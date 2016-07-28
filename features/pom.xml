@@ -154,6 +154,11 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-vpp-renderer</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfclisp</artifactId>
         <version>${project.version}</version>
     </dependency>
@@ -292,6 +297,14 @@
     <dependency>
        <groupId>${project.groupId}</groupId>
        <artifactId>sfc-openflow-renderer</artifactId>
+       <version>${project.version}</version>
+       <type>xml</type>
+       <classifier>config</classifier>
+    </dependency>
+    <!-- odl-sfc-vpp-renderer config files -->
+    <dependency>
+       <groupId>${project.groupId}</groupId>
+       <artifactId>sfc-vpp-renderer</artifactId>
        <version>${project.version}</version>
        <type>xml</type>
        <classifier>config</classifier>

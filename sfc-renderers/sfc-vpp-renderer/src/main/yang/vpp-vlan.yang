@@ -1,0 +1,420 @@
+module vpp-vlan {
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:vpp:vlan";
+  prefix "vpp-vlan";
+
+  revision "2015-05-27" {
+    description
+    "Initial revision of vlan model for VPP.
+     Reuses some concepts from draft-wilton-netmod-intf-vlan-yang-02 model.";
+  }
+
+  import ietf-interfaces {
+    prefix "if";
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix "yang";
+  }
+  import yang-ext {
+    prefix "ext";
+  }
+  import dot1q-types {
+    prefix dot1q;
+  }
+  import v3po {
+    prefix v3po;
+  }
+
+  typedef sub-interface-status {
+    type enumeration {
+      enum "up";
+      enum "down";
+    }
+  }
+
+  // todo add 802dot1ad support to dot1q-types.yang
+  /*
+   * Defines the supported IEEE 802.1Q types that can be used for
+   * VLAN tag matching.
+   */
+  identity vlan-type {
+    description "Base identity from which all VLAN types
+                 are derived from";
+  }
+
+  identity 802dot1q {
+    base vlan-type;
+    description
+      "An 802.1Q VLAN type";
+  }
+
+  identity 802dot1ad {
+    base vlan-type;
+    description
+      "An 802.1ad VLAN type";
+  }
+
+  typedef vlan-type {
+    type identityref {
+      base "vlan-type";
+    }
+    description "Identifies a specific VLAN type";
+  }
+
+  grouping match-attributes {
+    choice match-type {
+      mandatory true;
+      description "Provides a choice of how the frames may be matched";
+
+      case default {
+        description "Default match";
+        leaf default {
+          type empty;
+          description
+            "Default match.  Matches all traffic not matched to any
+             other peer sub-interface by a more specific
+             encapsulation.";
+        } // leaf default
+      } // case default
+
+      case untagged {
+        description "Match untagged Ethernet frames only";
+        leaf untagged {
+          type empty;
+            description
+              "Untagged match.  Matches all untagged traffic.";
+        } // leaf untagged
+      } // case untagged
+
+      case vlan-tagged {
+        container vlan-tagged {
+          description "Matches VLAN tagged frames. Vlan tags need to be specified to use this match type";
+
+          leaf match-exact-tags {
+            type boolean;
+            default true;
+            description
+              "If set, indicates that all 802.1Q VLAN tags in the
+               Ethernet frame header must be explicitly matched, i.e.
+               the EtherType following the matched tags must not be a
+               802.1Q tag EtherType.  If unset then extra 802.1Q VLAN
+               tags are allowed.";
+          }
+        } // container vlan-tagged
+      } // case vlan-tagged
+    }
+  }
+
+  // TODO VPP does not allow to change subinterface nor delete it (except for tag-rewrite operation)
+  grouping sub-interface-base-attributes {
+    leaf vlan-type {
+      type vlan-type;
+      default 802dot1q;
+    }
+
+    container tags {
+      list tag {
+        key "index";
+        max-elements 2;
+
+        description "The VLAN tags to use by locally sourced traffic";
+
+        leaf index {
+          type uint8 {
+            range "0..1";
+          }
+
+          /*
+           * Only allow a push of an inner tag if an outer tag is also
+           * being pushed.
+           */
+          must "index != 0 or
+                count(../../push-tags[index = 0]/index) > 0" {
+            error-message "An inner tag can only be pushed if an outer
+                           tag is also specified";
+            description "Only allow a push of an inner tag if an outer
+                         tag is also being pushed";
+          }
+          description "The index into the tag stack";
+        }
+
+        uses dot1q:dot1q-tag-or-any;
+
+      }
+    }
+
+    container match {
+      description
+       "The match used to classify frames to this interface";
+      uses match-attributes;
+    }
+
+    container l2 {
+      uses v3po:l2-base-attributes;
+      container rewrite {
+        uses tag-rewrite;
+      }
+    }
+
+    container acl {
+      uses v3po:acl-base-attributes;
+    }
+  }
+
+  grouping sub-interface-config-attributes {
+    leaf enabled {
+      type boolean;
+      default "false";
+      description
+        "Contains the configured, desired state of the sub-interface.
+        To enable sub-interface, the super inerface needs to be enabled";
+    }
+  }
+
+  grouping sub-interface-operational-attributes {
+    leaf admin-status {
+      type sub-interface-status;
+      mandatory true;
+    }
+    leaf oper-status {
+      type sub-interface-status;
+      mandatory true;
+    }
+    leaf if-index {
+      type int32 {
+        range "1..2147483647";
+      }
+      mandatory true;
+    }
+    leaf phys-address {
+      type yang:phys-address;
+      description
+        "The sub-interface's Media Access Control (MAC) address.";
+    }
+    leaf speed {
+      type yang:gauge64;
+      units "bits/second";
+    }
+  }
+
+  /*
+   * Only symetrical rewrite is supported
+   */
+  grouping tag-rewrite {
+    description "Flexible rewrite";
+
+    leaf vlan-type { // todo rename to push_dot1q, mandatory(?) with default true
+      type vlan-type;
+      default 802dot1q;
+    }
+
+    leaf pop-tags {
+      type uint8 {
+        range 1..2;
+      }
+      description "The number of tags to pop (or translate if used in
+                   conjunction with push-tags)";
+    }
+
+    list push-tags {
+      key "index";
+      max-elements 2;
+      description "The number of tags to push (or translate if used
+                   in conjunction with pop-tags)";
+      /*
+       * Server should order by increasing index.
+       */
+      leaf index {
+        type uint8 {
+          range 0..1;
+        }
+
+        /*
+         * Only allow a push of an inner tag if an outer tag is also
+         * being pushed.
+         */
+        must "index != 0 or
+              count(../../push-tags[index = 0]/index) > 0" {
+          error-message "An inner tag can only be pushed if an outer
+                         tag is also specified";
+          description "Only allow a push of an inner tag if an outer
+                       tag is also being pushed";
+        }
+      }
+
+      uses dot1q:dot1q-tag;
+    }
+  }
+
+  grouping sub-interface-ip4-attributes {
+    container ipv4 {
+      // TODO: add currently unsupported:
+      // enabled, forwarding, mtu, address/origin(config false), neighbor/origin(config false)
+
+      // TODO: reuse groupings once ietf-ip provides them
+
+      description
+        "Parameters for the IPv4 address family (based on ietf-ip rev. 2014-06-16)";
+
+      list address {
+        key "ip";
+        description
+          "The list of configured IPv4 addresses on the interface.";
+        leaf ip {
+          type inet:ipv4-address-no-zone;
+          description
+            "The IPv4 address on the interface.";
+        }
+
+        choice subnet {
+          mandatory true;
+          description
+            "The subnet can be specified as a prefix-length, or,
+             if the server supports non-contiguous netmasks, as
+             a netmask.";
+          leaf prefix-length {
+            type uint8 {
+              range "0..32";
+            }
+            description
+              "The length of the subnet prefix.";
+          }
+          leaf netmask {
+            type yang:dotted-quad;
+            description
+              "The subnet specified as a netmask (contiguous)";
+          }
+        }  // choice subnet
+      }  // list address
+
+      list neighbor {
+        key "ip";
+        description
+          "A list of mappings from IPv4 addresses to
+          link-layer addresses.
+
+          Entries in this list are used as static entries in the
+          ARP Cache.";
+        reference
+          "RFC 826: An Ethernet Address Resolution Protocol";
+
+        leaf ip {
+          type inet:ipv4-address-no-zone;
+          description
+            "The IPv4 address of the neighbor node.";
+        }
+
+        leaf link-layer-address {
+          type yang:phys-address;
+          mandatory true;
+          description
+            "The link-layer address of the neighbor node.";
+        }
+      }  // list neighbor
+    }
+  }
+
+  grouping sub-interface-ip6-attributes {
+    container ipv6 {
+      // TODO: add currently unsupported:
+      // enabled, forwarding, mtu, neighbor, dup-addr-detect-transmits, autoconf,
+      // address(config false): origin, status
+      // neighbor(config false): origin, is-router, state
+
+      // TODO: reuse groupings once ietf-ip provides them
+
+      description
+        "Parameters for the IPv6 address family (based on ietf-ip rev. 2014-06-16)";
+
+      list address {
+        key "ip";
+        description
+          "The list of configured IPv6 addresses on the interface.";
+        leaf ip {
+          type inet:ipv6-address-no-zone;
+          description
+            "The IPv6 address on the interface.";
+        }
+
+        leaf prefix-length {
+          type uint8 {
+            range "0..128";
+          }
+          mandatory true;
+          description
+            "The length of the subnet prefix.";
+        }
+      }  // list address
+
+      list neighbor {
+        key "ip";
+        description
+          "A list of mappings from IPv6 addresses to
+        link-layer addresses.
+
+        Entries in this list are used as static entries in the
+        Neighbor Cache.";
+        reference
+          "RFC 4861: Neighbor Discovery for IP version 6 (IPv6)";
+
+        leaf ip {
+          type inet:ipv6-address-no-zone;
+          description
+            "The IPv6 address of the neighbor node.";
+        }
+
+        leaf link-layer-address {
+          type yang:phys-address;
+          mandatory true;
+          description
+            "The link-layer address of the neighbor node.";
+        }
+      }  // list neighbor
+    }
+  }
+
+  augment /if:interfaces/if:interface {
+    ext:augment-identifier "subinterface-augmentation";
+
+    container sub-interfaces {
+      description "L2 vlan subinterfaces";
+
+
+      list sub-interface {
+        key "identifier";
+        leaf identifier {
+          type uint32;
+        }
+
+        uses sub-interface-base-attributes;
+        uses sub-interface-config-attributes;
+        uses sub-interface-ip4-attributes;
+        uses sub-interface-ip6-attributes;
+      }
+    }
+  }
+
+  augment /if:interfaces-state/if:interface {
+    ext:augment-identifier "subinterface-state-augmentation";
+
+    container sub-interfaces {
+      description "L2 vlan subinterfaces";
+
+      list sub-interface {
+        key "identifier";
+        leaf identifier {
+          type uint32;
+        }
+
+        uses sub-interface-base-attributes;
+        uses sub-interface-operational-attributes;
+        uses sub-interface-ip4-attributes;
+        uses sub-interface-ip6-attributes;
+      }
+    }
+  }
+
+}

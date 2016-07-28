@@ -8,8 +8,10 @@
 
 package org.opendaylight.sfc.ofrenderer.utils;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -78,6 +80,18 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
     @Override
     public Long getPortNumberFromName(String bridgeName, String portName, long rspId) {
         return new Long(0);
+    }
+
+    @Override
+    public BigInteger getDpid(String sffName, String sfName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setDpid(String sffName, String sfName, BigInteger value) {
+        // TODO Auto-generated method stub
+
     }
 
 }

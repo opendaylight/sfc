@@ -14,11 +14,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.RspLogicalSffAugmentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +48,10 @@ public class SffGraph {
         private String sfg;
         private long pathId;
         private short serviceIndex;
+        private RspLogicalSffAugmentation dstLogicalSffAugmentation;
+        private DpnIdType logicalSffSrcDpnId;
+        private DpnIdType logicalSffDstDpnId;
+
 
         public SffName getSrcSff() {
             return srcSff;
@@ -87,12 +94,39 @@ public class SffGraph {
             this.pathId = pathId;
             this.serviceIndex = serviceIndex;
             this.prevSf = null;
+            this.logicalSffSrcDpnId = null;
+            this.logicalSffDstDpnId = null;
         }
 
         @Override
         public String toString() {
-            return "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", prevSf=" + prevSf
-                    + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex + "]";
+            StringBuffer returnValue = new StringBuffer("SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf="
+                    + sf + ", prevSf=" + prevSf + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex);
+            if ((getSrcDpnId() != null) || (getDstDpnId() != null)) {
+                returnValue.append(", Logical SFF params: src dpnid [" +  getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]");
+            }
+            returnValue.append("]");
+            return returnValue.toString();
+        }
+
+        public DpnIdType getDstDpnId() {
+            return logicalSffDstDpnId;
+        }
+
+        public DpnIdType getSrcDpnId() {
+            return logicalSffSrcDpnId;
+        }
+
+        public boolean isIntraLogicalSFFEntry() {
+           return ((logicalSffSrcDpnId != null) && (logicalSffDstDpnId != null));
+        }
+
+        public void setSrcDpnId(DpnIdType srcDpnId) {
+            this.logicalSffSrcDpnId = srcDpnId;
+        }
+
+        public void setDstDpnId(DpnIdType dpnId) {
+            this.logicalSffDstDpnId = dpnId;
         }
     }
 
@@ -108,6 +142,7 @@ public class SffGraph {
         // The Ingress DPL info for this hop
         private DataPlaneLocator ingressHopDpl;
 
+
         public SffDataPlaneLocators(SffName sffName, long pathId, SffDataPlaneLocatorName ingressDplName,
                 SffDataPlaneLocatorName egressDplName, DataPlaneLocator hopDpl) {
             this.sffName = sffName;
@@ -115,6 +150,7 @@ public class SffGraph {
             this.ingressDplName = ingressDplName;
             this.egressDplName = egressDplName;
             this.ingressHopDpl = hopDpl;
+
         }
 
         public SffName getSffName() {
@@ -148,16 +184,9 @@ public class SffGraph {
     private Map<Long, DataPlaneLocator> pathIdToPathEgressLocators;
 
     public SffGraph() {
-        this.graphEntries = new ArrayList<SffGraphEntry>();
-        this.pathIdToSffDataPlaneLocators = new HashMap<Long, Map<SffName, SffDataPlaneLocators>>();
-        this.pathIdToPathEgressLocators = new HashMap<Long, DataPlaneLocator>();
-    }
-
-    //
-    // Graph methods
-    //
-    public SffGraphEntry addGraphEntry(final SffName srcSff, final SffName dstSff, long pathId, short serviceIndex) {
-        return addGraphEntry(srcSff, dstSff, null, null, pathId, serviceIndex);
+        this.graphEntries = new ArrayList<>();
+        this.pathIdToSffDataPlaneLocators = new HashMap<>();
+        this.pathIdToPathEgressLocators = new HashMap<>();
     }
 
     public SffGraphEntry addGraphEntry(final SffName srcSff, final SffName dstSff, final SfName sf, final String sfg,
@@ -165,7 +194,7 @@ public class SffGraph {
         SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, sfg, pathId, serviceIndex);
         graphEntries.add(entry);
 
-        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}]",
+        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}] ",
                 srcSff.getValue(), dstSff.getValue(), sf.getValue(), sfg, pathId, serviceIndex);
 
         return entry;
@@ -201,7 +230,7 @@ public class SffGraph {
                 sffName.getValue(), pathId, ingressDpl.getValue(), egressDpl.getValue());
 
         if (sffToDpls == null) {
-            sffToDpls = new HashMap<SffName, SffDataPlaneLocators>();
+            sffToDpls = new HashMap<>();
             pathIdToSffDataPlaneLocators.put(pathId, sffToDpls);
         }
 
@@ -222,7 +251,7 @@ public class SffGraph {
                 return null;
             }
 
-            sffToDpls = new HashMap<SffName, SffDataPlaneLocators>();
+            sffToDpls = new HashMap<>();
             pathIdToSffDataPlaneLocators.put(pathId, sffToDpls);
         }
 

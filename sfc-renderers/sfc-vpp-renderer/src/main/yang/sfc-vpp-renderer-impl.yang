@@ -1,0 +1,74 @@
+// vi: set smarttab et sw=4 tabstop=4:
+module sfc-vpp-renderer-impl {
+
+  yang-version 1;
+  namespace "urn:opendaylight:params:xml:ns:yang:controller:config:sfc-vpp-renderer:impl";
+  prefix "sfc-vpp-renderer-impl";
+
+  import config { prefix config; revision-date 2013-04-05; }
+  import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+  import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28; }
+
+
+  description
+      "This module contains the base YANG definitions for
+      sfc-vpp-renderer impl implementation.";
+
+  revision "2016-07-20" {
+      description
+          "Initial revision";
+  }
+
+  // This is the definition of the service implementation as a module identity
+  identity sfc-vpp-renderer-impl {
+      base config:module-type;
+
+      // Specifies the prefix for generated java classes.
+      config:java-name-prefix SfcVppRenderer;
+  }
+
+
+  // Augments the 'configuration' choice node under modules/module.
+  augment "/config:modules/config:module/config:configuration" {
+    case sfc-vpp-renderer-impl {
+      when "/config:modules/config:module/config:type = 'sfc-vpp-renderer-impl'";
+
+      //wires in the data-broker service
+      container data-broker {
+        uses config:service-ref {
+          refine type {
+              mandatory false;
+              config:required-identity mdsal:binding-async-data-broker;
+          }
+        }
+      }
+
+      container notification-service {
+        uses config:service-ref {
+          refine type {
+            mandatory true;
+            config:required-identity mdsal:binding-notification-service;
+          }
+        }
+      }
+
+      container rpc-registry {
+        uses config:service-ref {
+          refine type {
+             mandatory true;
+             config:required-identity mdsal:binding-rpc-registry;
+          }
+        }
+      }
+
+      container binding-registry {
+        uses config:service-ref {
+          refine type {
+              mandatory true;
+              config:required-identity mdsal:binding-broker-osgi-registry;
+          }
+        }
+      }
+    }
+  }
+}

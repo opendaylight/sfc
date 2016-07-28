@@ -154,6 +154,11 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-vpp-renderer</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfclisp</artifactId>
         <version>${project.version}</version>
     </dependency>

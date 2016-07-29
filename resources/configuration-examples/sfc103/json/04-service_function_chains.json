@@ -1,0 +1,30 @@
+{
+    "service-function-chains": {
+        "service-function-chain": [
+            {
+                "name": "SFC1",
+                "symmetric": "true",
+                "sfc-service-function": [
+                    {
+                        "name": "dpi-abstract1",
+                        "type": "dpi"
+                    },
+                    {
+                        "name": "firewall-abstract1",
+                        "type": "firewall"
+                    }
+                ]
+            },
+            {
+                "name": "SFC2",
+                "symmetric": "true",
+                "sfc-service-function": [
+                    {
+                        "name": "dpi-abstract1",
+                        "type": "dpi"
+                    }
+                ]
+            }
+        ]
+    }
+}

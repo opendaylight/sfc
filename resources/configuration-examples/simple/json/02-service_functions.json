@@ -1,0 +1,22 @@
+{
+  "service-functions": {
+    "service-function": [
+      {
+        "name": "sf1",
+        "type": "http-header-enrichment",
+        "nsh-aware": true,
+        "ip-mgmt-address": "10.0.0.10",
+        "sf-data-plane-locator": [
+          {
+            "name": "sff1",
+            "ip": "10.0.0.10",
+            "port": 6633,
+            "transport": "service-locator:vxlan-gpe",
+            "service-function-forwarder": "sff1",
+            "service-function-ovs:ovs-port" : {"port-id" : "veth1"}
+          }
+        ]
+      }
+    ]
+  }
+}

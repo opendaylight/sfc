@@ -1,0 +1,44 @@
+{
+    "service-nodes": {
+        "service-node": [
+            {
+                "name": "classifier1",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.10"
+            },
+            {
+                "name": "sff1",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.20"
+            },
+            {
+                "name": "sf1",
+                "service-function": [
+                    "dpi-1"
+                ],
+                "ip-mgmt-address": "192.168.1.30"
+            },
+            {
+                "name": "sf2",
+                "service-function": [
+                    "firewall-1"
+                ],
+                "ip-mgmt-address": "192.168.1.40"
+            },
+            {
+                "name": "sff2",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.50"
+            },
+            {
+                "name": "classifier2",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.60"
+            }
+        ]
+    }
+}

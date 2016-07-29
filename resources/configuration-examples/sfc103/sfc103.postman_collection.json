@@ -1,0 +1,373 @@
+{
+	"variables": [],
+	"info": {
+		"name": "sfc103",
+		"_postman_id": "d48a3c7e-12c6-d6ed-6089-c0b7ba10bd1f",
+		"description": "SFC configuration for sfc103 demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "configuration",
+			"description": "",
+			"item": [
+				{
+					"name": "01-configure-service_nodes",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-node:service-nodes/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-nodes\": {\n        \"service-node\": [\n            {\n                \"name\": \"classifier1\",\n                \"service-function\": [\n                ],\n                \"ip-mgmt-address\": \"192.168.1.10\"\n            },\n            {\n                \"name\": \"sff1\",\n                \"service-function\": [\n                ],\n                \"ip-mgmt-address\": \"192.168.1.20\"\n            },\n            {\n                \"name\": \"sf1\",\n                \"service-function\": [\n                    \"dpi-1\"\n                ],\n                \"ip-mgmt-address\": \"192.168.1.30\"\n            },\n            {\n                \"name\": \"sf2\",\n                \"service-function\": [\n                    \"firewall-1\"\n                ],\n                \"ip-mgmt-address\": \"192.168.1.40\"\n            },\n            {\n                \"name\": \"sff2\",\n                \"service-function\": [\n                ],\n                \"ip-mgmt-address\": \"192.168.1.50\"\n            },\n            {\n                \"name\": \"classifier2\",\n                \"service-function\": [\n                ],\n                \"ip-mgmt-address\": \"192.168.1.60\"\n            }\n        ]\n    }\n}"
+						},
+						"description": "Configuration of Service Nodes"
+					},
+					"response": []
+				},
+				{
+					"name": "02-configure-service_functions",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function:service-functions/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-functions\": {\n        \"service-function\": [\n            {\n                \"name\": \"dpi-1\",\n                \"ip-mgmt-address\": \"192.168.1.30\",\n                \"rest-uri\": \"http://192.168.1.30:5000\",\n                \"type\": \"dpi\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"dpi-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.30\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"firewall-1\",\n                \"ip-mgmt-address\": \"192.168.1.40\",\n                \"rest-uri\": \"http://192.168.1.40:5000\",\n                \"type\": \"firewall\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"firewall-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.40\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF2\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						},
+						"description": "Configurarion of Service Functions"
+					},
+					"response": []
+				},
+				{
+					"name": "03-configure-service_function_forwarders",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-forwarder:service-function-forwarders/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-forwarders\": {\n        \"service-function-forwarder\": [\n           {\n                \"name\": \"Classifier1\",\n                \"service-node\": \"classifier1\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\"\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff0-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.10\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFF1\",\n                \"service-node\": \"sff1\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\"\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff1-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.20\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n                \"service-function-dictionary\": [\n                    {\n                        \"name\": \"dpi-1\",\n                        \"sff-sf-data-plane-locator\": {\n                             \"sf-dpl-name\": \"dpi-1-dpl\",\n                             \"sff-dpl-name\": \"sff1-dpl\"\n                        }\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFF2\",\n                \"service-node\": \"sff2\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\"\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff2-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.50\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n                \"service-function-dictionary\": [\n                    {\n                        \"name\": \"firewall-1\",\n                        \"sff-sf-data-plane-locator\": {\n                            \"sf-dpl-name\": \"firewall-1-dpl\",\n                            \"sff-dpl-name\": \"sff2-dpl\"\n                        }\n                    }\n                ]\n            },\n            {\n                \"name\": \"Classifier2\",\n                \"service-node\": \"classifier2\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\"\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff3-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.60\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						},
+						"description": "Configuration of Service Function Forwarders"
+					},
+					"response": []
+				},
+				{
+					"name": "04-configure-service_function_chains",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-chain:service-function-chains/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-chains\": {\n        \"service-function-chain\": [\n            {\n                \"name\": \"SFC1\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    },\n                    {\n                        \"name\": \"firewall-abstract1\",\n                        \"type\": \"firewall\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFC2\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						},
+						"description": "Configuration of Service Function Chains"
+					},
+					"response": []
+				},
+				{
+					"name": "05-configure-service_function_metadata",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-path-metadata:service-function-metadata/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service-function-metadata\": {\n    \"context-metadata\": [\n      {\n        \"name\": \"NSH1\",\n        \"context-header1\": \"1\",\n        \"context-header2\": \"2\",\n        \"context-header3\": \"3\",\n        \"context-header4\": \"4\"\n      }\n    ]\n  }\n}"
+						},
+						"description": "Configuration of metadata (NSH)"
+					},
+					"response": []
+				},
+				{
+					"name": "06-configure-service_function_paths",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-path:service-function-paths/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-paths\": {\n        \"service-function-path\": [\n            {\n                \"name\": \"SFP1\",\n                \"service-chain-name\": \"SFC1\",\n                \"starting-index\": 255,\n                \"symmetric\": \"true\",\n                \"context-metadata\": \"NSH1\",\n                \"service-path-hop\": [\n                    {\n                        \"hop-number\": 0,\n                        \"service-function-name\": \"dpi-1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFP2\",\n                \"service-chain-name\": \"SFC2\",\n                \"starting-index\": 255,\n                \"symmetric\": \"true\",\n                \"context-metadata\": \"NSH1\",\n                \"service-path-hop\": [\n                    {\n                        \"hop-number\": 0,\n                        \"service-function-name\": \"dpi-1\"\n                    }\n                ]\n            }\n        ] \n    } \n}"
+						},
+						"description": "Configurarion of Service Function Paths"
+					},
+					"response": []
+				},
+				{
+					"name": "07-configure-service_function_acls",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/ietf-access-control-list:access-lists/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"access-lists\": {\n    \"acl\": [\n      {\n        \"acl-name\": \"ACL1\",\n        \"acl-type\": \"ietf-access-control-list:ipv4-acl\",\n        \"access-list-entries\": {\n          \"ace\": [\n            {\n              \"rule-name\": \"ACE1\",\n              \"actions\": {\n                \"service-function-acl:rendered-service-path\": \"RSP1\"\n              },\n              \"matches\": {\n                \"destination-ipv4-network\": \"192.168.2.0/24\",\n                \"source-ipv4-network\": \"192.168.2.0/24\",\n                \"protocol\": \"6\",\n                \"source-port-range\": {\n                    \"lower-port\": 0\n                },\n                \"destination-port-range\": {\n                    \"lower-port\": 80\n                }\n              }\n            }\n          ]\n        }\n      },\n      {\n        \"acl-name\": \"ACL2\",\n        \"acl-type\": \"ietf-access-control-list:ipv4-acl\",\n        \"access-list-entries\": {\n          \"ace\": [\n            {\n              \"rule-name\": \"ACE2\",\n              \"actions\": {\n                \"service-function-acl:rendered-service-path\": \"RSP1-Reverse\"\n              },\n              \"matches\": {\n                \"destination-ipv4-network\": \"192.168.2.0/24\",\n                \"source-ipv4-network\": \"192.168.2.0/24\",\n                \"protocol\": \"6\",\n                \"source-port-range\": {\n                    \"lower-port\": 80\n                },\n                \"destination-port-range\": {\n                    \"lower-port\": 0\n                }\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}"
+						},
+						"description": "Configuration of Service Function ACLs"
+					},
+					"response": []
+				},
+				{
+					"name": "08-rendered_service_path",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/operations/rendered-service-path:create-rendered-path/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": {\n        \"name\": \"RSP1\",\n        \"parent-service-function-path\": \"SFP1\",\n        \"symmetric\": \"true\"\n    }\n}"
+						},
+						"description": "Emulation of RSP creation in Operational data model"
+					},
+					"response": []
+				},
+				{
+					"name": "09-configure-service_function_classifiers",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-classifier:service-function-classifiers/",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service-function-classifiers\": {\n    \"service-function-classifier\": [\n      {\n        \"name\": \"Classifier1\",\n        \"scl-service-function-forwarder\": [\n          {\n            \"name\": \"Classifier1\",\n            \"interface\": \"veth-br\"\n          }\n        ],\n        \"acl\": {\n            \"name\": \"ACL1\",\n            \"type\": \"ietf-access-control-list:ipv4-acl\"\n         }\n      },\n      {\n        \"name\": \"Classifier2\",\n        \"scl-service-function-forwarder\": [\n          {\n            \"name\": \"Classifier2\",\n            \"interface\": \"veth-br\"\n          }\n        ],\n        \"acl\": {\n            \"name\": \"ACL2\",\n            \"type\": \"ietf-access-control-list:ipv4-acl\"\n         }\n      }\n    ]\n  }\n}"
+						},
+						"description": "Configuration of Service Function Classifiers"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "verification",
+			"description": "GET calls to see the current configuration",
+			"item": [
+				{
+					"name": "get-service_functions",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function:service-functions/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-functions\": {\n        \"service-function\": [\n            {\n                \"name\": \"dpi-1\",\n                \"ip-mgmt-address\": \"192.168.1.30\",\n                \"rest-uri\": \"http://192.168.1.30:5000\",\n                \"type\": \"dpi\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"dpi-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.30\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"firewall-1\",\n                \"ip-mgmt-address\": \"192.168.1.40\",\n                \"rest-uri\": \"http://192.168.1.40:5000\",\n                \"type\": \"firewall\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"firewall-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.40\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF2\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						},
+						"description": "Shows the configured Service Functions"
+					},
+					"response": []
+				},
+				{
+					"name": "get-service_function_chains",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-chain:service-function-chains/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-chains\": {\n        \"service-function-chain\": [\n            {\n                \"name\": \"SFC1\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    },\n                    {\n                        \"name\": \"firewall-abstract1\",\n                        \"type\": \"firewall\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFC2\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						},
+						"description": "Get the configured Service Function Chains"
+					},
+					"response": []
+				},
+				{
+					"name": "get-service_function_forwarders",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-forwarder:service-function-forwarders/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-forwarders\": {\n        \"service-function-forwarder\": [\n           {\n                \"name\": \"Classifier1\",\n                \"service-node\": \"classifier1\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\",\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff0-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.10\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n            },\n            {\n                \"name\": \"SFF1\",\n                \"service-node\": \"sff1\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\",\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff1-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.20\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n                \"service-function-dictionary\": [\n                    {\n                        \"name\": \"dpi-1\",\n                        \"sff-sf-data-plane-locator\": {\n                             \"sf-dpl-name\": \"dpi-1-dpl\",\n                             \"sff-dpl-name\": \"sff1-dpl\"\n                        }\n                    }\n                ],\n            },\n            {\n                \"name\": \"SFF2\",\n                \"service-node\": \"sff2\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\",\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff2-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.50\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n                \"service-function-dictionary\": [\n                    {\n                        \"name\": \"firewall-1\",\n                        \"sff-sf-data-plane-locator\": {\n                            \"sf-dpl-name\": \"firewall-1-dpl\",\n                            \"sff-dpl-name\": \"sff2-dpl\"\n                        }\n                    }\n                ]\n            },\n            {\n                \"name\": \"Classifier2\",\n                \"service-node\": \"classifier2\",\n                \"service-function-forwarder-ovs:ovs-bridge\": {\n                    \"bridge-name\": \"br-sfc\",\n                },\n                \"sff-data-plane-locator\": [\n                    {\n                        \"name\": \"sff3-dpl\",\n                        \"data-plane-locator\": {\n                            \"transport\": \"service-locator:vxlan-gpe\",\n                            \"port\": 6633,\n                            \"ip\": \"192.168.1.60\"\n                        },\n                        \"service-function-forwarder-ovs:ovs-options\": {\n                            \"remote-ip\": \"flow\",\n                            \"dst-port\": \"6633\",\n                            \"key\": \"flow\",\n                            \"nsp\": \"flow\",\n                            \"nsi\": \"flow\",\n                            \"nshc1\": \"flow\",\n                            \"nshc2\": \"flow\",\n                            \"nshc3\": \"flow\",\n                            \"nshc4\": \"flow\"\n                        }\n                    }\n                ],\n            }\n        ]\n    }\n}"
+						},
+						"description": "Shows the configured Service Function Forwarders"
+					},
+					"response": []
+				},
+				{
+					"name": "get-service_function_paths",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-function-path:service-function-paths/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-paths\": {\n        \"service-function-path\": [\n            {\n                \"name\": \"SFP1\",\n                \"service-chain-name\": \"SFC1\",\n                \"starting-index\": 255,\n                \"symmetric\": \"true\",\n                \"context-metadata\": \"NSH1\",\n                \"service-path-hop\": [\n                    {\n                        \"hop-number\": 0,\n                        \"service-function-name\": \"dpi-1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFP2\",\n                \"service-chain-name\": \"SFC2\",\n                \"starting-index\": 255,\n                \"symmetric\": \"true\",\n                \"context-metadata\": \"NSH1\",\n                \"service-path-hop\": [\n                    {\n                        \"hop-number\": 0,\n                        \"service-function-name\": \"dpi-1\"\n                    }\n                ]\n            }\n        ] \n    } \n}"
+						},
+						"description": "Shows Service Function Paths"
+					},
+					"response": []
+				},
+				{
+					"name": "get-service_nodes",
+					"request": {
+						"url": "http://{{ip}}:8181/restconf/config/service-node:service-nodes/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW4=",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service-function-scheduler-type\": [\n        {\n            \"type\": \"service-function-scheduler-type:shortest-path\",\n            \"enabled\": true,\n            \"name\": \"round-robin\"\n        }\n    ]\n}"
+						},
+						"description": "Shows configured Service Nodes"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -117,6 +117,28 @@ class SfcGeniusServiceHandler {
         );
     }
 
+    CompletableFuture<Void> interfaceStateUp(String interfaceName, BigInteger nodeId) {
+        SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
+        SfcGeniusTsaWriter tsaWriter = getTsaWriter();
+
+        return dpnIfWriter.addInterface(nodeId, interfaceName)
+                .thenCompose(optionalNewDpn -> optionalNewDpn
+                        .map(tsaWriter::createTerminatingServiceAction)
+                        .orElse(CompletableFuture.completedFuture(null))
+        );
+    }
+
+    CompletableFuture<Void> interfaceStateDown(String interfaceName, BigInteger nodeId) {
+        SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
+        SfcGeniusTsaWriter tsaWriter = getTsaWriter();
+
+        return dpnIfWriter.removeInterfaceFromDpn(nodeId, interfaceName).thenCompose(
+                optionalOldDpn -> optionalOldDpn
+                        .map(tsaWriter::removeTerminatingServiceAction)
+                        .orElse(CompletableFuture.completedFuture(null))
+        );
+    }
+
     protected SfcGeniusIfStateReader getIfStateReader() {
         return new SfcGeniusIfStateReader(transaction, executor);
     }

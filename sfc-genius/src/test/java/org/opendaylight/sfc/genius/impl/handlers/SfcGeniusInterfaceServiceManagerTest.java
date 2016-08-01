@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -59,6 +60,9 @@ public class SfcGeniusInterfaceServiceManagerTest {
     SfcGeniusSfReader sfcGeniusSfReader;
 
     @Mock
+    SfcGeniusRspHandler sfcGeniusRspHandler;
+
+    @Mock
     SfcGeniusServiceHandler sfcGeniusServiceHandler;
 
     @Mock
@@ -75,6 +79,11 @@ public class SfcGeniusInterfaceServiceManagerTest {
             return null;
         }).when(executor).execute(any());
         when(readWriteTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        when(sfcGeniusRspHandler.interfaceStateUp(any())).thenReturn(CompletableFuture.completedFuture(null));
+        when(sfcGeniusServiceHandler.interfaceStateUp(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
+        when(sfcGeniusServiceHandler.interfaceStateDown(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.bindToInterface(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.unbindFromInterface(any()))
@@ -83,6 +92,8 @@ public class SfcGeniusInterfaceServiceManagerTest {
         sfcGeniusInterfaceServiceManager = spy(
                 new SfcGeniusInterfaceServiceManager(dataBroker, rpcProviderRegistry, executor));
 
+        doReturn(sfcGeniusRspHandler).when(sfcGeniusInterfaceServiceManager)
+                .getSfcGeniusRspHandler(readWriteTransaction);
         doReturn(sfcGeniusServiceHandler).when(sfcGeniusInterfaceServiceManager)
                 .getSfcGeniusServiceHandler(readWriteTransaction);
         doReturn(sfcGeniusSfReader).when(sfcGeniusInterfaceServiceManager)
@@ -171,4 +182,22 @@ public class SfcGeniusInterfaceServiceManagerTest {
 
         sfcGeniusInterfaceServiceManager.unbindInterfacesOfServiceFunction("SF1");
     }
+
+    @Test
+    public void interfaceStateUp() throws Exception {
+        sfcGeniusInterfaceServiceManager.interfaceStateUp("IF1", BigInteger.valueOf(7));
+
+        verify(sfcGeniusRspHandler).interfaceStateUp("IF1");
+        verify(sfcGeniusServiceHandler).interfaceStateUp("IF1", BigInteger.valueOf(7));
+        verify(readWriteTransaction).submit();
+    }
+
+    @Test
+    public void interfaceStateDown() throws Exception {
+        sfcGeniusInterfaceServiceManager.interfaceStateDown("IF1", BigInteger.valueOf(7));
+
+        verify(sfcGeniusServiceHandler).interfaceStateDown("IF1", BigInteger.valueOf(7));
+        verify(readWriteTransaction).submit();
+    }
+
 }

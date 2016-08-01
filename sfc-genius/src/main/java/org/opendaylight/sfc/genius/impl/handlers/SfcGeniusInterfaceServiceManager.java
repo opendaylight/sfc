@@ -123,12 +123,40 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
 
     @Override
     public void interfaceStateUp(String interfaceName, BigInteger dpnId) {
-        // TODO implement
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusRspHandler rspHandler = getSfcGeniusRspHandler(readWriteTransaction);
+        SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+
+        CompletableFuture.allOf(
+                rspHandler.interfaceStateUp(interfaceName),
+                serviceHandler.interfaceStateUp(interfaceName, dpnId)
+        ).thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor)
+        ).handle((aVoid, exception) -> {
+                    if (exception != null) {
+                        LOG.error("Error handling interface {} state up on {}", interfaceName, dpnId, exception);
+                    }
+                    return null;
+        }).join();
     }
 
     @Override
     public void interfaceStateDown(String interfaceName, BigInteger nodeId) {
-        // TODO implement
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+
+        serviceHandler.interfaceStateDown(interfaceName, nodeId)
+                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .handle((aVoid, exception) -> {
+                    if (exception != null) {
+                        LOG.error("Error handling interface {} state up on {}", interfaceName, nodeId, exception);
+                    }
+                    return null;
+                })
+                .join();
+    }
+
+    protected SfcGeniusRspHandler getSfcGeniusRspHandler(ReadWriteTransaction readWriteTransaction) {
+        return new SfcGeniusRspHandler(readWriteTransaction, executor);
     }
 
     protected SfcGeniusSfReader getSfcGeniusSfReader(ReadWriteTransaction readWriteTransaction) {

@@ -200,6 +200,7 @@
         <module>sfc-jsonconfig</module>
         <module>sfc-vnfm-spi</module>
         <module>sfc-vnfm-tacker</module>
+        <module>sfc-pot</module>
         <module>features</module>
         <module>sfc-karaf</module>
         <module>sfc-bootstrap</module>

@@ -12,9 +12,9 @@ import org.opendaylight.controller.config.api.DependencyResolver;
 import org.opendaylight.controller.config.api.ModuleIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.genius.provider.SfcGeniusSfInterfaceManager;
-import org.opendaylight.sfc.genius.provider.listeners.SfcGeniusInterfaceStateListener;
-import org.opendaylight.sfc.genius.provider.listeners.SfcGeniusSfStateListener;
+import org.opendaylight.sfc.genius.impl.SfcGeniusSfInterfaceManager;
+import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
+import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

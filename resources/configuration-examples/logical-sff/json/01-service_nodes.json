@@ -1,0 +1,32 @@
+{
+    "service-nodes": {
+        "service-node": [
+            {
+                "name": "classifier1",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.10"
+            },
+            {
+                "name": "sf1",
+                "service-function": [
+                    "dpi-1"
+                ],
+                "ip-mgmt-address": "192.168.1.30"
+            },
+            {
+                "name": "sf2",
+                "service-function": [
+                    "firewall-1"
+                ],
+                "ip-mgmt-address": "192.168.1.40"
+            },
+            {
+                "name": "classifier2",
+                "service-function": [
+                ],
+                "ip-mgmt-address": "192.168.1.60"
+            }
+        ]
+    }
+}

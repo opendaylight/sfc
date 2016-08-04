@@ -1,0 +1,34 @@
+{
+    "service-functions": {
+        "service-function": [
+            {
+                "name": "dpi-1",
+                "ip-mgmt-address": "192.168.1.30",
+                "rest-uri": "http://192.168.1.30:5000",
+                "type": "dpi",
+                "nsh-aware": "true",
+                "sf-data-plane-locator": [
+                    {
+                        "name": "dpi-1-dpl",
+                        "interface-name": "e0fffc12-a46e-4575-bf36-8383c8edefed",
+                        "service-function-forwarder": "sfflogical1"
+                    }
+                ]
+            },
+            {
+                "name": "firewall-1",
+                "ip-mgmt-address": "192.168.1.40",
+                "rest-uri": "http://192.168.1.40:5000",
+                "type": "firewall",
+                "nsh-aware": "true",
+                "sf-data-plane-locator": [
+                    {
+                        "name": "firewall-1-dpl",
+                        "interface-name": "952a5486-d1a5-40cd-a7c1-cc61e59a2b36",
+                        "service-function-forwarder": "sfflogical1"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -86,7 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.ProtocolMatchFieldsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.ArpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
@@ -329,9 +329,9 @@ public class SfcOpenflowUtils {
         ipMatch.setIpProtocol(IP_PROTOCOL_TCP);
         match.setIpMatch(mergeIpMatch(match, ipMatch));
 
-        TcpFlagMatchBuilder tcpFlagMatch = new TcpFlagMatchBuilder();
-        tcpFlagMatch.setTcpFlag(TCP_FLAG_SYN);
-        match.setTcpFlagMatch(tcpFlagMatch.build());
+        TcpFlagsMatchBuilder tcpFlagMatch = new TcpFlagsMatchBuilder();
+        tcpFlagMatch.setTcpFlags(TCP_FLAG_SYN);
+        match.setTcpFlagsMatch(tcpFlagMatch.build());
     }
 
     public static void addMatchDscp(MatchBuilder match, short dscpVal) {

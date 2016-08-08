@@ -3,13 +3,7 @@
 set -eux
 
 function ovs_start {
-    ovsdb-server --remote=punix:/var/run/openvswitch/db.sock \
-                 --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
-                 --private-key=db:Open_vSwitch,SSL,private_key \
-                 --certificate=db:Open_vSwitch,SSL,certificate \
-                 --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert \
-                 --pidfile --detach
-    ovs-vswitchd --pidfile --detach --log-file=/var/log/openvswitch/ovs-vswitchd.log
+    service openvswitch-switch start
     ovs-vsctl set-manager tcp:192.168.1.5:6640
     ovs-vsctl add-br br-sfc
 }

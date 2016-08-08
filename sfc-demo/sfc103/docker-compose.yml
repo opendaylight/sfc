@@ -55,8 +55,6 @@ services:
     networks:
       sfc103_mgmt:
         ipv4_address: 192.168.1.20
-    cap_add:
-      - NET_ADMIN
 
   sff2:
     image: sfc-service-node
@@ -70,8 +68,6 @@ services:
     networks:
       sfc103_mgmt:
         ipv4_address: 192.168.1.50
-    cap_add:
-      - NET_ADMIN
 
   sf1:
     image: sfc-service-node
@@ -87,8 +83,6 @@ services:
         ipv4_address: 192.168.1.30
     volumes:
       - "/sfc:/sfc"
-    cap_add:
-      - NET_ADMIN
 
   sf2:
     image: sfc-service-node
@@ -104,8 +98,6 @@ services:
         ipv4_address: 192.168.1.40
     volumes:
       - "/sfc:/sfc"
-    cap_add:
-      - NET_ADMIN
 
 networks:
   sfc103_mgmt:

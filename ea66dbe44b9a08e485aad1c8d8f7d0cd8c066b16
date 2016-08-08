@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_54d828ef",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-08-08T09:42:12Z",
+      "side": 1,
+      "message": "\"cd $HOME\" must be added here to have write permission required by start-ovs-deb.sh",
+      "revId": "ea66dbe44b9a08e485aad1c8d8f7d0cd8c066b16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

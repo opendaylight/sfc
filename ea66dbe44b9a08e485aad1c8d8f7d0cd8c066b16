@@ -16,6 +16,57 @@
       "revId": "ea66dbe44b9a08e485aad1c8d8f7d0cd8c066b16",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c1e9151c",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-08-08T14:17:39Z",
+      "side": 1,
+      "message": "I would continue using the sfc_ready.sh checking here",
+      "revId": "ea66dbe44b9a08e485aad1c8d8f7d0cd8c066b16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a1d5f944",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-08-08T14:17:39Z",
+      "side": 1,
+      "message": "build_docker\nsleep 60\n\nTo have the demo fully working the build_docker function should be called here with a 60 (maybe less) seconds sleep just in case",
+      "revId": "ea66dbe44b9a08e485aad1c8d8f7d0cd8c066b16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_41206549",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-08-08T14:17:39Z",
+      "side": 1,
+      "message": "This function call shoud be removed from here (actually moved) for the reasons explained above",
+      "revId": "ea66dbe44b9a08e485aad1c8d8f7d0cd8c066b16",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

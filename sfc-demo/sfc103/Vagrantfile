@@ -6,58 +6,18 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "trusty-server-cloudimg-amd64"
-  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--memory", 1024]
-    v.customize ["modifyvm", :id, "--cpus", 4]
-  end
+  config.vm.box = "wily-server-cloudimg-amd64"
+  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/wily/current/wily-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.provision "docker"
 
   config.vm.synced_folder "../..", "/sfc"
 
   config.vm.define "odl" do | h |
     h.vm.host_name = "odl"
-    h.vm.network :private_network, ip: "192.168.1.5"
     h.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 4096]
-      v.customize ["modifyvm", :id, "--cpus", 4]
+      v.customize ["modifyvm", :id, "--cpus", 2]
     end
-    h.vm.provision :shell, :inline => "nohup /vagrant/setup_odl.sh > setup_odl.log 2>&1 &", privileged: false
-  end
-
-  config.vm.define "classifier1" do | h |
-    h.vm.host_name = "classifier1"
-    h.vm.network :private_network, ip: "192.168.1.10"
-    h.vm.provision :shell, :inline => "/vagrant/setup_classifier.sh"
-  end
-
-  config.vm.define "classifier2" do | h |
-    h.vm.host_name = "classifier2"
-    h.vm.network :private_network, ip: "192.168.1.60"
-    h.vm.provision :shell, :inline => "/vagrant/setup_classifier.sh"
-  end
-
-  config.vm.define "sff1" do | h |
-    h.vm.host_name = "sff1"
-    h.vm.network :private_network, ip: "192.168.1.20"
-    h.vm.provision :shell, :inline => "/vagrant/setup_sff.sh"
-  end
-
-  config.vm.define "sff2" do | h |
-    h.vm.host_name = "sff2"
-    h.vm.network :private_network, ip: "192.168.1.50"
-    h.vm.provision :shell, :inline => "/vagrant/setup_sff.sh"
-  end
-
-  config.vm.define "sf1" do | h |
-    h.vm.host_name = "sf1"
-    h.vm.network :private_network, ip: "192.168.1.30"
-    h.vm.provision :shell, :inline => "/vagrant/setup_sf.sh"
-  end
-
-  config.vm.define "sf2" do | h |
-    h.vm.host_name = "sf2"
-    h.vm.network :private_network, ip: "192.168.1.40"
-    h.vm.provision :shell, :inline => "/vagrant/setup_sf.sh"
+    h.vm.provision :shell, :inline => "/vagrant/setup_odl.sh", privileged: false
   end
 end

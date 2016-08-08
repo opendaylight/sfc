@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_d40a78d1",
+        "filename": "sfc-demo/sfc103/demo.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-08-08T08:03:54Z",
+      "side": 1,
+      "message": "I would prefer not to automate this. IMHO it\u0027s up to the system admin.",
+      "revId": "c27d376862a9214532a0218be07ecfb008d6159a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

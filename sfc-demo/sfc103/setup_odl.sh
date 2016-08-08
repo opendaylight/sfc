@@ -3,8 +3,9 @@
 # setup sfc from pre-build. If DIST_URL is null, build sfc from scratch
 DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.0-SNAPSHOT/
 
-
 function install_packages {
+    sudo apt-get install npm vim git git-review diffstat bridge-utils -y
+
     #install java8
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
     sudo add-apt-repository ppa:webupd8team/java -y
@@ -24,7 +25,29 @@ export M2_HOME=/usr/local/apache-maven/apache-maven-3.3.9
 export MAVEN_OPTS="-Xms256m -Xmx512m" # Very important to put the "m" on the end
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle # This matches sudo update-alternatives --config java
 EOF
-    sudo apt-get install npm vim git git-review diffstat -y
+
+    # install docker compose
+    sudo apt-get install -y python-pip
+    sudo pip install docker-compose
+}
+
+function install_ovs {
+    # Open vSwitch with VxLAN-GPE and NSH support
+    cd $HOME
+    sudo apt-get install -y git libtool m4 autoconf automake make libssl-dev libcap-ng-dev python3 python-six vlan iptables \
+         graphviz debhelper dh-autoreconf python-all python-qt4 python-twisted-conch
+    git clone https://github.com/openvswitch/ovs.git
+    git clone https://github.com/yyang13/ovs_nsh_patches.git
+    cd ovs
+    git reset --hard 7d433ae57ebb90cd68e8fa948a096f619ac4e2d8
+    cp ../ovs_nsh_patches/*.patch ./
+    git config user.email odl@opendaylight.org
+    git config user.name odl
+    git am *.patch
+    sudo DEB_BUILD_OPTIONS='parallel=8 nocheck' fakeroot debian/rules binary
+    sudo dpkg -i $HOME/openvswitch-datapath-dkms* $HOME/openvswitch-common* $HOME/openvswitch-switch* ../python-openvswitch*
+    mkdir -p /vagrant/ovs-debs
+    cp $HOME/openvswitch-common*.deb $HOME/openvswitch-switch*.deb /vagrant/ovs-debs/
 }
 
 function install_sfc {
@@ -46,18 +69,12 @@ function install_sfc {
     fi
 }
 
-function start_sfc {
-    cd $HOME/sfc/sfc-karaf/target/assembly/
-    sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-provider,odl-sfc-core,odl-sfc-ui,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs,odl-sfc-netconf/" etc/org.apache.karaf.features.cfg;
-    echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg;
-    rm -rf journal snapshots; bin/karaf clean
-}
 
-echo "SFC DEMO: Packages installation" > $HOME/sfc.prog
+echo "SFC DEMO: Packages installation"
 install_packages
 
-echo "SFC DEMO: SFC installation" > $HOME/sfc.prog
-install_sfc
+echo "SFC DEMO: Open vSwitch installation"
+install_ovs
 
-echo "SFC DEMO: Launch SFC" > $HOME/sfc.prog
-start_sfc
+echo "SFC DEMO: SFC installation"
+install_sfc

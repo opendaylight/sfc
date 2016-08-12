@@ -592,7 +592,9 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+        int priority = flowBuilder.getPriority().intValue();
+        assertTrue((priority == SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS) ||
+                   (priority == SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS+5));
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();

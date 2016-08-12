@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
-//import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
@@ -42,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
@@ -1185,9 +1186,44 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureVxlanGpeTransportEgressFlow(
             final String sffNodeName, final long nshNsp, final short nshNsi, String port) {
 
+        // When outputing to an outport, if inport==outport, then according to the
+        // openflow spec, the packet will be dropped. To avoid this, outport must
+        // be set to INPORT. This method writes 2 flows to avoid this situation:
+        //   flow1: if inport==port, actions=output:INPORT (higher priority than flow2)
+        //   flow2: actions=output:port (flow2 is basically the else condition)
+
+        Long vxgpePort = null;
+        try {
+            vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        } catch(Exception e) {
+            // getVxlanGpeOfPort throws NPE in Unit Tests, which is ok
+        }
+
+        if(vxgpePort != null) {
+            String vxgpePortStr = "output:" + vxgpePort.toString();
+            configureVxlanGpeTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, vxgpePortStr, OutputPortValues.INPORT.toString());
+            configureVxlanGpeTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, OutputPortValues.INPORT.toString(), vxgpePortStr);
+        } else {
+            configureVxlanGpeTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, port, port);
+        }
+    }
+
+    /**
+     * Simple call through for configureVxlanGpeTransportEgressFlow()
+     */
+    private void configureVxlanGpeTransportEgressFlowPorts(
+            final String sffNodeName, final long nshNsp, final short nshNsi, String inport, String outport) {
+        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
         SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        if(!inport.startsWith(OutputPortValues.INPORT.toString())) {
+            // if we output to a port that's the same as the inport, the pkt will be dropped
+            SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(inport));
+            outport = OutputPortValues.INPORT.toString();
+            flowPriority += 5;
+        }
 
         int order = 0;
         List<Action> actionList = new ArrayList<Action>();
@@ -1201,15 +1237,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
         actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
 
-        String vxgpePortStr = port;
-        //Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
-        //if(vxgpePort != null) {
-        //    vxgpePortStr = "output:" + vxgpePort.toString();
-        //}
-
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, vxgpePortStr, order,
-                        FLOW_PRIORITY_TRANSPORT_EGRESS,
+                configureTransportEgressFlow(match, actionList, outport, order,
+                        flowPriority,
                         TRANSPORT_EGRESS_NSH_VXGPE_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }

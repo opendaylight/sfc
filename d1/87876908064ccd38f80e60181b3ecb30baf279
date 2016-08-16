@@ -1,0 +1,9 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Yi Yang <yi.y.yang@intel.com>
+Code-Review+1: Andrej Leitner <andrej.leitner@pantheon.sk>
+Code-Review+2: Johnson Li <johnson.li@intel.com>
+Submitted-by: Johnson Li <johnson.li@intel.com>
+Submitted-at: Tue, 16 Aug 2016 02:50:09 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/43849
+Project: sfc
+Branch: refs/heads/stable/boron

@@ -38,13 +38,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpShaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpThaCase;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1Case;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2Case;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNsiCase;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNspCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshMdtypeCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshNpCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNsiCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNspCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCase;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunGpeNpCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpSpaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpTpaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
@@ -604,21 +607,30 @@ public class SfcOfFlowProgrammerTest {
 
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0).getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1).getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2).getAction();
-                //OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(3).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove0 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4).getAction();
+                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad  = (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(6).getAction();
 
-                //DstNxNshc1Case nshC1dst = (DstNxNshc1Case) regMove.getNxRegMove().getDst().getDstChoice();
-                //DstNxNshc2Case nshC2dst = (DstNxNshc2Case) regMove2.getNxRegMove().getDst().getDstChoice();
-                //DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove3.getNxRegMove().getDst().getDstChoice();
+                DstNxNshMdtypeCase mdType   = (DstNxNshMdtypeCase) regMove0.getNxRegMove().getDst().getDstChoice();
+                DstNxNshNpCase     nshNp    = (DstNxNshNpCase) regMove1.getNxRegMove().getDst().getDstChoice();
+                DstNxNshc1Case     nshC1dst = (DstNxNshc1Case) regMove2.getNxRegMove().getDst().getDstChoice();
+                DstNxNshc2Case     nshC2dst = (DstNxNshc2Case) regMove3.getNxRegMove().getDst().getDstChoice();
+                DstNxTunIdCase     tunIdDst = (DstNxTunIdCase) regMove4.getNxRegMove().getDst().getDstChoice();
+                DstNxTunGpeNpCase  gpeNp    = (DstNxTunGpeNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
 
-                //assertTrue(nshC1dst.isNxNshc1Dst());
-                //assertTrue(nshC2dst.isNxNshc2Dst());
-                //assertTrue(tunIdDst.isNxTunId());
-                //assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
-                //LOG.info("configureVxlanGpeTransportEgressFlow() Action OutputPort: [{}]",
-                        //output.getOutputAction().getOutputNodeConnector().getValue().toString());
+                assertTrue(mdType.isNxNshMdtype());
+                assertTrue(nshNp.isNxNshNp());
+                assertTrue(nshC1dst.isNxNshc1Dst());
+                assertTrue(nshC2dst.isNxNshc2Dst());
+                assertTrue(tunIdDst.isNxTunId());
+                assertTrue(gpeNp.isNxTunGpeNp());
+                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
+                LOG.info("configureVxlanGpeTransportEgressFlow() Action OutputPort: [{}]",
+                        output.getOutputAction().getOutputNodeConnector().getValue().toString());
             }
         }
     }
@@ -639,28 +651,36 @@ public class SfcOfFlowProgrammerTest {
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction instruction : isb.getInstruction()) {
-
             Instruction curInstruction = instruction.getInstruction();
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0).getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1).getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2).getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3).getAction();
-                //OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(4).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove0 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4).getAction();
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 = (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5).getAction();
+                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad  = (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(7).getAction();
 
-                //DstNxNsiCase nshNsi = (DstNxNsiCase) regMove1.getNxRegMove().getDst().getDstChoice();
-                //DstNxNspCase nshNsp = (DstNxNspCase) regMove2.getNxRegMove().getDst().getDstChoice();
-                //DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove3.getNxRegMove().getDst().getDstChoice();
-                //DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove4.getNxRegMove().getDst().getDstChoice();
+                DstNxNshMdtypeCase  mdType     = (DstNxNshMdtypeCase) regMove0.getNxRegMove().getDst().getDstChoice();
+                DstNxNshNpCase      nshNp      = (DstNxNshNpCase) regMove1.getNxRegMove().getDst().getDstChoice();
+                DstNxNsiCase        nshNsi     = (DstNxNsiCase) regMove2.getNxRegMove().getDst().getDstChoice();
+                DstNxNspCase        nshNsp     = (DstNxNspCase) regMove3.getNxRegMove().getDst().getDstChoice();
+                DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove4.getNxRegMove().getDst().getDstChoice();
+                DstNxTunIdCase      tunIdDst   = (DstNxTunIdCase) regMove5.getNxRegMove().getDst().getDstChoice();
+                DstNxTunGpeNpCase   gpeNp      = (DstNxTunGpeNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
 
-                //assertTrue(nshNsi.isNxNsiDst());
-                //assertTrue(nshNsp.isNxNspDst());
-                //assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
-                //assertTrue(tunIdDst.isNxTunId());
-                //assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
-                //LOG.info("configureVxlanGpeTransportEgressFlow() Action OutputPort: [{}]",
-                        //output.getOutputAction().getOutputNodeConnector().getValue().toString());
+                assertTrue(mdType.isNxNshMdtype());
+                assertTrue(nshNp.isNxNshNp());
+                assertTrue(nshNsi.isNxNsiDst());
+                assertTrue(nshNsp.isNxNspDst());
+                assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
+                assertTrue(tunIdDst.isNxTunId());
+                assertTrue(gpeNp.isNxTunGpeNp());
+                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
+                LOG.info("configureVxlanGpeTransportEgressFlow() Action OutputPort: [{}]",
+                        output.getOutputAction().getOutputNodeConnector().getValue().toString());
             }
         }
     }

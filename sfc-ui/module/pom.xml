@@ -19,7 +19,7 @@
     <artifactId>sfc-ui-module</artifactId>
     <name>${project.artifactId}</name>
     <description>SFC UI Module Resources</description>
-    <version>${dlux.version}</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <build>
@@ -47,6 +47,15 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>gulp</id>
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>build</arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

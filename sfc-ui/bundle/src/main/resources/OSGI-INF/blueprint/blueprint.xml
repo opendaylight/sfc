@@ -6,7 +6,7 @@
         <property name="loader" ref="loader"/>
         <property name="moduleName" value="sfc"/>
         <property name="url" value="/src/app/sfc"/>
-        <property name="directory" value="/sfc"/>
+        <property name="directory" value="/sfc/build"/>
         <property name="requireJs" value="app/sfc/main"/>
         <property name="angularJs" value="app.sfc"/>
         <property name="cssDependencies">

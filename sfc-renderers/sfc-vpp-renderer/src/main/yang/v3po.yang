@@ -341,8 +341,9 @@ module v3po {
           leaf split-horizon-group {
             when "../bridge-domain";
             type uint8 {
-              range "1..255";
+              range "0..255";
             }
+            default 0; //no split horizon group
             description
               "Interface's split-horizon group. Interfaces in the same
                bridge-domain and split-horizon group can not forward

@@ -258,14 +258,6 @@
       Put dependencies for configfiles directly referenced in your features.xml file.
       For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
     -->
-    <!-- odl-ios-xe-renderer config files -->
-    <dependency>
-       <groupId>org.opendaylight.sfc</groupId>
-       <artifactId>sfc-ios-xe-renderer</artifactId>
-       <version>${project.version}</version>
-       <type>xml</type>
-       <classifier>config</classifier>
-    </dependency>
     <!-- odl-sfc-ovs config files -->
     <dependency>
        <groupId>${project.groupId}</groupId>

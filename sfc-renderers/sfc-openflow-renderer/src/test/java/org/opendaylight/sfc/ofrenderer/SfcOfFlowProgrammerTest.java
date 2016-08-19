@@ -628,9 +628,9 @@ public class SfcOfFlowProgrammerTest {
                 assertTrue(nshC2dst.isNxNshc2Dst());
                 assertTrue(tunIdDst.isNxTunId());
                 assertTrue(gpeNp.isNxTunGpeNp());
-                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
+                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
                 LOG.info("configureVxlanGpeTransportEgressFlow() Action OutputPort: [{}]",
-                        output.getOutputAction().getOutputNodeConnector().getValue().toString());
+                        output.getOutputAction().getOutputNodeConnector());
             }
         }
     }

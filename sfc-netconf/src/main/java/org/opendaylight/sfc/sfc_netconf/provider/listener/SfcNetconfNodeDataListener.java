@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
+public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
@@ -244,6 +244,11 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener {
             }
         }
         return nodeId;
+    }
+
+    @Override
+    public void close() throws Exception {
+        closeDataChangeListener();
     }
 
 }

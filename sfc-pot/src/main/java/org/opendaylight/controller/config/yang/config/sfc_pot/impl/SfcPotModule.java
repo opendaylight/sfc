@@ -8,7 +8,7 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_pot.impl;
 
-import org.opendaylight.sfc.pot.provider.SfcPot;
+import org.opendaylight.sfc.pot.SfcPot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

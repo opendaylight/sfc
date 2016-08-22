@@ -102,6 +102,15 @@ module sfc-ioam-nb-pot {
     }
   }
 
+  typedef profile-index-range {
+    type int32 {
+      range "-1 .. 1";
+    }
+    description
+      "Range used for the profile index. Currently restricted to
+       0 or 1 to identify the two profiles.";
+  }
+
   typedef bit-mask-options {
     type enumeration {
       enum bits16 {
@@ -182,18 +191,26 @@ module sfc-ioam-nb-pot {
                metadata calculations.";
           }
 
+          leaf active-profile-index {
+            type profile-index-range;
+            description
+              "Proof of transit profile index that is active.
+               Will be set in the first hop of the path or chain.
+               Other nodes will not use this field.";
+          }
+
           list poly-parameter {
-            key "profile-name";
+            key "pindex";
             ordered-by system;
             description
               "List of multiple algorithm parameters ordered
                by profile name for a node to use. For now, there are
                two profiles per RSP.";
 
-            leaf profile-name {
-              type string;
+            leaf pindex {
+              type uint32;
               description
-                "Profile name for the profile being referred to.";
+                "Profile index being referred to.";
             }
 
             leaf prime {
@@ -202,9 +219,24 @@ module sfc-ioam-nb-pot {
                 "Prime number value in the profile.";
             }
 
-            leaf lpc {
-              type int64;
-              description "LPC value";
+            list coeffs {
+              ordered-by user;
+              leaf coeff {
+                type int64;
+                description "Coefficient value.";
+              }
+              description
+                "List of coefficients in the profile.";
+            }
+
+            list lpcs {
+              ordered-by user;
+              leaf lpc {
+                type int64;
+                description "LPC value";
+              }
+              description
+                "List of LPCs in the profile being referred to.";
             }
           }
         }
@@ -225,16 +257,16 @@ module sfc-ioam-nb-pot {
         container poly-secrets {
           description "Proof of transit algorithm parameters.";
           list poly-secret {
-            key "profile-name";
+            key "pindex";
             ordered-by system;
             description
               "List of parameters ordered by the profile name
                for a node to use.";
 
-            leaf profile-name {
-              type string;
+            leaf pindex {
+              type uint32;
               description
-                "Profile Name of the profile being referred to.";
+                "Profile index being referred to.";
             }
 
             leaf secret-share {

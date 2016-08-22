@@ -8,12 +8,15 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_pot.impl;
 
-import org.opendaylight.sfc.pot.provider.SfcPot;
+import org.opendaylight.sfc.pot.SfcPot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcPotModule extends org.opendaylight.controller.config.yang.config.sfc_pot.impl.AbstractSfcPotModule {
+import org.opendaylight.controller.config.api.DependencyResolver;
+import org.opendaylight.controller.config.api.ModuleIdentifier;
+
+public class SfcPotModule extends AbstractSfcPotModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotModule.class);
 
@@ -32,16 +35,15 @@ public class SfcPotModule extends org.opendaylight.controller.config.yang.config
         }
     }
 
-
-    public SfcPotModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
-                       org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
+    public SfcPotModule(ModuleIdentifier identifier,
+                        DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
 
-    public SfcPotModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
-                           org.opendaylight.controller.config.api.DependencyResolver dependencyResolver,
-                           org.opendaylight.controller.config.yang.config.sfc_pot.impl.SfcPotModule oldModule,
-                           java.lang.AutoCloseable oldInstance) {
+    public SfcPotModule(ModuleIdentifier identifier,
+                        DependencyResolver dependencyResolver,
+                        SfcPotModule oldModule,
+                        AutoCloseable oldInstance) {
         super(identifier, dependencyResolver, oldModule, oldInstance);
     }
 
@@ -51,13 +53,13 @@ public class SfcPotModule extends org.opendaylight.controller.config.yang.config
     }
 
     @Override
-    public java.lang.AutoCloseable createInstance() {
+    public AutoCloseable createInstance() {
 
         LOG.info("SFC Proof of Transit Module initializing");
 
         final SfcPot sfcpot = new SfcPot(getDataBrokerDependency(), getBindingRegistryDependency());
 
-        java.lang.AutoCloseable ret = new AutoCloseableSfcPot(sfcpot);
+        AutoCloseable ret = new AutoCloseableSfcPot(sfcpot);
 
         LOG.info("SFC Proof of Transit Module initialized: (instance {})", ret);
 

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_4ee66516",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/resources/org/opendaylight/blueprint/sfc-openflow-renderer.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-01T08:09:47Z",
+      "side": 1,
+      "message": "This method doesnt exist on the SfcOpenflowRenderer class.",
+      "range": {
+        "startLine": 14,
+        "startChar": 20,
+        "endLine": 14,
+        "endChar": 39
+      },
+      "revId": "6d916fc8e0303a3f63c1f8095c27b8d856151535",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6ee9a1e5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/resources/org/opendaylight/blueprint/sfc-openflow-renderer.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-01T08:09:47Z",
+      "side": 1,
+      "message": "The current signature for the SfcOpenflowRenderer ctor is the following:\nSfcOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService);\n\nI dont think these arguments will work with the current signature.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 37
+      },
+      "revId": "6d916fc8e0303a3f63c1f8095c27b8d856151535",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

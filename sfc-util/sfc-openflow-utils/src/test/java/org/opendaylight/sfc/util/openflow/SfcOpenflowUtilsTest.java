@@ -66,8 +66,23 @@ public class SfcOpenflowUtilsTest{
                         randNumArray[2]),
                 $("                                                      ", randNumArray[3]),
                 $(RandomStringUtils.random(17, true, true), randNumArray[4]),
-                $(RandomStringUtils.random(randomInt.nextInt((150 - 1) + 1) + 1), randNumArray[5])
+                $(cleanInvalidXmlChars(RandomStringUtils.random(randomInt.nextInt((150 - 1) + 1) + 1)), randNumArray[5])
         );
+    }
+
+    /**
+     * Prevents using invalid xml chars as test input (they would break the surefire XML test result)
+     * @param random the string to clean from invalid xml chars
+     * @return the sanitized string
+     */
+    private static Object cleanInvalidXmlChars(String random) {
+        String xml10pattern = "[^"
+                + "\u0009\r\n"
+                + "\u0020-\uD7FF"
+                + "\uE000-\uFFFD"
+                + "\ud800\udc00-\udbff\udfff"
+                + "]";
+        return random.replaceAll(xml10pattern, "");
     }
 
     @SuppressWarnings("unused")

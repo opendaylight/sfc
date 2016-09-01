@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_ce67154c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/resources/org/opendaylight/blueprint/sfc-openflow-renderer.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-01T08:53:19Z",
+      "side": 1,
+      "message": "This is no longer used.",
+      "range": {
+        "startLine": 9,
+        "startChar": 17,
+        "endLine": 9,
+        "endChar": 32
+      },
+      "revId": "ae243077e975e8773b812e53b4fd0197c54539e3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ee62d13c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/resources/org/opendaylight/blueprint/sfc-openflow-renderer.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-01T08:53:19Z",
+      "side": 1,
+      "message": "Where is this defined?",
+      "range": {
+        "startLine": 16,
+        "startChar": 19,
+        "endLine": 16,
+        "endChar": 38
+      },
+      "revId": "ae243077e975e8773b812e53b4fd0197c54539e3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

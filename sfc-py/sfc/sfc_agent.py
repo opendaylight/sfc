@@ -7,6 +7,8 @@
 
 import os
 import sys
+import logging
+import json
 import flask
 import signal
 import argparse
@@ -15,15 +17,17 @@ import argparse
 # CREDITS: http://stackoverflow.com/a/6655098/4183498
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, parent_dir)
-import sfc  # noqa
+
+from sfc.common import classifier
+from sfc.common import sfc_globals as _sfc_globals
+from sfc.common.odl_api import auto_sff_name, find_metadata, find_sff_locator, find_sf_locator
+from sfc.common.odl_api import get_metadata_from_odl, get_sffs_from_odl, get_sfp_from_odl, sf_local_host
+from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
+from sfc.cli import xe_cli, xr_cli, ovs_cli
+
 
 __package__ = 'sfc'
 
-from sfc.common import classifier
-from sfc.common.odl_api import *  # noqa
-from sfc.cli import xe_cli, xr_cli, ovs_cli
-from sfc.common import sfc_globals as _sfc_globals
-from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
 
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."

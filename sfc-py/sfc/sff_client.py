@@ -8,23 +8,29 @@
 
 import os
 import sys
+import logging
+import binascii
 import platform
 import time
+import socket
+import ipaddress
 import getopt
 import asyncio
 
+from sfc.nsh.common import BASEHEADER, CONTEXTHEADER, ETHERNET_ADDR_SIZE, ETHHEADER, GREHEADER, InnerHeader
+from sfc.nsh.common import NSH_NEXT_PROTO_ETH, NSH_NEXT_PROTO_IPV4, OAM_TRACE_REQ_TYPE, TRACEREQHEADER, VXLAN, VXLANGPE
+
+from sfc.nsh.decode import decode_baseheader, decode_contextheader, decode_trace_resp, decode_vxlan
+
+from sfc.nsh.encode import build_nsh_eth_header, build_nsh_header, build_nsh_trace_header
+from sfc.nsh.encode import build_trace_req_header, build_udp_packet, process_context_headers
 
 # fix Python 3 relative imports inside packages
 # CREDITS: http://stackoverflow.com/a/6655098/4183498
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, parent_dir)
-import sfc  # noqa
 
 __package__ = 'sfc'
-
-from sfc.nsh.decode import *  # noqa
-from sfc.nsh.encode import *  # noqa
-
 
 __author__ = "Reinaldo Penno, Jim Guichard, Paul Quinn"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."

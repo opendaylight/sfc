@@ -8,8 +8,10 @@
 import struct
 import logging
 import binascii
-from .common import *  # noqa
-
+from .common import NSH_BASE_HEADER_START_OFFSET, NSH_OAM_PKT_START_OFFSET, NSH_OAM_TRACE_HDR_LEN
+from .common import NSH_OAM_TRACE_RESP_SF_TYPE_LEN_START_OFFSET, NSH_OAM_TRACE_RESP_SF_TYPE_START_OFFSET
+from .common import NSH_TYPE1_DATA_PACKET, NSH_TYPE1_OAM_PACKET, OAM_TRACE_REQ_TYPE, OAM_TRACE_RESP_TYPE
+from .common import OAM_VERSION_AND_FLAG, VXLAN_RFC7348_HEADER, VXLAN_START_OFFSET
 
 __author__ = 'Reinaldo Penno'
 __copyright__ = 'Copyright(c) 2014, Cisco Systems, Inc.'

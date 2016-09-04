@@ -11,8 +11,8 @@ import socket
 import ipaddress
 import logging
 
-from .common import *  # noqa
-
+from .common import IP4HEADER, IP_HEADER_LEN, IPV4_HEADER_LEN_BYTES, IPV4_PACKET_ID, IPV4_TOS, IPV4_TTL
+from .common import IPV4_VERSION, PSEUDO_UDPHEADER, TRACEREQHEADER, UDPHEADER, UDP_HEADER_LEN_BYTES
 
 __author__ = "Reinaldo Penno, Jim Guichard"
 __copyright__ = "Copyright(c) 2015, Cisco Systems, Inc."

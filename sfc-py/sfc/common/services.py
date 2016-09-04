@@ -19,7 +19,8 @@ from threading import Thread
 from struct import pack, unpack
 
 from ..common.sfc_globals import sfc_globals
-from ..nsh.common import *  # noqa
+from ..nsh.common import VXLANGPE, BASEHEADER, CONTEXTHEADER, ETHHEADER, TRACEREQHEADER, NSH_NEXT_PROTO_IPV4, PAYLOAD_START_INDEX_NSH_TYPE1, NSH_NEXT_PROTO_ETH, PAYLOAD_START_INDEX_NSH_TYPE3
+ IPV4_HEADER_LEN_BYTES
 from ..nsh import decode as nsh_decode
 from ..nsh.encode import add_sf_to_trace_pkt
 from ..nsh.service_index import process_service_index

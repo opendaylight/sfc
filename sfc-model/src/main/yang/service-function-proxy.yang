@@ -53,6 +53,7 @@ module service-function-proxy{
 
   grouping proxy {
     container proxy-data-plane-locator {
+      presence "Enables data plane locator for proxy";
       description "proxy's data-plane-locator";
       uses sfc-sl:data-plane-locator;
     }

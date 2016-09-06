@@ -27,7 +27,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -305,7 +308,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         createRenderedPathInputBuilder.setName(null);
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
-        serviceFunctionPathBuilder.setTransportType(VxlanGpe.class);
+        serviceFunctionPathBuilder.setTransportType(Mac.class);
+        serviceFunctionPathBuilder.setSfcEncapsulation(Transport.class);
         serviceFunctionPathBuilder.setContextMetadata("CMD");
         serviceFunctionPathBuilder.setVariableMetadata("VMD");
 
@@ -316,7 +320,39 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         assertNotNull("Must not be null", testRenderedServicePath);
         assertEquals("Must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);
+        assertEquals("Must be equal", testRenderedServicePath.getTransportType(), Mac.class);
+        assertEquals("Must be equal", testRenderedServicePath.getSfcEncapsulation(), Transport.class);
+        assertEquals("Must be equal", testRenderedServicePath.getContextMetadata(), "CMD");
+        assertEquals("Must be equal", testRenderedServicePath.getVariableMetadata(), "VMD");
+    }
+
+    @Test
+    /*
+     * there is successful test with some attributes correctly set, and expect
+     * default values for the others
+     */
+    public void testCreateRenderedServicePathEntrySuccessfulDefaults() throws Exception {
+        init();
+
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
+        SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
+        RenderedServicePath testRenderedServicePath;
+
+        createRenderedPathInputBuilder.setName(null);
+        serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
+        serviceFunctionPathBuilder.setContextMetadata("CMD");
+        serviceFunctionPathBuilder.setVariableMetadata("VMD");
+
+        serviceFunctionPathBuilder.setName(SFP_NAME);
+
+        testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
+                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+
+        assertNotNull("Must not be null", testRenderedServicePath);
+        assertEquals("Must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);
         assertEquals("Must be equal", testRenderedServicePath.getTransportType(), VxlanGpe.class);
+        assertEquals("Must be equal", testRenderedServicePath.getSfcEncapsulation(), Nsh.class);
         assertEquals("Must be equal", testRenderedServicePath.getContextMetadata(), "CMD");
         assertEquals("Must be equal", testRenderedServicePath.getVariableMetadata(), "VMD");
     }

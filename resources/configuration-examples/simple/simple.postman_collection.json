@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "simple",
-		"_postman_id": "7b6e5a27-6a7b-84c9-bf68-2391c46664a4",
+		"_postman_id": "99b76925-601c-5b68-8ab4-83e5830b81d0",
 		"description": "SFC simple configuration for happy testing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -105,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"service-function-paths\": {\n     \"service-function-path\": [\n       {\n         \"name\": \"sfc-path-1sf1sff\",\n         \"service-chain-name\": \"sfc-chain-1sf1sff\",\n         \"transport-type\": \"service-locator:vxlan-gpe\",\n         \"symmetric\": true\n       }\n     ]\n   }\n}"
+							"raw": "{\n   \"service-function-paths\": {\n     \"service-function-path\": [\n       {\n         \"name\": \"sfc-path-1sf1sff\",\n         \"service-chain-name\": \"sfc-chain-1sf1sff\",\n         \"transport-type\": \"service-locator:vxlan-gpe\",\n         \"sfc-encapsulation\": \"service-locator:nsh\",\n         \"symmetric\": true\n       }\n     ]\n   }\n}"
 						},
 						"description": "Configurarion of Service Function Paths"
 					},

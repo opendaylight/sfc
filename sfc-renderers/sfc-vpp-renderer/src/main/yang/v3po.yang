@@ -28,6 +28,9 @@ module v3po {
   import vpp-classifier {
     prefix "vpp-classifier";
   }
+  import ietf-access-control-list {
+    prefix "acl";
+  }
 
   typedef bridge-domain-ref {
     type leafref {
@@ -46,6 +49,10 @@ module v3po {
   }
 
   identity vxlan-tunnel {
+    base if:interface-type;
+  }
+
+  identity gre-tunnel {
     base if:interface-type;
   }
 
@@ -150,6 +157,22 @@ module v3po {
       type boolean;
       default false;
     }
+
+    container arp-termination-table {
+      when "../v3po:arp-termination = 'true'";
+
+      // TODO(HONEYCOMB-133): add support for read (after VPP-230 is done)
+      list arp-termination-table-entry {
+        key "ip-address phys-address";
+        leaf ip-address {
+          // FIXME: change to ip-address-no-zone after https://bugs.opendaylight.org/show_bug.cgi?id=6413 is resolved
+          type inet:ip-address;
+        }
+        leaf phys-address {
+          type yang:phys-address;
+        }
+      }
+    }
   }
 
   // TODO express constraints for L2 FIB entries in YANG if possible
@@ -185,7 +208,7 @@ module v3po {
             "L2 FIB action. For filter action, entry must be configured as static.";
         }
         leaf bridged-virtual-interface {
-          when "../v3po:action = 'forward'";
+          when "../action = 'forward'";
           type boolean;
           config false; // FIXME setting bvi is currently not supported by VPP's binary api
         }
@@ -195,7 +218,9 @@ module v3po {
 
   grouping tap-interface-base-attributes {
     leaf tap-name {
-      type string;
+      type string{
+        pattern "[a-zA-Z0-9\-;.+@$#^&*!_()=\[\]]*";
+      }
     }
   }
 
@@ -291,6 +316,20 @@ module v3po {
     }
   }
 
+  grouping gre-base-attributes {
+    leaf src {
+      /*mandatory true;*/
+      type inet:ip-address;
+    }
+    leaf dst {
+      /*mandatory true;*/
+      type inet:ip-address;
+    }
+    leaf outer-fib-id {
+      type uint32;
+    }
+  }
+
   grouping vxlan-gpe-base-attributes {
     leaf local {
       /*mandatory true;*/
@@ -341,8 +380,9 @@ module v3po {
           leaf split-horizon-group {
             when "../bridge-domain";
             type uint8 {
-              range "1..255";
+              range "0..255";
             }
+            default 0; //no split horizon group
             description
               "Interface's split-horizon group. Interfaces in the same
                bridge-domain and split-horizon group can not forward
@@ -357,6 +397,22 @@ module v3po {
                associated with the BVI.";
           }
         }
+      }
+  }
+
+  grouping proxy-arp-attributes {
+        description
+        "Parameters for configuring Proxy ARP on interfaces.";
+
+      leaf vrf-id {
+        type uint32;
+        default 0;
+      }
+      leaf low-addr {
+          type inet:ipv4-address;
+      }
+      leaf high-addr {
+          type inet:ipv4-address;
       }
   }
 
@@ -383,6 +439,35 @@ module v3po {
         type vpp-classifier:classify-table-ref;
         description
           "An IPv6 ACL table";
+      }
+    }
+  }
+
+  grouping ietf-acl-base-attributes {
+    description
+      "Provides limited support for ietf-acl model.";
+
+    container access-lists {
+      description
+        "Defines references to ietf-acl lists. Before assignment to interface,
+        ACL lists are merged into 3 type of acls (eth0, ip4 and ip6) that are supported by vpp.
+        Then corresponding tables and sessions are created and assigned to the interface.
+
+        Assignment update/delete removes all created tables and sessions and repeats process described above.
+        Update/delete of ACL lists referenced here is not permitted (assignment needs to be removed first).
+
+        Read is supported only for acls that were created and assigned by Honeycomb agent
+        (corresponding metadata are present).";
+      list acl {
+        key "type name";
+
+        leaf type {
+          type acl:acl-type;
+        }
+
+        leaf name {
+          type acl:access-control-list-ref;
+        }
       }
     }
   }
@@ -423,6 +508,11 @@ module v3po {
       uses vxlan-base-attributes;
     }
 
+    container gre {
+      when "../if:type = 'v3po:gre-tunnel'";
+      uses gre-base-attributes;
+    }
+
     container l2 {
       must "(not (../if:ipv4[if:enabled = 'true']/if:address/if:ip) and " +
       "not (../if:ipv6[if:enabled = 'true']/if:address/if:ip))";
@@ -436,8 +526,16 @@ module v3po {
       uses vxlan-gpe-base-attributes;
     }
 
+    container proxy-arp {
+      uses proxy-arp-attributes;
+    }
+
     container acl {
       uses acl-base-attributes;
+    }
+
+    container ietf-acl {
+      uses ietf-acl-base-attributes;
     }
   }
 
@@ -496,6 +594,11 @@ module v3po {
       uses vxlan-gpe-base-attributes;
     }
 
+    container gre {
+      when "../if:type = 'gre-tunnel'";
+      uses gre-base-attributes;
+    }
+
     container l2 {
       must "(not (../if:ipv4[if:enabled = 'true']/if:address/if:ip) and " +
       "not (../if:ipv6[if:enabled = 'true']/if:address/if:ip))";
@@ -503,8 +606,16 @@ module v3po {
       uses l2-base-attributes;
     }
 
+    container proxy-arp {
+      uses proxy-arp-attributes;
+    }
+
     container acl {
       uses acl-base-attributes;
+    }
+
+    container ietf-acl {
+      uses ietf-acl-base-attributes;
     }
   }
 

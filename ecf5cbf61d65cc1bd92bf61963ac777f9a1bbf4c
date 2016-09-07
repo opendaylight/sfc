@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_d6179543",
+        "filename": "sfc-model/src/main/yang/service-function-path.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-07T11:59:16Z",
+      "side": 1,
+      "message": "This needs to be removed.",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 32
+      },
+      "revId": "ecf5cbf61d65cc1bd92bf61963ac777f9a1bbf4c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

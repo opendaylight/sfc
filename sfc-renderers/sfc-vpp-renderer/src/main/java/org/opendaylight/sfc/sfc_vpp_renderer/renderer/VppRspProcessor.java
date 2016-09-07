@@ -10,9 +10,11 @@ package org.opendaylight.sfc.sfc_vpp_renderer.renderer;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -43,9 +45,15 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.RoutingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.VxlanBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.VxlanGpeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.L2Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.Vpp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.BridgeDomains;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomain;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomainBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomainKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeNextProtocol;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeTunnel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeVni;
@@ -56,23 +64,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.l2.base.attributes.interconnection.BridgeBasedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.Ethernet;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.MdType1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshEntryMdTypeAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshEntryMdTypeAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VxlanEncapAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VxlanEncapAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshVxlanGpeEncapAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshVxlanGpeEncapAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.Nsh;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.NshEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.NshMaps;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.entries.NshEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.entries.NshEntryKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.entries.NshEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.maps.NshMap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.maps.NshMapKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.nsh.nsh.maps.NshMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VxlanGpeEncapType;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshMdType1Augment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshMdType1AugmentBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VppNsh;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.NshEntries;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.NshMaps;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntryKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMapKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VxlanGpe;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -88,6 +91,8 @@ public class VppRspProcessor {
     private final DataBroker dataBroker;
     private final VppNodeManager nodeManager;
     private final RenderedPathListener rspListener;
+    private static final String SFC_BD_NAME = new String("SFCVPP");
+    private final Map<String, String> bridgeDomainCreated = new HashMap<>();
 
     public VppRspProcessor(DataBroker dataBroker, VppNodeManager nodeManager) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
@@ -99,7 +104,7 @@ public class VppRspProcessor {
     public void updateRsp(RenderedServicePath renderedServicePath) {
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
-        Short serviceIndex;
+        Short serviceIndex = renderedServicePath.getStartingIndex();
         DataBroker previousMountPoint = null;
         DataBroker currentMountpoint = null;
         SffName previousSffName = null;
@@ -147,6 +152,12 @@ public class VppRspProcessor {
             localIp = ipList.get(0);
             remoteIp = ipList.get(1);
 
+            /* Create BridgeDomain */
+            if (!bridgeDomainCreated.containsKey(currentSffName.getValue())) {
+                addBridgeDomain(currentMountpoint, SFC_BD_NAME, currentSffName.getValue());
+                bridgeDomainCreated.put(currentSffName.getValue(), SFC_BD_NAME);
+            }
+
             SfLocatorProxyAugmentation sfDplProxyAug = getSfDplProxyAugmentation(serviceFunction, currentSffName);
             if (sfDplProxyAug == null) {
                 /* NSH-aware SF */
@@ -180,13 +191,15 @@ public class VppRspProcessor {
                 }
             }
         }
+
+        /* TODO: Configure VxlanGpeNsh for last hop to classifier */
     }
 
     public void deleteRsp(RenderedServicePath renderedServicePath) {
         boolean ret = false;
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
-        Short serviceIndex;
+        Short serviceIndex = renderedServicePath.getStartingIndex();
         DataBroker previousMountPoint = null;
         DataBroker currentMountpoint = null;
         SffName previousSffName = null;
@@ -425,6 +438,39 @@ public class VppRspProcessor {
         return ip;
     }
 
+    private void addBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
+        InstanceIdentifier<BridgeDomain> bridgeDomainIId =
+            InstanceIdentifier.create(Vpp.class)
+                .child(BridgeDomains.class)
+                .child(BridgeDomain.class, new BridgeDomainKey(bridgeDomainName));
+
+        BridgeDomainBuilder bdBuilder = new BridgeDomainBuilder();
+        bdBuilder.setName(bridgeDomainName);
+        bdBuilder.setFlood(true);
+        bdBuilder.setForward(true);
+        bdBuilder.setLearn(true);
+        bdBuilder.setUnknownUnicastFlood(true);
+        bdBuilder.setArpTermination(false);
+
+        final DataBroker vppDataBroker = dataBroker;
+        final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
+        wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainIId, bdBuilder.build());
+
+        LOG.debug("Submitting new bridge domain {} to config store...", bridgeDomainName);
+
+        Futures.addCallback(wTx.submit(), new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable Void result) {
+                LOG.debug("Writing bridge domain {} to {} finished successfully.", bridgeDomainName, vppNode);
+            }
+
+            @Override
+            public void onFailure(@Nonnull Throwable t) {
+                LOG.warn("Writing bridge domain {} to {} failed: {}", bridgeDomainName, vppNode, t);
+            }
+        });
+    }
+
     private String buildVxlanGpePortKey(final IpAddress remote) {
         return new String("vxlanGpeTun" + "_" + remote.getIpv4Address().getValue());
     }
@@ -440,23 +486,29 @@ public class VppRspProcessor {
         vxlanGpeBuilder.setEncapVrfId(Long.valueOf(0));
         vxlanGpeBuilder.setDecapVrfId(Long.valueOf(0));
 
+        final RoutingBuilder routingBuilder = new RoutingBuilder();
+        routingBuilder.setVrfId(Long.valueOf(0));
+
         final InterfaceBuilder interfaceBuilder = new InterfaceBuilder();
         interfaceBuilder.setName(buildVxlanGpePortKey(remote));
         interfaceBuilder.setType(VxlanGpeTunnel.class);
         VppInterfaceAugmentationBuilder vppInterfaceAugmentationBuilder = new VppInterfaceAugmentationBuilder();
         vppInterfaceAugmentationBuilder.setVxlanGpe(vxlanGpeBuilder.build());
+        vppInterfaceAugmentationBuilder.setRouting(routingBuilder.build());
 
         // Set L2 bridgedomain, is it required?
         final L2Builder l2Builder = new L2Builder();
         final BridgeBasedBuilder bridgeBasedBuilder = new BridgeBasedBuilder();
         bridgeBasedBuilder.setBridgedVirtualInterface(false);
-        String bridgeDomainName = "local0";
+        bridgeBasedBuilder.setSplitHorizonGroup(Short.valueOf("1"));
+        String bridgeDomainName = SFC_BD_NAME;
         bridgeBasedBuilder.setBridgeDomain(bridgeDomainName);
         l2Builder.setInterconnection(bridgeBasedBuilder.build());
         vppInterfaceAugmentationBuilder.setL2(l2Builder.build());
 
         interfaceBuilder.addAugmentation(VppInterfaceAugmentation.class, vppInterfaceAugmentationBuilder.build());
         interfaceBuilder.setEnabled(true);
+        interfaceBuilder.setLinkUpDownTrapEnable(Interface.LinkUpDownTrapEnable.Enabled);
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
@@ -524,7 +576,8 @@ public class VppRspProcessor {
         final L2Builder l2Builder = new L2Builder();
         final BridgeBasedBuilder bridgeBasedBuilder = new BridgeBasedBuilder();
         bridgeBasedBuilder.setBridgedVirtualInterface(false);
-        String bridgeDomainName = "local0";
+        bridgeBasedBuilder.setSplitHorizonGroup(Short.valueOf("1"));
+        String bridgeDomainName = SFC_BD_NAME;
         bridgeBasedBuilder.setBridgeDomain(bridgeDomainName);
         l2Builder.setInterconnection(bridgeBasedBuilder.build());
         vppInterfaceAugmentationBuilder.setL2(l2Builder.build());
@@ -582,28 +635,30 @@ public class VppRspProcessor {
     private void addNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode)
     {
         NshEntryBuilder nshEntryBuilder = new NshEntryBuilder();
+        nshEntryBuilder.setVersion(Short.valueOf("0"));
+        nshEntryBuilder.setLength(Short.valueOf("6"));
         nshEntryBuilder.setNsp(nsp);
         nshEntryBuilder.setNsi(nsi);
         nshEntryBuilder.setName(buildNshEntryKey(nsp, nsi));
         nshEntryBuilder.setKey(new NshEntryKey(nshEntryBuilder.getName()));
         nshEntryBuilder.setMdType(MdType1.class);
         nshEntryBuilder.setNextProtocol(Ethernet.class);
-        NshEntryMdTypeAugmentBuilder nshEntryMdTypeAugmentBuilder = new NshEntryMdTypeAugmentBuilder();
+        NshMdType1AugmentBuilder nshMdType1AugmentBuilder = new NshMdType1AugmentBuilder();
         Long c1 = Long.valueOf(0);
         Long c2 = Long.valueOf(0);
         Long c3 = Long.valueOf(0);
         Long c4 = Long.valueOf(0);
-        nshEntryMdTypeAugmentBuilder.setC1(c1);
-        nshEntryMdTypeAugmentBuilder.setC2(c2);
-        nshEntryMdTypeAugmentBuilder.setC3(c3);
-        nshEntryMdTypeAugmentBuilder.setC4(c4);
-        nshEntryBuilder.addAugmentation(NshEntryMdTypeAugment.class, nshEntryMdTypeAugmentBuilder.build());
+        nshMdType1AugmentBuilder.setC1(c1);
+        nshMdType1AugmentBuilder.setC2(c2);
+        nshMdType1AugmentBuilder.setC3(c3);
+        nshMdType1AugmentBuilder.setC4(c4);
+        nshEntryBuilder.addAugmentation(NshMdType1Augment.class, nshMdType1AugmentBuilder.build());
         NshEntry nshEntry = nshEntryBuilder.build();
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final InstanceIdentifier<NshEntry> nshEntryIid
-                    = InstanceIdentifier.create(Nsh.class).child(NshEntries.class).child(NshEntry.class, nshEntry.getKey());
+                    = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class).child(NshEntry.class, nshEntry.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntryIid, nshEntry);
 
         LOG.debug("Submitting new nsh entry to config store...");
@@ -647,7 +702,7 @@ public class VppRspProcessor {
         return new String("nsh_map_" + nsp.toString() + "_" + nsi.toString() + "_to_" + mappedNsp.toString() + "_" + mappedNsi.toString());
     }
 
-    private void addNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, Augmentation<NshMap> augment, String vppNode)
+    private void addNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode)
     {
         final NshMapBuilder nshMapBuilder = new NshMapBuilder();
         nshMapBuilder.setNsp(nsp);
@@ -656,18 +711,14 @@ public class VppRspProcessor {
         nshMapBuilder.setMappedNsi(mappedNsi);
         nshMapBuilder.setName(buildNshMapKey(nsp, nsi, mappedNsp, mappedNsi));
         nshMapBuilder.setKey(new NshMapKey(nshMapBuilder.getName()));
-        nshMapBuilder.setEncapType(VxlanGpeEncapType.class);
-        if (augment instanceof NshVxlanGpeEncapAugment) {
-            nshMapBuilder.addAugmentation(NshVxlanGpeEncapAugment.class, augment);
-        } else if (augment instanceof VxlanEncapAugment) {
-            nshMapBuilder.addAugmentation(VxlanEncapAugment.class, augment);
-        }
+        nshMapBuilder.setEncapType(VxlanGpe.class);
+        nshMapBuilder.setEncapIfName(encapIfName);
         NshMap nshMap = nshMapBuilder.build();
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final InstanceIdentifier<NshMap> nshMapIid
-                    = InstanceIdentifier.create(Nsh.class).child(NshMaps.class).child(NshMap.class, nshMap.getKey());
+                    = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class).child(NshMap.class, nshMap.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapIid, nshMap);
 
         LOG.debug("Submitting new nsh map to config store...");
@@ -675,7 +726,7 @@ public class VppRspProcessor {
         Futures.addCallback(wTx.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
-                LOG.debug("Writing nah map to {} finished successfully.", vppNode);
+                LOG.debug("Writing nsh map to {} finished successfully.", vppNode);
             }
 
             @Override
@@ -707,26 +758,13 @@ public class VppRspProcessor {
         });
     }
 
-    private NshVxlanGpeEncapAugment buildNshVxlanGpeEncapAugment(final IpAddress localIp, final IpAddress remoteIp, final Long vni) {
-        NshVxlanGpeEncapAugmentBuilder augmentBuilder = new NshVxlanGpeEncapAugmentBuilder();
-        augmentBuilder.setLocal(localIp);
-        augmentBuilder.setRemote(remoteIp);
-        augmentBuilder.setVni(new VxlanGpeVni(vni));
-        augmentBuilder.setNextProtocol(VxlanGpeNextProtocol.Nsh);
-        augmentBuilder.setEncapVrfId(Long.valueOf(0));
-        augmentBuilder.setDecapVrfId(Long.valueOf(0));
-        return augmentBuilder.build();
-    }
-
     private boolean configureVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
         Long vni = Long.valueOf(0); // SFC classifier set it to 0, so always use 0
 
         addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
         addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
+        addNshMap(dataBroker, nsp, nsi, nsp, nsi, buildVxlanGpePortKey(remoteIp), sffName.getValue());
 
-        NshVxlanGpeEncapAugment augment = buildNshVxlanGpeEncapAugment(localIp, remoteIp, vni);
-        addNshMap(dataBroker, nsp, nsi, nsp, nsi, augment, sffName.getValue());
-        //TODO: add route, add arp
         return true;
     }
 
@@ -738,17 +776,7 @@ public class VppRspProcessor {
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
         removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF
         removeNshMap(dataBroker, nsp, nsi, nsp, nextNsi, sffName.getValue());
-        //TODO: remove route, remove arp
         return true;
-    }
-
-    private VxlanEncapAugment buildVxlanEncapAugment(final IpAddress srcIp, final IpAddress dstIp, final Long vni) {
-        VxlanEncapAugmentBuilder augmentBuilder = new VxlanEncapAugmentBuilder();
-        augmentBuilder.setSrc(srcIp);
-        augmentBuilder.setDst(dstIp);
-        augmentBuilder.setVni(new VxlanVni(vni));
-        augmentBuilder.setEncapVrfId(Long.valueOf(0));
-        return augmentBuilder.build();
     }
 
     private boolean configureVxlanNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress srcIp, final IpAddress dstIp, final Long nsp, final Short nsi) {
@@ -756,10 +784,8 @@ public class VppRspProcessor {
 
         addVxlanPort(dataBroker, srcIp, dstIp, vni, sffName.getValue()); //SFF<->SF
         addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
+        addNshMap(dataBroker, nsp, nsi, nsp, nsi, buildVxlanPortKey(dstIp), sffName.getValue());
 
-        VxlanEncapAugment augment = buildVxlanEncapAugment(srcIp, dstIp, vni);
-        addNshMap(dataBroker, nsp, nsi, nsp, nsi, augment, sffName.getValue());
-        //TODO: add route, add arp
         return true;
     }
 
@@ -771,7 +797,6 @@ public class VppRspProcessor {
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
         removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF
         removeNshMap(dataBroker, nsp, nsi, nsp, nextNsi, sffName.getValue());
-        //TODO: remove route, remove arp
         return true;
     }
 

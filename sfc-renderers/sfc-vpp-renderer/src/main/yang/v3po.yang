@@ -401,19 +401,19 @@ module v3po {
   }
 
   grouping proxy-arp-attributes {
-    description
-      "Parameters for configuring Proxy ARP on interfaces.";
+        description
+        "Parameters for configuring Proxy ARP on interfaces.";
 
-    leaf vrf-id {
-      type uint32;
-      default 0;
-    }
-    leaf low-addr {
-      type inet:ipv4-address;
-    }
-    leaf high-addr {
-      type inet:ipv4-address;
-    }
+      leaf vrf-id {
+        type uint32;
+        default 0;
+      }
+      leaf low-addr {
+          type inet:ipv4-address;
+      }
+      leaf high-addr {
+          type inet:ipv4-address;
+      }
   }
 
   grouping acl-base-attributes {
@@ -459,9 +459,13 @@ module v3po {
         Read is supported only for acls that were created and assigned by Honeycomb agent
         (corresponding metadata are present).";
       list acl {
-        key "reference";
+        key "type name";
 
-        leaf reference {
+        leaf type {
+          type acl:acl-type;
+        }
+
+        leaf name {
           type acl:access-control-list-ref;
         }
       }

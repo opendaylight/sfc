@@ -66,12 +66,12 @@ module vpp-nsh {
     description "encap type";
   }
 
-  identity vxlan-gpe-encap-type {
+  identity vxlan-gpe {
     base "encap-type";
     description "vxlan-gpe encap type";
   }
 
-  identity vxlan-encap-type {
+  identity vxlan {
     base "encap-type";
     description "vxlan encap type";
   }
@@ -121,7 +121,9 @@ module vpp-nsh {
   }
 
   grouping nsh-md-type2-attributes {
-
+      leaf type {
+      type uint32;
+    }
   }
 
   grouping nsh-entry-base-attributes {
@@ -181,9 +183,13 @@ module vpp-nsh {
     leaf encap-type {
       type nsh-encap-type;
     }
+    leaf encap-if-name {
+      type string;
+      description "Interface Name";
+    }
   }
 
-  container nsh {
+  container vpp-nsh {
     description
     "NSH config data";
 
@@ -210,31 +216,19 @@ module vpp-nsh {
     }
   }
 
-  augment /nsh/nsh-entries/nsh-entry {
-    ext:augment-identifier nsh-entry-md-type-augment;
+  augment /vpp-nsh/nsh-entries/nsh-entry {
+    ext:augment-identifier nsh-md-type-1-augment;
     when "/md-type = 'vpp-nsh:md-type1' ";
     uses nsh-md-type1-attributes;
   }
 
-  augment /nsh/nsh-entries/nsh-entry {
-    ext:augment-identifier nsh-entry-md-type-augment;
+  augment /vpp-nsh/nsh-entries/nsh-entry {
+    ext:augment-identifier nsh-md-type-2-augment;
     when "/md-type = 'vpp-nsh:md-type2' ";
     uses nsh-md-type2-attributes;
   }
 
-  augment /nsh/nsh-maps/nsh-map {
-    ext:augment-identifier nsh-vxlan-gpe-encap-augment;
-    when "/encap-type = 'vpp-nsh:vxlan-gpe-encap-type' ";
-    uses v3po:vxlan-gpe-base-attributes;
-  }
-
-  augment /nsh/nsh-maps/nsh-map {
-    ext:augment-identifier vxlan-encap-augment;
-    when "/encap-type = 'vpp-nsh:vxlan-encap-type' ";
-    uses v3po:vxlan-base-attributes;
-  }
-
-  container nsh-state {
+  container vpp-nsh-state {
     config false;
 
     description
@@ -261,5 +255,17 @@ module vpp-nsh {
           "nsh-map operational data";
       }
     }
+  }
+
+  augment /vpp-nsh-state/nsh-entries/nsh-entry {
+    ext:augment-identifier nsh-md-type-1-state-augment;
+    when "/md-type = 'vpp-nsh:md-type1' ";
+    uses nsh-md-type1-attributes;
+  }
+
+  augment /vpp-nsh-state/nsh-entries/nsh-entry {
+    ext:augment-identifier nsh-md-type-2-state-augment;
+    when "/md-type = 'vpp-nsh:md-type2' ";
+    uses nsh-md-type2-attributes;
   }
 }

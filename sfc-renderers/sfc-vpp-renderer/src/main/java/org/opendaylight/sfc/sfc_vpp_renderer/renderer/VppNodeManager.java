@@ -178,12 +178,11 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     private List<String> initializeRequiredCapabilities() {
-        final String jvpp = "(urn:honeycomb:params:xml:ns:yang:vpp:jvpp:cfg?revision=2016-04-06)vpp-jvpp-cfg";
+        final String netconfTcp = "(urn:opendaylight:params:xml:ns:yang:controller:netconf:northbound:tcp?revision=2015-04-23)netconf-northbound-tcp";
+        final String vppNsh = "(urn:opendaylight:params:xml:ns:yang:vpp:nsh?revision=2016-06-24)vpp-nsh";
         final String v3po = "(urn:opendaylight:params:xml:ns:yang:v3po?revision=2015-01-05)v3po";
-        final String v3po2vpp = "(urn:honeycomb:params:xml:ns:yang:v3po2vpp?revision=2016-04-06)v3po2vpp";
-        final String ietfYangTypes = "(urn:ietf:params:xml:ns:yang:ietf-yang-types?revision=2013-07-15)ietf-yang-types";
-        final String ietfInetTypes = "(urn:ietf:params:xml:ns:yang:ietf-inet-types?revision=2013-07-15)ietf-inet-types";
-        String capabilityEntries[] = {jvpp, v3po, v3po2vpp, ietfYangTypes, ietfInetTypes};
+        final String ietfInterfaces = "(urn:ietf:params:xml:ns:yang:ietf-interfaces?revision=2014-05-08)ietf-interfaces";
+        String capabilityEntries[] = {netconfTcp, vppNsh, v3po, ietfInterfaces};
         return Arrays.asList(capabilityEntries);
     }
 

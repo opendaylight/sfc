@@ -12,12 +12,6 @@ import json
 import flask
 import signal
 import argparse
-from sfc.common import classifier
-from sfc.common import sfc_globals as _sfc_globals
-from sfc.common.odl_api import auto_sff_name, find_metadata, find_sff_locator, find_sf_locator
-from sfc.common.odl_api import get_metadata_from_odl, get_sffs_from_odl, get_sfp_from_odl, sf_local_host
-from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff
-from sfc.cli import xe_cli, xr_cli, ovs_cli
 
 # fix Python 3 relative imports inside packages
 # CREDITS: http://stackoverflow.com/a/6655098/4183498
@@ -26,6 +20,14 @@ sys.path.insert(1, parent_dir)
 
 __package__ = 'sfc'
 
+# TODO: the whole sfc-py module should be revisited/refactored to avoid disable
+#       the flake8 quality assurance checkings (noqa)
+from sfc.common import classifier # noqa
+from sfc.common import sfc_globals as _sfc_globals # noqa
+from sfc.common.odl_api import auto_sff_name, find_metadata, find_sff_locator, find_sf_locator # noqa
+from sfc.common.odl_api import get_metadata_from_odl, get_sffs_from_odl, get_sfp_from_odl, sf_local_host # noqa
+from sfc.common.launcher import start_sf, stop_sf, start_sff, stop_sff # noqa
+from sfc.cli import xe_cli, xr_cli, ovs_cli # noqa
 
 __author__ = "Paul Quinn, Reinaldo Penno"
 __copyright__ = "Copyright(c) 2014, Cisco Systems, Inc."

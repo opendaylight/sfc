@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup sfc from pre-build. If DIST_URL is null, build sfc from scratch
-DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.0-SNAPSHOT/
+DIST_URL=https://nexus.opendaylight.org/content/repositories/autorelease-1477/org/opendaylight/integration/distribution-karaf/0.5.0-Boron/distribution-karaf-0.5.0-Boron.tar.gz
 
 function install_packages {
     sudo apt-get install npm vim git git-review diffstat bridge-utils -y
@@ -46,15 +46,12 @@ function install_ovs {
     git am *.patch
     sudo DEB_BUILD_OPTIONS='parallel=8 nocheck' fakeroot debian/rules binary
     sudo dpkg -i $HOME/openvswitch-datapath-dkms* $HOME/openvswitch-common* $HOME/openvswitch-switch* ../python-openvswitch*
-    mkdir -p /vagrant/ovs-debs
-    cp $HOME/openvswitch-common*.deb $HOME/openvswitch-switch*.deb /vagrant/ovs-debs/
 }
 
 function install_sfc {
     cd $HOME
     if [[ -n $DIST_URL ]]; then
-        curl $DIST_URL/maven-metadata.xml | grep -A2 tar.gz | grep value | cut -f2 -d'>' | cut -f1 -d'<' | \
-            xargs -I {} curl $DIST_URL/distribution-karaf-{}.tar.gz | tar xvz-
+        curl $DIST_URL | tar xvz-
         rm -rf $HOME/sfc; mkdir -p $HOME/sfc/sfc-karaf/target
         mv distribution-karaf* $HOME/sfc/sfc-karaf/target/assembly
     else
@@ -69,6 +66,12 @@ function install_sfc {
     fi
 }
 
+function build_docker_image {
+    mkdir -p /vagrant/ovs-debs
+    cp $HOME/openvswitch-common*.deb $HOME/openvswitch-switch*.deb /vagrant/ovs-debs
+    docker build -t sfc-service-node /vagrant
+    rm -fr /vagrant/ovs-debs
+}
 
 echo "SFC DEMO: Packages installation"
 install_packages
@@ -78,3 +81,6 @@ install_ovs
 
 echo "SFC DEMO: SFC installation"
 install_sfc
+
+echo "SFC DEMO: Build docker image demo containers"
+build_docker_image

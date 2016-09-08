@@ -80,6 +80,10 @@ Cleanup Demo
 ------------
 1. vagrant destroy -f
 
+Generate Vagrantbox
+-------------------
+1. vagrant up
+2. vagrant package --output FILENAME
 
 Trouble Shooting(TBD)
 --------------------

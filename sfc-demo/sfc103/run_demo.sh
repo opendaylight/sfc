@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function clean {
-    cd /vagrant; docker-compose down
+    docker-compose down
     printf "Stopping karaf ...  "
     spin=('/' '-' '\' '|' '-')
     i=0
@@ -37,8 +37,8 @@ function start_sfc {
     fi
 }
 
-function build_docker {
-    cd /vagrant; docker-compose up -d
+function deploy_containers {
+    docker-compose up -d
 }
 
 function start_demo {
@@ -76,8 +76,8 @@ clean
 echo "SFC DEMO: Start SFC"
 start_sfc
 
-echo "SFC DEMO: Build Docker"
-build_docker
+echo "SFC DEMO: Deploy Docker containers"
+deploy_containers
 
 echo "SFC DEMO: Give some time to have all things ready"
 sleep 60

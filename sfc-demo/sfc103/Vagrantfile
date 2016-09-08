@@ -4,13 +4,22 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+$clone_sfc = <<SCRIPT
+git clone https://git.opendaylight.org/gerrit/p/sfc.git /sfc
+cd /sfc/ && git checkout 0c0224529f001772175ecbc8fa2243ad0af7d993
+chown -R vagrant:vagrant /sfc
+SCRIPT
+
+$clean = <<SCRIPT
+cd /home/vagrant
+rm -fr *.deb ovs ovs_nsh_patches
+SCRIPT
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "wily-server-cloudimg-amd64"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/wily/current/wily-server-cloudimg-amd64-vagrant-disk1.box"
   config.vm.provision "docker"
-
-  config.vm.synced_folder "../..", "/sfc"
 
   config.vm.define "odl" do | h |
     h.vm.host_name = "odl"
@@ -18,6 +27,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ["modifyvm", :id, "--cpus", 2]
     end
+    h.vm.provision :shell, :inline => $clone_sfc
     h.vm.provision :shell, :inline => "/vagrant/setup_odl.sh", privileged: false
+    h.vm.provision "file", source: "run_demo.sh", destination: "$HOME/run_demo.sh"
+    h.vm.provision "file", source: "docker-compose.yml", destination: "$HOME/docker-compose.yml"
+    h.vm.provision "file", source: "Dockerfile", destination: "$HOME/Dockerfile"
+    h.vm.provision "file", source: "start.sh", destination: "$HOME/start.sh"
+    h.vm.provision :shell, :inline => $clean
   end
 end

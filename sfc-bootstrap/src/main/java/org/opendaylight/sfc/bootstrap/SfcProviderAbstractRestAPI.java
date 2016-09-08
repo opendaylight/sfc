@@ -8,14 +8,13 @@
 
 package org.opendaylight.sfc.bootstrap;
 
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.ws.rs.client.ResponseProcessingException;
 
 /**
  * Abstract parent Runnable for the REST API.
@@ -88,11 +87,7 @@ public abstract class SfcProviderAbstractRestAPI implements Runnable {
             } catch (InvocationTargetException e) {
                 LOG.error("Invocation target exception: {}", e.getMessage());
                 return;
-            } catch (UniformInterfaceException e) {
-                LOG.error("REST Server error. Message: {}",
-                        e.getMessage());
-                return;
-            } catch (ClientHandlerException e) {
+            } catch (ResponseProcessingException e) {
                 LOG.error("Could not communicate with REST Server: {} ", e.getMessage());
                 return;
             }

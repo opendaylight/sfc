@@ -10,13 +10,18 @@ package org.opendaylight.sfc.tacker.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.ClassNamesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.test.framework.AppDescriptor;
-import com.sun.jersey.test.framework.JerseyTest;
-import com.sun.jersey.test.framework.WebAppDescriptor;
-import java.io.IOException;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
+import org.glassfish.jersey.test.spi.TestContainerException;
+import org.glassfish.jersey.test.spi.TestContainerFactory;
+import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
+import org.glassfish.jersey.test.ServletDeploymentContext;
+import org.glassfish.jersey.test.DeploymentContext;
+import org.glassfish.jersey.servlet.ServletContainer;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.ProcessingException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +38,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -79,11 +83,11 @@ public class TackerManagerTest extends JerseyTest {
     private static Token token;
 
     private static HttpServer startServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(tackerServer.class);
+        final ResourceConfig resourceConfig = new ResourceConfig(tackerServer.class);
         HttpServer httpServer = null;
         try {
-            httpServer = GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + BASE_PORT), resourceConfig);
-        } catch (IOException e) {
+            httpServer = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + ":" + BASE_PORT), resourceConfig);
+        } catch (ProcessingException e) {
             e.printStackTrace();
             LOG.debug(e.getMessage());
         }
@@ -91,12 +95,12 @@ public class TackerManagerTest extends JerseyTest {
     }
 
     private static HttpServer startKeystoneServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(keystoneServer.class);
+        final ResourceConfig resourceConfig = new ResourceConfig(keystoneServer.class);
         HttpServer httpServer = null;
         try {
             httpServer =
-                    GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + KEYSTONE_PORT), resourceConfig);
-        } catch (IOException e) {
+                    GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + ":" + KEYSTONE_PORT), resourceConfig);
+        } catch (ProcessingException e) {
             e.printStackTrace();
             LOG.debug(e.getMessage());
         }
@@ -233,8 +237,18 @@ public class TackerManagerTest extends JerseyTest {
     }
 
     @Override
-    protected AppDescriptor configure() {
-        return new WebAppDescriptor.Builder().build();
+    protected Application configure() {
+        return new ResourceConfig(tackerServer.class);
+    }
+
+    @Override
+    protected DeploymentContext configureDeployment() {
+        return ServletDeploymentContext.forServlet(new ServletContainer(new ResourceConfig(tackerServer.class))).build();
+    }
+
+    @Override
+    protected TestContainerFactory getTestContainerFactory() throws TestContainerException {
+        return new GrizzlyWebTestContainerFactory();
     }
 
     @Path("/v1.0/vnfs")

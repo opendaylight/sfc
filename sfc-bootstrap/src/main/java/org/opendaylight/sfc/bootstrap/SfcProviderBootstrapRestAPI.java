@@ -8,11 +8,12 @@
 
 package org.opendaylight.sfc.bootstrap;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -64,13 +65,11 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
             final String CONFIG_FILES_DIR = jo.getString("bootstrapDataDir");
             final String CONFIG_DATA_URL = jo.getString("configDataUrl");
             final String CONFIG_DATA_MIME_TYPE = jo.getString("configDataMimeType");
-            final HTTPBasicAuthFilter basicAuthFilter = new HTTPBasicAuthFilter("admin", "admin");
+            final HttpAuthenticationFeature basicAuthFeature = HttpAuthenticationFeature.basic("admin", "admin");
             files = jo.getJSONArray("files");
 
-
-            ClientConfig clientConfig = new DefaultClientConfig();
-            Client client = Client.create(clientConfig);
-            client.addFilter(basicAuthFilter);
+            ClientConfig clientConfig = new ClientConfig();
+            Client client = ClientBuilder.newClient(clientConfig);
 
             if (files.length() > 0) {
                 for (int i = 0; i < files.length(); i++) {
@@ -91,12 +90,13 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                     }
                     try {
                         new JSONObject(json);
-                        ClientResponse putClientResponse = client
-                                .resource(CONFIG_DATA_URL + urlpath)
-                                .type(CONFIG_DATA_MIME_TYPE)
-                                .put(ClientResponse.class, json);
+                        Response putClientResponse = client
+                                .target(CONFIG_DATA_URL + urlpath)
+                                .register(basicAuthFeature)
+                                .request(CONFIG_DATA_MIME_TYPE)
+                                .put(Entity.text(json));
                         putClientResponse.close();
-                        if (putClientResponse.getStatus() != 200){
+                        if (putClientResponse.getStatus() != 200) {
                             LOG.error("\n***** Unsuccessful PUT for file {}, HTTP response code {} *****\n", filename,
                                     putClientResponse.getStatus());
                         }

@@ -199,12 +199,12 @@
       </dependency>
     <!--  Used in odl-sfc-bootstrp and odl-sfc-sb-rest -->
     <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
+        <groupId>com.eclipsesource.jaxrs</groupId>
+        <artifactId>jersey-all</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-core</artifactId>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
     <dependency>
         <groupId>org.json</groupId>

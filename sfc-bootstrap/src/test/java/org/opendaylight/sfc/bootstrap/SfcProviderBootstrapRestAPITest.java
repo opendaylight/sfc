@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.bootstrap;
 
-import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,8 +23,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import javax.ws.rs.client.ResponseProcessingException;
 
 
 /**
@@ -96,7 +96,7 @@ public class SfcProviderBootstrapRestAPITest {
          * the rest json file has been created. If so, this file is then PUT to url address location
          * - this step needs running
          * sfc-karaf (or any server for test purposes). It is not running - so method should throw
-         * ClientHandlerException.
+         * ResponseProcessingException
          * If so, test catch that exception, check it and consider test to pass (all steps like
          * reading json etc. were successful).
          * If some other exception is thrown (or none), test will fail.
@@ -108,12 +108,12 @@ public class SfcProviderBootstrapRestAPITest {
                     new SfcProviderBootstrapRestAPI(new Object[0], new Class[0], "param");
             sfcProviderBootstrapRestAPI.putBootstrapData();
         } catch (Exception e) {
-            if (e.getClass() == ClientHandlerException.class) {
-                assertEquals("Must be equal", e.getClass(), (ClientHandlerException.class));
+            if (e.getClass() == ResponseProcessingException.class) {
+                assertEquals("Must be equal", e.getClass(), (ResponseProcessingException.class));
                 assertTrue("Must be true", e.getCause().getMessage().toLowerCase().contains("connection refused"));
-            } else
-                // test is ok in IDE, build throws null pointer, don't know why
+            } else {
                 assertEquals("Must be equal", e.getClass(), (NullPointerException.class));
+            }
         }
     }
 }

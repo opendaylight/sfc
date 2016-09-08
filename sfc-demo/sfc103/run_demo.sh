@@ -37,7 +37,7 @@ function start_sfc {
     fi
 }
 
-function build_docker {
+function deploy_containers {
     cd /vagrant; docker-compose up -d
 }
 
@@ -76,8 +76,8 @@ clean
 echo "SFC DEMO: Start SFC"
 start_sfc
 
-echo "SFC DEMO: Build Docker"
-build_docker
+echo "SFC DEMO: Deploy Docker containers"
+deploy_containers
 
 echo "SFC DEMO: Give some time to have all things ready"
 sleep 60

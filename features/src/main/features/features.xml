@@ -110,7 +110,6 @@
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>
         <bundle>mvn:org.glassfish/javax.json/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-sb-rest-initial.xml">mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfc-pot" version="${project.version}" description="OpenDaylight :: sfc-pot :: SFC Proof of Transit ">

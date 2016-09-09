@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker"
+    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
+    odl:type="default" />
+
+  <bean id="opendaylightSfc"
+    class="org.opendaylight.sfc.provider.OpendaylightSfc"
+    destroy-method="close">
+    <property name="dataProvider" ref="dataBroker"/>
+  </bean>
+
+  <bean id="sbRestSfEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestSfgEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestSffEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestRspEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestAclEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestScfEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestSfstEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sbRestSfstateEntryDataListener"
+    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstateEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sfcSbRestProviderModule"
+    class="org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl.SfcSbRestProviderModule"
+    init-method="startSbRestKeepAliveSocket"
+    destroy-method="close"/>
+
+</blueprint>

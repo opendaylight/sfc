@@ -270,14 +270,6 @@
       Put dependencies for configfiles directly referenced in your features.xml file.
       For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
     -->
-    <!-- odl-sfc-sb-rest config files -->
-    <dependency>
-       <groupId>${project.groupId}</groupId>
-       <artifactId>sfc-sb-rest</artifactId>
-       <version>${project.version}</version>
-       <type>xml</type>
-       <classifier>config</classifier>
-    </dependency>
     <!-- odl-sfc-genius config files -->
     <dependency>
        <groupId>${project.groupId}</groupId>

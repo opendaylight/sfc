@@ -84,7 +84,6 @@
         <feature version="${netconf.parent.version}">odl-netconf-connector-all</feature>
         <feature version="${netconf.parent.version}">odl-netconf-topology</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-vpp-renderer/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-vpp-renderer-initial.xml">mvn:org.opendaylight.sfc/sfc-vpp-renderer/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfclisp" version="${project.version}" description="OpenDaylight :: sfclisp :: all">

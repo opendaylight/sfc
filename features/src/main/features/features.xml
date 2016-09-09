@@ -94,7 +94,6 @@
         <feature version="${lispflowmapping.version}">odl-lispflowmapping-mappingservice</feature>
         <feature version="${lispflowmapping.version}">odl-lispflowmapping-southbound</feature>
         <bundle>mvn:org.opendaylight.sfc/sfclisp/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-lisp-initial.xml">mvn:org.opendaylight.sfc/sfclisp/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfc-sb-rest" version="${project.version}" description="OpenDaylight :: sfc-sb-rest ">

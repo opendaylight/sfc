@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  odl:use-default-for-reference-types="true">
+
+  <reference id="dataBroker"
+    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
+    odl:type="default" />
+
+  <bean id="opendaylightSfc"
+    class="org.opendaylight.sfc.provider.OpendaylightSfc"
+    destroy-method="close">
+    <property name="dataProvider" ref="dataBroker"/>
+  </bean>
+
+  <bean id="sfcOvsRpc" class="org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc" />
+
+  <odl:rpc-implementation ref="sfcOvsRpc"/>
+
+  <bean id="sfcOvsNodeDataListener"
+    class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+  <bean id="sfcOvsSffEntryDataListener"
+    class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener"
+    destroy-method="closeDataChangeListener">
+    <argument ref="opendaylightSfc"/>
+  </bean>
+
+</blueprint>

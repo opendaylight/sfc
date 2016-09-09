@@ -279,14 +279,7 @@
        <classifier>config</classifier>
     </dependency>
     <!-- odl-sfc-pot config files -->
-    <dependency>
-       <groupId>${project.groupId}</groupId>
-       <artifactId>sfc-pot</artifactId>
-       <version>${project.version}</version>
-       <type>xml</type>
-       <classifier>config</classifier>
-    </dependency>
-       <dependency>
+      <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>
         <version>${project.version}</version>

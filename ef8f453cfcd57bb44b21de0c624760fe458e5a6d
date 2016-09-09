@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_8d3983a6",
+        "filename": "sfc-demo/sfc103/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-09-09T08:40:30Z",
+      "side": 1,
+      "message": "It\u0027s the point in master at which I know the demo is working:\n\ncommit 0c0224529f001772175ecbc8fa2243ad0af7d993\nAuthor: Guo Ruijing \u003cruijing.guo@intel.com\u003e\nDate:   Sun Aug 7 20:45:53 2016 -0400\n\n    Update sfc103 to docker based version\n    \n    - Additionally the demo can be executed several times without vagrant vm destruction\n    - Compliant with OVS 2.5.90 NSH patches written by Yi Yang\n    \n    Change-Id: I13b5561c263b5fc76511adff42010bf51696f572\n    Signed-off-by: Guo Ruijing \u003cruijing.guo@intel.com\u003e\n    Signed-off-by: Ricardo Diaz Campos \u003cricardo.diaz.campos@ericsson.com\u003e\n\nDo you prefer to set any other point?",
+      "parentUuid": "7a6b29fe_0d98d3be",
+      "range": {
+        "startLine": 9,
+        "startChar": 25,
+        "endLine": 9,
+        "endChar": 65
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_cd7a5b76",
         "filename": "sfc-demo/sfc103/Vagrantfile",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_cd3ffb85",
+        "filename": "sfc-demo/sfc103/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-09-09T08:40:30Z",
+      "side": 1,
+      "message": "You are right but this Vagrantfile is intended to generate a box to be distributed. At generated point is when the provision script is exectued. The resulting box will have this incorporated.",
+      "parentUuid": "7a6b29fe_cd7a5b76",
+      "range": {
+        "startLine": 31,
+        "startChar": 40,
+        "endLine": 31,
+        "endChar": 47
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_6df067fe",
         "filename": "sfc-demo/sfc103/setup_odl.sh",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2016-09-09T08:30:11Z",
       "side": 1,
       "message": "Can you please add a comment here indicating this is Boron RC3.1",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 8
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ed491732",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 6063
+      },
+      "writtenOn": "2016-09-09T08:40:30Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "7a6b29fe_6df067fe",
       "range": {
         "startLine": 4,
         "startChar": 0,

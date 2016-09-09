@@ -57,7 +57,6 @@
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <feature version="${ovsdb.southbound.version}">odl-ovsdb-southbound-impl</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-ovs/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-ovs-initial.xml">mvn:org.opendaylight.sfc/sfc-ovs/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfc-scf-openflow" version="${project.version}" description="OpenDaylight :: sfc-scf-openflow">

@@ -66,7 +66,6 @@
         <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-scf-openflow-initial.xml">mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfcofl2" version="${project.version}" description="OpenDaylight :: sfcofl2 (DEPRECATED)">

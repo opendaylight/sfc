@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_0d98d3be",
+        "filename": "sfc-demo/sfc103/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "what version of SFC is this?",
+      "range": {
+        "startLine": 9,
+        "startChar": 25,
+        "endLine": 9,
+        "endChar": 65
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_cd7a5b76",
+        "filename": "sfc-demo/sfc103/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "This wont work, since you removed the config.vm.synced_folder line above.",
+      "range": {
+        "startLine": 31,
+        "startChar": 40,
+        "endLine": 31,
+        "endChar": 47
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6df067fe",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "Can you please add a comment here indicating this is Boron RC3.1",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 4,
+        "endChar": 8
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6dd7c74b",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "This wont work since you removed the synced folders option in the Vagrantfile.",
+      "range": {
+        "startLine": 70,
+        "startChar": 14,
+        "endLine": 70,
+        "endChar": 21
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_adf6fff6",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "This wont work since you removed the synced folders option from the Vagrantfile.",
+      "range": {
+        "startLine": 71,
+        "startChar": 68,
+        "endLine": 71,
+        "endChar": 75
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_0ddf336a",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "wont work.",
+      "range": {
+        "startLine": 72,
+        "startChar": 38,
+        "endLine": 72,
+        "endChar": 45
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_eddbd779",
+        "filename": "sfc-demo/sfc103/setup_odl.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-09T08:30:11Z",
+      "side": 1,
+      "message": "wont work.",
+      "range": {
+        "startLine": 73,
+        "startChar": 12,
+        "endLine": 73,
+        "endChar": 19
+      },
+      "revId": "ef8f453cfcd57bb44b21de0c624760fe458e5a6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

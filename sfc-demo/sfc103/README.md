@@ -72,7 +72,7 @@ Classifiers Topology
 
 Setup Demo
 ----------
-1. Install virtualbox & vagrant in ubuntu 14.04.03
+1. Install virtualbox & vagrant(>=1.8.0) in ubuntu 14.04.03
 2. ./demo.sh
 
 

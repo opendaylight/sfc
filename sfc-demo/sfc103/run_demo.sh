@@ -80,7 +80,7 @@ echo "SFC DEMO: Build Docker"
 build_docker
 
 echo "SFC DEMO: Give some time to have all things ready"
-sleep 60
+sleep 120
 
 echo "SFC DEMO: Start Demo"
 start_demo

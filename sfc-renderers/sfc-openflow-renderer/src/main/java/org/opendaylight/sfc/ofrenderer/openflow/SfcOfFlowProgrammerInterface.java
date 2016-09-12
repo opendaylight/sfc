@@ -45,11 +45,11 @@ public interface SfcOfFlowProgrammerInterface {
      * Deletes all flows created for a particular RSP and removes
      * initialization flows from SFFs if the last RSP was removed.
      *
-     * @param rspId ID of RSP
+     * @param rspId the id of the RSP to be deleted
      *
      * @return Node IDs from which initialization flows were removed.
      */
-    public Set<NodeId> deleteRspFlows(final Long rspId);
+    public Set<NodeId> deleteRspFlows(final long rspId);
 
     // Write any buffered flows to the data store
     public void flushFlows();

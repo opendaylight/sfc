@@ -43,10 +43,10 @@ public interface SfcOfFlowWriterInterface {
     public void deleteRspFlows(final Long rspId);
 
     /**
-     * Delete initialization flows from SFF if no RSP exists.
+     * Delete initialization flows from SFFs whenever they're no longer featured
+     * in a RenderedServicePath
      *
-     * @return Set of NodeIDs of cleared SFFs.
-     * Example of NodeID: openflow:99344160872776
+     * @return Set of NodeIDs of cleared SFFs (ex: "openflow:99344160872776")
      */
     public Set<NodeId> clearSffsIfNoRspExists();
 

@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -42,7 +44,6 @@ public class SfcOfRspProcessor {
     private SfcSynchronizer sfcSynchronizer;
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
-    private static final Long SFC_FLOWS = new Long(0xdeadbeef);
 
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
@@ -98,7 +99,7 @@ public class SfcOfRspProcessor {
                 LOG.debug("build flows of entry: {}", entry);
 
                 // The flows created by initializeSff dont belong to any particular RSP
-                sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
+                sfcOfFlowProgrammer.setFlowRspId(SfcOfFlowProgrammerImpl.SFC_FLOWS);
                 initializeSff(entry);
                 sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
 
@@ -451,7 +452,7 @@ public class SfcOfRspProcessor {
      * Set a given SFF as initialized.
      * Called by initializeSff()
      *
-     * @param sffName - the SFF to set
+     * @param sffNodeId - the SFF to set
      * @param initialized - boolean value to set the SFF as
      */
     private void setSffInitialized(final NodeId sffNodeId, boolean initialized) {

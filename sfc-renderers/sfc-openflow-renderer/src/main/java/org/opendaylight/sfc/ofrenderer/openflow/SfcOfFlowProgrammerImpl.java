@@ -109,6 +109,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final short APP_COEXISTENCE_NOT_SET = -1;
     private static final short TUN_GPE_NP_NSH = 0x4;
 
+    // is this the best place to put this constant ?...
+    public static final Long SFC_FLOWS = new Long(0xdeadbeef);
+
     // Instance variables
     private short tableBase;
     // Used for app-coexistence
@@ -169,7 +172,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public Set<NodeId> deleteRspFlows(final Long rspId) {
+    public Set<NodeId> deleteRspFlows(final long rspId) {
         sfcOfFlowWriter.deleteRspFlows(rspId);
         Set<NodeId> nodes = sfcOfFlowWriter.clearSffsIfNoRspExists();
         sfcOfFlowWriter.deleteFlowSet();
@@ -496,8 +499,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * Internal util method used by the previously defined configureTransportIngressFlow()
      * methods.
      *
-     * @param etherType - the etherType protocol to set in the match
-     * @param ipProtocol - the IP protocol to set in the match
+     * @param match - the MatchBuilder object which will create the matches
      * @param nextTable - the nextTable to jump to upon matching
      *
      * @return a FlowBuilder with the created Transport Ingress flow

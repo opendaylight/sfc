@@ -169,7 +169,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public Set<NodeId> deleteRspFlows(final Long rspId) {
+    public Set<NodeId> deleteRspFlows(final long rspId) {
         sfcOfFlowWriter.deleteRspFlows(rspId);
         Set<NodeId> nodes = sfcOfFlowWriter.clearSffsIfNoRspExists();
         sfcOfFlowWriter.deleteFlowSet();
@@ -496,8 +496,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * Internal util method used by the previously defined configureTransportIngressFlow()
      * methods.
      *
-     * @param etherType - the etherType protocol to set in the match
-     * @param ipProtocol - the IP protocol to set in the match
+     * @param match - the MatchBuilder object which will create the matches
      * @param nextTable - the nextTable to jump to upon matching
      *
      * @return a FlowBuilder with the created Transport Ingress flow

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -36,13 +37,13 @@ import org.slf4j.LoggerFactory;
 
 public class SfcOfRspProcessor {
 
+    public static final Long SFC_FLOWS = new Long(0xdeadbeef);
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
     private SfcSynchronizer sfcSynchronizer;
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
-    private static final Long SFC_FLOWS = new Long(0xdeadbeef);
 
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
@@ -451,7 +452,7 @@ public class SfcOfRspProcessor {
      * Set a given SFF as initialized.
      * Called by initializeSff()
      *
-     * @param sffName - the SFF to set
+     * @param sffNodeId - the SFF to set
      * @param initialized - boolean value to set the SFF as
      */
     private void setSffInitialized(final NodeId sffNodeId, boolean initialized) {

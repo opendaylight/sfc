@@ -29,7 +29,7 @@ function start_sfc {
         if [ $sfcfeatures -eq 9 ]; then
             break
         fi
-        $retries = $(( $retries - 1 ))
+        retries=$(( $retries - 1 ))
     done
     if [ $retries -eq 0 ]; then
         echo "Karaf not started. Exit immediately"

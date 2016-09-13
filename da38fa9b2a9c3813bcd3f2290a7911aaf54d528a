@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_2e093f2c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-09-13T15:57:47Z",
+      "side": 1,
+      "message": "Minor comment. I think nobody is including info of corrected bugs in the source code itself in order not to polute it (that info is stored in gerrit after all)",
+      "range": {
+        "startLine": 70,
+        "startChar": 59,
+        "endLine": 70,
+        "endChar": 62
+      },
+      "revId": "da38fa9b2a9c3813bcd3f2290a7911aaf54d528a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2e201f9a",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-09-13T15:57:47Z",
+      "side": 1,
+      "message": "this line?",
+      "range": {
+        "startLine": 162,
+        "startChar": 18,
+        "endLine": 162,
+        "endChar": 19
+      },
+      "revId": "da38fa9b2a9c3813bcd3f2290a7911aaf54d528a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_0e71e3a7",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-09-13T15:57:47Z",
+      "side": 1,
+      "message": "This will iterate through all the RSPs, right? I think this is an unnecesary O(n) search. Wouldn\u0027t it be better just to keep a map pairing sff -\u003e number of RSPs it participates on? (that way this could be changed with only a search for the sff in a hasmap, i.e log(n) search",
+      "range": {
+        "startLine": 410,
+        "startChar": 4,
+        "endLine": 415,
+        "endChar": 5
+      },
+      "revId": "da38fa9b2a9c3813bcd3f2290a7911aaf54d528a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

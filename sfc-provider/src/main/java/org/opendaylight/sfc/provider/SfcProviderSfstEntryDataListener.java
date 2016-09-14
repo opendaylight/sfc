@@ -46,7 +46,7 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
         //SF Schedule type Entry
         try {
             sfstEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                            OpendaylightSfc.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+                    SfcProviderUtils.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
         } catch (final Exception e) {
             LOG.error("SfcProviderScfEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderScfEntryDataListener: registration Listener failed.", e);

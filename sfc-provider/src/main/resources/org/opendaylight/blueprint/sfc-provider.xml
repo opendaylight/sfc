@@ -18,6 +18,7 @@
 
   <bean id="sfcProviderRpc"
     class="org.opendaylight.sfc.provider.SfcProviderRpc">
+    <property name="dataBroker" ref="dataBroker"/>
   </bean>
   <odl:rpc-implementation ref="sfcProviderRpc"/>
 

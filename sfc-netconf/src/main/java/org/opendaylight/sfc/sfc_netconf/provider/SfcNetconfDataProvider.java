@@ -16,18 +16,17 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 public class SfcNetconfDataProvider implements BindingAwareConsumer {
 
     private MountPointService mountService;
-    static SfcNetconfDataProvider sfcNetconfDataProvider;
+    private static SfcNetconfDataProvider sfcNetconfDataProvider;
 
-    /*
-     * Factory method
-     */
-    public static SfcNetconfDataProvider GetNetconfDataProvider() {
-        if (sfcNetconfDataProvider != null)
-            return sfcNetconfDataProvider;
-        else {
-            sfcNetconfDataProvider = new SfcNetconfDataProvider();
-            return sfcNetconfDataProvider;
+    public SfcNetconfDataProvider(MountPointService mountService) {
+        this.mountService = mountService;
+        if (sfcNetconfDataProvider == null) {
+            SfcNetconfDataProvider.sfcNetconfDataProvider = this;
         }
+    }
+
+    public static SfcNetconfDataProvider GetNetconfDataProvider() {
+        return SfcNetconfDataProvider.sfcNetconfDataProvider;
     }
 
     public MountPointService getMountService() {
@@ -38,5 +37,4 @@ public class SfcNetconfDataProvider implements BindingAwareConsumer {
     public void onSessionInitialized(ConsumerContext session) {
         mountService = session.getSALService(MountPointService.class);
     }
-
 }

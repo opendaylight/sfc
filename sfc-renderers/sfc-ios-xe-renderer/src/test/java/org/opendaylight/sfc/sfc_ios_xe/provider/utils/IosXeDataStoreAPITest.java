@@ -8,12 +8,15 @@
 
 package org.opendaylight.sfc.sfc_ios_xe.provider.utils;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -48,20 +51,32 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
 
+import java.util.concurrent.ExecutionException;
+
 
 public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
     private final String REMOTE_FORWARDER = "remote-forwarder";
     private final String SERVICE_NAME = "service-function";
     private IosXeDataStoreAPI iosXeDataStoreAPI;
     private DataBroker mountpoint;
 
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private OpendaylightSfc odlSfc;
+
     @Before
     public void init() {
         // Initialize datastore
         mountpoint = getDataBroker();
-        odl.setDataProvider(mountpoint);
+        odlSfc = new OpendaylightSfc(mountpoint);
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     @Test

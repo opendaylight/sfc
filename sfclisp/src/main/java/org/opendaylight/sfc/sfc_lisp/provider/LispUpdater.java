@@ -10,10 +10,11 @@ package org.opendaylight.sfc.sfc_lisp.provider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.opendaylight.controller.config.threadpool.ThreadPool;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_lisp.provider.api.SfcLispFlowMappingApi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
@@ -64,9 +65,11 @@ public class LispUpdater implements ILispUpdater {
 
     private static LispUpdater lispUpdaterObj;
     private OdlMappingserviceService lfmService;
+    private ThreadPool threadPool;
 
-    public LispUpdater(OdlMappingserviceService lfmService) {
+    public LispUpdater(OdlMappingserviceService lfmService, ThreadPool threadPool) {
         this.lfmService = lfmService;
+        this.threadPool = threadPool;
         lispUpdaterObj = this;
     }
 
@@ -154,7 +157,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
         if (reply == null) {
             return serviceFunction;
         }
@@ -186,7 +189,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
         if (reply == null ) {
             return serviceFunctionForwarder;
         }
@@ -234,7 +237,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { prefix };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
         if (reply == null) {
             return null;
         }
@@ -260,7 +263,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
     }
 
     private Eid getSrcDstFromAce(AceIp ipMatch) {
@@ -388,7 +391,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
     }
 
     private void registerElpMapping(Eid eid, List<IpAddress> hopList) {
@@ -451,7 +454,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                threadPool.getExecutor());
     }
 
     @Deprecated

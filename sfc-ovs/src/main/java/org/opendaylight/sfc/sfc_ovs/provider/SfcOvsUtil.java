@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
@@ -502,7 +502,7 @@ public class SfcOvsUtil {
 
     public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {
         Node managerNode =
-                lookupTopologyNode(serviceFunctionForwarder, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                lookupTopologyNode(serviceFunctionForwarder, SfcProviderUtils.getSfcProviderUtils().getExecutor());
         if (managerNode == null) {
             LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -543,7 +543,7 @@ public class SfcOvsUtil {
                 new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE, methodParams);
 
         OvsdbBridgeAugmentation readBridge = (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge,
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                SfcProviderUtils.getSfcProviderUtils().getExecutor());
 
         if (readBridge == null) {
             return null;

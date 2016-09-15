@@ -15,7 +15,7 @@ import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.sfc_netconf.provider.SfcNetconfDataProvider;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
@@ -37,7 +37,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcProviderSfDescriptionMonitorAPI{
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final SfcProviderUtils SFC_UTILS = SfcProviderUtils.getSfcProviderUtils();
     private static ConsumerContext sessionData;
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier
@@ -52,9 +52,9 @@ public class SfcProviderSfDescriptionMonitorAPI{
     private void setSessionHelper()  {
         printTraceStart(LOG);
         try {
-            if(odlSfc.getBroker()!=null) {
+            if(SFC_UTILS.getBroker()!=null) {
                 if(sessionData==null) {
-                    sessionData = odlSfc.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
+                    sessionData = SFC_UTILS.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
                     Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
                 }
             }

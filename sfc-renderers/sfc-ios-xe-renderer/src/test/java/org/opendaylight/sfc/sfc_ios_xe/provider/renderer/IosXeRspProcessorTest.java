@@ -10,12 +10,17 @@ package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
@@ -52,7 +57,6 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
     private final String forwarderName = "forwarder";
     private final SfName firstFunctionName = new SfName("firstFunction");
     private final SfName secondFunctionName = new SfName("secondFunction");
@@ -60,13 +64,23 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     private final String mgmtIp = "10.0.0.1";
     private DataBroker dataBroker;
     private NodeManager nodeManager;
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private OpendaylightSfc odlSfc;
 
     @Before
     public void init() {
         dataBroker = getDataBroker();
-        odl.setDataProvider(dataBroker);
+        odlSfc = new OpendaylightSfc(dataBroker);
         nodeManager = mock(NodeManager.class);
         prepareSfcEntities();
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     @Test

@@ -6,27 +6,26 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
+  <reference id="threadPool"
+    interface="org.opendaylight.controller.config.threadpool.ThreadPool"
+    odl:type="sfc" />
 
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
+  <bean id="sfcOvsRpc" class="org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc">
+    <argument ref="threadPool"/>
   </bean>
-
-  <bean id="sfcOvsRpc" class="org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc" />
 
   <odl:rpc-implementation ref="sfcOvsRpc"/>
 
   <bean id="sfcOvsNodeDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <argument ref="threadPool"/>
   </bean>
 
   <bean id="sfcOvsSffEntryDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <argument ref="threadPool"/>
   </bean>
 
 </blueprint>

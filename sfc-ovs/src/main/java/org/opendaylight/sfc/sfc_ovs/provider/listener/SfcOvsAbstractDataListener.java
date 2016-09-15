@@ -17,15 +17,16 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
+import java.util.concurrent.ExecutorService;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class SfcOvsAbstractDataListener implements DataChangeListener {
-    protected OpendaylightSfc opendaylightSfc;
+    protected ExecutorService executor;
     protected DataBroker dataBroker;
     protected InstanceIdentifier<?> instanceIdentifier;
     protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
@@ -35,12 +36,12 @@ public abstract class SfcOvsAbstractDataListener implements DataChangeListener {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
     }
 
-    public OpendaylightSfc getOpendaylightSfc() {
-        return opendaylightSfc;
+    public ExecutorService getExecutorService() {
+        return executor;
     }
 
-    public void setOpendaylightSfc(OpendaylightSfc opendaylightSfc) {
-        this.opendaylightSfc = opendaylightSfc;
+    public void setExecutorService(ExecutorService executor) {
+        this.executor = executor;
     }
 
     public DataBroker getDataBroker() {

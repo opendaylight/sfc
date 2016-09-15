@@ -15,12 +15,16 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -59,16 +63,26 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final String IP_MGMT_ADDRESS = "192.168.1.2";
     private static final int DP_PORT = 6633;
     private static final SfName SF_NAME = new SfName("dummySF");
     private static final SfName SF_STATE_NAME = new SfName("dummySFS");
 
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private OpendaylightSfc odlSfc;
+
     @Before
     public void before() {
         DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        odlSfc = new OpendaylightSfc(dataBroker);
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     public void testCreateReadServiceFunctionDescription() {

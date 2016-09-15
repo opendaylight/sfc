@@ -21,7 +21,8 @@ package org.opendaylight.sfc.sfc_ovs.provider;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+
+import org.opendaylight.controller.config.threadpool.ThreadPool;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
@@ -45,9 +46,13 @@ import org.slf4j.LoggerFactory;
 public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsRpc.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private ThreadPool threadPool;
 
     private static final String OVSDB_NODE_PREFIX = "ovsdb://";
+
+    public SfcOvsRpc(final ThreadPool threadPool) {
+        this.threadPool = threadPool;
+    }
 
     /**
      * This method writes a new OVS Bridge into OVSDB Config DataStore. This write event triggers
@@ -77,7 +82,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         //create parent OVS Node InstanceIdentifier (based on ip)
         } else if (ovsNode.getIp() != null) {
             IpAddress ipAddress = new IpAddress(ovsNode.getIp().getValue());
-            Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress, odlSfc.getExecutor());
+            Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress, threadPool.getExecutor());
             if (node != null) {
                 nodeId = node.getNodeId();
             }
@@ -96,7 +101,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             SfcOvsDataStoreAPI sfcOvsDataStoreAPI =
                     new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParams);
 
-            if ((boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, odlSfc.getExecutor())) {
+            if ((boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, threadPool.getExecutor())) {
                 rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
             } else {
                 String message = "Error writing OVS Bridge: '" + input.getName() + "' into OVSDB Configuration DataStore.";

@@ -17,6 +17,7 @@ import static junit.framework.TestCase.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.After;
@@ -27,6 +28,8 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPITest;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -103,20 +106,21 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("sffdpl");
     private static final String testIpAddress = "170.0.0.1";
     private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
-    private OpendaylightSfc opendaylightSfc;
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
     private InstanceIdentifier<OvsdbBridgeAugmentation> testBridgeIID;
 
+    private DataBroker dataBroker;
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private OpendaylightSfc odlSfc;
+
     @Before
     public void init() {
-        if (opendaylightSfc == null)
-            opendaylightSfc = new OpendaylightSfc();
-        if (executorService == null)
-            executorService = opendaylightSfc.getExecutor();
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        dataBroker = getDataBroker();
+        odlSfc = new OpendaylightSfc(dataBroker);
 
         // before starting test, node is created
         nodeIID = createNodeIID();
@@ -124,10 +128,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     }
 
     @After
-    public void finalized() {
-
+    public void finalized() throws ExecutionException, InterruptedException {
         // delete node after test
         deleteOvsdbNode(LogicalDatastoreType.CONFIGURATION);
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     @Test

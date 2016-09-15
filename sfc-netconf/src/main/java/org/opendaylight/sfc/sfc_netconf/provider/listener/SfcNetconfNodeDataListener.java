@@ -19,9 +19,10 @@ package org.opendaylight.sfc.sfc_netconf.provider.listener;
 
 import java.util.List;
 import java.util.Map;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
@@ -62,9 +63,8 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
     public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
         .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    public SfcNetconfNodeDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
+    public SfcNetconfNodeDataListener(DataBroker db) {
+        setDataBroker(db);
         setInstanceIdentifier(NETCONF_TOPO_IID);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
         registerAsDataChangeListener();

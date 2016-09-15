@@ -9,7 +9,7 @@ package org.opendaylight.sfc.sfc_lisp.provider.api;
 
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -25,13 +25,13 @@ public class SfcProviderServiceLispAPI {
 
     public static void lispUpdateServiceFunction(ServiceFunction sf) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (OpendaylightSfc.getOpendaylightSfcObj().getDataProvider() != null) {
+        if (SfcProviderUtils.getSfcProviderUtils().getDataProvider() != null) {
             sf = LispUpdater.getLispUpdaterObj().updateLispData(sf);
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
                     .child(ServiceFunction.class, sf.getKey()).build();
 
-            WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = SfcProviderUtils.getSfcProviderUtils().getDataProvider().newWriteOnlyTransaction();
             writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
             writeTx.submit();
 
@@ -41,14 +41,14 @@ public class SfcProviderServiceLispAPI {
 
     public static void lispUpdateServiceFunctionForwarder(ServiceFunctionForwarder sff) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (OpendaylightSfc.getOpendaylightSfcObj().getDataProvider() != null) {
+        if (SfcProviderUtils.getSfcProviderUtils().getDataProvider() != null) {
 
             sff = LispUpdater.getLispUpdaterObj().updateLispData(sff);
 
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
                     .child(ServiceFunctionForwarder.class, sff.getKey()).build();
 
-            WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = SfcProviderUtils.getSfcProviderUtils().getDataProvider().newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, sff, true);
             writeTx.submit();
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -154,7 +154,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         if(sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
             throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsBridgeAugmentation.");
         }
-        Node node = SfcOvsUtil.lookupTopologyNode(sff, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        Node node = SfcOvsUtil.lookupTopologyNode(sff, SfcProviderUtils.getSfcProviderUtils().getExecutor());
         if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
         }

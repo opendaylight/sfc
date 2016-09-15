@@ -104,11 +104,10 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
+    private DataBroker dataBroker;
 
-    public static SfcProviderRpc getSfcProviderRpc() {
-        return new SfcProviderRpc();
+    public SfcProviderRpc(final DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
     }
 
     @Override
@@ -214,7 +213,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 serviceFunctionChainsBuilder.setServiceFunctionChain(input.getServiceFunctionChain());
         ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
 
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(OpendaylightSfc.SFC_IID, sfcs,
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(SfcProviderUtils.SFC_IID, sfcs,
                 LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }

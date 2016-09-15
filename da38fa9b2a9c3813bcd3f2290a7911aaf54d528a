@@ -68,6 +68,30 @@
       "revId": "da38fa9b2a9c3813bcd3f2290a7911aaf54d528a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ce888b73",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowWriterImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 415,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-15T13:52:37Z",
+      "side": 1,
+      "message": "Yes, you\u0027re right on the complexity analysis; never-the-less, O(N) can be faster than O(log N) for \"small\" input sizes, and keeping it this way avoids keeping more state, which is good, since it is simpler.\n\nBut, I think it should be optimized for the most common \u0027expected\u0027 input size, thus you might be right.",
+      "parentUuid": "7a6b29fe_0e71e3a7",
+      "range": {
+        "startLine": 410,
+        "startChar": 4,
+        "endLine": 415,
+        "endChar": 5
+      },
+      "revId": "da38fa9b2a9c3813bcd3f2290a7911aaf54d528a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

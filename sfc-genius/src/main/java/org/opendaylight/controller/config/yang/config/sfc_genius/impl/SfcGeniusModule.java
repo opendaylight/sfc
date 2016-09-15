@@ -8,11 +8,15 @@
 
 package org.opendaylight.controller.config.yang.config.sfc_genius.impl;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.opendaylight.controller.config.api.DependencyResolver;
 import org.opendaylight.controller.config.api.ModuleIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.genius.impl.SfcGeniusSfInterfaceManager;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
+import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusInterfaceServiceManager;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
 import org.slf4j.Logger;
@@ -46,11 +50,27 @@ public class SfcGeniusModule
         LOG.info("Initializing SFC Genius module {}", this);
 
         DataBroker dataBroker = getDataBrokerDependency();
-        SfcGeniusSfInterfaceManager interfaceManager = new SfcGeniusSfInterfaceManager(dataBroker);
-        SfcGeniusSfStateListener sfListener = new SfcGeniusSfStateListener(interfaceManager);
-        SfcGeniusInterfaceStateListener interfaceListener = new SfcGeniusInterfaceStateListener(interfaceManager);
-        sfListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
-        interfaceListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
+        RpcProviderRegistry rpcProviderRegistry = getRpcRegistryDependency();
+
+        // Listeners will submit jobs to this executor, data store events will be
+        // handled synchronously, one at a time and in order.
+        ExecutorService listenerExecutor = Executors.newSingleThreadExecutor();
+
+        // Handlers will submit asynchronous callback jobs to this executor
+        ExecutorService handlerExecutor = Executors.newSingleThreadExecutor();
+
+        // Main handler of data store events
+        ISfcGeniusInterfaceServiceHandler interfaceManager;
+        interfaceManager = new SfcGeniusInterfaceServiceManager(dataBroker, rpcProviderRegistry, handlerExecutor);
+
+        // Listeners to data store events
+        SfcGeniusSfStateListener sfStateListener;
+        sfStateListener = new SfcGeniusSfStateListener(interfaceManager, listenerExecutor);
+        SfcGeniusInterfaceStateListener interfaceStateListener;
+        interfaceStateListener = new SfcGeniusInterfaceStateListener(interfaceManager, listenerExecutor);
+
+        sfStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
+        interfaceStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
 
         LOG.info("SFC Genius module {} initialized", this);
 
@@ -59,8 +79,8 @@ public class SfcGeniusModule
             public void close() throws Exception {
                 LOG.info("Closing SFC Genius module {}", this);
 
-                sfListener.close();
-                interfaceListener.close();
+                sfStateListener.close();
+                interfaceStateListener.close();
 
                 LOG.info("SFC Genius module instance {} closed", this);
             }

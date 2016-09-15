@@ -46,7 +46,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSffEntryDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffEntryDataListener.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private final DataBroker broker;
     private ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration;
 
@@ -59,7 +58,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener, Auto
         //ServiceFunctionForwarder Entry
         try {
             sffDataChangeListenerRegistration = broker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                    OpendaylightSfc.SFF_ENTRY_IID, this, DataBroker.DataChangeScope.SUBTREE );
+                    SfcProviderUtils.SFF_ENTRY_IID, this, DataBroker.DataChangeScope.SUBTREE );
         } catch (final Exception e) {
             LOG.error("SfcProviderSffEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderSffEntryDataListener: registration Listener failed.", e);

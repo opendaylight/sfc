@@ -10,8 +10,6 @@ package org.opendaylight.sfc.pot.provider;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcPot {
 
-    final OpendaylightSfc opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger(SfcPot.class);
     private static final String SFCV_STR = "ioam-pot";
 

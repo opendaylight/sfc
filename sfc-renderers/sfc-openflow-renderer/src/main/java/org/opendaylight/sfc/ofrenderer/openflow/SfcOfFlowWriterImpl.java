@@ -27,7 +27,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -112,7 +112,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         }
 
         public void run(){
-            WriteTransaction trans = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction trans = SfcProviderUtils.getSfcProviderUtils().getDataProvider().newWriteOnlyTransaction();
 
             LOG.debug("FlowSetWriterTask: starting addition of {} flows", flowsToWrite.size());
 
@@ -152,7 +152,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         public void run(){
 
-            WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = SfcProviderUtils.getSfcProviderUtils().getDataProvider().newWriteOnlyTransaction();
 
             LOG.debug("FlowSetRemoverTask: starting deletion of {} flows", flowsToDelete.size());
 

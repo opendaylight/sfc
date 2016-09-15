@@ -10,9 +10,11 @@ package org.opendaylight.sfc.sfc_lisp.provider.listener;
 
 import java.util.List;
 import java.util.Map;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
 import org.opendaylight.sfc.sfc_lisp.provider.api.SfcProviderServiceLispAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
@@ -37,10 +39,9 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSffDataListener.class);
     private LispUpdater lispUpdater;
 
-    public SfcLispSffDataListener(OpendaylightSfc odlSfc, LispUpdater lispUpdater) {
-        setOpendaylightSfc(odlSfc);
-        setDataBroker(odlSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SFF_IID);
+    public SfcLispSffDataListener(DataBroker db, LispUpdater lispUpdater) {
+        setDataBroker(db);
+        setInstanceIdentifier(SfcProviderUtils.SFF_IID);
         setDataStoreType(LogicalDatastoreType.CONFIGURATION);
         registerAsDataChangeListener();
         this.lispUpdater = lispUpdater;

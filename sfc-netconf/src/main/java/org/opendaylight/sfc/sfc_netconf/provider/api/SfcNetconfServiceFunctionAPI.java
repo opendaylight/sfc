@@ -11,7 +11,7 @@ package org.opendaylight.sfc.sfc_netconf.provider.api;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
@@ -58,7 +58,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcNetconfServiceFunctionAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceFunctionAPI.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
+    private static final SfcProviderUtils SFC_UTILS = SfcProviderUtils.getSfcProviderUtils();
     private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
 
     /**
@@ -136,7 +136,7 @@ public class SfcNetconfServiceFunctionAPI {
         printTraceStart(LOG);
 
         try {
-            if (ODL_SFC.getDataProvider() != null) {
+            if (SFC_UTILS.getDataProvider() != null) {
                 sfDescMonBuilder = new SfcSfDescMonBuilder().setDescriptionInfo(descInfo);
 
                 // get ServiceFunctionState
@@ -218,7 +218,7 @@ public class SfcNetconfServiceFunctionAPI {
         ServiceFunctionState dataSfcStateObject;
         printTraceStart(LOG);
         try {
-            if (ODL_SFC.getDataProvider() != null) {
+            if (SFC_UTILS.getDataProvider() != null) {
                 sfDescMonBuilder = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo);
 
                 // get ServiceFunctionState

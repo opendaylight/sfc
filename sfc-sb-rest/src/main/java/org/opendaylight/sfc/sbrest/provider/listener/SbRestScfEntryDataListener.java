@@ -9,8 +9,11 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.controller.config.threadpool.ThreadPool;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
@@ -26,10 +29,10 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
 
-    public SbRestScfEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SCF_ENTRY_IID);
+    public SbRestScfEntryDataListener(DataBroker db, ThreadPool threadPool) {
+        setExecutorService(threadPool.getExecutor());
+        setDataBroker(db);
+        setInstanceIdentifier(SfcProviderUtils.SCF_ENTRY_IID);
         registerAsDataChangeListener();
     }
 
@@ -62,8 +65,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                         createdServiceClassifier.getAcl().getType());
 
                     Runnable task = new SbRestAclTask(RestOperation.POST, accessList,
-                            createdServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
-                    opendaylightSfc.getExecutor().submit(task);
+                            createdServiceClassifier.getSclServiceFunctionForwarder(), getExecutorService());
+                    getExecutorService().submit(task);
                 }
             }
         }
@@ -81,8 +84,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                         updatedServiceClassifier.getAcl().getType());
 
                     Runnable task = new SbRestAclTask(RestOperation.PUT, accessList,
-                            updatedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
-                    opendaylightSfc.getExecutor().submit(task);
+                            updatedServiceClassifier.getSclServiceFunctionForwarder(), getExecutorService());
+                    getExecutorService().submit(task);
                 }
             }
         }
@@ -99,8 +102,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener {
                 if (deletedServiceClassifier.getAcl() != null) {
                     Runnable task = new SbRestAclTask(RestOperation.DELETE, deletedServiceClassifier.getAcl().getName(),
                             deletedServiceClassifier.getAcl().getType(),
-                            deletedServiceClassifier.getSclServiceFunctionForwarder(), opendaylightSfc.getExecutor());
-                    opendaylightSfc.getExecutor().submit(task);
+                            deletedServiceClassifier.getSclServiceFunctionForwarder(), getExecutorService());
+                    getExecutorService().submit(task);
                 }
             }
         }

@@ -9,8 +9,11 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
+
+import org.opendaylight.controller.config.threadpool.ThreadPool;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -24,10 +27,10 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
 
-    public SbRestSfEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SF_ENTRY_IID);
+    public SbRestSfEntryDataListener(DataBroker db, ThreadPool threadPool) {
+        setExecutorService(threadPool.getExecutor());
+        setDataBroker(db);
+        setInstanceIdentifier(SfcProviderUtils.SF_ENTRY_IID);
         registerAsDataChangeListener();
     }
 
@@ -56,8 +59,8 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("\nCreated Service Function Name: {}", createdServiceFunction.getName());
 
-                Runnable task = new SbRestSfTask(RestOperation.PUT, createdServiceFunction, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfTask(RestOperation.PUT, createdServiceFunction, getExecutorService());
+                getExecutorService().submit(task);
             }
         }
 
@@ -69,8 +72,8 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
                 LOG.debug("\nModified Service Function Name: {}", updatedServiceFunction.getName());
 
-                Runnable task = new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, getExecutorService());
+                getExecutorService().submit(task);
             }
         }
 
@@ -84,8 +87,8 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
                 LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunction.getName());
 
-                Runnable task = new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, getExecutorService());
+                getExecutorService().submit(task);
             }
         }
         printTraceStop(LOG);

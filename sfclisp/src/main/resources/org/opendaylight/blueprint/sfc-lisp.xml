@@ -6,38 +6,36 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
-  </bean>
+  <reference id="threadPool"
+    interface="org.opendaylight.controller.config.threadpool.ThreadPool"
+    odl:type="sfc" />
 
   <odl:rpc-service id="lfmService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService"/>
 
   <bean id="lispUpdater"
     class="org.opendaylight.sfc.sfc_lisp.provider.LispUpdater">
     <argument ref="lfmService"/>
+    <argument ref="threadPool"/>
   </bean>
 
   <bean id="sfcProviderSffDataListener"
     class="org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispSffDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
   </bean>
 
   <bean id="sfcProviderSfEntryDataListener"
     class="org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispSfEntryDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
   </bean>
 
   <bean id="sfcLispRspEntryDataListener"
     class="org.opendaylight.sfc.sfc_lisp.provider.listener.SfcLispRspEntryDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
   </bean>
 

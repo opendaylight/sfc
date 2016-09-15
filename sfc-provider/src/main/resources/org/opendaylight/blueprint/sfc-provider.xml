@@ -6,18 +6,35 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-  <reference id="bindingRegistry"
+  <reference id="bindingAwareBroker"
     interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
+
+  <bean id="sfcFixedThreadPool"
+    class="org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper"
+    destroy-method="close">
+    <argument value="100"/>
+    <argument value="false"/>
+    <argument value="SFC-%d"/>
+  </bean>
+  <service ref="sfcFixedThreadPool" interface="org.opendaylight.controller.config.threadpool.ThreadPool"
+    odl:type="sfc"/>
+
+  <bean id="sfcProviderUtils"
+    class="org.opendaylight.sfc.provider.SfcProviderUtils">
+    <property name="dataBroker" ref="dataBroker"/>
+    <property name="bindingAwareBroker" ref="bindingAwareBroker"/>
+    <property name="sfcFixedThreadPoolWrapper" ref="sfcFixedThreadPool"/>
+  </bean>
 
   <bean id="opendaylightSfc"
     class="org.opendaylight.sfc.provider.OpendaylightSfc"
     destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
-    <property name="broker" ref="bindingRegistry"/>
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderRpc"
     class="org.opendaylight.sfc.provider.SfcProviderRpc">
+    <argument ref="dataBroker"/>
   </bean>
   <odl:rpc-implementation ref="sfcProviderRpc"/>
 

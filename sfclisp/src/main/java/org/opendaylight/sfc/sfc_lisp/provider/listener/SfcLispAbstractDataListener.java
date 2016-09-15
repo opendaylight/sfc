@@ -11,22 +11,16 @@ package org.opendaylight.sfc.sfc_lisp.provider.listener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class SfcLispAbstractDataListener implements DataChangeListener {
-    protected OpendaylightSfc odlSfc;
     protected DataBroker dataBroker;
     protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
     protected LogicalDatastoreType dataStoreType;
     protected InstanceIdentifier<?> instanceId;
     public SfcLispAbstractDataListener() {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
-    }
-
-    public void setOpendaylightSfc(OpendaylightSfc odlSfc) {
-        this.odlSfc = odlSfc;
     }
 
     public void setDataBroker(DataBroker dataBroker) {

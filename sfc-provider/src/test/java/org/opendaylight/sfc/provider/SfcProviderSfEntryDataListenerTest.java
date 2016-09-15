@@ -102,7 +102,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfEntryDataListenerTest.class);
 
     public ListenerRegistration<DataChangeListener> registerAsDataChangeListener() {
-        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SF_ENTRY_IID,
+        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, SfcProviderUtils.SF_ENTRY_IID,
                 sfEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
     }
 
@@ -319,10 +319,10 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
 
         /* Clean-up */
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFP_IID, LogicalDatastoreType.CONFIGURATION));
 
     }
 
@@ -397,10 +397,10 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
             }
         }
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderUtils.SFP_IID, LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -591,7 +591,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcProviderUtils.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION));
 
         // executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new Object[]{sfsBuilder.build()},
         // new Class[]{ServiceFunctions.class})).get();
@@ -653,7 +653,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
         }
         ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
         serviceFunctionForwardersBuilder.setServiceFunctionForwarder(sffList);
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SFF_IID, serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcProviderUtils.SFF_IID, serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
         // Create Service Function Chain
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(new SfcName(SFC_NAME));
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();

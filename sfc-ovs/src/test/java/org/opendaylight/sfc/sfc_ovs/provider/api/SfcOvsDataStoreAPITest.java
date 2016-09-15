@@ -13,6 +13,8 @@ import static junit.framework.TestCase.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +22,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -80,19 +84,30 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     private final String testIpv4 = "10.0.0.1";
     private final String testIpv6 = "01:23:45:67:89:AB:CD:EF";
     private final InstanceIdentifier<Node> nodeIID = createNodeIID();
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private SfcOvsDataStoreAPI sfcOvsDataStoreAPIObject;
     private SfcOvsDataStoreAPI.Method methodToCall;
     private Object testResult;
 
+    private DataBroker dataBroker;
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private OpendaylightSfc odlSfc;
+
     @Before
     public void init() {
-        DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        dataBroker = getDataBroker();
+        odlSfc = new OpendaylightSfc(dataBroker);
 
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writePutTransactionAPI")).toReturn(true);
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "deleteTransactionAPI")).toReturn(true);
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(true);
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     @Test

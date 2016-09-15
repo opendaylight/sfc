@@ -35,14 +35,6 @@ public abstract class SfcNetconfAbstractDataListener implements DataChangeListen
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
     }
 
-    public OpendaylightSfc getOpendaylightSfc() {
-        return opendaylightSfc;
-    }
-
-    public void setOpendaylightSfc(OpendaylightSfc opendaylightSfc) {
-        this.opendaylightSfc = opendaylightSfc;
-    }
-
     public DataBroker getDataBroker() {
         return dataBroker;
     }

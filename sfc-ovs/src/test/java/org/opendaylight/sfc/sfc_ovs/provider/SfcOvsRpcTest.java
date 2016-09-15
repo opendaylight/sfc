@@ -8,12 +8,20 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opendaylight.controller.config.threadpool.ThreadPool;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcFixedThreadPoolWrapper;
+import org.opendaylight.sfc.provider.SfcProviderUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.create.ovs.bridge.input.OvsNodeBuilder;
@@ -40,7 +48,7 @@ import static junit.framework.TestCase.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcOvsUtil.class)
-public class SfcOvsRpcTest {
+public class SfcOvsRpcTest extends AbstractDataBrokerTest {
 
     private static final String ipAddressString = "170.0.0.1";
     private static final String testName = "testName";
@@ -51,19 +59,30 @@ public class SfcOvsRpcTest {
     private OvsNodeBuilder ovsNodeBuilder;
     private SfcOvsRpc sfcOvsRpcObject;
 
+    private DataBroker dataBroker;
+    private static final SfcFixedThreadPoolWrapper sfcFixedThreadPoolObj =
+            new SfcFixedThreadPoolWrapper(SfcProviderUtils.EXECUTOR_THREAD_POOL_SIZE, SfcProviderUtils.THREAD_FACTORY_IS_DAEMON,
+                    SfcProviderUtils.THREAD_FACTORY_NAME_FORMAT);
+    private static ExecutorService executor = sfcFixedThreadPoolObj.getExecutor();
+    private OpendaylightSfc odlSfc;
+
     @Before
     public void init() {
-        DataBroker dataBroker = null;
-        OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-        // noinspection ConstantConditions
-        opendaylightSfc.setDataProvider(dataBroker);
+        dataBroker = getDataBroker();
+        odlSfc = new OpendaylightSfc(dataBroker);
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        odlSfc.close();
+        sfcFixedThreadPoolObj.close();
     }
 
     @Test
     public void testCreateOvsBridgeNullNode() throws Exception {
         createOvsBridgeInputBuilder = new CreateOvsBridgeInputBuilder();
         ovsNodeBuilder = new OvsNodeBuilder();
-        sfcOvsRpcObject = new SfcOvsRpc();
+        sfcOvsRpcObject = new SfcOvsRpc((ThreadPool) executor);
 
         // create "empty" node
         nodeBuilder = new NodeBuilder();
@@ -83,7 +102,7 @@ public class SfcOvsRpcTest {
     public void testCreateOvsBridgeNullNodeId() throws Exception {
         createOvsBridgeInputBuilder = new CreateOvsBridgeInputBuilder();
         ovsNodeBuilder = new OvsNodeBuilder();
-        sfcOvsRpcObject = new SfcOvsRpc();
+        sfcOvsRpcObject = new SfcOvsRpc((ThreadPool) executor);
 
         // create "empty" node
         nodeBuilder = new NodeBuilder();
@@ -111,7 +130,7 @@ public class SfcOvsRpcTest {
     public void testCreateOvsBridgeFalseResult() throws Exception {
         createOvsBridgeInputBuilder = new CreateOvsBridgeInputBuilder();
         ovsNodeBuilder = new OvsNodeBuilder();
-        sfcOvsRpcObject = new SfcOvsRpc();
+        sfcOvsRpcObject = new SfcOvsRpc((ThreadPool) executor);
 
         // set node ip
         ovsNodeBuilder.setIp(new IpAddress(new Ipv4Address(ipAddressString))).setPort(new PortNumber(portNumber));
@@ -133,7 +152,7 @@ public class SfcOvsRpcTest {
     public void testCreateOvsBridgeTrueResult() throws Exception {
         createOvsBridgeInputBuilder = new CreateOvsBridgeInputBuilder();
         ovsNodeBuilder = new OvsNodeBuilder();
-        sfcOvsRpcObject = new SfcOvsRpc();
+        sfcOvsRpcObject = new SfcOvsRpc((ThreadPool) executor);
 
         // set node ip & port
         ovsNodeBuilder.setIp(new IpAddress(new Ipv4Address(ipAddressString))).setPort(new PortNumber(portNumber));

@@ -58,7 +58,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfstEntryDataListenerTest.class);
 
     public ListenerRegistration<DataChangeListener> registerAsDataChangeListener() {
-        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFST_ENTRY_IID,
+        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, SfcProviderUtils.SFST_ENTRY_IID,
                 sfstEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
     }
 

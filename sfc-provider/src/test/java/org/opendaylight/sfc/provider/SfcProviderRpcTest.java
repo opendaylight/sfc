@@ -318,7 +318,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     @Before
     public void setUp() {
         setOdlSfc();
-        sfcProviderRpc = new SfcProviderRpc();
+        sfcProviderRpc = new SfcProviderRpc(getDataBroker());
     }
 
     @After
@@ -637,11 +637,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         InstantiateServiceFunctionChainInputBuilder instantiateServiceFunctionChainInput =
                 new InstantiateServiceFunctionChainInputBuilder();
         assertNull(sfcProviderRpc.instantiateServiceFunctionChain(instantiateServiceFunctionChainInput.build()));
-    }
-
-    @Test
-    public void getSfcProviderRpcTest() {
-        assertNotNull(SfcProviderRpc.getSfcProviderRpc());
     }
 
     @Test

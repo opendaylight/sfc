@@ -11,7 +11,7 @@
 
   <bean id="renderer"
     class="org.opendaylight.sfc.sfc_ios_xe.provider.SfcIosXeRenderer"
-    destroy-method="unregisterListeners">
+    init-method="initialize" destroy-method="unregisterListeners">
     <argument ref="dataBroker"/>
     <argument ref="bindingRegistry"/>
   </bean>

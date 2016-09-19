@@ -8,8 +8,17 @@
 
 package org.opendaylight.sfc.genius.impl.utils;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,19 +41,77 @@ public class SfcGeniusUtilsTest {
     @Captor
     ArgumentCaptor<Runnable> runnableCaptor;
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    public void toCompletableFutureDone() throws Exception {
+        ListenableFuture listenableFuture = Futures.immediateFuture(dataObject);
+
+        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+
+        assertThat(completableFuture.isDone(), is(false));
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        assertThat(completableFuture.isDone(), is(true));
+        assertThat(completableFuture.get(), is(dataObject));
+    }
+
+    @Test
+    public void toCompletableFutureExceptionallyDone() throws Exception {
+        Throwable t = new Throwable();
+        ListenableFuture listenableFuture = Futures.immediateFailedFuture(t);
+
+        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+
+        assertThat(completableFuture.isDone(), is(false));
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        assertThat(completableFuture.isCompletedExceptionally(), is(true));
+        try {
+            completableFuture.join();
+        } catch (CompletionException e) {
+            assertThat(e.getCause(), is(t));
+        }
+    }
+
+    @Test
+    public void toCompletableFutureCancelled() throws Exception {
+        ListenableFuture listenableFuture = Futures.immediateCancelledFuture();
+
+        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+
+        assertThat(completableFuture.isDone(), is(false));
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        assertThat(completableFuture.isCancelled(), is(true));
+    }
+
+    @Test
     public void getDpnIdFromLowerLayerIfListTooManyItems() throws Exception {
-        SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Arrays.asList("Item1", "Item2"));
+        try {
+            SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Arrays.asList("Item1", "Item2"));
+        } catch (Exception e) {
+            assertThat(e, is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(instanceOf(IllegalArgumentException.class)));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getDpnIdFromLowerLayerIfListBadItem() throws Exception {
-        SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Collections.singletonList(""));
+        try {
+            SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Collections.singletonList(""));
+        } catch (Exception e) {
+            assertThat(e, is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(instanceOf(IllegalArgumentException.class)));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getDpnIdFromNullLowerLayerIfList() throws Exception {
-        SfcGeniusUtils.getDpnIdFromLowerLayerIfList(null);
+        try {
+            SfcGeniusUtils.getDpnIdFromLowerLayerIfList(null);
+        } catch (Exception e) {
+            assertThat(e, is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(instanceOf(IllegalArgumentException.class)));
+        }
     }
 
 }

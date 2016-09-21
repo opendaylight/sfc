@@ -8,9 +8,16 @@
                         sfc-genius:sfc-genius-impl
                     </type>
                     <name>sfc-genius-impl</name>
-
+                    <rpc-registry>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-rpc-registry
+                        </type>
+                        <name>binding-rpc-broker</name>
+                    </rpc-registry>
                     <data-broker>
-                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-async-data-broker</type>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">
+                            binding:binding-async-data-broker
+                        </type>
                         <name>binding-data-broker</name>
                     </data-broker>
                 </module>
@@ -21,7 +28,6 @@
 
     <required-capabilities>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-provider:impl?module=sfc-provider-impl&amp;revision=2014-06-30</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl?module=sfc-genius-impl&amp;revision=2014-10-20</capability>
     </required-capabilities>
 

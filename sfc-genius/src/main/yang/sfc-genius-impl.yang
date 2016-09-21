@@ -30,12 +30,19 @@ module sfc-genius-impl {
             container data-broker {
                 uses config:service-ref {
                     refine type {
-                    mandatory false;
-                    config:required-identity mdsal:binding-async-data-broker;
+                        mandatory true;
+                        config:required-identity mdsal:binding-async-data-broker;
                     }
                 }
             }
-
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
         }
     }
 }

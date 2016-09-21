@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-provider</artifactId>
+            <artifactId>sfc-model</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.genius</groupId>
@@ -28,6 +28,11 @@
         <dependency>
             <groupId>org.opendaylight.genius</groupId>
             <artifactId>mdsalutil-api</artifactId>
+            <version>${genius.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.genius</groupId>
+            <artifactId>itm-api</artifactId>
             <version>${genius.version}</version>
         </dependency>
         <dependency>
@@ -44,6 +49,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -84,7 +94,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>

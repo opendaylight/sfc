@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.genius.impl.handlers.writers;
 
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -27,10 +28,27 @@ public class SfcGeniusDpnIfWriter {
     /**
      * Constructs a {@code SfcGeniusDpnIfWriter} using the provided
      * {@link Map}.
-     * @param dpnInterfaces the {@link Map} of data planes to interfaces.
+     * @param dpnInterfaces the {@link Map} of data planes to interfaces
+     *                      to be handled by this {@code SfcGeniusDpnIfWriter}.
      */
     public SfcGeniusDpnIfWriter(Map<BigInteger, Set<String>> dpnInterfaces) {
         this.dpnInterfaces = dpnInterfaces;
+    }
+
+    /**
+     * Add an interface from the provided data plane node.
+     *
+     * @param dpnId the data plane node identifier to add the interface to.
+     * @param interfaceName the name of the interface to add.
+     *
+     * @return Optionally, the data plane node identifier that was also
+     * added because it was associated for the first time with an interface.
+     */
+    public CompletableFuture<Optional<BigInteger>> addInterface(BigInteger dpnId, String interfaceName) {
+        Set<String> interfaces = dpnInterfaces.computeIfAbsent(dpnId, k -> new HashSet<>());
+        return interfaces.add(interfaceName) && interfaces.size() == 1 ?
+                CompletableFuture.completedFuture(Optional.of(dpnId)) :
+                CompletableFuture.completedFuture(Optional.empty());
     }
 
     /**

@@ -13,11 +13,13 @@ import static org.junit.Assert.assertThat;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +37,45 @@ public class SfcGeniusDpnIfWriterTest {
         dpnInterfaces.put(dpnIdWithOneInterface, new HashSet<>(Arrays.asList(existingInterface)));
         dpnInterfaces.put(dpnIdWithTwoInterfaces, new HashSet<>(Arrays.asList(existingInterface, "IF2")));
         sfcGeniusDpnIfWriter = new SfcGeniusDpnIfWriter(dpnInterfaces);
+    }
+
+    @Test
+    public void addInterfaceFirstOfDpn() throws Exception {
+        BigInteger dpnId = BigInteger.valueOf(999);
+        String interfaceName = "IF7";
+        int oldSize = dpnInterfaces.size();
+
+        CompletableFuture<Optional<BigInteger>> newDpnId = sfcGeniusDpnIfWriter.addInterface(dpnId, interfaceName);
+
+        assertThat(dpnInterfaces.get(dpnId), is(Collections.singleton(interfaceName)));
+        assertThat(dpnInterfaces.size(), is(oldSize + 1));
+        assertThat(newDpnId.get().isPresent(), is(true));
+        assertThat(newDpnId.get().get(), is(dpnId));
+    }
+
+    @Test
+    public void addInterfaceNotFirstOfDpn() throws Exception {
+        String interfaceName = "IF7";
+        int oldSize = dpnInterfaces.size();
+
+        CompletableFuture<Optional<BigInteger>> newDpnId =
+                sfcGeniusDpnIfWriter.addInterface(dpnIdWithOneInterface, interfaceName);
+
+        assertThat(dpnInterfaces.get(dpnIdWithOneInterface).contains(interfaceName), is(true));
+        assertThat(dpnInterfaces.size(), is(oldSize));
+        assertThat(newDpnId.get().isPresent(), is(false));
+    }
+
+    @Test
+    public void addInterfaceExistingNotFirstOfDpn() throws Exception {
+        int oldSize = dpnInterfaces.size();
+
+        CompletableFuture<Optional<BigInteger>> newDpnId =
+                sfcGeniusDpnIfWriter.addInterface(dpnIdWithOneInterface, existingInterface);
+
+        assertThat(dpnInterfaces.get(dpnIdWithOneInterface).contains(existingInterface), is(true));
+        assertThat(dpnInterfaces.size(), is(oldSize));
+        assertThat(newDpnId.get().isPresent(), is(false));
     }
 
     @Test

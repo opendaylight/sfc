@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_cd9eb4b8",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/controller/config/yang/config/sfc_genius/impl/SfcGeniusModule.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-21T13:33:15Z",
+      "side": 1,
+      "message": "This isnt a problem for this patch, but very soon you should remove this class and instead use the blueprint dependency injection feature.",
+      "range": {
+        "startLine": 25,
+        "startChar": 13,
+        "endLine": 25,
+        "endChar": 28
+      },
+      "revId": "0fe39a3177fcbde3c75348ec4ec111ef75668a53",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ada1b8f9",
+        "filename": "sfc-genius/src/main/yang/sfc-genius-impl.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-21T13:33:15Z",
+      "side": 1,
+      "message": "This isnt a problem for this patch, but very soon you should remove this class and instead use the blueprint dependency injection feature.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 24
+      },
+      "revId": "0fe39a3177fcbde3c75348ec4ec111ef75668a53",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

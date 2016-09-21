@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_f29b8f63",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/controller/config/yang/config/sfc_genius/impl/SfcGeniusModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-21T13:33:15Z",
+      "side": 1,
+      "message": "Just a comment for a future patch: Ideally this class should be removed and the blueprint dependency injection feature should be used in its place.",
+      "range": {
+        "startLine": 25,
+        "startChar": 13,
+        "endLine": 25,
+        "endChar": 28
+      },
+      "revId": "37a885559220e68ee7c58b78fe9f716c3b60db77",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

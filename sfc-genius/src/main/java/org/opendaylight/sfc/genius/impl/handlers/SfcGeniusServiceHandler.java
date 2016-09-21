@@ -66,6 +66,32 @@ class SfcGeniusServiceHandler {
     }
 
     /**
+     * Bind SFC service to interface. Will also add the terminating
+     * service action if this is the first interface bound to SFC service on
+     * the node.
+     *
+     * @param interfaceName the interface name.
+     * @return future signaling completion of the operation.
+     */
+    CompletableFuture<Void> bindToInterface(String interfaceName) {
+        SfcGeniusIfStateReader ifStateReader = getIfStateReader();
+        SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
+        SfcGeniusTsaWriter tsaWriter = getTsaWriter();
+        SfcGeniusBoundServiceWriter boundServiceWriter = getBoundServiceWriter();
+
+        LOG.debug("Bind SFC service to interface {}", interfaceName);
+
+        return CompletableFuture.allOf(
+                ifStateReader.readDpnId(interfaceName)
+                        .thenCompose(dpnId -> dpnIfWriter.addInterface(dpnId, interfaceName))
+                        .thenCompose(optionalOldDpn -> optionalOldDpn
+                                .map(tsaWriter::createTerminatingServiceAction)
+                                .orElse(CompletableFuture.completedFuture(null))),
+                boundServiceWriter.bindService(interfaceName)
+        );
+    }
+
+    /**
      * Unbind SFC service from interface. Will also remove the terminating
      * service action if this is the last interface bound to SFC service on
      * the node.
@@ -79,14 +105,14 @@ class SfcGeniusServiceHandler {
         SfcGeniusTsaWriter tsaWriter = getTsaWriter();
         SfcGeniusBoundServiceWriter boundServiceWriter = getBoundServiceWriter();
 
-        LOG.debug("Unbind from interface {}", interfaceName);
+        LOG.debug("Unbind SFC service from interface {}", interfaceName);
 
         return CompletableFuture.allOf(
                 ifStateReader.readDpnId(interfaceName)
                         .thenCompose(dpnId -> dpnIfWriter.removeInterfaceFromDpn(dpnId, interfaceName))
                         .thenCompose(optionalOldDpn -> optionalOldDpn
-                                        .map(tsaWriter::removeTerminatingServiceAction)
-                                        .orElse(CompletableFuture.completedFuture(null))),
+                                .map(tsaWriter::removeTerminatingServiceAction)
+                                .orElse(CompletableFuture.completedFuture(null))),
                 boundServiceWriter.unbindService(interfaceName)
         );
     }

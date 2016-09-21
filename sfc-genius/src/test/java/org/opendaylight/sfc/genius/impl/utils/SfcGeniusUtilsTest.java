@@ -43,9 +43,10 @@ public class SfcGeniusUtilsTest {
 
     @Test
     public void toCompletableFutureDone() throws Exception {
-        ListenableFuture listenableFuture = Futures.immediateFuture(dataObject);
+        ListenableFuture<DataObject> listenableFuture = Futures.immediateFuture(dataObject);
 
-        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+        CompletableFuture<DataObject> completableFuture;
+        completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
 
         assertThat(completableFuture.isDone(), is(false));
         verify(executor).execute(runnableCaptor.capture());
@@ -57,9 +58,10 @@ public class SfcGeniusUtilsTest {
     @Test
     public void toCompletableFutureExceptionallyDone() throws Exception {
         Throwable t = new Throwable();
-        ListenableFuture listenableFuture = Futures.immediateFailedFuture(t);
+        ListenableFuture<DataObject> listenableFuture = Futures.immediateFailedFuture(t);
 
-        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+        CompletableFuture<DataObject> completableFuture;
+        completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
 
         assertThat(completableFuture.isDone(), is(false));
         verify(executor).execute(runnableCaptor.capture());
@@ -74,9 +76,10 @@ public class SfcGeniusUtilsTest {
 
     @Test
     public void toCompletableFutureCancelled() throws Exception {
-        ListenableFuture listenableFuture = Futures.immediateCancelledFuture();
+        ListenableFuture<DataObject> listenableFuture = Futures.immediateCancelledFuture();
 
-        CompletableFuture completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
+        CompletableFuture<DataObject> completableFuture;
+        completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
 
         assertThat(completableFuture.isDone(), is(false));
         verify(executor).execute(runnableCaptor.capture());

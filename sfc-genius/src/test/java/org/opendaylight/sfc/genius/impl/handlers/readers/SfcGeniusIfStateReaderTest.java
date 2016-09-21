@@ -44,7 +44,7 @@ public class SfcGeniusIfStateReaderTest {
     @Test
     public void readDpnId() throws Exception {
         String interfaceName = "IF1";
-        List lowerLayerIfList = Collections.singletonList("openflow:1234567890:1");
+        List<String> lowerLayerIfList = Collections.singletonList("openflow:1234567890:1");
         when(anInterface.getLowerLayerIf()).thenReturn(lowerLayerIfList);
         doReturn(CompletableFuture.completedFuture(anInterface))
                 .when(reader).doRead(eq(LogicalDatastoreType.OPERATIONAL), instanceIdentifierCaptor.capture());

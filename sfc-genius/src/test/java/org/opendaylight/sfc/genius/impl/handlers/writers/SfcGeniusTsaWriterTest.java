@@ -50,7 +50,7 @@ public class SfcGeniusTsaWriterTest {
     Executor executor;
 
     @Mock
-    RpcResult rpcResult;
+    RpcResult<Void> rpcResult;
 
     @Mock
     RpcError rpcError;
@@ -67,14 +67,13 @@ public class SfcGeniusTsaWriterTest {
     @Test
     public void createTerminatingServiceAction() throws Exception {
         BigInteger dpnid = BigInteger.valueOf(8);
-        Short offset = 0;
 
         when(itmRpcService.createTerminatingServiceActions(any()))
                 .thenReturn(CompletableFuture.completedFuture(rpcResult));
         when(rpcResult.isSuccessful()).thenReturn(true);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.createTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
@@ -98,7 +97,6 @@ public class SfcGeniusTsaWriterTest {
     @Test
     public void createTerminatingServiceActionUnsuccessful() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
-        Short offset = 0;
         Throwable throwable = new Throwable();
 
         when(itmRpcService.createTerminatingServiceActions(any()))
@@ -108,7 +106,7 @@ public class SfcGeniusTsaWriterTest {
         when(rpcError.getCause()).thenReturn(throwable);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.createTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
@@ -126,7 +124,6 @@ public class SfcGeniusTsaWriterTest {
     @Test
     public void createTerminatingServiceActionException() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
-        Short offset = 0;
         Throwable throwable = new Throwable();
         CompletableFuture<RpcResult<Void>> future = new CompletableFuture<>();
         future.completeExceptionally(throwable);
@@ -134,7 +131,7 @@ public class SfcGeniusTsaWriterTest {
         when(itmRpcService.createTerminatingServiceActions(any())).thenReturn(future);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.createTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
@@ -159,7 +156,7 @@ public class SfcGeniusTsaWriterTest {
         when(rpcResult.isSuccessful()).thenReturn(true);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.removeTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.removeTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
@@ -186,7 +183,7 @@ public class SfcGeniusTsaWriterTest {
         when(rpcError.getCause()).thenReturn(throwable);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.removeTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.removeTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
@@ -211,7 +208,7 @@ public class SfcGeniusTsaWriterTest {
         when(itmRpcService.removeTerminatingServiceActions(any())).thenReturn(future);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
-        CompletableFuture completableFuture = writer.removeTerminatingServiceAction(dpnid);
+        CompletableFuture<Void> completableFuture = writer.removeTerminatingServiceAction(dpnid);
 
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();

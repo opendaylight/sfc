@@ -10,14 +10,18 @@ package org.opendaylight.sfc.genius.impl.handlers.writers;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +31,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInput;
+import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +51,9 @@ public class SfcGeniusTsaWriterTest {
     @Mock
     RpcResult rpcResult;
 
+    @Mock
+    RpcError rpcError;
+
     @Captor
     ArgumentCaptor<Runnable> runnableCaptor;
 
@@ -52,6 +62,92 @@ public class SfcGeniusTsaWriterTest {
 
     @Captor
     ArgumentCaptor<RemoveTerminatingServiceActionsInput> removeInputCaptor;
+
+    @Test
+    public void createTerminatingServiceAction() throws Exception {
+        BigInteger dpnid = BigInteger.valueOf(8);
+        Short offset = 0;
+
+        when(itmRpcService.createTerminatingServiceActions(any()))
+                .thenReturn(CompletableFuture.completedFuture(rpcResult));
+        when(rpcResult.isSuccessful()).thenReturn(true);
+
+        SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
+        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        verify(itmRpcService).createTerminatingServiceActions(createInputCaptor.capture());
+
+        assertThat(completableFuture.isDone(), is(true));
+
+        CreateTerminatingServiceActionsInput input = createInputCaptor.getValue();
+        assertThat(input, notNullValue());
+        assertThat(input.getDpnId(), is(dpnid));
+        assertThat(input.getServiceId(), is(SfcGeniusConstants.SFC_VNID));
+        assertThat(input.getInstruction().size(), is(1));
+
+        Instruction instruction = input.getInstruction().get(0);
+        assertThat(instruction.getInstruction(), is(instanceOf(GoToTableCase.class)));
+
+        GoToTableCase goToTable = (GoToTableCase) instruction.getInstruction();
+        assertThat(goToTable.getGoToTable().getTableId(), is(SfcGeniusConstants.SFC_TRANSPORT_INGRESS_TABLE));
+    }
+
+    @Test
+    public void createTerminatingServiceActionUnsuccessful() throws Exception {
+        BigInteger dpnid = BigInteger.ZERO;
+        Short offset = 0;
+        Throwable throwable = new Throwable();
+
+        when(itmRpcService.createTerminatingServiceActions(any()))
+                .thenReturn(CompletableFuture.completedFuture(rpcResult));
+        when(rpcResult.isSuccessful()).thenReturn(false);
+        when(rpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
+        when(rpcError.getCause()).thenReturn(throwable);
+
+        SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
+        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+
+        assertThat(completableFuture.isCompletedExceptionally(), is(true));
+        try {
+            completableFuture.join();
+        } catch (CompletionException e) {
+            assertThat(e.getCause(), is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause().getCause(), is(instanceOf(RuntimeException.class)));
+            assertThat(e.getCause().getCause().getCause(), sameInstance(throwable));
+        }
+    }
+
+    @Test
+    public void createTerminatingServiceActionException() throws Exception {
+        BigInteger dpnid = BigInteger.ZERO;
+        Short offset = 0;
+        Throwable throwable = new Throwable();
+        CompletableFuture<RpcResult<Void>> future = new CompletableFuture<>();
+        future.completeExceptionally(throwable);
+
+        when(itmRpcService.createTerminatingServiceActions(any())).thenReturn(future);
+
+        SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
+        CompletableFuture completableFuture = writer.createTerminatingServiceAction(dpnid);
+
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+
+        assertThat(completableFuture.isCompletedExceptionally(), is(true));
+        try {
+            completableFuture.join();
+        } catch (CompletionException e) {
+            assertThat(e.getCause(), is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause().getCause(), is(instanceOf(RuntimeException.class)));
+            assertThat(e.getCause().getCause().getCause(), is(instanceOf(ExecutionException.class)));
+            assertThat(e.getCause().getCause().getCause().getCause(), sameInstance(throwable));
+        }
+    }
 
     @Test
     public void removeTerminatingServiceAction() throws Exception {
@@ -80,10 +176,13 @@ public class SfcGeniusTsaWriterTest {
     @Test
     public void removeTerminatingServiceActionUnsuccessful() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
+        Throwable throwable = new Throwable();
 
         when(itmRpcService.removeTerminatingServiceActions(any()))
                 .thenReturn(CompletableFuture.completedFuture(rpcResult));
         when(rpcResult.isSuccessful()).thenReturn(false);
+        when(rpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
+        when(rpcError.getCause()).thenReturn(throwable);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
         CompletableFuture completableFuture = writer.removeTerminatingServiceAction(dpnid);
@@ -91,12 +190,14 @@ public class SfcGeniusTsaWriterTest {
         verify(executor).execute(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        assertTrue(completableFuture.isCompletedExceptionally());
+        assertThat(completableFuture.isCompletedExceptionally(), is(true));
         try {
             completableFuture.join();
         } catch (Exception e) {
             assertThat(e.getCause(), is(instanceOf(SfcGeniusRuntimeException.class)));
-        };
+            assertThat(e.getCause().getCause(), is(instanceOf(RuntimeException.class)));
+            assertThat(e.getCause().getCause().getCause(), sameInstance(throwable));
+        }
     }
 
     @Test
@@ -119,6 +220,9 @@ public class SfcGeniusTsaWriterTest {
             completableFuture.join();
         } catch (Exception e) {
             assertThat(e.getCause(), is(instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause().getCause(), is(instanceOf(RuntimeException.class)));
+            assertThat(e.getCause().getCause().getCause(), is(instanceOf(ExecutionException.class)));
+            assertThat(e.getCause().getCause().getCause().getCause(), sameInstance(throwable));
         }
     }
 

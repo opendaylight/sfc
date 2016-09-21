@@ -9,11 +9,16 @@
 package org.opendaylight.sfc.genius.impl.handlers.writers;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import org.opendaylight.genius.mdsalutil.MDSALUtil;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInputBuilder;
@@ -44,6 +49,39 @@ public class SfcGeniusTsaWriter {
     }
 
     /**
+     * Adds the SFC terminating service action from a specific data plane
+     * node.
+     *
+     * @param dpnId the data plane node identifier.
+     * @return future signaling completion.
+     */
+    public CompletableFuture<Void> createTerminatingServiceAction(BigInteger dpnId) {
+        short offset = NwConstants.SFC_TRANSPORT_INGRESS_TABLE;
+        CreateTerminatingServiceActionsInput input = new CreateTerminatingServiceActionsInputBuilder()
+                .setDpnId(dpnId)
+                .setInstruction(Collections.singletonList(MDSALUtil.buildAndGetGotoTableInstruction(offset, 0)))
+                .setServiceId(SfcGeniusConstants.SFC_VNID)
+                .build();
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                RpcResult<Void> result = itmRpcService.createTerminatingServiceActions(input).get();
+                if (!result.isSuccessful()) {
+                    throw new SfcGeniusRuntimeException(
+                            new RuntimeException(
+                                    "Could not add terminating service action on dara plane node " + dpnId,
+                                    result.getErrors().stream().findFirst().map(RpcError::getCause).orElse(null)));
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new SfcGeniusRuntimeException(
+                        new RuntimeException(
+                                "Could not add terminating service action on dara plane node " + dpnId,
+                                e));
+            }
+            return null;
+        }, executor);
+    }
+
+    /**
      * Removes the SFC terminating service action from a specific data plane
      * node.
      *
@@ -61,12 +99,14 @@ public class SfcGeniusTsaWriter {
                 if (!result.isSuccessful()) {
                     throw new SfcGeniusRuntimeException(
                             new RuntimeException(
-                                    "Could not remove terminating service action",
+                                    "Could not remove terminating service action from data plane node" + dpnId,
                                     result.getErrors().stream().findFirst().map(RpcError::getCause).orElse(null)));
                 }
             } catch (InterruptedException | ExecutionException e) {
                 throw new SfcGeniusRuntimeException(
-                        new RuntimeException("Could not remove terminating service action", e));
+                        new RuntimeException(
+                                "Could not remove terminating service action from data plane node" + dpnId,
+                                e));
             }
             return null;
         }, executor);

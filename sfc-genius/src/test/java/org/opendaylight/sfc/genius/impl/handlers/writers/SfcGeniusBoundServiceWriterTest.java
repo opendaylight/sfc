@@ -74,7 +74,7 @@ public class SfcGeniusBoundServiceWriterTest {
         assertThat(future.isCompletedExceptionally(), is(false));
         assertThat(future.isCancelled(), is(false));
 
-        InstanceIdentifier iid = instanceIdentifierCaptor.getValue();
+        InstanceIdentifier<BoundServices> iid = instanceIdentifierCaptor.getValue();
         assertThat(iid.firstKeyOf(ServicesInfo.class), is(new ServicesInfoKey("IF1", ServiceModeIngress.class)));
         assertThat(iid.firstKeyOf(BoundServices.class), is(new BoundServicesKey(NwConstants.SFC_SERVICE_INDEX)));
 
@@ -105,7 +105,7 @@ public class SfcGeniusBoundServiceWriterTest {
         assertThat(future.isCompletedExceptionally(), is(false));
         assertThat(future.isCancelled(), is(false));
 
-        InstanceIdentifier iid = instanceIdentifierCaptor.getValue();
+        InstanceIdentifier<BoundServices> iid = instanceIdentifierCaptor.getValue();
         assertThat(iid.firstKeyOf(ServicesInfo.class), is(new ServicesInfoKey("IF2", ServiceModeIngress.class)));
         assertThat(iid.firstKeyOf(BoundServices.class), is(new BoundServicesKey(NwConstants.SFC_SERVICE_INDEX)));
     }

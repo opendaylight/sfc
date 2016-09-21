@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusSfStateListenerTest {
@@ -41,7 +42,7 @@ public class SfcGeniusSfStateListenerTest {
     ServiceFunctionState serviceFunctionState;
 
     @Mock
-    List sfpList;
+    List<SfServicePath> sfpList;
 
     SfcGeniusSfStateListener sfcGeniusSfStateListener;
 

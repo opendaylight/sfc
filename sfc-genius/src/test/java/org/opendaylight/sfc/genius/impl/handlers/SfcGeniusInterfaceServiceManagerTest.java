@@ -75,6 +75,8 @@ public class SfcGeniusInterfaceServiceManagerTest {
             return null;
         }).when(executor).execute(any());
         when(readWriteTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
+        when(sfcGeniusServiceHandler.bindToInterface(any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.unbindFromInterface(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
 
@@ -88,6 +90,47 @@ public class SfcGeniusInterfaceServiceManagerTest {
     }
 
     @Test
+    public void bindInterfacesOfServiceFunction() throws Exception {
+        when(sfcGeniusSfReader.readInterfacesOfSf(any()))
+                .thenReturn(CompletableFuture.completedFuture(Arrays.asList("I1", "I2")));
+
+        sfcGeniusInterfaceServiceManager.bindInterfacesOfServiceFunction("SF1");
+
+        verify(sfcGeniusSfReader).readInterfacesOfSf(new SfName("SF1"));
+        verify(sfcGeniusServiceHandler).bindToInterface("I1");
+        verify(sfcGeniusServiceHandler).bindToInterface("I2");
+        verify(readWriteTransaction).submit();
+    }
+
+    @Test
+    public void bindInterfacesOfServiceFunctionNoInterfaces() throws Exception {
+        when(sfcGeniusSfReader.readInterfacesOfSf(any()))
+                .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+
+        sfcGeniusInterfaceServiceManager.bindInterfacesOfServiceFunction("SF1");
+
+        verify(sfcGeniusSfReader).readInterfacesOfSf(new SfName("SF1"));
+        verifyZeroInteractions(sfcGeniusServiceHandler);
+    }
+
+    @Test
+    public void bindInterfacesOfServiceFunctionErrorNoException() throws Exception {
+        when(sfcGeniusSfReader.readInterfacesOfSf(any()))
+                .thenReturn(CompletableFuture.completedFuture(Arrays.asList("IF1", "IF2")));
+        when(readWriteTransaction.submit()).thenThrow(new SfcGeniusRuntimeException(new Throwable()));
+
+        sfcGeniusInterfaceServiceManager.bindInterfacesOfServiceFunction("SF1");
+    }
+
+    @Test(expected = CompletionException.class)
+    public void bindInterfacesOfServiceFunctionUnknownException() throws Exception {
+        when(sfcGeniusSfReader.readInterfacesOfSf(any()))
+                .thenReturn(CompletableFuture.completedFuture(Arrays.asList("IF1", "IF2")));
+        when(readWriteTransaction.submit()).thenThrow(new RuntimeException(""));
+
+        sfcGeniusInterfaceServiceManager.bindInterfacesOfServiceFunction("SF1");
+    }
+
     public void unbindInterfacesOfServiceFunction() throws Exception {
         when(sfcGeniusSfReader.readInterfacesOfSf(any()))
                 .thenReturn(CompletableFuture.completedFuture(Arrays.asList("IF1", "IF2")));
@@ -112,7 +155,7 @@ public class SfcGeniusInterfaceServiceManagerTest {
     }
 
     @Test
-    public void unbindInterfacesOfServiceFunctionKnownException() throws Exception {
+    public void unbindInterfacesOfServiceFunctionErrorNoException() throws Exception {
         when(sfcGeniusSfReader.readInterfacesOfSf(any()))
                 .thenReturn(CompletableFuture.completedFuture(Arrays.asList("IF1", "IF2")));
         when(readWriteTransaction.submit()).thenThrow(new SfcGeniusRuntimeException(new Throwable()));
@@ -128,5 +171,4 @@ public class SfcGeniusInterfaceServiceManagerTest {
 
         sfcGeniusInterfaceServiceManager.unbindInterfacesOfServiceFunction("SF1");
     }
-
 }

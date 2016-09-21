@@ -51,9 +51,45 @@ public class SfcGeniusServiceHandlerTest {
         when(sfcGeniusServiceHandler.getDpnIfWriter()).thenReturn(sfcGeniusDpnIfWriter);
         when(sfcGeniusServiceHandler.getIfStateReader()).thenReturn(sfcGeniusIfStateReader);
         when(sfcGeniusServiceHandler.getTsaWriter()).thenReturn(sfcGeniusTsaWriter);
+        when(sfcGeniusTsaWriter.createTerminatingServiceAction(any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusTsaWriter.removeTerminatingServiceAction(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
+        when(sfcGeniusBoundServiceWriter.bindService(any())).thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusBoundServiceWriter.unbindService(any())).thenReturn(CompletableFuture.completedFuture(null));
+    }
+
+
+    @Test
+    public void bindToInterfaceFirstOfDpn() throws Exception {
+        String interfaceName = "IF1";
+        BigInteger dpnId = BigInteger.valueOf(17);
+        Short offset = 130;
+
+        when(sfcGeniusIfStateReader.readDpnId(interfaceName)).thenReturn(CompletableFuture.completedFuture(dpnId));
+        when(sfcGeniusDpnIfWriter.addInterface(dpnId, interfaceName))
+                .thenReturn(CompletableFuture.completedFuture(Optional.of(dpnId)));
+
+        sfcGeniusServiceHandler.bindToInterface(interfaceName);
+
+        verify(sfcGeniusTsaWriter).createTerminatingServiceAction(dpnId);
+        verify(sfcGeniusBoundServiceWriter).bindService(interfaceName);
+    }
+
+    @Test
+    public void bindToInterface() throws Exception {
+        String interfaceName = "IF1";
+        BigInteger dpnId = BigInteger.valueOf(18);
+        Short offset = 130;
+
+        when(sfcGeniusIfStateReader.readDpnId(interfaceName)).thenReturn(CompletableFuture.completedFuture(dpnId));
+        when(sfcGeniusDpnIfWriter.addInterface(dpnId, interfaceName))
+                .thenReturn(CompletableFuture.completedFuture(Optional.empty()));
+
+        sfcGeniusServiceHandler.bindToInterface(interfaceName);
+
+        verify(sfcGeniusBoundServiceWriter).bindService(interfaceName);
+        verifyZeroInteractions(sfcGeniusTsaWriter);
     }
 
     @Test
@@ -84,6 +120,16 @@ public class SfcGeniusServiceHandlerTest {
 
         verify(sfcGeniusBoundServiceWriter).unbindService(interfaceName);
         verifyZeroInteractions(sfcGeniusTsaWriter);
+    }
+
+    @Test
+    public void interfaceStateUp() throws Exception {
+
+    }
+
+    @Test
+    public void interfaceStateDown() throws Exception {
+
     }
 
 }

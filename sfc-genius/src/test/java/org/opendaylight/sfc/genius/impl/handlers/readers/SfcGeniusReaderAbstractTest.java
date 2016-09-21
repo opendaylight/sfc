@@ -8,9 +8,12 @@
 
 package org.opendaylight.sfc.genius.impl.handlers.readers;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,4 +80,29 @@ public class SfcGeniusReaderAbstractTest {
         }
     }
 
+    @Test
+    public void readOptional() throws Exception {
+        when(readTransaction.read(LogicalDatastoreType.CONFIGURATION, null))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.of(dataObject)));
+        CompletableFuture<java.util.Optional<DataObject>> completableFuture = reader.doReadOptional(
+                LogicalDatastoreType.CONFIGURATION, null);
+        assertFalse(completableFuture.isDone());
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        assertTrue(completableFuture.isDone());
+        assertEquals(dataObject, completableFuture.get().get());
+    }
+
+    @Test
+    public void readOptionalNotFound() throws Exception {
+        when(readTransaction.read(LogicalDatastoreType.CONFIGURATION, null))
+                .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));
+        CompletableFuture<java.util.Optional<DataObject>> completableFuture = reader.doReadOptional(
+                LogicalDatastoreType.CONFIGURATION, null);
+        assertFalse(completableFuture.isDone());
+        verify(executor).execute(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        assertTrue(completableFuture.isDone());
+        assertFalse(completableFuture.get().isPresent());
+    }
 }

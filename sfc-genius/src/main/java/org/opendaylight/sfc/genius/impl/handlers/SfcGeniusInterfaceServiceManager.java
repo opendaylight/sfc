@@ -73,7 +73,26 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
 
     @Override
     public void bindInterfacesOfServiceFunction(String sfName) {
-        // TODO implement
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusSfReader sfReader = getSfcGeniusSfReader(readWriteTransaction);
+        SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+
+        LOG.debug("Bind interfaces of service function {}", sfName);
+
+        sfReader.readInterfacesOfSf(new SfName(sfName))
+                .thenCompose(interfaceList -> CompletableFuture.allOf(
+                        interfaceList.stream()
+                                .map(serviceHandler::bindToInterface)
+                                .toArray(size -> new CompletableFuture<?>[size])))
+                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .exceptionally(exception -> {
+                    if (exception.getCause() instanceof SfcGeniusRuntimeException) {
+                        LOG.error("Error binding to interfaces of service function {}", sfName, exception.getCause());
+                        return null;
+                    }
+                    throw new CompletionException(exception.getCause());
+                })
+                .join();
     }
 
     @Override

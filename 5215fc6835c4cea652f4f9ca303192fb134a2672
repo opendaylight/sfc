@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_17a55d03",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/utils/SfcGeniusUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-22T15:03:45Z",
+      "side": 1,
+      "message": "Why do you pass a list instead of only one interface name?",
+      "range": {
+        "startLine": 73,
+        "startChar": 71,
+        "endLine": 73,
+        "endChar": 87
+      },
+      "revId": "5215fc6835c4cea652f4f9ca303192fb134a2672",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

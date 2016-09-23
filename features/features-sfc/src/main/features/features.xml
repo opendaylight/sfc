@@ -108,11 +108,9 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}</bundle>
         <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
         <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
-        <bundle>wrap:mvn:org.json/json/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/{{VERSION}}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/{{VERSION}}</bundle>

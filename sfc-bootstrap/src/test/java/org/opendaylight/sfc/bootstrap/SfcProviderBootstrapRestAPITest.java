@@ -8,14 +8,15 @@
 
 package org.opendaylight.sfc.bootstrap;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.jersey.api.client.ClientHandlerException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.provider.config.SfcProviderConfig;
@@ -55,7 +56,7 @@ public class SfcProviderBootstrapRestAPITest {
     public void testReadJsonFiles() {
         String configOriginalPath = "sfc-provider/src/test/resources/SfcProviderConfig/sfc_provider_config_test.json";
         String jsonConfigString = null;
-        JSONObject configFile = null;
+        JsonObject configFile = null;
         byte[] encoded = null;
 
         // create json file. File is slightly changed because original path in bootstrapDataDir does
@@ -70,19 +71,16 @@ public class SfcProviderBootstrapRestAPITest {
         }
 
         if (encoded != null) {
-            try {
-                configFile = new JSONObject(jsonConfigString);
-            } catch (JSONException e) {
-                LOG.error("Error instantiating {}", jsonConfigString, e);
+            JsonElement element = new JsonParser().parse(jsonConfigString);
+            if (element.isJsonObject()) {
+                configFile = element.getAsJsonObject();
+            } else {
+                LOG.error("Error instantiating config object");
             }
         }
 
         if (configFile != null) {
-            try {
-                configFile = configFile.getJSONObject("bootstrap");
-            } catch (JSONException e) {
-                LOG.error("Error retrieving bootstrap object", e);
-            }
+            configFile = configFile.getAsJsonObject("bootstrap");
         }
 
         // first mock returns true when method tries to find json file (is does not exists), second

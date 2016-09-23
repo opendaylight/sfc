@@ -8,6 +8,10 @@
 
 package org.opendaylight.sfc.bootstrap;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -18,9 +22,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.opendaylight.sfc.provider.config.SfcProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,28 +57,28 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
             return;
         }
 
-        JSONObject jo = providerConfig.getJsonBootstrapObject();
+        JsonObject jo = providerConfig.getJsonBootstrapObject();
 
-        JSONArray files;
+        JsonArray files;
 
         try {
-            final String CONFIG_FILES_DIR = jo.getString("bootstrapDataDir");
-            final String CONFIG_DATA_URL = jo.getString("configDataUrl");
-            final String CONFIG_DATA_MIME_TYPE = jo.getString("configDataMimeType");
+            final String CONFIG_FILES_DIR = jo.getAsJsonPrimitive("bootstrapDataDir").getAsString();
+            final String CONFIG_DATA_URL = jo.getAsJsonPrimitive("configDataUrl").getAsString();
+            final String CONFIG_DATA_MIME_TYPE = jo.getAsJsonPrimitive("configDataMimeType").getAsString();
             final HTTPBasicAuthFilter basicAuthFilter = new HTTPBasicAuthFilter("admin", "admin");
-            files = jo.getJSONArray("files");
+            files = jo.getAsJsonArray("files");
 
 
             ClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create(clientConfig);
             client.addFilter(basicAuthFilter);
 
-            if (files.length() > 0) {
-                for (int i = 0; i < files.length(); i++) {
-                    JSONObject o = files.getJSONObject(i);
+            if (files.size() > 0) {
+                for (int i = 0; i < files.size(); i++) {
+                    JsonObject o = files.get(i).getAsJsonObject();
                     String json;
-                    String filename = o.getString("name");
-                    String urlpath = o.getString("urlpath");
+                    String filename = o.getAsJsonPrimitive("name").getAsString();
+                    String urlpath = o.getAsJsonPrimitive("urlpath").getAsString();
                     try {
                         byte[] encoded = Files.readAllBytes(Paths.get(CONFIG_FILES_DIR + filename));
                         json = new String(encoded, StandardCharsets.UTF_8);
@@ -90,7 +91,7 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                         break;
                     }
                     try {
-                        new JSONObject(json);
+                        new JsonParser().parse(json);
                         ClientResponse putClientResponse = client
                                 .resource(CONFIG_DATA_URL + urlpath)
                                 .type(CONFIG_DATA_MIME_TYPE)
@@ -100,13 +101,13 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
                             LOG.error("\n***** Unsuccessful PUT for file {}, HTTP response code {} *****\n", filename,
                                     putClientResponse.getStatus());
                         }
-                    } catch (JSONException e) {
+                    } catch (JsonSyntaxException e) {
                         LOG.error("\n***** Invalid JSON in file {}, passing *****\n", filename);
                     }
 
                 }
             }
-        } catch (JSONException e) {
+        } catch (JsonSyntaxException e) {
             LOG.warn("failed to ...." , e);
         }
     }

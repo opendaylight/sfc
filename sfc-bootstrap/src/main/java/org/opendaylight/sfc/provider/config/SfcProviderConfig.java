@@ -8,13 +8,15 @@
 
 package org.opendaylight.sfc.provider.config;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ public class SfcProviderConfig {
     private static final Path configFilePath = Paths.get("configuration/startup/sfc_provider_config.json");
     private static final SfcProviderConfig INSTANCE = new SfcProviderConfig();
 
-    private JSONObject providerConfig;
+    private JsonObject providerConfig;
 
     public static SfcProviderConfig getInstance() {
         return INSTANCE;
@@ -45,11 +47,15 @@ public class SfcProviderConfig {
                 byte[] encoded = Files.readAllBytes(configFilePath);
                 String jsonString = new String(encoded, StandardCharsets.UTF_8);
                 try {
-                    this.providerConfig = new JSONObject(jsonString);
-                } catch (JSONException e) {
+                    JsonElement element = new JsonParser().parse(jsonString);
+                    if (element.isJsonObject()) {
+                        this.providerConfig = element.getAsJsonObject();
+                        return true;
+                    }
+                } catch (JsonSyntaxException e) {
                     LOG.error(e.getMessage());
-                    return false;
                 }
+                return false;
             } catch (IOException e) {
                 LOG.error("Error reading SFC Provider config file");
                 return false;
@@ -58,19 +64,13 @@ public class SfcProviderConfig {
             LOG.warn("SFC Provider file not found");
             return false;
         }
-        return true;
     }
 
-    public JSONObject getProviderConfig() {
+    public JsonObject getProviderConfig() {
         return this.providerConfig;
     }
 
-    public JSONObject getJsonBootstrapObject() {
-        try {
-            return this.providerConfig.getJSONObject("bootstrap");
-        } catch (JSONException e) {
-            LOG.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+    public JsonObject getJsonBootstrapObject() {
+        return this.providerConfig.getAsJsonObject("bootstrap");
     }
 }

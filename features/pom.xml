@@ -207,14 +207,6 @@
         <artifactId>jersey-core</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.codehaus.jettison</groupId>
-        <artifactId>jettison</artifactId>
-    </dependency>
-    <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
     </dependency>
@@ -229,10 +221,6 @@
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-json-org</artifactId>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.jaxrs</groupId>

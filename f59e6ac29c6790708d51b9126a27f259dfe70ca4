@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_087fec15",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T10:19:51Z",
+      "side": 1,
+      "message": "It could.",
+      "parentUuid": "7a6b29fe_08d1ac22",
+      "range": {
+        "startLine": 41,
+        "startChar": 82,
+        "endLine": 41,
+        "endChar": 96
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_e8cb906f",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-09-26T10:01:46Z",
       "side": 1,
       "message": "Empty message",
+      "range": {
+        "startLine": 65,
+        "startChar": 56,
+        "endLine": 65,
+        "endChar": 58
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_2870e83e",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T10:19:51Z",
+      "side": 1,
+      "message": "Was already fixed in the next patchset. thanks for pointing that out, never the less.",
+      "parentUuid": "7a6b29fe_e8cb906f",
       "range": {
         "startLine": 65,
         "startChar": 56,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_28990879",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T10:19:51Z",
+      "side": 1,
+      "message": "Yes it is; We are using the Interface object from the config DS, which is this one; but also using the Interface object from the InterfacesState package - which is the Interface object from the OPERATIONAL DS. \n\nFQN of one of those objects is thus required, since java doesn\u0027t allow for import aliases.",
+      "parentUuid": "7a6b29fe_68d94056",
+      "range": {
+        "startLine": 49,
+        "startChar": 8,
+        "endLine": 49,
+        "endChar": 114
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_08ea4cda",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_888bfc1d",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T10:19:51Z",
+      "side": 1,
+      "message": "Right you are; in the next patch set, this is already fixed",
+      "parentUuid": "7a6b29fe_08ea4cda",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 79
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_28c2a852",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
         "patchSetId": 1
@@ -105,6 +201,30 @@
       "writtenOn": "2016-09-26T10:01:46Z",
       "side": 1,
       "message": "Use a constant. I think this constant is even defined somewhere, since it is the root node of the topology.",
+      "range": {
+        "startLine": 98,
+        "startChar": 78,
+        "endLine": 98,
+        "endChar": 87
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_688e602f",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T10:19:51Z",
+      "side": 1,
+      "message": "Ok, gonna look for it",
+      "parentUuid": "7a6b29fe_28c2a852",
       "range": {
         "startLine": 98,
         "startChar": 78,

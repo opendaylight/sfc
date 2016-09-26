@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_2800e800",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Discussed; since we\u0027re not sure of the right location for it, it is gonna remain in the same place",
+      "parentUuid": "7a6b29fe_a8b87875",
+      "range": {
+        "startLine": 20,
+        "startChar": 13,
+        "endLine": 20,
+        "endChar": 34
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_c8afb47b",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-09-26T12:29:22Z",
       "side": 1,
       "message": "reword: not present?",
+      "range": {
+        "startLine": 30,
+        "startChar": 75,
+        "endLine": 30,
+        "endChar": 91
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_8302bd07",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "OK, might be clearer that way",
+      "parentUuid": "7a6b29fe_c8afb47b",
       "range": {
         "startLine": 30,
         "startChar": 75,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_6305e10f",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Same here; let\u0027s go for clarity",
+      "parentUuid": "7a6b29fe_a8b238e2",
+      "range": {
+        "startLine": 34,
+        "startChar": 75,
+        "endLine": 34,
+        "endChar": 91
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_a884f80a",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
         "patchSetId": 3
@@ -82,6 +154,30 @@
       "writtenOn": "2016-09-26T12:29:22Z",
       "side": 1,
       "message": "Decompose this in more calls to Optional#map; I think is better and possible to avoid Optional\u003cOptional\u003c..\u003e\u003e towards readability.",
+      "range": {
+        "startLine": 42,
+        "startChar": 24,
+        "endLine": 42,
+        "endChar": 136
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a3dff938",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Decomposed.",
+      "parentUuid": "7a6b29fe_a884f80a",
       "range": {
         "startLine": 42,
         "startChar": 24,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_c308352a",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Right; also gonna change the indentation, so it becomes clearer",
+      "parentUuid": "7a6b29fe_68e300d9",
+      "range": {
+        "startLine": 46,
+        "startChar": 95,
+        "endLine": 46,
+        "endChar": 104
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_e8cef058",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
         "patchSetId": 3
@@ -128,6 +248,30 @@
       "writtenOn": "2016-09-26T12:29:22Z",
       "side": 1,
       "message": "Possible NoSuchElementException? If so, suggest handling it.",
+      "range": {
+        "startLine": 48,
+        "startChar": 87,
+        "endLine": 48,
+        "endChar": 93
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_234f6935",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Modified the API so that an Optional is returned instead",
+      "parentUuid": "7a6b29fe_e8cef058",
       "range": {
         "startLine": 48,
         "startChar": 87,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_23df69d7",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Sure.",
+      "parentUuid": "7a6b29fe_6895c031",
+      "range": {
+        "startLine": 54,
+        "startChar": 43,
+        "endLine": 54,
+        "endChar": 47
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_481f24b7",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
         "patchSetId": 3
@@ -174,6 +342,30 @@
       "writtenOn": "2016-09-26T12:29:22Z",
       "side": 1,
       "message": "Open for discussion: should we handle with error the case with more than 1 logical interface locator? The risk I see here is non deterministic behavior: if there are more than one, this method may not always return the same.",
+      "range": {
+        "startLine": 63,
+        "startChar": 16,
+        "endLine": 63,
+        "endChar": 27
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c3e795aa",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Did that; instead of findFirst, I collect the values into a list, and return a string when the list has a single value. \n\nIf the list has 0 or more than 1, an exception is thrown",
+      "parentUuid": "7a6b29fe_481f24b7",
       "range": {
         "startLine": 63,
         "startChar": 16,
@@ -220,6 +412,30 @@
       "writtenOn": "2016-09-26T12:29:22Z",
       "side": 1,
       "message": "Consider Collections#emptyList",
+      "range": {
+        "startLine": 116,
+        "startChar": 24,
+        "endLine": 116,
+        "endChar": 41
+      },
+      "revId": "859af039946f04c6634f46023d50eb67cd8f6213",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a3ea5971",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "sure",
+      "parentUuid": "7a6b29fe_08424cad",
       "range": {
         "startLine": 116,
         "startChar": 24,

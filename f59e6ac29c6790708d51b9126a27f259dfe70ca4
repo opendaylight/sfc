@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_08d1ac22",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-26T10:01:46Z",
+      "side": 1,
+      "message": "could be exported to a constant?",
+      "range": {
+        "startLine": 41,
+        "startChar": 82,
+        "endLine": 41,
+        "endChar": 96
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e8cb906f",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDatastoreApi.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-26T10:01:46Z",
+      "side": 1,
+      "message": "Empty message",
+      "range": {
+        "startLine": 65,
+        "startChar": 56,
+        "endLine": 65,
+        "endChar": 58
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_68d94056",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-26T10:01:46Z",
+      "side": 1,
+      "message": "Is it necessary to include the FQN of this type?",
+      "range": {
+        "startLine": 49,
+        "startChar": 8,
+        "endLine": 49,
+        "endChar": 114
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_08ea4cda",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-26T10:01:46Z",
+      "side": 1,
+      "message": "Javadoc for the methods",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 79
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_28c2a852",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-09-26T10:01:46Z",
+      "side": 1,
+      "message": "Use a constant. I think this constant is even defined somewhere, since it is the root node of the topology.",
+      "range": {
+        "startLine": 98,
+        "startChar": 78,
+        "endLine": 98,
+        "endChar": 87
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

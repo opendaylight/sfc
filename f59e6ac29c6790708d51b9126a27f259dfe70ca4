@@ -234,6 +234,30 @@
       "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_882e5cf9",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusUtilsDataGetter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-09-26T15:50:52Z",
+      "side": 1,
+      "message": "Apparently, it is defined in pretty much every project that uses it; gonna define within the file, until a genius related constants file appears",
+      "parentUuid": "7a6b29fe_688e602f",
+      "range": {
+        "startLine": 98,
+        "startChar": 78,
+        "endLine": 98,
+        "endChar": 87
+      },
+      "revId": "f59e6ac29c6790708d51b9126a27f259dfe70ca4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

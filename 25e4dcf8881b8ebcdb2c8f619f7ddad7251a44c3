@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_74e916b6",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/controller/config/yang/config/sfc_pot/impl/SfcPotModule.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_76fbfa46",
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_56f6be5d",
         "filename": "sfc-pot/src/main/java/org/opendaylight/controller/config/yang/config/sfc_pot/impl/SfcPotModule.java",
         "patchSetId": 2
@@ -30,6 +48,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "Optional - all these qualified names should be replaced with imports, it would increase readability",
+      "range": {
+        "startLine": 36,
+        "startChar": 24,
+        "endLine": 36,
+        "endChar": 79
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d4d3ca01",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/controller/config/yang/config/sfc_pot/impl/SfcPotModule.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_56f6be5d",
       "range": {
         "startLine": 36,
         "startChar": 24,
@@ -59,6 +101,24 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b4ce0e58",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/controller/config/yang/config/sfc_pot/impl/SfcPotModule.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_f69eea05",
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_d66f6efa",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/SfcPot.java",
         "patchSetId": 2
@@ -70,6 +130,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "Is there some specific reason why methods triggerConfigRefresher() and stopConfigRefresher() from line 63 are static? I see why you are creating instance of SfcPotTimerThread, but calling static method on instance does not look very good.",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 51
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_14da6216",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/SfcPot.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_d66f6efa",
       "range": {
         "startLine": 51,
         "startChar": 8,
@@ -105,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_f4d406ea",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/SfcPot.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_76a93a23",
+      "range": {
+        "startLine": 54,
+        "startChar": 15,
+        "endLine": 54,
+        "endChar": 37
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_4629de99",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/SfcPot.java",
         "patchSetId": 2
@@ -116,6 +224,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "Why you are not calling sfcPotRspListener.closeDataChangeListener() here?",
+      "range": {
+        "startLine": 58,
+        "startChar": 8,
+        "endLine": 58,
+        "endChar": 69
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5407ba81",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/SfcPot.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_4629de99",
       "range": {
         "startLine": 58,
         "startChar": 8,
@@ -151,6 +283,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_340afe89",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/listener/SfcPotAbstractDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Will change to DataTreeChangeListener in the next rev.  Thanks.",
+      "parentUuid": "7a6b29fe_66805a8b",
+      "range": {
+        "startLine": 21,
+        "startChar": 60,
+        "endLine": 21,
+        "endChar": 78
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_e6110a5e",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/listener/SfcPotAbstractDataListener.java",
         "patchSetId": 2
@@ -162,6 +318,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "This method is unused (also see my comment in SfcPot.class, line 58)",
+      "range": {
+        "startLine": 70,
+        "startChar": 16,
+        "endLine": 70,
+        "endChar": 39
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_94fdd270",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/listener/SfcPotAbstractDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_e6110a5e",
       "range": {
         "startLine": 70,
         "startChar": 16,
@@ -197,6 +377,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_7400f665",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/listener/SfcPotRspListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_c122f8a1",
+      "range": {
+        "startLine": 52,
+        "startChar": 16,
+        "endLine": 52,
+        "endChar": 55
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_bc59e28f",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRpc.java",
         "patchSetId": 2
@@ -208,6 +412,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "This ret is always true, right?",
+      "range": {
+        "startLine": 62,
+        "startChar": 64,
+        "endLine": 62,
+        "endChar": 67
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d4faaa73",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_bc59e28f",
       "range": {
         "startLine": 62,
         "startChar": 64,
@@ -243,6 +471,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_542e9afb",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_7ccaaa1b",
+      "range": {
+        "startLine": 77,
+        "startChar": 37,
+        "endLine": 77,
+        "endChar": 65
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_5ccd2e30",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
         "patchSetId": 2
@@ -254,6 +506,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "This variable is never used",
+      "range": {
+        "startLine": 91,
+        "startChar": 8,
+        "endLine": 91,
+        "endChar": 37
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b4f56e84",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_5ccd2e30",
       "range": {
         "startLine": 91,
         "startChar": 8,
@@ -312,6 +588,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_14f1c294",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_5cc24ee9",
+      "range": {
+        "startLine": 99,
+        "startChar": 13,
+        "endLine": 99,
+        "endChar": 32
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_7c98ea1b",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
         "patchSetId": 2
@@ -323,6 +623,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "ad some comment or remove",
+      "range": {
+        "startLine": 268,
+        "startChar": 3,
+        "endLine": 270,
+        "endChar": 7
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f4eb66a1",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_7c98ea1b",
       "range": {
         "startLine": 268,
         "startChar": 3,
@@ -358,6 +682,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_34315e5a",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotTimerData.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_af7b6279",
+      "range": {
+        "startLine": 153,
+        "startChar": 16,
+        "endLine": 153,
+        "endChar": 19
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_2f8f5276",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotTimerThread.java",
         "patchSetId": 2
@@ -369,6 +717,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "optional - doLoop is boolean, while (doLoop) {...} is enough",
+      "range": {
+        "startLine": 50,
+        "startChar": 15,
+        "endLine": 50,
+        "endChar": 29
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_7437564d",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotTimerThread.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_2f8f5276",
       "range": {
         "startLine": 50,
         "startChar": 15,
@@ -404,6 +776,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_d4410aaa",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotTimerWheel.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_6fecaa2a",
+      "range": {
+        "startLine": 18,
+        "startChar": 18,
+        "endLine": 18,
+        "endChar": 37
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_2fe63244",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotConfigGenerator.java",
         "patchSetId": 2
@@ -415,6 +811,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "missing tab, please fix this in whole class",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 4
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f44246a9",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_2fe63244",
       "range": {
         "startLine": 68,
         "startChar": 0,
@@ -450,6 +870,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_5415fa99",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_4fd60e50",
+      "range": {
+        "startLine": 230,
+        "startChar": 6,
+        "endLine": 230,
+        "endChar": 13
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_cf485e2f",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotConfigGenerator.java",
         "patchSetId": 2
@@ -461,6 +905,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "I don\u0027t understand purpose of this method. You are basically copying all lpcs values into new big integer array res, and then returning it. \n\nFirst thing, you can copy array using\nSystem.arraycopy(src, srcPos, dest, destPos, length);\ninstead of whole for\n\nBut why not just do it like this? Simple getter\n\npublic Biginteger[] getLpcs() {\n    return lpcs;\n}",
+      "range": {
+        "startLine": 233,
+        "startChar": 3,
+        "endLine": 237,
+        "endChar": 5
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_940b127c",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "FiindBugs is reporting not to expose mutable internal DS with just \u0027return lpcs\u0027.  So, now using arrayCopy. Thanks.",
+      "parentUuid": "7a6b29fe_cf485e2f",
       "range": {
         "startLine": 233,
         "startChar": 3,
@@ -496,6 +964,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_740e368d",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_4f0baed5",
+      "range": {
+        "startLine": 54,
+        "startChar": 67,
+        "endLine": 54,
+        "endChar": 76
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_2f02b2b3",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
         "patchSetId": 2
@@ -507,6 +999,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "this variable is redundant, you can use sfSize instead, it is not changed after this line, so you don\u0027t have to keep its original value",
+      "range": {
+        "startLine": 136,
+        "startChar": 12,
+        "endLine": 136,
+        "endChar": 16
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d428eae3",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_2f02b2b3",
       "range": {
         "startLine": 136,
         "startChar": 12,
@@ -542,6 +1058,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b423ae03",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_cf1dfe10",
+      "range": {
+        "startLine": 210,
+        "startChar": 8,
+        "endLine": 210,
+        "endChar": 25
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_8fdf8639",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
         "patchSetId": 2
@@ -553,6 +1093,30 @@
       "writtenOn": "2016-09-26T19:39:43Z",
       "side": 1,
       "message": "\"j\" is already a long value, don\u0027t need to be boxed. Same in the line 275",
+      "range": {
+        "startLine": 274,
+        "startChar": 40,
+        "endLine": 274,
+        "endChar": 55
+      },
+      "revId": "25e4dcf8881b8ebcdb2c8f619f7ddad7251a44c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_141f02b8",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-09-28T14:21:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_8fdf8639",
       "range": {
         "startLine": 274,
         "startChar": 40,

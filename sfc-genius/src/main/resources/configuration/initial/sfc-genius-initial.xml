@@ -28,7 +28,7 @@
 
     <required-capabilities>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding?module=opendaylight-md-sal-binding&amp;revision=2013-10-28</capability>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl?module=sfc-genius-impl&amp;revision=2014-10-20</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:sfc-genius:impl?module=sfc-genius-impl&amp;revision=2016-07-15</capability>
     </required-capabilities>
 
 </snapshot>

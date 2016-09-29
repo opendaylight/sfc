@@ -31,6 +31,7 @@
       <ovsdb.southbound.version>1.4.0-SNAPSHOT</ovsdb.southbound.version>
       <restconf.version>1.5.0-SNAPSHOT</restconf.version>
       <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
+      <genius.version>0.2.0-SNAPSHOT</genius.version>
    </properties>
    <dependencies>
     <!--
@@ -105,6 +106,14 @@
         <classifier>features</classifier>
         <type>xml</type>
     </dependency>
+   <dependency>
+       <groupId>org.opendaylight.genius</groupId>
+       <artifactId>genius-features</artifactId>
+       <version>${genius.version}</version>
+       <classifier>features</classifier>
+       <type>xml</type>
+       <scope>runtime</scope>
+   </dependency>
 
     <!--
                     BUNDLES SECTION
@@ -195,6 +204,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-vnfm-tacker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-genius</artifactId>
         <version>${project.version}</version>
       </dependency>
     <!--  Used in odl-sfc-bootstrp and odl-sfc-sb-rest -->

@@ -23,6 +23,7 @@
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/{{VERSION}}/xml/features</repository>
     <repository>mvn:org.opendaylight.lispflowmapping/features-lispflowmapping/{{VERSION}}/xml/features</repository>
+    <repository>mvn:org.opendaylight.genius/genius-features/{{VERSION}}/xml/features</repository>
 
     <feature name="odl-sfc-model" version="${project.version}" description="OpenDaylight :: sfc :: Model">
         <feature version="${mdsal.model.version}">odl-mdsal-models</feature>
@@ -176,6 +177,14 @@
         <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
         <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
+    </feature>
+
+    <feature name="odl-sfc-genius" version="${project.version}" description="OpenDaylight :: sfc :: Genius ">
+        <feature version="${mdsal.version}">odl-mdsal-broker</feature>
+        <feature version="${project.version}">odl-sfc-provider</feature>
+        <feature version='${genius.version}'>odl-genius</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/sfc-genius-initial.xml">mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>

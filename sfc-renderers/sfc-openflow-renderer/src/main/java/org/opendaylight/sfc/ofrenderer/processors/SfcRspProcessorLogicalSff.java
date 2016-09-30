@@ -10,12 +10,12 @@ package org.opendaylight.sfc.ofrenderer.processors;
 import java.util.List;
 import java.util.Optional;
 
+import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
-import org.opendaylight.sfc.ofrenderer.utils.SfcLogicalInterfaceOfUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -191,7 +191,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
 
         ServiceFunction sfDst = sfcProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        String sfLogicalInterface = SfcLogicalInterfaceOfUtils.getSfLogicalInterface(sfDst);
+        String sfLogicalInterface = SfcGeniusDataUtils.getSfLogicalInterface(sfDst);
         LOG.debug("configureTransportEgressFlows:sff->sf egress from a logical sff. "
                 + "Target interface:{} si:{}",
                 sfLogicalInterface, entry.getServiceIndex());
@@ -273,11 +273,10 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
      * @return  the optional {@link}MacAddress
      */
     private Optional<MacAddress> getMacAddress(SfDataPlaneLocator dstSfDpl) {
-        Optional<MacAddress> theMacAddr = Optional.empty();
         LOG.debug("getMacAddress:starting. dstSfDpl:{}", dstSfDpl);
         String ifName = ((LogicalInterfaceLocator) dstSfDpl.getLocatorType())
                 .getInterfaceName();
-        theMacAddr = Optional.ofNullable(SfcLogicalInterfaceOfUtils.getServiceFunctionMacAddress(ifName));
+        Optional<MacAddress> theMacAddr = SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
         LOG.debug("Read interface's [{}] MAC address [{}]", ifName,
                 theMacAddr.isPresent() ? theMacAddr.get().getValue() : "(empty)");
         return theMacAddr;

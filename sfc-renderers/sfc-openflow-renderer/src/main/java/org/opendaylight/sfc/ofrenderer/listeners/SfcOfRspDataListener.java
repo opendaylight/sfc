@@ -8,20 +8,18 @@
 
 package org.opendaylight.sfc.ofrenderer.listeners;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
-import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
-import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,58 +32,51 @@ import org.slf4j.LoggerFactory;
  * <p>
  * @since 2015-01-27
  */
-public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
+public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServicePath>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspDataListener.class);
     private SfcOfRspProcessor sfcOfRspProcessor;
+    private final ListenerRegistration rspListenerRegistration;
 
-    public SfcOfRspDataListener(
-            DataBroker dataBroker,
-            SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
-            SfcOfBaseProviderUtils sfcOfProviderUtils,
-            SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry) {
-        setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.RSP_ENTRY_IID);
-        registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
-        this.sfcOfRspProcessor = new SfcOfRspProcessor(
-                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry);
+    public SfcOfRspDataListener(DataBroker dataBroker, SfcOfRspProcessor sfcOfRspProcessor) {
+        rspListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, OpendaylightSfc.RSP_ENTRY_IID),
+                this);
+        this.sfcOfRspProcessor = sfcOfRspProcessor;
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<RenderedServicePath>> collection) {
+        for (DataTreeModification<RenderedServicePath> modification : collection) {
+            DataObjectModification<RenderedServicePath> rootNode = modification.getRootNode();
 
-        // Currently we dont need to do anything for the OriginalData
-
-        // configureSffFlows will do a check for each SFF to see
-        // if its Openflow Enabled, and if not, skip it
-
-        // RSP create
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof RenderedServicePath) {
-                LOG.info("SfcOfRspDataListener.onDataChanged create RSP {}", ((RenderedServicePath) entry.getValue()).getName());
-                this.sfcOfRspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue());
+            switch (rootNode.getModificationType()) {
+                case WRITE:
+                case SUBTREE_MODIFIED:
+                    if (rootNode.getDataBefore() == null && rootNode.getDataAfter() != null) {
+                        LOG.info("SfcOfRspDataListener.onDataTreeChanged create RSP {}", rootNode.getDataBefore());
+                        sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
+                    } else if (rootNode.getDataAfter().equals(rootNode.getDataBefore())) {
+                        LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",
+                                rootNode.getDataAfter(),
+                                rootNode.getDataBefore());
+                        // This clause supports re-rendering of unmodified RSPs
+                        sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
+                        sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
+                    }
+                    break;
+                case DELETE:
+                    if (rootNode.getDataBefore() != null) {
+                        LOG.info("SfcOfRspDataListener.onDataTreeChanged delete RSP {}", rootNode.getDataBefore());
+                        sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
+                    }
+                    break;
             }
         }
+    }
 
-        // RSP update
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if ((entry.getValue() instanceof RenderedServicePath && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
-                LOG.info("SfcOfRspDataListener.onDataChanged update RSP {}", ((RenderedServicePath) entry.getValue()).getName());
-                // Currently RSP updates are not supported
-            }
-        }
-
-        // RSP delete
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier<?> instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = change.getOriginalData().get(instanceIdentifier);
-            if (dataObject instanceof RenderedServicePath) {
-                LOG.info("SfcOfRspDataListener.onDataChanged delete RSP");
-                this.sfcOfRspProcessor.deleteRenderedServicePath((RenderedServicePath) dataObject);
-            }
-        }
+    @Override
+    public void close() throws Exception {
+        rspListenerRegistration.close();
     }
 }

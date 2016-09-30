@@ -15,9 +15,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
-import org.opendaylight.sfc.ofrenderer.utils.SfcLogicalInterfaceOfUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 public class SfcOfRspProcessor {
 
-    public static final Long SFC_FLOWS = new Long(0xdeadbeef);
+    public static final long SFC_FLOWS = 0xdeadbeef;
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
@@ -234,7 +234,8 @@ public class SfcOfRspProcessor {
             prevSfName = sfName;
             prevSffName = curSffName;
 
-            if (SfcLogicalInterfaceOfUtils.isSfUsingALogicalInterface(sf)) {
+
+            if (SfcGeniusDataUtils.isSfUsingALogicalInterface(sf)) {
                 String logicalInterfaceName = sfcOfProviderUtils.getSfLogicalInterfaceName(sf);
                 LOG.debug("populateSffGraph: SF uses a logical interface -> storing id for the dataplane node (interface:{})", logicalInterfaceName);
                 Optional<DpnIdType> dpnid = SfcGeniusRpcClient.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
@@ -500,8 +501,8 @@ public class SfcOfRspProcessor {
      * Given an SFF name, determine if its been initialized yet or not.
      * Called by initializeSff()
      *
-     * @param sffName - SFF to check
-     * @return true if its been initialized, false otherwise
+     * @param   sffNodeId   The SFF node ID to check
+     * @return  true if its been initialized, false otherwise
      */
     private boolean getSffInitialized(final NodeId sffNodeId) {
         Boolean isInitialized = sffInitialized.get(sffNodeId);
@@ -510,7 +511,7 @@ public class SfcOfRspProcessor {
             return false;
         }
 
-        return isInitialized.booleanValue();
+        return isInitialized;
     }
 
     /**

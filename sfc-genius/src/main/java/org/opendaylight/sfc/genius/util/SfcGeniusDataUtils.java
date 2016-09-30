@@ -10,14 +10,16 @@ package org.opendaylight.sfc.genius.util;
 
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.meta.rev160406.bridge.ref.info.BridgeRefEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeRef;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,21 +32,19 @@ public class SfcGeniusDataUtils {
      * @return          the MAC address used by the SF, when available
      */
     public static Optional<MacAddress> getServiceFunctionMacAddress(String ifName) {
-        String theLogicalInterfaceName =
-                Optional.ofNullable(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceName(ifName))
+        String theLogicalInterfaceName = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceName(ifName)
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the CONFIG DS"));
-        Interface theIf =
-                Optional.ofNullable(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
+        Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
 
-        return Optional.ofNullable(
-                SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf()))
-                    .map(theDpnId -> SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDpnId))
-                    .map(BridgeRefEntry::getBridgeReference)
+        return Optional.ofNullable(SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf()))
+                    .map(SfcGeniusUtilsDataGetter::getBridgeFromDpnId)
+                    .filter(Optional::isPresent)
+                    .map(bridgeRef -> bridgeRef.get().getBridgeReference())
                     .map(OvsdbBridgeRef::getValue)
                     .map(iid -> iid.firstKeyOf(Node.class))
-                    .map(node -> node.getNodeId())
-                    .map(nodeId -> nodeId.getValue())
+                    .map(NodeKey::getNodeId)
+                    .map(NodeId::getValue)
                     .map(theBridgeName ->
                             SfcGeniusUtilsDataGetter.readOvsNodeInterfaces(theBridgeName, theLogicalInterfaceName))
                     .orElseThrow(() -> new RuntimeException(
@@ -58,24 +58,50 @@ public class SfcGeniusDataUtils {
     }
 
     /**
+     * Checks if a given Service Function has logical interfaces attached to it
+     * @param sf    The service function we want to check
+     * @return      True if it has a LogicalInterface attached attached, False otherwise
+     */
+    public static boolean isSfUsingALogicalInterface(ServiceFunction sf) {
+        return Optional.ofNullable(sf)
+                .map(SfcGeniusDataUtils::getSfLogicalInterfaceDataplaneLocators)
+                .filter(logicalIfDpls -> logicalIfDpls.size() > 0)
+                .isPresent();
+    }
+
+    /**
      * Fetches the logical interface name, when given a ServiceFunction
-     * @param sf    The service function to analyze
-     * @return      The interface name, when available
+     * @param   sf  The service function whose logical interface name we're interested on
+     * @throws  IllegalArgumentException if the Service Function is not attached to a single Logical Interface
+     * @return  The interface name, when available
      */
     public static String getSfLogicalInterface(ServiceFunction sf) {
-        List<String> theDpls = Optional.ofNullable(sf)
-                .orElseThrow(() -> new RuntimeException("ServiceFunction is null"))
-                .getSfDataPlaneLocator().stream()
-                .filter(dpl -> dpl.getLocatorType() != null &&
-                        dpl.getLocatorType().getImplementedInterface().equals(LogicalInterface.class))
-                .map(logicalIfDpl -> ((LogicalInterface)logicalIfDpl.getLocatorType()).getInterfaceName())
-                .collect(Collectors.toList());
+        List<LogicalInterface> theDpls = Optional.ofNullable(sf)
+                .map(SfcGeniusDataUtils::getSfLogicalInterfaceDataplaneLocators)
+                .orElse(Collections.emptyList());
+
         if (theDpls.size() == 1) {
-            return theDpls.get(0);
+            return theDpls.get(0).getInterfaceName();
         }
         else {
             throw new IllegalArgumentException(
                     String.format("We *must* have a single LogicalInterface locator. Got %d", theDpls.size()));
         }
+    }
+
+    /**
+     * Fetches the logical interface dataplane locators of a given Service Function
+     * @param   sf   The service function from which we want to extract the dataplane locators
+     * @return       The list of logical interface dataplane locators attached to the Service Function
+     */
+    private static List<LogicalInterface> getSfLogicalInterfaceDataplaneLocators(ServiceFunction sf) {
+        return Optional.ofNullable(sf)
+                .orElseThrow(() -> new RuntimeException("ServiceFunction is null"))
+                .getSfDataPlaneLocator()
+                .stream()
+                .filter(dpl -> dpl.getLocatorType() != null)
+                .filter(dpl -> dpl.getLocatorType().getImplementedInterface().equals(LogicalInterface.class))
+                .map(logicalIfDpl -> (LogicalInterface) logicalIfDpl.getLocatorType())
+                .collect(Collectors.toList());
     }
 }

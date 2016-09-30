@@ -305,7 +305,7 @@ public class SfcProviderServiceFunctionAPI {
         return sf;
     }
 
-    protected static ServiceFunctions readAllServiceFunctions() {
+    public static ServiceFunctions readAllServiceFunctions() {
         ServiceFunctions sfs;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();

@@ -100,7 +100,7 @@ public class SfcDataStoreAPI {
                     && optionalDataObject.isPresent()) {
                 ret = optionalDataObject.get();
             } else {
-                LOG.debug("{}: Failed to read",
+                LOG.debug(          "{}: Failed to read",
                         Thread.currentThread().getStackTrace()[1]);
             }
         } catch (ReadFailedException e) {

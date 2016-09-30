@@ -308,6 +308,7 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
+        Assert.assertFalse(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
     }
 
@@ -347,13 +348,13 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
+        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
     }
 
     /**
      * Positive test, where we can get the name of the LogicalInterface
      * to which the SF is connected to
-     *
      */
     @Test
     public void getSfLogicalInterface() {
@@ -380,6 +381,7 @@ public class SfcGeniusDataUtilsTest {
                         .setSfDataPlaneLocator(dpLocators)
                         .build();
 
+        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         Assert.assertEquals("40c552e0-3695-472d-bace-7618786aba27",
                 SfcGeniusDataUtils.getSfLogicalInterface(dpiNode));
     }

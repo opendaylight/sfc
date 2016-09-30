@@ -54,7 +54,7 @@ public class SfcGeniusSfStateListener extends AsyncDataTreeChangeListenerBase<Se
 
     @Override
     protected void update(InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                          ServiceFunctionState newSf, ServiceFunctionState oldSf) {
+                          ServiceFunctionState oldSf, ServiceFunctionState newSf) {
         // If this SF stops participating in RSPs, we need to unbind from its interfaces
         LOG.debug("Received service function state update event {} {} {}", instanceIdentifier, oldSf, newSf);
         int numberOfNewPaths = newSf.getSfServicePath() == null ? 0 : newSf.getSfServicePath().size();

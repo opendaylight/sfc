@@ -46,7 +46,7 @@ class SfcGeniusUtilsDataGetter {
      * @param ifName the name of the neutron interface
      * @return the Interface object from the config DS
      */
-    private static org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface
+    private static Optional<org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface>
     getServiceFunctionAttachedInterface(String ifName) {
         org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey ifKey =
             new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey(ifName);
@@ -55,7 +55,7 @@ class SfcGeniusUtilsDataGetter {
             ifConfigIID = InstanceIdentifier.create(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.Interfaces.class)
                 .child(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface.class, ifKey);
 
-        return SfcDataStoreAPI.readTransactionAPI(ifConfigIID, LogicalDatastoreType.CONFIGURATION);
+        return Optional.ofNullable(SfcDataStoreAPI.readTransactionAPI(ifConfigIID, LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -64,11 +64,10 @@ class SfcGeniusUtilsDataGetter {
      * @param ifName the name of the neutron port
      * @return the LogicalInterface name
      */
-    public static String getServiceFunctionAttachedInterfaceName(String ifName) {
-        return Optional.ofNullable(getServiceFunctionAttachedInterface(ifName))
+    public static Optional<String> getServiceFunctionAttachedInterfaceName(String ifName) {
+        return getServiceFunctionAttachedInterface(ifName)
                 .map(theIf -> theIf.getAugmentation(ParentRefs.class))
-                .map(ParentRefs::getParentInterface)
-                .orElse(null);
+                .map(ParentRefs::getParentInterface);
     }
 
     /**
@@ -77,11 +76,12 @@ class SfcGeniusUtilsDataGetter {
      * @param ifName    the name of the neutron port
      * @return          the InterfaceState object, read from the OPERATIONAL DS
      */
-    public static Interface getServiceFunctionAttachedInterfaceState(String ifName) {
+    public static Optional<Interface> getServiceFunctionAttachedInterfaceState(String ifName) {
         InstanceIdentifier<Interface> targetInterfaceIID =
                 InstanceIdentifier.create(InterfacesState.class)
                         .child(Interface.class, new InterfaceKey(ifName));
-        return SfcDataStoreAPI.readTransactionAPI(targetInterfaceIID, LogicalDatastoreType.OPERATIONAL);
+        return Optional.ofNullable(
+                SfcDataStoreAPI.readTransactionAPI(targetInterfaceIID, LogicalDatastoreType.OPERATIONAL));
     }
 
     /**
@@ -90,11 +90,11 @@ class SfcGeniusUtilsDataGetter {
      * @param theDpnId  the dataplane ID for that bridge
      * @return          the BridgeRef object
      */
-    public static BridgeRefEntry getBridgeFromDpnId(BigInteger theDpnId) {
+    public static Optional<BridgeRefEntry> getBridgeFromDpnId(BigInteger theDpnId) {
         InstanceIdentifier<BridgeRefEntry> theBridgeRefIID =
             InstanceIdentifier.create(BridgeRefInfo.class)
                 .child(BridgeRefEntry.class, new BridgeRefEntryKey(theDpnId));
-        return SfcDataStoreAPI.readTransactionAPI(theBridgeRefIID, LogicalDatastoreType.OPERATIONAL);
+        return Optional.ofNullable(SfcDataStoreAPI.readTransactionAPI(theBridgeRefIID, LogicalDatastoreType.OPERATIONAL));
     }
 
     /**

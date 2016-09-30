@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.genius.impl.handlers.readers;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -59,5 +60,27 @@ class SfcGeniusReaderAbstract {
                         new NoSuchElementException("Data store object not found: " + instanceIdentifier));
             }
         });
+    }
+
+    /**
+     * Utility method to read a {#DataObject} from the data store.
+     *
+     * @param logicalDatastoreType to read from.
+     * @param instanceIdentifier of the data object to read.
+     * @param <T> the type of the data object to read.
+     * @return future to an optional data object.
+     */
+    protected <T extends DataObject> CompletableFuture<Optional<T>> doReadOptional(
+            LogicalDatastoreType logicalDatastoreType,
+            InstanceIdentifier<T> instanceIdentifier) {
+        return SfcGeniusUtils.toCompletableFuture(
+                readTransaction.read(logicalDatastoreType, instanceIdentifier), executor).thenApply(
+                optional -> {
+                    if (optional.isPresent()) {
+                        return Optional.of(optional.get());
+                    } else {
+                        return Optional.empty();
+                    }
+                });
     }
 }

@@ -13,9 +13,16 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
+import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +51,17 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
     private final Map<BigInteger, Set<String>> dpnInterfaces;
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusInterfaceServiceManager.class);
 
+    /**
+     * Constructs a {@code SfcGeniusInterfaceServiceManager} using the provided
+     * {@link DataBroker} for data store operations, the
+     * {@link RpcProviderRegistry} to access RPC services and the
+     * {@link Executor} for asynchronous tasks.
+     *
+     *
+     * @param dataBroker the data broker for data store operations.
+     * @param rpcProviderRegistry the RPC provider registry of services.
+     * @param executor the executor where asynchronous tasks are executed.
+     */
     public SfcGeniusInterfaceServiceManager(DataBroker dataBroker,
                                             RpcProviderRegistry rpcProviderRegistry,
                                             Executor executor) {
@@ -53,27 +71,53 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
         this.dpnInterfaces = new HashMap<>();
     }
 
-
     @Override
     public void bindInterfacesOfServiceFunction(String sfName) {
-        // TODO implementation
+        // TODO implement
     }
-
 
     @Override
     public void unbindInterfacesOfServiceFunction(String sfName) {
-        // TODO implementation
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusSfReader sfReader = getSfcGeniusSfReader(readWriteTransaction);
+        SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+
+        LOG.debug("Unbind interfaces of service function {}", sfName);
+
+        sfReader.readInterfacesOfSf(new SfName(sfName))
+                .thenCompose(interfaceList ->
+                        CompletableFuture.allOf(
+                                interfaceList.stream()
+                                        .map(serviceHandler::unbindFromInterface)
+                                        .toArray(size -> new CompletableFuture<?>[size])))
+                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .exceptionally(exception -> {
+                    if (exception.getCause() instanceof SfcGeniusRuntimeException) {
+                        LOG.error("Error unbinding from interfaces of service function {}",
+                                sfName, exception.getCause());
+                        return null;
+                    }
+                    throw new CompletionException(exception.getCause());
+                })
+                .join();
     }
 
     @Override
     public void interfaceStateUp(String interfaceName, BigInteger dpnId) {
-        // TODO implementation
+        // TODO implement
     }
 
     @Override
     public void interfaceStateDown(String interfaceName, BigInteger nodeId) {
-        // TODO implementation
+        // TODO implement
     }
 
+    protected SfcGeniusSfReader getSfcGeniusSfReader(ReadWriteTransaction readWriteTransaction) {
+        return new SfcGeniusSfReader(readWriteTransaction, executor);
+    }
+
+    protected SfcGeniusServiceHandler getSfcGeniusServiceHandler(ReadWriteTransaction readWriteTransaction) {
+        return new SfcGeniusServiceHandler(dpnInterfaces, readWriteTransaction, rpcProviderRegistry, executor);
+    }
 
 }

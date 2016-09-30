@@ -116,6 +116,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private Long flowRspId;
     private SfcOfFlowWriterInterface sfcOfFlowWriter = null;
 
+    public SfcOfFlowProgrammerImpl() {
+        this.tableBase = APP_COEXISTENCE_NOT_SET;
+        this.tableEgress = APP_COEXISTENCE_NOT_SET;
+        this.flowRspId = new Long(0);
+    }
+
     public SfcOfFlowProgrammerImpl(SfcOfFlowWriterInterface sfcOfFlowWriter) {
         this.tableBase = APP_COEXISTENCE_NOT_SET;
         this.tableEgress = APP_COEXISTENCE_NOT_SET;

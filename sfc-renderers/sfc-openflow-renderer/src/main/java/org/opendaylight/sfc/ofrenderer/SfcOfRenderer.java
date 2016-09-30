@@ -19,6 +19,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 public class SfcOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
+    private final SfcOfRspProcessor sfcOfRspProcessor;
 
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private Registration pktInRegistration;
@@ -52,7 +54,9 @@ public class SfcOfRenderer implements AutoCloseable {
         this.sfcSynchronizer = new SfcSynchronizer();
         this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(new SfcOfFlowWriterImpl());
         SfcOfBaseProviderUtils sfcOfProviderUtils = new SfcOfProviderUtils();
-        this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry);
+        this.sfcOfRspProcessor = new SfcOfRspProcessor(
+                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry);
+        this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfRspProcessor);
         this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);
         this.sfcOfRendererListener = new SfcOfRendererDataListener(dataBroker, sfcOfFlowProgrammer, sfcSynchronizer);
 
@@ -83,6 +87,7 @@ public class SfcOfRenderer implements AutoCloseable {
             if(pktInRegistration != null) {
                 pktInRegistration.close();
             }
+            openflowRspDataListener.close();
         } catch(Exception e) {
             LOG.error("SfcOfRenderer auto-closed exception {}", e.getMessage());
         }

@@ -74,7 +74,8 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
             if ((entry.getValue() instanceof RenderedServicePath && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
                 LOG.info("SfcOfRspDataListener.onDataChanged update RSP {}", ((RenderedServicePath) entry.getValue()).getName());
-                // Currently RSP updates are not supported
+                this.sfcOfRspProcessor.deleteRenderedServicePath((RenderedServicePath) entry.getValue());
+                this.sfcOfRspProcessor.processRenderedServicePath((RenderedServicePath) entry.getValue());
             }
         }
 

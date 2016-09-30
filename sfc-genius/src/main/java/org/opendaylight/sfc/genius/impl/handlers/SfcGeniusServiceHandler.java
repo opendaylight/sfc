@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  *   blocking calls and the asynchronous data store callbacks.
  * - Data plane node to interface information is to be stored in a {@link Map}.
  *   {@see SfcGeniusDpnIfWriter} for more information.
- *
  */
 class SfcGeniusServiceHandler {
 
@@ -114,6 +113,46 @@ class SfcGeniusServiceHandler {
                                 .map(tsaWriter::removeTerminatingServiceAction)
                                 .orElse(CompletableFuture.completedFuture(null))),
                 boundServiceWriter.unbindService(interfaceName)
+        );
+    }
+
+    /**
+     * Handle SFC service for an interface that has become available: add the
+     * terminating service action if this is the first interface bound to SFC
+     * service on the node.
+     *
+     * @param interfaceName the name of the interface.
+     * @param nodeId the data plane node Id where the interface is located.
+     * @return future signaling completion of the operation.
+     */
+    CompletableFuture<Void> interfaceStateUp(String interfaceName, BigInteger nodeId) {
+        SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
+        SfcGeniusTsaWriter tsaWriter = getTsaWriter();
+
+        return dpnIfWriter.addInterface(nodeId, interfaceName)
+                .thenCompose(optionalNewDpn -> optionalNewDpn
+                        .map(tsaWriter::createTerminatingServiceAction)
+                        .orElse(CompletableFuture.completedFuture(null))
+                );
+    }
+
+    /**
+     * Handle SFC service for an interface that has become unavailable: remove
+     * the terminating service action if this is the last interface bound to
+     * SFC service on the node.
+     *
+     * @param interfaceName the name of the interface.
+     * @param nodeId the data plane node Id where the interface was located.
+     * @return future signaling completion of the operation.
+     */
+    CompletableFuture<Void> interfaceStateDown(String interfaceName, BigInteger nodeId) {
+        SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
+        SfcGeniusTsaWriter tsaWriter = getTsaWriter();
+
+        return dpnIfWriter.removeInterfaceFromDpn(nodeId, interfaceName).thenCompose(
+                optionalOldDpn -> optionalOldDpn
+                        .map(tsaWriter::removeTerminatingServiceAction)
+                        .orElse(CompletableFuture.completedFuture(null))
         );
     }
 

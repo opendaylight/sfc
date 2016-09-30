@@ -92,17 +92,17 @@ public class SfcGeniusDataUtilsTest {
     public void setUp() {
         PowerMockito.mockStatic(SfcGeniusUtilsDataGetter.class);
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceName(anyString()))
-                .thenReturn(logicalIfName);
+                .thenReturn(Optional.of(logicalIfName));
 
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(anyString()))
-                .thenReturn(new InterfaceBuilder()
+                .thenReturn(Optional.of(new InterfaceBuilder()
                         .setKey(new InterfaceKey(logicalIfName))
                         .setPhysAddress(new PhysAddress("11:22:33:44:55:66"))
                         .setLowerLayerIf(new ArrayList<String>() {{
                             add("openflow:79268612506848:1");
                         }})
                         .setType(L2vlan.class)
-                        .build());
+                        .build()));
 
         OvsdbTerminationPointAugmentationBuilder ovsdbTpAug = new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTpAug.setPortUuid(new Uuid("451f440a-a828-41ad-993c-93aaec43eb31"));
@@ -141,7 +141,7 @@ public class SfcGeniusDataUtilsTest {
                 .build();
 
         PowerMockito.when(SfcGeniusUtilsDataGetter.readOvsNodeInterfaces(anyString(), anyString())).thenReturn(theInterfaces);
-        PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(any(BigInteger.class))).thenReturn(theBridge);
+        PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(any(BigInteger.class))).thenReturn(Optional.of(theBridge));
     }
 
     /**
@@ -186,9 +186,9 @@ public class SfcGeniusDataUtilsTest {
     @Test(expected = RuntimeException.class)
     public void readMacAddressNotOvsBridge() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDpnId))
-                .thenReturn(new BridgeRefEntryBuilder()
+                .thenReturn(Optional.of(new BridgeRefEntryBuilder()
                         .setKey(new BridgeRefEntryKey(theDpnId))
-                        .build());
+                        .build()));
         SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
     }
 
@@ -201,13 +201,13 @@ public class SfcGeniusDataUtilsTest {
     @Test(expected = org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException.class)
     public void readMacAddressInvalidDpnId() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
-                .thenReturn(new InterfaceBuilder()
+                .thenReturn(Optional.of(new InterfaceBuilder()
                         .setKey(new InterfaceKey(logicalIfName))
                         .setPhysAddress(new PhysAddress("52:c1:91:54:fc:7a"))
                         .setLowerLayerIf(new ArrayList<String>() {{
                             add("qua-qua");}})
                         .setType(L2vlan.class)
-                        .build());
+                        .build()));
         SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
     }
 
@@ -308,6 +308,7 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
+        Assert.assertFalse(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
     }
 
@@ -347,13 +348,13 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
+        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
     }
 
     /**
      * Positive test, where we can get the name of the LogicalInterface
      * to which the SF is connected to
-     *
      */
     @Test
     public void getSfLogicalInterface() {
@@ -380,6 +381,7 @@ public class SfcGeniusDataUtilsTest {
                         .setSfDataPlaneLocator(dpLocators)
                         .build();
 
+        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         Assert.assertEquals("40c552e0-3695-472d-bace-7618786aba27",
                 SfcGeniusDataUtils.getSfLogicalInterface(dpiNode));
     }

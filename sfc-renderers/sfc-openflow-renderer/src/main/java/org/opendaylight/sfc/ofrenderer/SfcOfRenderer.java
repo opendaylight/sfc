@@ -83,6 +83,7 @@ public class SfcOfRenderer implements AutoCloseable {
             if(pktInRegistration != null) {
                 pktInRegistration.close();
             }
+            openflowRspDataListener.close();
         } catch(Exception e) {
             LOG.error("SfcOfRenderer auto-closed exception {}", e.getMessage());
         }

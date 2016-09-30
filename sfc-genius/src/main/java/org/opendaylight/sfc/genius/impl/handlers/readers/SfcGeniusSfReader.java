@@ -44,6 +44,35 @@ public class SfcGeniusSfReader extends SfcGeniusReaderAbstract {
     }
 
     /**
+     * Read the service function names that have the given interface configured
+     * as a data plane locator.
+     *
+     * @param interfaceName the interface name.
+     * @return a list of service function names, empty list if none.
+     */
+    public CompletableFuture<List<SfName>> readSfOnInterface(String interfaceName) {
+        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
+        return doReadOptional(LogicalDatastoreType.CONFIGURATION, sfsIID)
+                .thenApply(optionalServiceFunctions -> optionalServiceFunctions
+                        .map(ServiceFunctions::getServiceFunction)
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .filter(serviceFunction -> isServiceFunctionOnInterface(serviceFunction, interfaceName))
+                        .map(ServiceFunction::getName)
+                        .collect(Collectors.toList()));
+    }
+
+    private static boolean isServiceFunctionOnInterface(ServiceFunction serviceFunction, String interfaceName) {
+        return serviceFunction.getSfDataPlaneLocator().stream()
+                .map(DataPlaneLocator::getLocatorType)
+                .filter(locatorType -> locatorType instanceof LogicalInterface)
+                .map(locatorType -> (LogicalInterface) locatorType)
+                .filter(logicalInterface -> interfaceName.equals(logicalInterface.getInterfaceName()))
+                .findFirst()
+                .isPresent();
+    }
+
+    /**
      * Read the interface names configured as data plane locators of a
      * given service function.
      *

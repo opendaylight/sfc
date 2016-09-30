@@ -11,14 +11,17 @@ package org.opendaylight.sfc.genius.impl.handlers.readers;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -41,6 +45,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusSfReaderTest {
+
+    @Mock
+    ReadTransaction readTransaction;
+
+    @Mock
+    Executor executor;
 
     @Mock(answer = Answers.CALLS_REAL_METHODS)
     SfcGeniusSfReader reader;
@@ -78,6 +88,18 @@ public class SfcGeniusSfReaderTest {
                     ).build()
             ).collect(Collectors.toList())
         ).build();
+    }
+
+    @Test
+    public void readSfOnInterface() throws Exception {
+        InstanceIdentifier<ServiceFunctions> iid = InstanceIdentifier.builder(ServiceFunctions.class).build();
+        doReturn(CompletableFuture.completedFuture(Optional.of(serviceFunctions)))
+                .when(reader).doReadOptional(LogicalDatastoreType.CONFIGURATION, iid);
+
+        CompletableFuture<List<SfName>> sfNames = reader.readSfOnInterface("IFA");
+
+        assertThat(sfNames.get(), containsInAnyOrder(new SfName("SF1"), new SfName("SF3"), new SfName("SF5")));
+        assertTrue(sfNames.get().size() == 3);
     }
 
     @Test

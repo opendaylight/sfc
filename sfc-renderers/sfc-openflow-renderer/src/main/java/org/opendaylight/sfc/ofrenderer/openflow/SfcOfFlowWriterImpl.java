@@ -20,7 +20,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -144,7 +148,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
      */
     class FlowSetRemoverTask implements Runnable {
 
-        Set<FlowDetails> flowsToDelete = new HashSet<FlowDetails>();
+        Set<FlowDetails> flowsToDelete = new HashSet<>();
 
         public FlowSetRemoverTask(Set<FlowDetails> flowsToDelete) {
             this.flowsToDelete.addAll(flowsToDelete);
@@ -279,13 +283,13 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         Optional<Map<String, List<FlowDetails>>> theFlowsPerSffMap =
                 Optional.ofNullable(rspNameToFlowsMap.get(rspId));
         if (!theFlowsPerSffMap.isPresent()) {
-            rspNameToFlowsMap.put(rspId, new HashMap<String, List<FlowDetails>> ());
+            rspNameToFlowsMap.put(rspId, new HashMap<> ());
         }
 
         Optional<List<FlowDetails>> theFlowsPerSff =
                 Optional.ofNullable(rspNameToFlowsMap.get(rspId).get(sffNodeName));
         if (!theFlowsPerSff.isPresent()) {
-            rspNameToFlowsMap.get(rspId).put(sffNodeName, new ArrayList<FlowDetails>());
+            rspNameToFlowsMap.get(rspId).put(sffNodeName, new ArrayList<>());
         }
 
         List<FlowDetails> flowDetails = rspNameToFlowsMap.get(rspId).get(sffNodeName);
@@ -334,6 +338,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
      */
     @Override
     public void deleteRspFlows(final Long rspId) {
+        if (!rspNameToFlowsMap.containsKey(rspId)) {
+            LOG.warn("deleteRspFlows() Attempting to delete RSP [{}], and it does not exist", rspId);
+            return;
+        }
 
         List<FlowDetails> flowDetailsList = new ArrayList<>();
         rspNameToFlowsMap.get(rspId).forEach(
@@ -383,7 +391,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         Set<String> orphanSffs =
                 theInitializationFlows.entrySet().stream()
-                    .map(entry -> entry.getKey())
+                    .map(Entry::getKey)
                     .filter(isOrphanSff)
                     .collect(Collectors.toSet());
 

@@ -116,8 +116,14 @@ public class SfcOfRspTransactionalProcessorTest {
         sfcUtilsTestMock.resetCache();
     }
 
-
-    private boolean areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theMap) {
+    /**
+     * Helper function to check if the SFFs are free of initialization flows or still have them
+     *
+     * @param theMap the cache of installed flows per sff, per RSP
+     * @return true if all SFFs are free of initialization flows, false otherwise
+     */
+    private boolean
+    areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theMap) {
         Predicate<Map.Entry<String, List<SfcOfFlowWriterImpl.FlowDetails>>> emptySff =
                 theInputEntry -> theInputEntry.getValue().size() == 0;
         return theMap.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
@@ -149,7 +155,7 @@ public class SfcOfRspTransactionalProcessorTest {
         Set<SfcOfFlowWriterImpl.FlowDetails> deletedFlows = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
-        // fetch fetch the flow cache
+        // fetch the flow cache
         Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theMap =
                 Whitebox.getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
 
@@ -168,9 +174,7 @@ public class SfcOfRspTransactionalProcessorTest {
         assertThat(Sets.difference(currentFlows, deletedFlows), is(Collections.emptySet()));
 
         // assure that the SFFs don't have any initialization flows
-        Predicate<Map.Entry<String, List<SfcOfFlowWriterImpl.FlowDetails>>> emptySff =
-                theInputEntry -> theInputEntry.getValue().size() == 0;
-        Assert.assertTrue(theMap.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff));
+        Assert.assertTrue(areSffsFreeOfInitializationFlows(theMap));
     }
 
     /*
@@ -277,10 +281,8 @@ public class SfcOfRspTransactionalProcessorTest {
         // assure that we have the right number of flows
         Assert.assertEquals(0, allFlowsAfterRsp2.size() - allDeletedFlows.size());
 
-        // assure that no SFF has initialization flows
-        Predicate<Map.Entry<String, List<SfcOfFlowWriterImpl.FlowDetails>>> emptySff =
-                theInputEntry -> theInputEntry.getValue().size() == 0;
-        Assert.assertTrue(rspToFlowsMap4.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff));
+        // assure that the SFFs don't have any initialization flows
+        Assert.assertTrue(areSffsFreeOfInitializationFlows(rspToFlowsMap4));
     }
 
     /*
@@ -421,9 +423,7 @@ public class SfcOfRspTransactionalProcessorTest {
         // assure we have deleted the right number of flows
         Assert.assertEquals(0, allFlowsAfterRsp2.size() - deleteAllFlows.size());
 
-        // assure that no SFF has initialization flows
-        Predicate<Map.Entry<String, List<SfcOfFlowWriterImpl.FlowDetails>>> emptySff =
-                theInputEntry -> theInputEntry.getValue().size() == 0;
-        Assert.assertTrue(rspToFlowsMap4.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff));
+        // assure that the SFFs don't have any initialization flows
+        Assert.assertTrue(areSffsFreeOfInitializationFlows(rspToFlowsMap4));
     }
 }

@@ -7,14 +7,10 @@
  */
 package org.opendaylight.sfc.provider;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
@@ -58,7 +54,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This the main SFC Provider class. It is instantiated from the SFCProviderModule class.
+ * This the main SFC Provider class.
+ * This class should be instantiated from blueprint, so never it couldn't be a singleton.
  * <p>
  *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -67,13 +64,11 @@ import org.slf4j.LoggerFactory;
  * @since 2014-06-30
  */
 // FIXME Make this class a singleton or remove static getOpendaylightSfcObj
+//          to achieve that we mustremove getOpendaylightSfcObj first we must use blueprint in every bundle
+//          in order to inject this class to another bean
 public class OpendaylightSfc implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightSfc.class);
-
-    private static final long SHUTDOWN_TIME = 5;
-    private static final ThreadFactory THREAD_FACTORY =
-            new ThreadFactoryBuilder().setNameFormat("SFC-%d").setDaemon(false).build();
 
     public static final InstanceIdentifier<ServiceFunctionChain> SFC_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class).build();
@@ -122,18 +117,15 @@ public class OpendaylightSfc implements AutoCloseable {
 
     public static final int EXECUTOR_THREAD_POOL_SIZE = 100;
 
-    private static final ExecutorService executor =
-            Executors.newFixedThreadPool(EXECUTOR_THREAD_POOL_SIZE, THREAD_FACTORY);
-    protected static DataBroker dataProvider;
-    protected static BindingAwareBroker broker;
-    private static OpendaylightSfc opendaylightSfcObj;
+    protected static DataBroker dataProvider=null;
+    protected static BindingAwareBroker broker=null;
+    private static OpendaylightSfc opendaylightSfcObj=null;
+    protected static SfcThreadPoolWrapper poolWrapperInstance=null;
 
-    /* Constructors */
     public OpendaylightSfc() {
-        if (opendaylightSfcObj == null) {
-            opendaylightSfcObj = this;
-            LOG.info("Opendaylight Service Function Chaining Initialized");
-        }
+       //this class should be instantiated from blueprint.
+       opendaylightSfcObj = this;
+       LOG.info("Opendaylight Service Function Chaining Initialized");
     }
 
     /* Accessors */
@@ -182,14 +174,19 @@ public class OpendaylightSfc implements AutoCloseable {
         ServiceFunctionTypesBuilder sftTypesBuilder = new ServiceFunctionTypesBuilder().setServiceFunctionType(sftList);
         if (SfcDataStoreAPI.writePutTransactionAPI(SFT_IID, sftTypesBuilder.build(),
                 LogicalDatastoreType.CONFIGURATION)) {
-            LOG.info("Initialised Service Function Types");
+            LOG.info("Initialized Service Function Types");
         } else {
-            LOG.error("Could not initialise Service Function Types");
+            LOG.error("Could not initialize Service Function Types");
         }
     }
 
     public ExecutorService getExecutor() {
-        return executor;
+        return poolWrapperInstance.getExecutor();
+    }
+
+//setter mandatory for blueprint
+    public void setThreadpoolwrapper(SfcThreadPoolWrapper t){
+        this.poolWrapperInstance = t;
     }
 
     public void setDataProvider(DataBroker dataProvider) {
@@ -208,6 +205,8 @@ public class OpendaylightSfc implements AutoCloseable {
         return this.broker;
     }
 
+    //This getter is 100% redundant,
+    // because you could get the beano pointer with blueprint injection
     public static OpendaylightSfc getOpendaylightSfcObj() {
         return OpendaylightSfc.opendaylightSfcObj;
     }
@@ -250,13 +249,15 @@ public class OpendaylightSfc implements AutoCloseable {
             SfcDataStoreAPI.deleteTransactionAPI(sfstIid, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(sfstateIid, LogicalDatastoreType.OPERATIONAL);
 
-            // When we close this service we need to shutdown our executor!
-            executor.shutdown();
-            if (!executor.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
-                LOG.error("Executor did not terminate in the specified time.");
-                List<Runnable> droppedTasks = executor.shutdownNow();
-                LOG.error("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
-            }
+            // When we close this service we don't need to shutdown external executor,
+            //it's SfcThreadPoolWrapper bean responsability!
+            /*
+            *executor.shutdown();
+            *if (!executor.awaitTermination(SHUTDOWN_TIME, TimeUnit.SECONDS)) {
+            *    LOG.error("Executor did not terminate in the specified time.");
+            *    List<Runnable> droppedTasks = executor.shutdownNow();
+            *    LOG.error("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+            }*/
 
         }
     }

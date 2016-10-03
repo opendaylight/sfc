@@ -51,7 +51,9 @@ public class SfcOfRenderer implements AutoCloseable {
         LOG.info("SfcOfRenderer starting the SfcOfRenderer plugin...");
 
         this.sfcSynchronizer = new SfcSynchronizer();
-        this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(new SfcOfFlowWriterImpl());
+        SfcOfFlowWriterImpl sfcofflowwriterimpl = new SfcOfFlowWriterImpl();
+        sfcofflowwriterimpl.setDataProvider(dataBroker);
+        this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(sfcofflowwriterimpl);
         SfcOfBaseProviderUtils sfcOfProviderUtils = new SfcOfProviderUtils();
         this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer);
         this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);

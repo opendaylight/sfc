@@ -27,6 +27,7 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.SfcThreadPoolWrapper;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPITest;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -103,7 +104,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("sffdpl");
     private static final String testIpAddress = "170.0.0.1";
     private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
-    private OpendaylightSfc opendaylightSfc;
+    private OpendaylightSfc opendaylightSfc = null;
+    protected static SfcThreadPoolWrapper threadpoolwrapper = null;
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
@@ -111,12 +113,13 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @Before
     public void init() {
-        if (opendaylightSfc == null)
-            opendaylightSfc = new OpendaylightSfc();
-        if (executorService == null)
-            executorService = opendaylightSfc.getExecutor();
+        opendaylightSfc = new OpendaylightSfc();
+        threadpoolwrapper = new SfcThreadPoolWrapper(20);
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
+        opendaylightSfc.setThreadpoolwrapper(threadpoolwrapper);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
+        executorService = opendaylightSfc.getExecutor();
 
         // before starting test, node is created
         nodeIID = createNodeIID();

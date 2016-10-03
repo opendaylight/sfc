@@ -9,39 +9,51 @@
   <reference id="bindingRegistry"
     interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
 
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
+  <bean id="threadpoolwrapper" class="org.opendaylight.sfc.provider.SfcThreadPoolWrapper"
+        destroy-method="close">
+      <argument value="100"/>
+  </bean>
+
+  <bean id="opendaylightSfc" class="org.opendaylight.sfc.provider.OpendaylightSfc"
+        destroy-method="close">
     <property name="dataProvider" ref="dataBroker"/>
     <property name="broker" ref="bindingRegistry"/>
+    <property name="threadpoolwrapper" ref="threadpoolwrapper"/>
   </bean>
 
   <bean id="sfcProviderRpc"
-    class="org.opendaylight.sfc.provider.SfcProviderRpc">
+        class="org.opendaylight.sfc.provider.SfcProviderRpc">
+    <argument ref="opendaylightSfc"/>
   </bean>
   <odl:rpc-implementation ref="sfcProviderRpc"/>
 
   <bean id="sfcProviderSffEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener"
-    destroy-method="close">
+        class="org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener"
+            destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderSfEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener"
-    destroy-method="close">
+        class="org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener"
+            destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderScfEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener"
-    destroy-method="close">
+        class="org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener"
+            destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderSfstEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSfstEntryDataListener"
-    destroy-method="close">
+        class="org.opendaylight.sfc.provider.SfcProviderSfstEntryDataListener"
+            destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
+
+  <bean id="sfcdatastoreApi"
+        class="org.opendaylight.sfc.provider.api.SfcDataStoreAPI">
+    <property name="dataProvider" ref="dataBroker"/>
+  </bean>
+
 </blueprint>

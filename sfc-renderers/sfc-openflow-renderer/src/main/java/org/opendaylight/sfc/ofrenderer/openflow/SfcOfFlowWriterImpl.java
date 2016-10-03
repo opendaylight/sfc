@@ -31,8 +31,8 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -80,6 +80,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     // temporary list of flows to be deleted. All of them will be transactionally deleted on
     // flushFlows() invokation
     private Set<FlowDetails> setOfFlowsToAdd;
+    private DataBroker dataprovider = null;
 
     public SfcOfFlowWriterImpl() {
         this.threadPoolExecutorService = Executors.newSingleThreadExecutor();;
@@ -87,6 +88,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         this.flowBuilder = null;
         this.setOfFlowsToDelete = new HashSet<>();
         this.setOfFlowsToAdd = new HashSet<>();
+    }
+
+    public void setDataProvider(DataBroker r){
+        dataprovider = r;
     }
 
     /**
@@ -116,7 +121,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         }
 
         public void run(){
-            WriteTransaction trans = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction trans = dataprovider.newWriteOnlyTransaction();
 
             LOG.debug("FlowSetWriterTask: starting addition of {} flows", flowsToWrite.size());
 
@@ -156,7 +161,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
         public void run(){
 
-            WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+            WriteTransaction writeTx = dataprovider.newWriteOnlyTransaction();
 
             LOG.debug("FlowSetRemoverTask: starting deletion of {} flows", flowsToDelete.size());
 

@@ -12,10 +12,10 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +30,41 @@ import org.slf4j.LoggerFactory;
  * @since       2014-11-22
  */
 public class SfcDataStoreAPI {
+    protected static DataBroker dataProvider=null;
+    private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
 
-    // Hiding the implicit public constructor
-    private SfcDataStoreAPI() {
+    public SfcDataStoreAPI() {
+        LOG.info("SfcDataStoreAPI Initialized");
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
+    //blueprint setter
+    public void setDataProvider(DataBroker r) {
+        dataProvider = r;
+    }
+
+    //auxiliar static setter just for testing, because in UT we can't use blueprint,
+    //so the injection should be manual
+    public static void setDataProviderAux(DataBroker r) {
+        dataProvider = r;
+    }
+
+    public DataBroker getDataProvider() {
+        return dataProvider;
+    }
+
+    public static DataBroker getDataProviderInstance() {
+        return dataProvider;
+    }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI
             (InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret;
+        boolean ret=false;
 
-        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+        if (dataProvider == null){
+            LOG.error("deleteTransactionAPI: dataProvider not initialized!");
+            return ret;
+        }
+        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
         writeTx.delete(logicalDatastoreType, deleteIID);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -49,7 +72,6 @@ public class SfcDataStoreAPI {
             ret = true;
         } catch (TransactionCommitFailedException e) {
             LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage());
-            ret = false;
         }
         return ret;
     }
@@ -57,9 +79,12 @@ public class SfcDataStoreAPI {
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeMergeTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
-        boolean ret;
-
-        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+        boolean ret=false;
+        if (dataProvider == null){
+            LOG.error("writeMergeTransactionAPI: dataProvider not initialized!");
+            return ret;
+        }
+        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
         writeTx.merge(logicalDatastoreType, addIID, data, true);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -67,15 +92,18 @@ public class SfcDataStoreAPI {
             ret = true;
         } catch (TransactionCommitFailedException e) {
             LOG.error("writeMergeTransactionAPI: Transaction failed. Message: {}", e.getMessage());
-            ret = false;
         }
         return ret;
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI
             (InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType)  {
-        boolean ret;
-        WriteTransaction writeTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+        boolean ret=false;
+        if (dataProvider == null){
+            LOG.error("writePutTransactionAPI: dataProvider not initialized!");
+            return ret;
+        }
+        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
         writeTx.put(logicalDatastoreType, addIID, data, true);
         CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
@@ -83,7 +111,6 @@ public class SfcDataStoreAPI {
             ret = true;
         } catch (TransactionCommitFailedException e) {
             LOG.error("writePutTransactionAPI: Transaction failed. Message: {}", e.getMessage());
-            ret = false;
         }
         return ret;
     }
@@ -91,7 +118,12 @@ public class SfcDataStoreAPI {
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI
             (InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType)  {
         U ret = null;
-        ReadOnlyTransaction readTx = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newReadOnlyTransaction();
+
+        if (dataProvider == null){
+            LOG.error("readTransactionAPI: dataProvider not initialized!");
+            return ret;
+        }
+        ReadOnlyTransaction readTx = dataProvider.newReadOnlyTransaction();
         Optional<U> optionalDataObject;
         CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
         try {

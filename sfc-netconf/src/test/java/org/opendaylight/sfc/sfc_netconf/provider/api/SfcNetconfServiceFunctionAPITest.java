@@ -69,6 +69,8 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     public void before() {
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
+//        SfcNetconfServiceFunctionAPI.setOpendaylightSfc(opendaylightSfc);
     }
 
     public void testCreateReadServiceFunctionDescription() {

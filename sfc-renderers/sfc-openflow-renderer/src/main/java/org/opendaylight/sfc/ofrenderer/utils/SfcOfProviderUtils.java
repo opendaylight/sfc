@@ -156,6 +156,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         if(sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
             throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsBridgeAugmentation.");
         }
+        //we shouldn't use the getter getOpendaylightSfcObj, but nobody uses getPortNumberFromName
         Node node = SfcOvsUtil.lookupTopologyNode(sff, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
         if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);

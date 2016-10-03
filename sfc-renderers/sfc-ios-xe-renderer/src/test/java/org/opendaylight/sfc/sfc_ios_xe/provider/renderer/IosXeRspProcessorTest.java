@@ -48,6 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
@@ -65,6 +66,7 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     public void init() {
         dataBroker = getDataBroker();
         odl.setDataProvider(dataBroker);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
         nodeManager = mock(NodeManager.class);
         prepareSfcEntities();
     }

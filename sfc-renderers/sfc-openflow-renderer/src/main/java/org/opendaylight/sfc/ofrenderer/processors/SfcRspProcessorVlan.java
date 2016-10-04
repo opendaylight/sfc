@@ -9,6 +9,9 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
+import java.util.Optional;
+
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -268,5 +271,10 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
                     sffNodeName, srcMac, dstMac, vlanTag,
                     srcOfsPortStr, entry.getPathId());
         }
+    }
+
+    @Override
+    public Optional<SfcTableIndexMapper> getTableIndexMapper() {
+        return Optional.empty();
     }
 }

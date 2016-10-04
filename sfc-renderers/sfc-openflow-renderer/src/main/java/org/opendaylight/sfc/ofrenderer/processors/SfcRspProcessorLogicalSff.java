@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.SfcLogicalInterfaceOfUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -43,6 +46,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
  */
 public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
+    private final SfcTableIndexMapper tableIndexMapper;
+
+    public SfcRspProcessorLogicalSff() {
+        // This transport processor relies on Genius for retrieving correct table indexes. In order
+        // not to create a circular dependency between this class and Genius, this processor
+        // provides Genius mapping class with the tables it uses for each function
+        SfcTableIndexMapperBuilder builder = new SfcTableIndexMapperBuilder();
+        builder.setTransportIngressTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        builder.setPathMapperTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER);
+        builder.setPathMapperAclTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER_ACL);
+        builder.setNextHopTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
+        builder.setTransportEgressTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+
+        tableIndexMapper = builder.build();
+    }
     //
     // TransportIngress methods
     //
@@ -264,4 +282,10 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 theMacAddr.isPresent() ? theMacAddr.get().getValue() : "(empty)");
         return theMacAddr;
     }
+
+    @Override
+    public Optional<SfcTableIndexMapper> getTableIndexMapper() {
+        return Optional.of(tableIndexMapper);
+    }
+
 }

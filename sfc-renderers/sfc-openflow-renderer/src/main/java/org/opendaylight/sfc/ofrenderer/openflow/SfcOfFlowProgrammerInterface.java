@@ -9,9 +9,11 @@
 package org.opendaylight.sfc.ofrenderer.openflow;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -177,4 +179,13 @@ public interface SfcOfFlowProgrammerInterface {
     public void configureNshEthTransportEgressFlow(String sffOpenFlowNodeName,
             long nshNsp, short nshNsi, List<Action> actionList);
 
+    /**
+     * Setter for the table index mapper (class which provides the tables to use
+     * for Genius-based application coexistence)
+     *
+     * @param tableIndexMapper
+     *            The table index mapper
+     */
+    public void setTableIndexMapper(
+            Optional<SfcTableIndexMapper> tableIndexMapper);
 }

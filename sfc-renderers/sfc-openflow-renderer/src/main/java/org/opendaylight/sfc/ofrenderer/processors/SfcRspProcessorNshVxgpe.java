@@ -9,7 +9,9 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
+import java.util.Optional;
 
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -284,5 +286,10 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
             this.sfcFlowProgrammer.configureNshVxgpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
         }
+    }
+
+    @Override
+    public Optional<SfcTableIndexMapper> getTableIndexMapper() {
+        return Optional.empty();
     }
 }

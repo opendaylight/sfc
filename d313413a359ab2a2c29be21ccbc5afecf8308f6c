@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_1fd70f25",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-10-04T10:22:28Z",
+      "side": 1,
+      "message": "The purpose of these factory methods is so that they can be stubbed to return mocks on basic tests and I would very much prefer not having them as static. We could come up with a factory class, but I think is not worth it at this time.",
+      "parentUuid": "7a6b29fe_269942c4",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 5
+      },
+      "revId": "d313413a359ab2a2c29be21ccbc5afecf8308f6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_c6f5eeed",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-04T09:35:47Z",
       "side": 1,
       "message": "Would it make sense to move this class to this package:\norg.opendaylight.sfc.genius.impl.utils",
+      "range": {
+        "startLine": 39,
+        "startChar": 6,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "d313413a359ab2a2c29be21ccbc5afecf8308f6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_3f876b14",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-10-04T10:22:28Z",
+      "side": 1,
+      "message": "This is a core mechanism class of the module. The module has basically two responsibilities: 1) Manage the SFC service against genius, which is what this class does. 2) Manage RSP re-rendering after VM migration (to come in future patch). Both of these responsibilities are coordinated by the Manager. TLDR: I see it as too centric to the main purpose of the module to be an utility class that would be reused on any other place.",
+      "parentUuid": "7a6b29fe_c6f5eeed",
       "range": {
         "startLine": 39,
         "startChar": 6,

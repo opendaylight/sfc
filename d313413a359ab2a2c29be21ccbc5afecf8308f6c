@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_269942c4",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-04T09:35:47Z",
+      "side": 1,
+      "message": "Would these be better served in SfcGeniusUtils.java ??",
+      "range": {
+        "startLine": 115,
+        "startChar": 0,
+        "endLine": 121,
+        "endChar": 5
+      },
+      "revId": "d313413a359ab2a2c29be21ccbc5afecf8308f6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_c6f5eeed",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-04T09:35:47Z",
+      "side": 1,
+      "message": "Would it make sense to move this class to this package:\norg.opendaylight.sfc.genius.impl.utils",
+      "range": {
+        "startLine": 39,
+        "startChar": 6,
+        "endLine": 39,
+        "endChar": 29
+      },
+      "revId": "d313413a359ab2a2c29be21ccbc5afecf8308f6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

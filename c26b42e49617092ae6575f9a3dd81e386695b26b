@@ -49,6 +49,54 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_bc7549ce",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Ok, we can change the API to throw a more specific exception in another commit.",
+      "parentUuid": "7a6b29fe_16d6df4e",
+      "range": {
+        "startLine": 114,
+        "startChar": 17,
+        "endLine": 114,
+        "endChar": 26
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_bc8709b6",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Ok, I think we could change those interfaces to throw more specific exceptions in another change.",
+      "parentUuid": "7a6b29fe_e06559af",
+      "range": {
+        "startLine": 114,
+        "startChar": 17,
+        "endLine": 114,
+        "endChar": 26
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_200bd1d6",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
         "patchSetId": 2
@@ -96,6 +144,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_1cc0bddf",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_5916c756",
+      "range": {
+        "startLine": 169,
+        "startChar": 17,
+        "endLine": 169,
+        "endChar": 26
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_800e25e3",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
         "patchSetId": 2
@@ -131,6 +203,30 @@
       "side": 1,
       "message": "For the new popnsh + jump to netvirt dispatch table flow (this is subject to change if we end up implementing \"back to classifier\" for chain egress",
       "parentUuid": "7a6b29fe_800e25e3",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 87
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_7c43b16c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_f6bc0308",
       "range": {
         "startLine": 81,
         "startChar": 4,
@@ -329,6 +425,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_bc5c294e",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_f66a437f",
+      "range": {
+        "startLine": 194,
+        "startChar": 16,
+        "endLine": 194,
+        "endChar": 27
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_40d6cd28",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
         "patchSetId": 2
@@ -411,6 +531,30 @@
       "side": 1,
       "message": "Hum, I don\u0027t think so (the purpose of that null is to signal that an error ocurred (and was detected) during the rpc invokation). But it\u0027s true that it would make sense to change it to Optional\u003cList\u003cAction\u003e\u003e. I\u0027ll do that",
       "parentUuid": "7a6b29fe_5bb242e5",
+      "range": {
+        "startLine": 176,
+        "startChar": 35,
+        "endLine": 178,
+        "endChar": 34
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_9c596d5e",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-04T09:23:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_b6fbabbf",
       "range": {
         "startLine": 176,
         "startChar": 35,

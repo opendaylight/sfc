@@ -111,6 +111,10 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
+
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
@@ -171,6 +175,10 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
+
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
@@ -231,6 +239,10 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
+
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
@@ -279,6 +291,10 @@ public class SfcOfRspProcessorTest {
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         assertMatchAnyMethodsCalled("SFF_0");
+
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
@@ -329,6 +345,10 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled("SFF_0");
         assertMatchAnyMethodsCalled("SFF_1");
+
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 

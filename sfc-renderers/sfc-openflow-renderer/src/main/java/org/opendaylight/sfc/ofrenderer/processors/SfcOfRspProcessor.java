@@ -123,10 +123,10 @@ public class SfcOfRspProcessor {
             //
             SffGraph.SffGraphEntry entry = null;
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
+            sfcOfFlowProgrammer.setTableIndexMapper(transportProcessor.getTableIndexMapper());
             while (sffGraphIter.hasNext()) {
                 entry = sffGraphIter.next();
                 LOG.debug("build flows of entry: {}", entry);
-
                 // The flows created by initializeSff dont belong to any particular RSP
                 sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
                 initializeSff(entry);

@@ -22,6 +22,30 @@
       "revId": "0014a8170cea90eac2b96684c8dc0f6303ace505",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_9ff4bfd0",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-10-04T10:22:28Z",
+      "side": 1,
+      "message": "Since this manager is passed to the listeners on constructor, I prefer to pass an interface rather than an specific implementation. Is not meant to be a published interface, just a design pattern following the dependency inversion principle.",
+      "parentUuid": "7a6b29fe_7fa44308",
+      "range": {
+        "startLine": 46,
+        "startChar": 57,
+        "endLine": 46,
+        "endChar": 90
+      },
+      "revId": "0014a8170cea90eac2b96684c8dc0f6303ace505",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -13,10 +13,12 @@ import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.genius.mdsalutil.NwConstants;
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
@@ -119,6 +121,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private short tableEgress;
     private Long flowRspId;
     private SfcOfFlowWriterInterface sfcOfFlowWriter = null;
+
+    private SfcTableIndexMapper tableIndexMapper = null;
 
     public SfcOfFlowProgrammerImpl(SfcOfFlowWriterInterface sfcOfFlowWriter) {
         this.tableBase = APP_COEXISTENCE_NOT_SET;
@@ -1035,6 +1039,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param port - the switch port to send the packet out on
      * @param pathId - the RSP path id to match on
      */
+    @Override
     public void configureVlanLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final int dstVlan, final String port, final long pathId) {
 
@@ -1656,14 +1661,24 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
-     * getTableId
-     * Having a TableBase allows us to "offset" the SFF tables by this.tableBase
-     * tables. This is used for App Coexistence.
+     * getTableId Having a TableBase allows us to "offset" the SFF tables by
+     * this.tableBase tables. This is used for App Coexistence. When a
+     * {@link SfcTableIndexMapper} has been provided, it is used (this is
+     * another way of performing App coexistence)
      *
-     * @param tableIndex - the table to offset
+     * @param tableIndex
+     *            - the table to offset
      * @return the resulting table id
      */
     private short getTableId(short tableIndex) {
+
+        // A transport processor can provide a table index mapper in order
+        // to retrieve table positions
+        if (tableIndexMapper != null
+                && tableIndexMapper.getTableIndex(tableIndex).isPresent()) {
+            return tableIndexMapper.getTableIndex(tableIndex).get();
+        }
+
         if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
             // App Coexistence
             if(tableIndex == TABLE_INDEX_TRANSPORT_INGRESS) {
@@ -1730,5 +1745,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 FLOW_PRIORITY_TRANSPORT_EGRESS,
                 TRANSPORT_EGRESS_NSH_ETH_COOKIE);
 
+    }
+
+    @Override
+    public void setTableIndexMapper(SfcTableIndexMapper tableIndexMapper) {
+        this.tableIndexMapper = tableIndexMapper;
     }
 }

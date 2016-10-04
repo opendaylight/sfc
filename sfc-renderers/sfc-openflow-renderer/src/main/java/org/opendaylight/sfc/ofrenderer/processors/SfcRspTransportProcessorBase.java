@@ -10,6 +10,9 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+
+import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -96,6 +99,20 @@ public abstract class SfcRspTransportProcessorBase {
             SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl);
 
     public abstract void setRspTransports();
+
+    /**
+     * A renderer can provide a @{link SfcTableIndexMapper} class in order to
+     * use Genius-based application coexistence (i.e. let Genius decide which
+     * table indexes will be used for SFC tables). For doing so, that renderer
+     * will overwrite this method and provide a {@link SfcTableIndexMapper}
+     *
+     * @return The {@link SfcTableIndexMapper} to use for table indexes mapping,
+     *         or an empty {@link Optional} when the transport processor doesn't
+     *         rely on Genius for application coexistence
+     */
+    public Optional<SfcTableIndexMapper> getTableIndexMapper() {
+        return Optional.empty();
+    }
 
     /**
      * Iterate the SFF graph for the Rendered Service Path and process the Data

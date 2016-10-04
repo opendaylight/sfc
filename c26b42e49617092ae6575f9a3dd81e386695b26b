@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_16d6df4e",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "True, but I\u0027m adapting to the existing communication mechanism between transport processors and SfcOfRspProcessor, which uses RuntimeException for catching specific processors problem (many of those throw RuntimeException exists in other processors): \n\n\n        } catch (RuntimeException e) {\n            LOG.error(\"RuntimeException in processRenderedServicePath: \", e.getMessage(), e);\n        } finally {\n\n(many of those throw RuntimeException exists in other processors)",
+      "parentUuid": "7a6b29fe_e06559af",
+      "range": {
+        "startLine": 114,
+        "startChar": 17,
+        "endLine": 114,
+        "endChar": 26
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_200bd1d6",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "Same here: more specific exception. Maybe we need to reuse one already defined or define a new one.",
+      "range": {
+        "startLine": 169,
+        "startChar": 17,
+        "endLine": 169,
+        "endChar": 26
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5916c756",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Same as above",
+      "parentUuid": "7a6b29fe_200bd1d6",
       "range": {
         "startLine": 169,
         "startChar": 17,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_f6bc0308",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "For the new popnsh + jump to netvirt dispatch table flow (this is subject to change if we end up implementing \"back to classifier\" for chain egress",
+      "parentUuid": "7a6b29fe_800e25e3",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 87
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_c0fbfdbe",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "It is a matter of taste, but I think it is better as it was before: configureNshVxLanGpeTransportIngressFlow",
+      "range": {
+        "startLine": 441,
+        "startChar": 25,
+        "endLine": 441,
+        "endChar": 33
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d6b7471f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 441,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "I \"stole\" this change from ebrjohn ethnsh upcoming processor in order to both making this patch independent from his and easing the merge.",
+      "parentUuid": "7a6b29fe_c0fbfdbe",
       "range": {
         "startLine": 441,
         "startChar": 25,
@@ -209,6 +305,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_f66a437f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Also coming from ebrjohn\u0027s upcoming patch",
+      "parentUuid": "7a6b29fe_e01399fe",
+      "range": {
+        "startLine": 194,
+        "startChar": 16,
+        "endLine": 194,
+        "endChar": 27
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_40d6cd28",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
         "patchSetId": 2
@@ -220,6 +340,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "Suggestion: maybe the Java 8\u0027s Optional could help to ease this sentence",
+      "range": {
+        "startLine": 368,
+        "startChar": 7,
+        "endLine": 370,
+        "endChar": 112
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_760e33e6",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Please note that the getSfDataPlaneLocator method was existing before -\u003e changing its signature would force to perform changes in many places where they are actually not required",
+      "parentUuid": "7a6b29fe_40d6cd28",
       "range": {
         "startLine": 368,
         "startChar": 7,
@@ -255,6 +399,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b6fbabbf",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Hum, I don\u0027t think so (the purpose of that null is to signal that an error ocurred (and was detected) during the rpc invokation). But it\u0027s true that it would make sense to change it to Optional\u003cList\u003cAction\u003e\u003e. I\u0027ll do that",
+      "parentUuid": "7a6b29fe_5bb242e5",
+      "range": {
+        "startLine": 176,
+        "startChar": 35,
+        "endLine": 178,
+        "endChar": 34
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_bbcc366b",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
         "patchSetId": 2
@@ -266,6 +434,30 @@
       "writtenOn": "2016-10-03T12:38:57Z",
       "side": 1,
       "message": "same here",
+      "range": {
+        "startLine": 222,
+        "startChar": 39,
+        "endLine": 224,
+        "endChar": 38
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_96f66fd5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Same as above",
+      "parentUuid": "7a6b29fe_bbcc366b",
       "range": {
         "startLine": 222,
         "startChar": 39,
@@ -301,6 +493,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b1d0d51f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_dbd492ea",
+      "range": {
+        "startLine": 245,
+        "startChar": 23,
+        "endLine": 245,
+        "endChar": 36
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_20d91157",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
         "patchSetId": 2
@@ -312,6 +528,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "SfcRspProcessorNshVxLanGpe",
+      "range": {
+        "startLine": 28,
+        "startChar": 13,
+        "endLine": 28,
+        "endChar": 36
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d92ad78f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Reason stated already",
+      "parentUuid": "7a6b29fe_20d91157",
       "range": {
         "startLine": 28,
         "startChar": 13,
@@ -347,6 +587,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_99205fb2",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_80dc6547",
+      "range": {
+        "startLine": 31,
+        "startChar": 72,
+        "endLine": 31,
+        "endChar": 77
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_60b669fa",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
         "patchSetId": 2
@@ -358,6 +622,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "Redundant: these are already initialized to null.",
+      "range": {
+        "startLine": 94,
+        "startChar": 9,
+        "endLine": 96,
+        "endChar": 43
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_194e0f97",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_60b669fa",
       "range": {
         "startLine": 94,
         "startChar": 9,
@@ -393,6 +681,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_793aa3e8",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "It is as you say in the last sentence: for now, SFC\u0027s either use all regular SFFs or a single logical SFF, hence this implementation is correct.",
+      "parentUuid": "7a6b29fe_9b3cda30",
+      "range": {
+        "startLine": 379,
+        "startChar": 19,
+        "endLine": 379,
+        "endChar": 36
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_a0cb6170",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcOfFlowProgrammerTest.java",
         "patchSetId": 2
@@ -416,6 +728,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_593fe7d6",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcOfFlowProgrammerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "As previously stated, this was done to ease upcoming eth-nsh transport processor integration",
+      "parentUuid": "7a6b29fe_a0cb6170",
+      "range": {
+        "startLine": 188,
+        "startChar": 16,
+        "endLine": 188,
+        "endChar": 53
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_00c7b564",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcOfFlowProgrammerTest.java",
         "patchSetId": 2
@@ -427,6 +763,30 @@
       "writtenOn": "2016-10-03T08:51:47Z",
       "side": 1,
       "message": "configureNshVxLanGpeNextHopFlow",
+      "range": {
+        "startLine": 464,
+        "startChar": 16,
+        "endLine": 464,
+        "endChar": 44
+      },
+      "revId": "c26b42e49617092ae6575f9a3dd81e386695b26b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b9239bbd",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/SfcOfFlowProgrammerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-04T08:07:25Z",
+      "side": 1,
+      "message": "See above",
+      "parentUuid": "7a6b29fe_00c7b564",
       "range": {
         "startLine": 464,
         "startChar": 16,

@@ -9,25 +9,21 @@
 package org.opendaylight.sfc.provider.topology;
 
 /**
- * This class represents a node/vertex in topology graph
- * that composes of SFs (Service Functions) and SFFs (Service Function Forwarders)
- * , a node may be SF or SFF, please refer to class SfcProviderGraph for
- * topology graph
+ * This class represents a node/vertex in the topology graph that composes of SFs
+ * (Service Functions) and SFFs (Service Function Forwarders) , a node may be SF
+ * or SFF, please refer to class SfcProviderGraph for topology graph
  *
  * @author Shuqiang Zhao &lt;shuqiangx.zhao@intel.com&gt;
  * @author Yi Yang &lt;yi.y.yang@intel.com&gt;
  */
 public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNode> {
-    private String name;
-    private int load;
+    private final String name;
     private SfcProviderTopologyNode parent;
     private int color;
     private int dist;
 
-    public SfcProviderTopologyNode(String name)
-    {
+    public SfcProviderTopologyNode(String name) {
         this.name = name;
-        this.load = 0;
         this.parent = null;
         this.color = 0;
         this.dist = 0;
@@ -61,10 +57,12 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
         this.dist = dist;
     }
 
+    @Override
     public int compareTo(SfcProviderTopologyNode node) {
         return this.name.compareTo(node.getName());
     }
 
+    @Override
     public boolean equals(java.lang.Object obj) {
         if (this == obj) {
             return true;
@@ -74,9 +72,10 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
             return false;
         }
 
-        return this.name == ((SfcProviderTopologyNode)obj).getName();
+        return this.name == ((SfcProviderTopologyNode) obj).getName();
     }
 
+    @Override
     public int hashCode() {
         if (this.name == null) {
             return 0;

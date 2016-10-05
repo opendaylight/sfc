@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_b6d8bd80",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-05T14:28:08Z",
+      "side": 1,
+      "message": "Couldn\u0027t help but notice that this code is exactly the same as the one in the unbindInterfacesOfServiceFunction - only change being the method reference passed to the interfaces (bind/unbind).\n\nCould this be moved to a private method and pass the method reference by argument ?",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 95,
+        "endChar": 24
+      },
+      "revId": "ab44c7a52f5b71f5fc5f52b5a6a772e84f83170f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_56cfa9b3",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-05T14:28:08Z",
+      "side": 1,
+      "message": "pretty much the same thing here - ideally, bindToInterface \u0026 unbindFromInterface would only call a 3rd method, passing their respective method references",
+      "range": {
+        "startLine": 76,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 5
+      },
+      "revId": "ab44c7a52f5b71f5fc5f52b5a6a772e84f83170f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

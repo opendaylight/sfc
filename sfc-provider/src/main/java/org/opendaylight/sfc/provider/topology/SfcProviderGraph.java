@@ -17,38 +17,36 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class represents a topology graph, node/vertex
- * is a SF (Service Function) or SFF (Service Function Forwarder),
- * edge is a unidirect and direct connection between two
- * nodes/vertexes, it is mainly used to implement Dijkstra
- * shortest path algorithm, method getShortestPath can find
- * the shortest path between 'from' node and 'to' node in a graph.
+ * This class represents a topology graph, node/vertex is a SF (Service
+ * Function) or SFF (Service Function Forwarder), edge is a unidirect and direct
+ * connection between two nodes/vertexes, it is mainly used to implement
+ * Dijkstra shortest path algorithm, method getShortestPath can find the
+ * shortest path between 'from' node and 'to' node in a graph.
  * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @author Yi Yang (yi.y.yang@intel.com)
  *
- * <p>
+ *         <p>
  * @since 2015-03-13
  */
 public class SfcProviderGraph {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderGraph.class);
-    private static final TreeSet<SfcProviderTopologyNode> EMPTY_SET = new TreeSet<SfcProviderTopologyNode>();
-    private static final int WHITE     = 2;
-    private static final int GRAY     = 1;
-    private static final int BLACK    = 0;
-    private static final int MAX    = 10000;
+    private static final TreeSet<SfcProviderTopologyNode> EMPTY_SET = new TreeSet<>();
+    private static final int WHITE = 2;
+    private static final int GRAY = 1;
+    private static final int BLACK = 0;
+    private static final int MAX = 10000;
 
-    private HashMap<SfcProviderTopologyNode, TreeSet<SfcProviderTopologyNode>> sfcProviderTopoEdges;
-    private HashMap<String, SfcProviderTopologyNode> sfcProviderTopoNodes;
+    private final HashMap<SfcProviderTopologyNode, TreeSet<SfcProviderTopologyNode>> sfcProviderTopoEdges;
+    private final HashMap<String, SfcProviderTopologyNode> sfcProviderTopoNodes;
     private int nodeNum;
-    private int edgeNum;
+    private final int edgeNum;
 
     public SfcProviderGraph() {
-        sfcProviderTopoEdges = new HashMap<SfcProviderTopologyNode, TreeSet<SfcProviderTopologyNode>>();
-        sfcProviderTopoNodes = new HashMap<String, SfcProviderTopologyNode>();
+        sfcProviderTopoEdges = new HashMap<>();
+        sfcProviderTopoNodes = new HashMap<>();
         nodeNum = 0;
         edgeNum = 0;
     }
@@ -128,7 +126,7 @@ public class SfcProviderGraph {
         sfcProviderTopologyNode.setDist(0);
         sfcProviderTopologyNode.setParent(null);
 
-        Queue<SfcProviderTopologyNode> queue = new LinkedList<SfcProviderTopologyNode>();
+        Queue<SfcProviderTopologyNode> queue = new LinkedList<>();
         queue.offer(sfcProviderTopologyNode);
 
         while (!queue.isEmpty()) {
@@ -154,7 +152,7 @@ public class SfcProviderGraph {
             return null;
         }
 
-        List<SfcProviderTopologyNode> sfcProviderTopologyNodePath = new ArrayList<SfcProviderTopologyNode>();
+        List<SfcProviderTopologyNode> sfcProviderTopologyNodePath = new ArrayList<>();
         if (fromNodeName.equals(toNodeName)) {
             sfcProviderTopologyNodePath.add(0, fromNode);
             return sfcProviderTopologyNodePath;
@@ -168,8 +166,7 @@ public class SfcProviderGraph {
         }
 
         /* No path if the first node isn't fromNode, so clear it. */
-        if (sfcProviderTopologyNodePath.size() != 0
-            && !sfcProviderTopologyNodePath.get(0).equals(fromNode)) {
+        if (!sfcProviderTopologyNodePath.isEmpty() && !sfcProviderTopologyNodePath.get(0).equals(fromNode)) {
             sfcProviderTopologyNodePath.clear();
         }
         return sfcProviderTopologyNodePath;

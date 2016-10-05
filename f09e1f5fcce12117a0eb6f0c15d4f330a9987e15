@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_8a3abbe5",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-05T12:36:17Z",
+      "side": 1,
+      "message": "Yep, the idea is that this class will be blueprint-initialized at sfc-genius activation time, but sfc-openflow-renderer will need to retrieve that already-initialized class",
+      "parentUuid": "7a6b29fe_df1bd7c8",
+      "range": {
+        "startLine": 37,
+        "startChar": 13,
+        "endLine": 37,
+        "endChar": 31
+      },
+      "revId": "f09e1f5fcce12117a0eb6f0c15d4f330a9987e15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_1f7d4fe8",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-04T12:36:43Z",
       "side": 1,
       "message": "if we decide to keep this class as a Singleton, should this method be synchronized?",
+      "range": {
+        "startLine": 51,
+        "startChar": 37,
+        "endLine": 51,
+        "endChar": 48
+      },
+      "revId": "f09e1f5fcce12117a0eb6f0c15d4f330a9987e15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_4a170355",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-05T12:36:17Z",
+      "side": 1,
+      "message": "Not really. This class will be instantiated from one single point at bundle initalization time. Other bundles (i.e. sfc-openflow-renderer) won\u0027t start before the initialization is completed (because the sfc-openflow-renderer -\u003e sfc-genius dependency will not be achieved until that time)",
+      "parentUuid": "7a6b29fe_1f7d4fe8",
       "range": {
         "startLine": 51,
         "startChar": 37,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_2503d80e",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusRpcClient.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-05T12:36:17Z",
+      "side": 1,
+      "message": "This is temporary, just to keep us going while sfc-genius is not complete (we\u0027re using it so sfc-openflow-renderer provides the rpcProviderRegistry dependency, but the sfc-genius module will be capable of getting that reference by itself when we add blueprint initialization at a later time).",
+      "parentUuid": "7a6b29fe_3f5f6b77",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 26
+      },
+      "revId": "f09e1f5fcce12117a0eb6f0c15d4f330a9987e15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_4adc2319",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
         "patchSetId": 4
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_ca5cb34f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 1255,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-05T12:36:17Z",
+      "side": 1,
+      "message": "This is different from transportEgressFlow(), this one is meant to perform pop nsh + resubmit to the dispatcher table in the last sff of the chain (that is, avoiding the need for an egress classifier). Still have to be tested though, but it is not redundant with configureTransportEgressFlow(), which is used on all-but-last hops",
+      "parentUuid": "7a6b29fe_4adc2319",
+      "range": {
+        "startLine": 1255,
+        "startChar": 0,
+        "endLine": 1255,
+        "endChar": 111
+      },
+      "revId": "f09e1f5fcce12117a0eb6f0c15d4f330a9987e15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_cacf9356",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerInterface.java",
         "patchSetId": 4
@@ -105,6 +201,30 @@
       "writtenOn": "2016-10-04T12:36:43Z",
       "side": 1,
       "message": "I thought these were internal methods in SfcOfFlowProgrammerImpl.java, so they shouldnt be here.",
+      "range": {
+        "startLine": 179,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 70
+      },
+      "revId": "f09e1f5fcce12117a0eb6f0c15d4f330a9987e15",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_0a922bf6",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerInterface.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-05T12:36:17Z",
+      "side": 1,
+      "message": "You\u0027re mostly right: one of them unnecesarily exposes SfcOfFlowProgrammerImpl, the other one is redundant. I\u0027m simplifying this to a single configureNshEthTransportEgressFlow (it is needed in order to offer the signature which allows to pass a list of externally provided Actions (they are retrieved from Genius for the logical sff)",
+      "parentUuid": "7a6b29fe_cacf9356",
       "range": {
         "startLine": 179,
         "startChar": 0,

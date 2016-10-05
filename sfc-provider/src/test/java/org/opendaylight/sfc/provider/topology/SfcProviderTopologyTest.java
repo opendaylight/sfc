@@ -11,13 +11,13 @@ package org.opendaylight.sfc.provider.topology;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.controller.md.sal.binding.test.AssertCollections;
 
 /**
  * This class contains unit tests for SfcProviderGraph
@@ -120,7 +120,7 @@ public class SfcProviderTopologyTest {
 
         //create path with non-existing node, should return null
         sfcProviderTopologyNodeList = sfcProviderGraph.getShortestPath(NODE_NAME + 1, NODE_NAME + 5);
-        assertNull("Must be null", sfcProviderTopologyNodeList);
+        AssertCollections.assertEmpty(sfcProviderTopologyNodeList);
 
         //create path, when the src node is equal dst node, should return that node
         sfcProviderTopologyNodeList = sfcProviderGraph.getShortestPath(NODE_NAME + 1, NODE_NAME + 1);

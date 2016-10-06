@@ -155,6 +155,43 @@ public class SfcGeniusDataUtilsTest {
     }
 
     /**
+     * Positive test
+     *
+     */
+    @Test
+    public void readRemoteMacAddress() {
+        Optional<MacAddress> mac = SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName);
+        Assert.assertTrue(mac.isPresent());
+    }
+
+    /**
+     * Negative test when the interface does not exist in the CONFIG DS
+     *
+     */
+    @Test(expected = RuntimeException.class)
+    public void readRemoteMacAddressInterfaceDoesNotExist() {
+        PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)).thenReturn(null);
+        SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName);
+    }
+
+    /**
+     * Negative test when the interface exists, but does not have a physical address
+     */
+    @Test(expected = RuntimeException.class)
+    public void readRemoteMacAddressPhysicalAddressDoesNotExists() {
+        PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
+        .thenReturn(Optional.of(new InterfaceBuilder()
+                .setKey(new InterfaceKey(logicalIfName))
+                .setPhysAddress(null)
+                .setLowerLayerIf(new ArrayList<String>() {{
+                    add("openflow:79268612506848:1");
+                }})
+                .setType(L2vlan.class)
+                .build()));
+        SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName);
+    }
+
+    /**
      * Negative test when the interface features in the CONFIG DS
      * but does not feature in the OPERATIONAL DS
      *

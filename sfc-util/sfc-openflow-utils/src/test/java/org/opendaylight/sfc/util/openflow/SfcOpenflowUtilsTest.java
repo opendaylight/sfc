@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.util.openflow;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 import junitparams.JUnitParamsRunner;
@@ -19,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
+
+import org.junit.Assert;
 
 import static com.fasterxml.uuid.EthernetAddress.constructMulticastAddress;
 import static junitparams.JUnitParamsRunner.$;
@@ -272,4 +275,34 @@ public class SfcOpenflowUtilsTest{
                 testAct.getImplementedInterface().getName());
     }
 
+    @Test
+    @Parameters(method = "bigIntegerToMacConversionsParams")
+    public void testBigIntegerToMacStringConversions(BigInteger bi, String expectedValue) {
+        Assert.assertEquals("bad bigint to mac format conversion!", SfcOpenflowUtils.macStringFromBigInteger(bi), expectedValue);
+    }
+
+    public Object[][] bigIntegerToMacConversionsParams() {
+
+        final BigInteger NUMBER_256 = new BigInteger("256");
+        final BigInteger MAX_MAC = NUMBER_256
+                .multiply(NUMBER_256)
+                .multiply(NUMBER_256)
+                .multiply(NUMBER_256)
+                .multiply(NUMBER_256)
+                .multiply(NUMBER_256)
+                .subtract(new BigInteger("1"));
+
+        return new Object[][]{
+            {new BigInteger("0"), "00:00:00:00:00:00"},
+            {new BigInteger("1"), "00:00:00:00:00:01"},
+            {new BigInteger("15"), "00:00:00:00:00:0f"},
+            {new BigInteger("16"), "00:00:00:00:00:10"},
+            {new BigInteger("17"), "00:00:00:00:00:11"},
+            {new BigInteger("255"), "00:00:00:00:00:ff"},
+            {new BigInteger("256"), "00:00:00:00:01:00"},
+            {new BigInteger("257"), "00:00:00:00:01:01"},
+            {new BigInteger(new Integer(256*256).toString()), "00:00:00:01:00:00"},
+            {MAX_MAC, "ff:ff:ff:ff:ff:ff"}
+        };
+    }
 }

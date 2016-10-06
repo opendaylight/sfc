@@ -25,13 +25,12 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 
@@ -49,13 +48,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestination;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshNodesNodeTableFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.pop.nsh.grouping.NxPopNsh;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
@@ -118,7 +117,8 @@ public class SfcOfLogicalSffRspProcessorTest {
     private List<SftTypeName> sfTypes;
 
     private static final String theLogicalIfName = "tap40c552e0-36";
-    private static final MacAddress theMacAddress = new MacAddress("11:22:33:44:55:66");
+    private static final MacAddress theMacAddressSfSide = new MacAddress("11:22:33:44:55:66");
+    private static final MacAddress theMacAddressOvsSide = new MacAddress("aa:bb:cc:dd:ee:ff");
 
     public SfcOfLogicalSffRspProcessorTest() {
         initMocks(this);
@@ -147,7 +147,9 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         PowerMockito.mockStatic(SfcGeniusDataUtils.class);
         PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(anyString()))
-                .thenReturn(Optional.of(theMacAddress));
+                .thenReturn(Optional.of(theMacAddressSfSide));
+        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(anyString()))
+                .thenReturn(Optional.of(theMacAddressOvsSide));
 
         PowerMockito.when(SfcGeniusDataUtils.getSfLogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(theLogicalIfName);
@@ -195,6 +197,7 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         int nHops = sfTypes.size() + 1;
 
+
         verify(interfaceManagerRpcService, times(nHops))
                 .getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class));
 
@@ -210,19 +213,40 @@ public class SfcOfLogicalSffRspProcessorTest {
                 Whitebox.getInternalState(ofFlowWriter, "setOfFlowsToAdd");
 
         // Make sure we have the right amount of flows in each relevant table
-        Assert.assertEquals(1, addedFlows.stream().filter(
+
+        // Please note that there is only one switch being programmed in this
+        // test. Even though the chain includes 2 SFs, the mocking returns the
+        // same dpnid for both logical interfaces, i.e. simulating that
+        // both SFs are hosted in the same compute node. It is important to
+        // keep that in mind when accounting flows in the following tests
+
+        // Logical SFF processor never uses table 0 as classifier (it uses genius,
+        // which uses that table for service binding)
+        Assert.assertEquals(0, addedFlows.stream().filter(
                 flow -> flow.tableKey.getId().equals(TABLE_INDEX_CLASSIFIER)).count());
-        Assert.assertEquals(nHops, addedFlows.stream().filter(
+
+        // transport ingress: one (initialization in the only switch) + one per (hops -1, this is the
+        // number of "SF ingresses" in the chain)
+        Assert.assertEquals(1 + (nHops -1), addedFlows.stream().filter(
                 flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
+
+        // path mapper: only the initialization flow in the only switch that it is used in this test
         Assert.assertEquals(1, addedFlows.stream().filter(
                 flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE)).count());
+
+        // path mapper acl: again, initialization only
         Assert.assertEquals(1, addedFlows.stream().filter(
                 flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE)).count());
-        Assert.assertEquals(4, addedFlows.stream().filter(
+
+        // next hop: 1 (initialization in the only switch) + 2 * (nhops -1) (i.e. ingress + egress to each SF) -1 (both
+        // sfs are sharing the switch, so one less flow (the one for going from one SFF to the next one) is written
+        Assert.assertEquals(1 + (2 * (nHops -1) -1) , addedFlows.stream().filter(
                 flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).count());
 
-        Assert.assertEquals(2 * nHops, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
+        // match any: these are the 5 initialization flows for the 5 SFC tables in the switch
+        Assert.assertEquals(5, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
                 flow -> flow.getFlowName().equals("MatchAny")).count());
+
         Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
                 flow -> flow.getFlowName().equals("ingress_Transport_Flow")).count());
         Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
@@ -340,6 +364,7 @@ public class SfcOfLogicalSffRspProcessorTest {
     }
 
     private boolean matchNextHop(Flow nextHopFlow, long rspId) {
+
         // handle the Match
         List<NxAugMatchNodesNodeTableFlow> theNciraExtensions = getNciraExtensions(nextHopFlow);
 
@@ -358,23 +383,34 @@ public class SfcOfLogicalSffRspProcessorTest {
         // assure the destination mac address is the expected
         List<Action> actionList = getInstructionsFromFlow(nextHopFlow).stream()
                 .map(inst -> filterInstructionType(inst, ApplyActionsCase.class))
-                .filter(Optional::isPresent)
                 .map(applyActionsInst -> applyActionsInst.get().getApplyActions())
                 .map(ApplyActions::getAction)
                 .findFirst()
                 .orElse(Collections.emptyList());
 
-        Optional<MacAddress> macAddress = actionList
+        List<MacAddress> macAddresses = actionList
                 .stream()
-                .map(action -> filterActionType(action, SetFieldCase.class))
+                .map(action -> filterActionType(action, NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class))
                 .filter(Optional::isPresent)
-                .map(SetFieldCaseAction -> SetFieldCaseAction.get().getSetField())
-                .map(SetField::getEthernetMatch)
-                .map(EthernetMatch::getEthernetDestination)
-                .map(EthernetDestination::getAddress)
-                .findFirst();
+                .map(NxActionRegLoadNodesNodeTableFlowApplyActionsCase -> NxActionRegLoadNodesNodeTableFlowApplyActionsCase.get().getNxRegLoad())
+                .map(NxRegLoad::getValue)
+                .map(SfcOpenflowUtils::macStringFromBigInteger)
+                .map(value -> new MacAddress(value))
+                .collect(Collectors.toList());
 
-        return macAddress.filter(theMac -> theMac.equals(theMacAddress)).isPresent();
+        // there must be exactly two actions: one for replacing the destination MAC address (the target SF) and other for setting
+        // the source MAC address (so the packet can be returned after SF processing)
+        if (macAddresses.size() != 2) {
+            return false;
+        }
+        List<MacAddress> expectedMacs = new ArrayList<MacAddress>();
+        expectedMacs.add(theMacAddressSfSide);
+        expectedMacs.add(theMacAddressOvsSide);
+        if (!macAddresses.containsAll(expectedMacs)) {
+            return false;
+        }
+
+        return true;
     }
 
     private List<Instruction> getInstructionsFromFlow(Flow theFlow) {

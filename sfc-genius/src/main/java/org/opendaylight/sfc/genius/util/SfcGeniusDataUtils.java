@@ -60,6 +60,24 @@ public class SfcGeniusDataUtils {
     }
 
     /**
+     * Fetches the MAC address for the switch port to which a given SF is connected
+     *
+     * @param ifName    the name of the neutron port to which the SF is connected
+     * @return          the MAC address used by the SFF port to which
+     *      the SF is connected, when available
+     */
+    public static Optional<MacAddress> getServiceFunctionForwarderPortMacAddress(String ifName) {
+
+        Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
+                        .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
+        if (theIf.getPhysAddress() == null) {
+            throw new RuntimeException(
+                    "Interface is present in the OPER DS, but it doesn't have a mac address");
+        }
+        return Optional.of(new MacAddress(theIf.getPhysAddress().getValue()));
+    }
+
+    /**
      * Checks if a given Service Function has logical interfaces attached to it
      * @param sf    The service function we want to check
      * @return      True if it has a LogicalInterface attached attached, False otherwise

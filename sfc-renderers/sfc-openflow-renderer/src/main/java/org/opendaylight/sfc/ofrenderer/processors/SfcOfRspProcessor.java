@@ -132,7 +132,7 @@ public class SfcOfRspProcessor {
                 LOG.debug("build flows of entry: {}", entry);
                 // The flows created by initializeSff dont belong to any particular RSP
                 sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
-                initializeSff(entry);
+                initializeSff(entry, transportProcessor);
                 sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
                 configureTransportIngressFlows(entry, sffGraph, transportProcessor);
                 configurePathMapperFlows(entry, sffGraph, transportProcessor);
@@ -469,8 +469,10 @@ public class SfcOfRspProcessor {
      * Initialize the SFF by creating the match any flows, if not already created.
      *
      * @param entry - contains the SFF and RSP id
+     * @param transportProcessor the transport processor to use when initialization
+     * flows are transport-dependent
      */
-    private void initializeSff(SffGraph.SffGraphEntry entry) {
+    private void initializeSff(SffGraph.SffGraphEntry entry, SfcRspTransportProcessorBase transportProcessor) {
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             return;
         }
@@ -483,7 +485,7 @@ public class SfcOfRspProcessor {
         NodeId sffNodeId = new NodeId(sffNodeName);
         if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
-            this.sfcOfFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
+            transportProcessor.configureClassifierTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);

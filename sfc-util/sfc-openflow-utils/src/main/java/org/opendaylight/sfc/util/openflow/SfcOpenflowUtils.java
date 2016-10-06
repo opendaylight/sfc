@@ -9,6 +9,10 @@ package org.opendaylight.sfc.util.openflow;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.ActionUtil;
@@ -186,16 +190,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.reg.grouping.NxmNxRegBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.gpe.np.grouping.NxmNxTunGpeNpBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-// Import Nicira extension
-
-
-// Import Nicira extension
 
 public class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
@@ -1827,5 +1821,31 @@ public class SfcOpenflowUtils {
                 .setKey(new InstructionKey(order))
                 .setOrder(order)
                 .build();
+    }
+
+    /*
+     * Returns the string representation for a given {@link BigInteger) representing
+     * a mac address. (e.g. for the value 257, it returns "00:00:00:00:01:01")
+     * @param value    The BigInteger representation for the mac address
+     * @return         The string (i.e. 6 hex-formatted bytes separated with ":") representation
+     */
+    public static String macStringFromBigInteger(BigInteger value) {
+        // a mac (48 bytes max) always fits into a 64 bit integer
+        long macAddressLong = value.longValue();
+
+        byte[] macAddressComplete = new byte[6];
+        for (int i = 5; i >=0; i--) {
+            macAddressComplete[i] = (byte) (macAddressLong % 256);
+            macAddressLong = macAddressLong >> 8L;
+        }
+
+        StringBuilder sb = new StringBuilder(18);
+        for (int i = 0; i <= 5; i++) {
+            byte b = macAddressComplete[i];
+            if (sb.length() > 0)
+                sb.append(':');
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }

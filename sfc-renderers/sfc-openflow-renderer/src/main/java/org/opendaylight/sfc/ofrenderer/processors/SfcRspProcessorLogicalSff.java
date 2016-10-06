@@ -228,7 +228,15 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             LOG.debug("configureSffTransportEgressFlow: called for chain egress");
-            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName,nsp,nsi);
+            SfDataPlaneLocator srcSfDpl = sfcProviderUtils
+                    .getSfDataPlaneLocator(
+                            sfcProviderUtils.getServiceFunction(
+                                    entry.getPrevSf(), entry.getPathId()),
+                            entry.getSrcSff());
+            MacAddress macAddress = getMacAddress(srcSfDpl).get();
+
+            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(
+                    sffNodeName, nsp, nsi, macAddress);
         } else {
             LOG.debug("configureSffTransportEgressFlow: called for non-final graph entry");
             if (entry.isIntraLogicalSFFEntry()) {

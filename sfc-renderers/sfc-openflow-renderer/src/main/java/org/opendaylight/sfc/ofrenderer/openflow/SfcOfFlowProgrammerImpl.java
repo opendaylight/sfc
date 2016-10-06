@@ -22,6 +22,7 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -932,7 +933,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, order++));
+        actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthDst(dstMac,
+                order++));
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
@@ -1222,18 +1224,29 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param nshNsi - the NSH Service Index to match on
      */
     @Override
-    public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi) {
+    public void configureNshEthLastHopTransportEgressFlow(
+            final String sffNodeName, final long nshNsp, final short nshNsi,
+            MacAddress macAddress) {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
         SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
 
-        // On the last hop just remove nsh header and resubmit to the dispatcher table
+        // On the last hop:
+        // 1. remove nsh header
+        // 2. Change src mac to the mac of the last SF
+        // 3. resubmit to the dispatcher table
         int order = 0;
         List<Action> actionList = new ArrayList<>();
 
         // Pop NSH
         Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(order++);
         actionList.add(popNsh);
+
+        // Change source address
+        Action changeSourceMac = SfcOpenflowUtils
+                .createActionSetDlSrc(macAddress.getValue(),
+                order++);
+        actionList.add(changeSourceMac);
 
         // Proceed with other services
         actionList.add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, order++));

@@ -348,4 +348,12 @@ public abstract class SfcRspTransportProcessorBase {
 
         return false;
     }
+
+    /**
+     * Create the appropriate rules in the classifier table (when necessary)
+     * @param sffNodeName  the openflow node identifier
+     */
+    public void configureClassifierTableMatchAny(final String sffNodeName) {
+        this.sfcFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
+    }
 }

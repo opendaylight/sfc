@@ -31,7 +31,8 @@ public class SfcGeniusDataUtils {
      * @param ifName    the name of the neutron port to which the SF is connected
      * @return          the MAC address used by the SF, when available
      */
-    public static Optional<MacAddress> getServiceFunctionMacAddress(String ifName) {
+    public static Optional<MacAddress> getServiceFunctionMacAddress(
+            String ifName) {
         String theLogicalInterfaceName = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceName(ifName)
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the CONFIG DS"));
         Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
@@ -55,6 +56,24 @@ public class SfcGeniusDataUtils {
                                 theExternalId.getExternalIdKey().equals(SfcGeniusConstants.MAC_KEY))
                         .map(theMac -> new MacAddress(theMac.getExternalIdValue()))
                 .findFirst();
+    }
+
+    /**
+     * Fetches the MAC address for the ovs port to which a given SF is connected
+     *
+     * @param ifName    the name of the neutron port to which the SF is connected
+     * @return          the MAC address used by the OVS port to which
+     *      the SF is connected, when available
+     */
+    public static Optional<MacAddress> getOvsPortMacAddress(
+            String ifName) {
+        Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
+                        .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
+        if (theIf.getPhysAddress() == null) {
+            throw new RuntimeException(
+                    "Interface is present in the OPER DS, but it doesn't have a mac address");
+        }
+        return Optional.of(new MacAddress(theIf.getPhysAddress().getValue()));
     }
 
     /**

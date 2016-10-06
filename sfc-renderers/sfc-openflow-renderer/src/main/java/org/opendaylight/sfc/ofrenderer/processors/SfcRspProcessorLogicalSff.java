@@ -120,14 +120,16 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                                      SffDataPlaneLocator srcSffDpl,
                                      SfDataPlaneLocator dstSfDpl) {
 
-        Optional<MacAddress> theMacAddr = getMacAddress(dstSfDpl);
-        if (!theMacAddr.isPresent()) {
+        Optional<MacAddress> srcSfMac = getMacAddress(dstSfDpl, true);
+        Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl, false);
+        if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
             throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(),
                         entry.getPathId(), entry.getDstDpnId()),
-                theMacAddr.get().getValue(), entry.getPathId(),
+                srcSfMac.get().getValue(), dstSfMac.get().getValue(),
+                entry.getPathId(),
                 entry.getServiceIndex());
     }
 
@@ -151,12 +153,14 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SfDataPlaneLocator dstSfDpl) {
 
-        Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl);
-        if (!dstSfMac.isPresent()) {
+        Optional<MacAddress> srcSfMac = getMacAddress(dstSfDpl, true);
+        Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl, false);
+        if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
             throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(), entry.getDstDpnId()),
+                srcSfMac.get().getValue(),
                 dstSfMac.get().getValue(),
                 entry.getPathId(),
                 entry.getServiceIndex());
@@ -228,7 +232,15 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             LOG.debug("configureSffTransportEgressFlow: called for chain egress");
-            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName,nsp,nsi);
+            SfDataPlaneLocator srcSfDpl = sfcProviderUtils
+                    .getSfDataPlaneLocator(
+                            sfcProviderUtils.getServiceFunction(
+                                    entry.getPrevSf(), entry.getPathId()),
+                            entry.getSrcSff());
+            MacAddress macAddress = getMacAddress(srcSfDpl, false).get();
+
+            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(
+                    sffNodeName, nsp, nsi, macAddress);
         } else {
             LOG.debug("configureSffTransportEgressFlow: called for non-final graph entry");
             if (entry.isIntraLogicalSFFEntry()) {
@@ -272,13 +284,18 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
      * @param dstSfDpl the data plane locator
      * @return  the optional {@link}MacAddress
      */
-    private Optional<MacAddress> getMacAddress(SfDataPlaneLocator dstSfDpl) {
+    private Optional<MacAddress> getMacAddress(SfDataPlaneLocator dstSfDpl,
+            boolean returnRemoteEnd) {
         LOG.debug("getMacAddress:starting. dstSfDpl:{}", dstSfDpl);
         String ifName = ((LogicalInterfaceLocator) dstSfDpl.getLocatorType())
                 .getInterfaceName();
-        Optional<MacAddress> theMacAddr = SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
-        LOG.debug("Read interface's [{}] MAC address [{}]", ifName,
-                theMacAddr.isPresent() ? theMacAddr.get().getValue() : "(empty)");
+        Optional<MacAddress> theMacAddr = returnRemoteEnd
+                ? SfcGeniusDataUtils.getOvsPortMacAddress(ifName)
+                : SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
+        LOG.debug(
+                "Read interface's [{}] (remoteEndMAC requested {}) MAC address [{}]",
+                ifName, returnRemoteEnd, theMacAddr.isPresent()
+                        ? theMacAddr.get().getValue() : "(empty)");
         return theMacAddr;
     }
 

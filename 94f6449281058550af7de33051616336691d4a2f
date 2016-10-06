@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_476b6e85",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-06T16:00:49Z",
+      "side": 1,
+      "message": "I don\u0027t think this is how optional is meant to be used.\n\nAn optional is java 8s way of implementing monads, which are meant to encapsulate a data type, and transform that data type through functions into another data-type.\n\nBasically, I don\u0027t think they\u0027re meant to be used as instance variables, nor as parameters to methods, but as results of computation (Optional.of or Optional.ofNullable, when dealing w/ possible null returning values; or be returned by methods)",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 125,
+        "endChar": 78
+      },
+      "revId": "94f6449281058550af7de33051616336691d4a2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_870466c7",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1680,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-06T16:00:49Z",
+      "side": 1,
+      "message": "same here; the \u0027right\u0027 way to do this is kind of like:\n\nOptional\u003cshort\u003e tableId \u003d \n  Optional.ofNullable(tableIndexMapper)\n    .filter(Optional::isPresent)\n    .filter(mapper -\u003e mapper.get().getTableIndex().isPresent())\n    .map(mapper -\u003e mapper.get().getTableIndex());\n\nif (tableId.isPresent()) return tableId.get();\n\n(no clue if this compiles, just throwing an example)",
+      "range": {
+        "startLine": 1677,
+        "startChar": 8,
+        "endLine": 1680,
+        "endChar": 9
+      },
+      "revId": "94f6449281058550af7de33051616336691d4a2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e71b9a1a",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1753,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-06T16:00:49Z",
+      "side": 1,
+      "message": "Same here; optional should not be used as arguments; they should be computed from the arguments",
+      "range": {
+        "startLine": 1752,
+        "startChar": 12,
+        "endLine": 1753,
+        "endChar": 49
+      },
+      "revId": "94f6449281058550af7de33051616336691d4a2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

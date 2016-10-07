@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_d38460b3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderScfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-07T13:56:53Z",
+      "side": 1,
+      "message": "This change will come later",
+      "parentUuid": "7a6b29fe_73ed8c8e",
+      "range": {
+        "startLine": 39,
+        "startChar": 56,
+        "endLine": 39,
+        "endChar": 74
+      },
+      "revId": "44345e36c9122e02f3737df197b886fb1db4b976",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_53f21070",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderSfEntryDataListener.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2016-10-07T13:53:54Z",
       "side": 1,
       "message": "This class is deprecated, can you also please change it to use the new form.",
+      "range": {
+        "startLine": 46,
+        "startChar": 55,
+        "endLine": 46,
+        "endChar": 73
+      },
+      "revId": "44345e36c9122e02f3737df197b886fb1db4b976",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_53c050e0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderSfEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-07T13:56:53Z",
+      "side": 1,
+      "message": "This change will come later on",
+      "parentUuid": "7a6b29fe_53f21070",
       "range": {
         "startLine": 46,
         "startChar": 55,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b3b56480",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderSffEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-07T13:56:53Z",
+      "side": 1,
+      "message": "This change will come later on",
+      "parentUuid": "7a6b29fe_b3e724ac",
+      "range": {
+        "startLine": 47,
+        "startChar": 56,
+        "endLine": 47,
+        "endChar": 74
+      },
+      "revId": "44345e36c9122e02f3737df197b886fb1db4b976",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_93eca891",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderSfstEntryDataListener.java",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2016-10-07T13:53:54Z",
       "side": 1,
       "message": "This class is deprecated, can you also please change it to use the new form.",
+      "range": {
+        "startLine": 35,
+        "startChar": 57,
+        "endLine": 35,
+        "endChar": 75
+      },
+      "revId": "44345e36c9122e02f3737df197b886fb1db4b976",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_93bae86c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/SfcProviderSfstEntryDataListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-07T13:56:53Z",
+      "side": 1,
+      "message": "This change will come later on",
+      "parentUuid": "7a6b29fe_93eca891",
       "range": {
         "startLine": 35,
         "startChar": 57,

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_384db3c5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/OpendaylightSfc.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-07T10:46:11Z",
+      "side": 1,
+      "message": "We should be able to completely remove this class.\nAll the *ENTRY_IIDs should be put in their own static class.\nAnyone that needs anything available from the getters here (DataBroker, etc), should have that object injected via blueprint.\nWe\u0027ll need to figure out where to put initServiceFunctionTypes() but it doesnt have to be here.\nThe SfcThreadPoolWrapper can go away in favor of standard Java ThreadPools.",
+      "range": {
+        "startLine": 69,
+        "startChar": 13,
+        "endLine": 69,
+        "endChar": 28
+      },
+      "revId": "f28f5038c060ee49f147e4ff98689a627857f4d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

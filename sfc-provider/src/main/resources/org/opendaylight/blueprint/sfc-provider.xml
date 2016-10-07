@@ -22,25 +22,25 @@
   <odl:rpc-implementation ref="sfcProviderRpc"/>
 
   <bean id="sfcProviderSffEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSffEntryDataListener"
+    class="org.opendaylight.sfc.provider.listeners.SfcProviderSffEntryDataListener"
     destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderSfEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener"
+    class="org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener"
     destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderScfEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderScfEntryDataListener"
+    class="org.opendaylight.sfc.provider.listeners.SfcProviderScfEntryDataListener"
     destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderSfstEntryDataListener"
-    class="org.opendaylight.sfc.provider.SfcProviderSfstEntryDataListener"
+    class="org.opendaylight.sfc.provider.listeners.SfcProviderSfstEntryDataListener"
     destroy-method="close">
     <argument ref="dataBroker"/>
   </bean>

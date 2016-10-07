@@ -2,6 +2,30 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a6b29fe_58beafd5",
+        "filename": "sfc-netconf/src/main/resources/org/opendaylight/blueprint/sfc-netconf.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5860
+      },
+      "writtenOn": "2016-10-07T09:42:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_87a0e6a6",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 9
+      },
+      "revId": "7b86d681505d89e370fcb3bf421a4ea3aba94f71",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_47b88e2a",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
         "patchSetId": 1
@@ -18,6 +42,30 @@
         "startChar": 0,
         "endLine": 15,
         "endChar": 1
+      },
+      "revId": "7b86d681505d89e370fcb3bf421a4ea3aba94f71",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b8b38309",
+        "filename": "sfc-provider/src/main/resources/org/opendaylight/blueprint/sfc-provider.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 5860
+      },
+      "writtenOn": "2016-10-07T09:42:31Z",
+      "side": 1,
+      "message": "OK, no problem, I will try to conver TheadPoolWraper to a service.",
+      "parentUuid": "7a6b29fe_274592b3",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 9
       },
       "revId": "7b86d681505d89e370fcb3bf421a4ea3aba94f71",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

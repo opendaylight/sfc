@@ -31,7 +31,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @author Vladimir Lavor (vladimir.lavor@pantheon.sk)
  * @version 0.1
- * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
+ * @see org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener
  * @since 2014-06-30
  */
 public class SfcProviderServiceChainAPI {

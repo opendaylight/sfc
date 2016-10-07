@@ -35,7 +35,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  *
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
- * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
+ * @see org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener
  * <p>
  * @since 2014-11-04
  */

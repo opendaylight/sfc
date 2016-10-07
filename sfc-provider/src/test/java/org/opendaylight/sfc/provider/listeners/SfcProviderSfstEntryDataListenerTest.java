@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
@@ -83,10 +85,10 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
     public void testOnDataChanged_CreateData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                 Mockito.mock(AsyncDataChangeEvent.class);
-        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
-        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
+        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
+        Set<InstanceIdentifier<?>> removedPaths = new HashSet<>();
+        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<>();
+        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<>();
 
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = build_service_function_scheduler_type();
 
@@ -133,10 +135,10 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
     public void testOnDataChanged_RemoveData() throws Exception {
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                 Mockito.mock(AsyncDataChangeEvent.class);
-        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
-        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
+        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
+        Set<InstanceIdentifier<?>> removedPaths = new HashSet<>();
+        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<>();
+        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<>();
 
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = build_service_function_scheduler_type();
 
@@ -171,10 +173,10 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
         String SchedulerTypeName = "Random1";
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                 Mockito.mock(AsyncDataChangeEvent.class);
-        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
-        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
-        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
+        Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
+        Set<InstanceIdentifier<?>> removedPaths = new HashSet<>();
+        Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<>();
+        Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<>();
 
         /* Create and commit SFST */
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = build_service_function_scheduler_type();
@@ -275,10 +277,10 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
         for (int i = 0; i < SFST_NAMES.size(); i++) {
             AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                     Mockito.mock(AsyncDataChangeEvent.class);
-            Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<InstanceIdentifier<?>, DataObject>();
-            Set<InstanceIdentifier<?>> removedPaths = new HashSet<InstanceIdentifier<?>>();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<InstanceIdentifier<?>, DataObject>();
-            Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<InstanceIdentifier<?>, DataObject>();
+            Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();
+            Set<InstanceIdentifier<?>> removedPaths = new HashSet<>();
+            Map<InstanceIdentifier<?>, DataObject> updatedData = new HashMap<>();
+            Map<InstanceIdentifier<?>, DataObject> originalData = new HashMap<>();
 
             ServiceFunctionSchedulerTypeKey key = new ServiceFunctionSchedulerTypeKey(schedulerTypes[i]);
             ServiceFunctionSchedulerTypeBuilder sfstBuilder = new ServiceFunctionSchedulerTypeBuilder();

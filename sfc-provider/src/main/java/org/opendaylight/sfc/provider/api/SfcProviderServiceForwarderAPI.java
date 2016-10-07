@@ -47,7 +47,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
- * @see org.opendaylight.sfc.provider.SfcProviderSfEntryDataListener
+ * @see org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener
  *      <p>
  * @since 2014-06-30
  */

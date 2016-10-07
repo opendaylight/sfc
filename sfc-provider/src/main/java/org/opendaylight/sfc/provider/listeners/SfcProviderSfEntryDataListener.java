@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.provider;
+package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -35,9 +36,8 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
- * This class gets called whenever there is a change to
- * a Service Function list entry, i.e.,
- * added/deleted/modified.
+ * This class gets called whenever there is a change to a Service Function list
+ * entry, i.e., added/deleted/modified.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
@@ -57,8 +57,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
     private void registerListeners() {
         // ServiceFunction Entry
         try {
-            sfEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                          OpendaylightSfc.SF_ENTRY_IID, SfcProviderSfEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+            sfEntryDataChangeListenerRegistration = broker.registerDataChangeListener(
+                    LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SF_ENTRY_IID,
+                    SfcProviderSfEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
         } catch (final Exception e) {
             LOG.error("SfcProviderSfEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderSfEntryDataListener: registration Listener failed.", e);
@@ -66,10 +67,11 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
     }
 
     /**
-     * This method is called whenever there is change in a SF. Before doing any changes
-     * it takes a global lock in order to ensure it is the only writer.
+     * This method is called whenever there is change in a SF. Before doing any
+     * changes it takes a global lock in order to ensure it is the only writer.
      *
-     * @param change AsyncDataChangeEvent object
+     * @param change
+     *            AsyncDataChangeEvent object
      */
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
@@ -94,7 +96,6 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
                     if (entry.getValue() instanceof ServiceFunction) {
                         ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
-
                         if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(createdServiceFunction)) {
                             LOG.error("Failed to create service function type: {}", createdServiceFunction.getType());
                         }
@@ -107,19 +108,19 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
                     DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
                     if (dataObject instanceof ServiceFunction) {
                         ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
-
                         if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction)) {
                             LOG.error("Failed to delete Service Function Type for SF: {}",
                                     originalServiceFunction.getName());
                         }
 
                         /*
-                         * Before removing RSPs used by this Service Function, we need to remove all
-                         * references in the SFF/SF operational trees
+                         * Before removing RSPs used by this Service Function,
+                         * we need to remove all references in the SFF/SF
+                         * operational trees
                          */
                         SfName sfName = originalServiceFunction.getName();
                         List<RspName> rspList = SfcProviderServiceFunctionAPI.getRspsBySfName(sfName);
-                        if ((rspList != null) && (!rspList.isEmpty())) {
+                        if (rspList != null && !rspList.isEmpty()) {
                             if (SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
                             } else {
                                 LOG.error("{}: Failed to delete SF {} operational state",
@@ -135,8 +136,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
                 // SF UPDATE
                 Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-                    if ((entry.getValue() instanceof ServiceFunction)
-                            && (!(dataCreatedObject.containsKey(entry.getKey())))) {
+                    if (entry.getValue() instanceof ServiceFunction && !dataCreatedObject.containsKey(entry.getKey())) {
                         DataObject dataObject = dataOriginalDataObject.get(entry.getKey());
                         ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
                         ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
@@ -150,20 +150,22 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
                         }
 
                         /*
-                         * Before removing RSPs used by this Service Function, we need to remove all
-                         * references in the SFF/SF operational trees
+                         * Before removing RSPs used by this Service Function,
+                         * we need to remove all references in the SFF/SF
+                         * operational trees
                          */
                         SfName sfName = originalServiceFunction.getName();
-                        List<SfServicePath> sfServicePathList =
-                                SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
+                        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI
+                                .readServiceFunctionState(sfName);
                         List<RspName> rspList = new ArrayList<>();
-                        if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
+                        if (sfServicePathList != null && !sfServicePathList.isEmpty()) {
                             if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
                                 LOG.error("{}: Failed to delete SF {} operational state",
                                         Thread.currentThread().getStackTrace()[1], sfName);
                             }
                             for (SfServicePath sfServicePath : sfServicePathList) {
-                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                                // TODO Bug 4495 - RPCs hiding heuristics using
+                                // Strings - alagalah
 
                                 RspName rspName = new RspName(sfServicePath.getName().getValue());
                                 SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
@@ -172,9 +174,9 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener, AutoC
                             SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
                         }
                         /*
-                         * We do not update the SFF dictionary. Since the user configured it in the
-                         * first place,
-                         * (s)he is also responsible for updating it.
+                         * We do not update the SFF dictionary. Since the user
+                         * configured it in the first place, (s)he is also
+                         * responsible for updating it.
                          */
                     }
                 }

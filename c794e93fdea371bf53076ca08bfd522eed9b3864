@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_2e39e6d8",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-10T10:08:54Z",
+      "side": 1,
+      "message": "Lets make this the default behavior in SfcRspTransportProcessorBase and only override it when needed, like in SfcRspProcessorLogicalSff.",
+      "range": {
+        "startLine": 291,
+        "startChar": 0,
+        "endLine": 294,
+        "endChar": 5
+      },
+      "revId": "c794e93fdea371bf53076ca08bfd522eed9b3864",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

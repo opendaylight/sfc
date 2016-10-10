@@ -19,7 +19,6 @@
     <artifactId>sfc-ui-module</artifactId>
     <name>${project.artifactId}</name>
     <description>SFC UI Module Resources</description>
-    <version>${dlux.version}</version>
     <packaging>jar</packaging>
 
     <build>

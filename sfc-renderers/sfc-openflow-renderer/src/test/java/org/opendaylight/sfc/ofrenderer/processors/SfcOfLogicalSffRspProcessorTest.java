@@ -137,7 +137,7 @@ public class SfcOfLogicalSffRspProcessorTest {
     public SfcOfLogicalSffRspProcessorTest() throws Exception {
         initMocks(this);
 
-        operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl());
+        operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl(dataBroker));
         flowProgrammer.setFlowWriter(ofFlowWriter);
         sfcUtils = new SfcOfProviderUtilsTestMock();
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(
@@ -182,9 +182,9 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.when(SfcGeniusDataUtils.getSfLogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(theLogicalIfName);
 
-        PowerMockito.mockStatic(OpendaylightSfc.class);
-        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj()).thenReturn(odlSfc);
-        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj().getDataProvider()).thenReturn(dataBroker);
+        //PowerMockito.mockStatic(OpendaylightSfc.class);
+        //PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj()).thenReturn(odlSfc);
+        //PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj().getDataProvider()).thenReturn(dataBroker);
         PowerMockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(null);
 
         PowerMockito.when(SfcGeniusDataUtils.isSfUsingALogicalInterface(any(ServiceFunction.class)))

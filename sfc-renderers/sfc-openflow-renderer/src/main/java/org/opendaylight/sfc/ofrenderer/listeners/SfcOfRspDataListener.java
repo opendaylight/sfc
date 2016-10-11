@@ -49,8 +49,8 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
         setDataBroker(dataBroker);
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
-        this.sfcOfRspProcessor = new SfcOfRspProcessor(
-                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry, new OperDsUpdateHandlerLSFFImpl());
+        sfcOfRspProcessor = new SfcOfRspProcessor(
+                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry, new OperDsUpdateHandlerLSFFImpl(dataBroker));
     }
 
     @Override

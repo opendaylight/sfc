@@ -10,10 +10,11 @@ package org.opendaylight.sfc.sfc_lisp.provider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_lisp.provider.api.SfcLispFlowMappingApi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 public class LispUpdater implements ILispUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(LispUpdater.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     private static LispUpdater lispUpdaterObj;
     private OdlMappingserviceService lfmService;
@@ -154,7 +156,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                        executor);
         if (reply == null) {
             return serviceFunction;
         }
@@ -186,7 +188,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                        executor);
         if (reply == null ) {
             return serviceFunctionForwarder;
         }
@@ -234,7 +236,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { prefix };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                            executor);
         if (reply == null) {
             return null;
         }
@@ -260,7 +262,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                            executor);
     }
 
     private Eid getSrcDstFromAce(AceIp ipMatch) {
@@ -388,7 +390,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                        executor);
     }
 
     private void registerElpMapping(Eid eid, List<IpAddress> hopList) {
@@ -451,7 +453,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = {eid};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                            executor);
     }
 
     @Deprecated

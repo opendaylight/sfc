@@ -19,10 +19,10 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -42,15 +42,18 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsSffEntryDataListener.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
 
-    public SfcOvsSffEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
+    public SfcOvsSffEntryDataListener() {
         setInstanceIdentifier(SFF_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+    }
+
+    public void setDataProvider( DataBroker r ){
+        setDataBroker(r);
         registerAsDataChangeListener(DataBroker.DataChangeScope.ONE);
     }
 
@@ -69,7 +72,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
                 // add augmentations for serviceFunctionForwarder
-                addOvsdbAugmentations(serviceFunctionForwarder, opendaylightSfc.getExecutor());
+                addOvsdbAugmentations(serviceFunctionForwarder, executor);
             }
         }
 
@@ -81,7 +84,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
                 // rewrite augmentations for serviceFunctionForwarder
-                addOvsdbAugmentations(updatedServiceFunctionForwarder, opendaylightSfc.getExecutor());
+                addOvsdbAugmentations(updatedServiceFunctionForwarder, executor);
             }
         }
 
@@ -101,7 +104,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
                     // delete OvsdbNode
                     SfcOvsUtil.deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName.getValue()),
-                            opendaylightSfc.getExecutor());
+                                                    executor);
                 }
 
             } else if (dataObject instanceof SffDataPlaneLocator) {
@@ -118,7 +121,7 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                     // delete OvsdbTerminationPoint
                     SfcOvsUtil.deleteOvsdbTerminationPoint(
                             SfcOvsUtil.buildOvsdbTerminationPointIID(sffNameAsString, sffDataPlaneLocatorNameAsString),
-                            opendaylightSfc.getExecutor());
+                                    executor);
                 }
             }
         }

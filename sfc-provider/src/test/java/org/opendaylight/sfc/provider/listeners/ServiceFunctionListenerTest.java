@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.sfc.provider.SfcProviderIIDs;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
@@ -239,11 +239,13 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         }
 
-        // Cleanup
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        /* Clean-up */
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+
     }
 
     /**
@@ -297,10 +299,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         }
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcProviderIIDs.SFP_IID, LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -494,8 +496,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
 
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SF_IID, sfsBuilder.build(),
-                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcProviderIIDs.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION));
 
         Thread.sleep(1000); // Wait they are really created
 
@@ -548,8 +549,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         }
         ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
         serviceFunctionForwardersBuilder.setServiceFunctionForwarder(sffList);
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(OpendaylightSfc.SFF_IID,
-                serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcProviderIIDs.SFF_IID, serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
         // Create Service Function Chain
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(new SfcName(SFC_NAME));
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();

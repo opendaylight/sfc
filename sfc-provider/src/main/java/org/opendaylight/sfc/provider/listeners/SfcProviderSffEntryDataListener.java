@@ -17,7 +17,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -36,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 
 /**
  * This class is the DataListener for SFF changes.
@@ -47,9 +47,11 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSffEntryDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffEntryDataListener.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private final DataBroker broker;
     private ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration;
+    private static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
+
 
     public SfcProviderSffEntryDataListener(final DataBroker db) {
         this.broker = db;
@@ -60,7 +62,7 @@ public class SfcProviderSffEntryDataListener implements DataChangeListener, Auto
         //ServiceFunctionForwarder Entry
         try {
             sffDataChangeListenerRegistration = broker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                    OpendaylightSfc.SFF_ENTRY_IID, this, DataBroker.DataChangeScope.SUBTREE );
+                    SFF_ENTRY_IID, this, DataBroker.DataChangeScope.SUBTREE );
         } catch (final Exception e) {
             LOG.error("SfcProviderSffEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderSffEntryDataListener: registration Listener failed.", e);

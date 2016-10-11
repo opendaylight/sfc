@@ -18,7 +18,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,6 +38,8 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspDataListener.class);
     private SfcOfRspProcessor sfcOfRspProcessor;
+    private static final InstanceIdentifier<RenderedServicePath> RSP_ENTRY_IID =
+            InstanceIdentifier.builder(RenderedServicePaths.class).child(RenderedServicePath.class).build();
 
     public SfcOfRspDataListener(
             DataBroker dataBroker,
@@ -46,7 +48,7 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
             SfcSynchronizer sfcSynchronizer,
             RpcProviderRegistry rpcProviderRegistry) {
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.RSP_ENTRY_IID);
+        setIID(RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
         this.sfcOfRspProcessor = new SfcOfRspProcessor(
                 sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry);

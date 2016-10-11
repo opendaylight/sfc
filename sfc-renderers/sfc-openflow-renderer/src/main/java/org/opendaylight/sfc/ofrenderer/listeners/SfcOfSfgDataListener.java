@@ -18,7 +18,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAlgAPI;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.alg.rev150214.service.function.group.algorithms.ServiceFunctionGroupAlgorithm;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.ServiceFunctionGroups;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
@@ -56,6 +56,8 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfSfgDataListener.class);
+    public static final InstanceIdentifier<ServiceFunctionGroup> SFG_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctionGroups.class).child(ServiceFunctionGroup.class).build();
 
     public SfcOfSfgDataListener(DataBroker dataBroker, SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils) {
@@ -63,7 +65,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
         this.sfcOfProviderUtils = sfcOfProviderUtils;
 
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.SFG_ENTRY_IID);
+        setIID(SFG_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
     }
 

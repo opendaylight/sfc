@@ -13,7 +13,9 @@ import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.AccessListsState;
@@ -46,18 +48,20 @@ import static com.google.common.base.Preconditions.checkState;
 public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
 
     protected DataBroker dataBroker;
-    protected static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
-    protected static ExecutorService executor = opendaylightSfc.getExecutor();
+    //protected static final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
+    protected static ExecutorService executor =  Executors.newFixedThreadPool(5);
 
     // initial sfc odl setup, executor is set only once, new data broker is created before every
     // set, it ensures empty data store
     protected void setOdlSfc() {
         dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        //opendaylightSfc.setDataProvider(dataBroker);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
+        SfcProviderRpc.setDataProviderAux(dataBroker);
     }
 
     protected void close() throws ExecutionException, InterruptedException {
-        opendaylightSfc.close();
+        //opendaylightSfc.close();
     }
 
     /*

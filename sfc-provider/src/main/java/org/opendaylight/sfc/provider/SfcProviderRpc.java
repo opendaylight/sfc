@@ -101,14 +101,26 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  */
 
 public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionChainService, RenderedServicePathService,
-        ServicePathIdService {
+        ServicePathIdService, AutoCloseable  {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
+    private static DataBroker dataBroker = null;
+    private static final InstanceIdentifier<ServiceFunctionChains> SFC_IID =
+            InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+
 
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();
+    }
+
+    //blueprint setter
+    public void setDataProvider(DataBroker r) {
+        dataBroker = r;
+    }
+
+    //aux setter just for test
+    public static void setDataProviderAux(DataBroker r) {
+        dataBroker = r;
     }
 
     @Override
@@ -214,7 +226,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 serviceFunctionChainsBuilder.setServiceFunctionChain(input.getServiceFunctionChain());
         ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
 
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(OpendaylightSfc.SFC_IID, sfcs,
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(SFC_IID, sfcs,
                 LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }
@@ -417,6 +429,12 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 RpcResultBuilder.success(setGenerationAlgorithmOutputBuilder.build());
 
         return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public void close() throws Exception {
+        SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
+
     }
 
 }

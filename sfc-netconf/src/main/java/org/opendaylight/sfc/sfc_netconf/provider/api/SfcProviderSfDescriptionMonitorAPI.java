@@ -15,7 +15,7 @@ import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.sfc.sfc_netconf.provider.SfcNetconfDataProvider;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
@@ -37,7 +37,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcProviderSfDescriptionMonitorAPI{
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
-    private static final OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
+    private static BindingAwareBroker bindingAwareBroker = null;
     private static ConsumerContext sessionData;
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
             InstanceIdentifier
@@ -46,15 +46,16 @@ public class SfcProviderSfDescriptionMonitorAPI{
                    new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     public SfcProviderSfDescriptionMonitorAPI() {
-            setSessionHelper();
+        setSessionHelper();
+        LOG.info("SfcProviderSfDescriptionMonitorAPI bean initialized.");
     }
 
     private void setSessionHelper()  {
         printTraceStart(LOG);
         try {
-            if(odlSfc.getBroker()!=null) {
+            if(bindingAwareBroker != null) {
                 if(sessionData==null) {
-                    sessionData = odlSfc.getBroker().registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
+                    sessionData = bindingAwareBroker.registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
                     Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
                 }
             }
@@ -134,4 +135,8 @@ public class SfcProviderSfDescriptionMonitorAPI{
         return service.get().getRpcService(ServiceFunctionDescriptionMonitorReportService.class);
     }
 
+    //blueprint setter
+    public void setBindingRegistry( BindingAwareBroker r ){
+        bindingAwareBroker = r;
+    }
 }

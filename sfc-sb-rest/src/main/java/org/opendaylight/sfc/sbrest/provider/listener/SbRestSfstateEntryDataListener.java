@@ -9,8 +9,10 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstateTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
@@ -20,15 +22,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 
 public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstateEntryDataListener.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static final InstanceIdentifier<ServiceFunctionState> SFSTATE_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctionsState.class).child(ServiceFunctionState.class).build();
 
-    public SbRestSfstateEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.SFSTATE_ENTRY_IID);
-        registerAsDataChangeListener();
+    public SbRestSfstateEntryDataListener() {
+        setInstanceIdentifier(SFSTATE_ENTRY_IID);
+    }
+
+    public void setDataProvider(DataBroker r){
+       setDataBroker(r);
+       registerAsDataChangeListener();
     }
 
     @Override
@@ -51,8 +59,8 @@ public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionState createdServiceFunctionState = (ServiceFunctionState) entry.getValue();
                 LOG.debug("\nCreated Service Function State Name: {}", createdServiceFunctionState.getName());
 
-                Runnable task = new SbRestSfstateTask(RestOperation.PUT, createdServiceFunctionState, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfstateTask(RestOperation.PUT, createdServiceFunctionState, executor);
+                executor.submit(task);
             }
         }
 
@@ -64,8 +72,8 @@ public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionState updatedServiceFunctionState = (ServiceFunctionState) entry.getValue();
                 LOG.debug("\nModified Service Function State Name: {}", updatedServiceFunctionState.getName());
 
-                Runnable task = new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executor);
+                executor.submit(task);
             }
         }
 
@@ -78,8 +86,8 @@ public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionState originalServiceFunctionState = (ServiceFunctionState) dataObject;
                 LOG.debug("\nDeleted Service Function State Name: {}", originalServiceFunctionState.getName());
 
-                Runnable task = new SbRestSfstateTask(RestOperation.DELETE, originalServiceFunctionState, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestSfstateTask(RestOperation.DELETE, originalServiceFunctionState, executor);
+                executor.submit(task);
             }
         }
 

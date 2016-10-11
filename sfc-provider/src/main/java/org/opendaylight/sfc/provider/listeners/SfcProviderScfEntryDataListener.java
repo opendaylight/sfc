@@ -15,9 +15,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -39,10 +39,11 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderScfEntryDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScfEntryDataListener.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
 
     private final DataBroker broker;
     private ListenerRegistration<DataChangeListener> scfEntryDataChangeListenerRegistration = null;
+    private static final InstanceIdentifier<ServiceFunctionClassifier> SCF_ENTRY_IID =
+            InstanceIdentifier.builder(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class).build();
 
     public SfcProviderScfEntryDataListener(final DataBroker db) {
         this.broker = db;
@@ -53,7 +54,7 @@ public class SfcProviderScfEntryDataListener implements DataChangeListener, Auto
         //ServiceClassifierEntry
         try {
             scfEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                            OpendaylightSfc.SCF_ENTRY_IID, SfcProviderScfEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+                            SCF_ENTRY_IID, SfcProviderScfEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
         } catch (final Exception e) {
             LOG.error("SfcProviderScfEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderScfEntryDataListener: registration Listener failed.", e);

@@ -9,9 +9,11 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestRspTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -21,17 +23,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 
 public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static final InstanceIdentifier<RenderedServicePath> RSP_ENTRY_IID =
+            InstanceIdentifier.builder(RenderedServicePaths.class).child(RenderedServicePath.class).build();
 
-    public SbRestRspEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.RSP_ENTRY_IID);
+    public SbRestRspEntryDataListener() {
+        setInstanceIdentifier(RSP_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-        registerAsDataChangeListener();
     }
+    public void setDataProvider(DataBroker r){
+       setDataBroker(r);
+       registerAsDataChangeListener();
+    }
+
 
 
     @Override
@@ -57,8 +65,8 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 RenderedServicePath createdRenderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\nCreated Rendered Service Path: {}", createdRenderedServicePath.getName());
 
-                Runnable task = new SbRestRspTask(RestOperation.POST, createdRenderedServicePath, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestRspTask(RestOperation.POST, createdRenderedServicePath, executor);
+                executor.submit(task);
             }
         }
 
@@ -70,8 +78,8 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 RenderedServicePath updatedRenderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\nModified Rendered Service Path Name: {}", updatedRenderedServicePath.getName());
 
-                Runnable task = new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executor);
+                executor.submit(task);
             }
         }
 
@@ -85,8 +93,8 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 RenderedServicePath originalRenderedServicePath = (RenderedServicePath) dataObject;
                 LOG.debug("\nDeleted Rendered Service Path Name: {}", originalRenderedServicePath.getName());
 
-                Runnable task = new SbRestRspTask(RestOperation.DELETE, originalRenderedServicePath, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestRspTask(RestOperation.DELETE, originalRenderedServicePath, executor);
+                executor.submit(task);
             }
         }
         printTraceStop(LOG);

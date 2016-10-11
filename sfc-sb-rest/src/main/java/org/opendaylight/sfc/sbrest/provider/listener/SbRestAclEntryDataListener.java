@@ -9,10 +9,14 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -23,14 +27,19 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static final InstanceIdentifier<Acl> ACL_ENTRY_IID =
+            InstanceIdentifier.builder(AccessLists.class).child(Acl.class).build();
 
-    public SbRestAclEntryDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
-        setInstanceIdentifier(OpendaylightSfc.ACL_ENTRY_IID);
-        registerAsDataChangeListener();
+
+    public SbRestAclEntryDataListener() {
+        setInstanceIdentifier(ACL_ENTRY_IID);
     }
 
+    public void setDataProvider(DataBroker r){
+       setDataBroker(r);
+       registerAsDataChangeListener();
+    }
 
     @Override
     public void onDataChanged(
@@ -55,8 +64,8 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
                 Acl createdAcl = (Acl) entry.getValue();
                 LOG.debug("\nCreated Access List Name: {}", createdAcl.getAclName());
 
-                Runnable task = new SbRestAclTask(RestOperation.POST, createdAcl, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestAclTask(RestOperation.POST, createdAcl, executor);
+                executor.submit(task);
             }
         }
 
@@ -68,8 +77,8 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
                 Acl updatedAcl = (Acl) entry.getValue();
                 LOG.debug("\nModified Access List Name: {}", updatedAcl.getAclName());
 
-                Runnable task = new SbRestAclTask(RestOperation.PUT, updatedAcl, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestAclTask(RestOperation.PUT, updatedAcl, executor);
+                executor.submit(task);
             }
         }
 
@@ -82,8 +91,8 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
                 Acl originalAcl = (Acl) dataObject;
                 LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
 
-                Runnable task = new SbRestAclTask(RestOperation.DELETE, originalAcl, opendaylightSfc.getExecutor());
-                opendaylightSfc.getExecutor().submit(task);
+                Runnable task = new SbRestAclTask(RestOperation.DELETE, originalAcl, executor);
+                executor.submit(task);
             }
         }
         printTraceStop(LOG);

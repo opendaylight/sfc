@@ -24,6 +24,8 @@ import com.google.common.util.concurrent.Futures;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -31,7 +33,6 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -54,20 +55,23 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public static final InstanceIdentifier<Node> OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER = InstanceIdentifier
             .create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
             .child(Node.class);
 
-    public SfcOvsNodeDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
+    public SfcOvsNodeDataListener() {
+        setDataBroker(getDataBroker());
         setInstanceIdentifier(OVSDB_NODE_AUGMENTATION_INSTANCE_IDENTIFIER);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-        registerAsDataChangeListener(DataBroker.DataChangeScope.BASE);
     }
 
+    public void setDataProvider( DataBroker r ){
+        setDataBroker(r);
+        registerAsDataChangeListener(DataBroker.DataChangeScope.BASE);
+    }
 
     @Override
     public void onDataChanged(
@@ -110,8 +114,7 @@ public class SfcOvsNodeDataListener extends SfcOvsAbstractDataListener {
                                 if (optionalSffs.isPresent()) {
                                     ServiceFunctionForwarder sff = findSffByIp(optionalSffs.get(), connectionInfo.getRemoteIp());
                                     if(sff != null) {
-                                        SfcOvsSffEntryDataListener.addOvsdbAugmentations(sff,
-                                                opendaylightSfc.getExecutor());
+                                        SfcOvsSffEntryDataListener.addOvsdbAugmentations(sff, executor );
                                     }
                                 }
                             }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
@@ -58,17 +58,21 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
-    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
+    //private static final SfcProviderSfDescriptionMonitorAPI getSfDescMon = new SfcProviderSfDescriptionMonitorAPI();
+    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
 
     public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
         .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    public SfcNetconfNodeDataListener(OpendaylightSfc opendaylightSfc) {
-        setOpendaylightSfc(opendaylightSfc);
-        setDataBroker(opendaylightSfc.getDataProvider());
+    public SfcNetconfNodeDataListener(DataBroker dataprovider) {
+        setDataBroker(dataprovider);
         setInstanceIdentifier(NETCONF_TOPO_IID);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
         registerAsDataChangeListener();
+    }
+
+    public void setSfcProviderSfDescriptionMonitorAPI( SfcProviderSfDescriptionMonitorAPI r){
+        getSfDescMon = r;
     }
 
     private static boolean isServiceFunction(NetconfNode netconfNode) {

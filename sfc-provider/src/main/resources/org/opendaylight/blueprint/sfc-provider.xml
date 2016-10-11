@@ -7,41 +7,39 @@
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
   <reference id="bindingRegistry"
-    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
+    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker" />
 
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
+  <bean id="opendaylightSfc" class="org.opendaylight.sfc.provider.OpendaylightSfc"
     destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
-    <property name="broker" ref="bindingRegistry"/>
+    <property name="dataProvider" ref="dataBroker" />
+    <property name="broker" ref="bindingRegistry" />
   </bean>
 
-  <bean id="sfcProviderRpc"
-    class="org.opendaylight.sfc.provider.SfcProviderRpc">
+  <bean id="sfcProviderRpc" class="org.opendaylight.sfc.provider.SfcProviderRpc">
   </bean>
-  <odl:rpc-implementation ref="sfcProviderRpc"/>
+  <odl:rpc-implementation ref="sfcProviderRpc" />
 
   <bean id="sfcProviderSffEntryDataListener"
     class="org.opendaylight.sfc.provider.listeners.SfcProviderSffEntryDataListener"
     destroy-method="close">
-    <argument ref="dataBroker"/>
-  </bean>
-
-  <bean id="sfcProviderSfEntryDataListener"
-    class="org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener"
-    destroy-method="close">
-    <argument ref="dataBroker"/>
+    <argument ref="dataBroker" />
   </bean>
 
   <bean id="sfcProviderScfEntryDataListener"
     class="org.opendaylight.sfc.provider.listeners.SfcProviderScfEntryDataListener"
     destroy-method="close">
-    <argument ref="dataBroker"/>
+    <argument ref="dataBroker" />
   </bean>
 
   <bean id="sfcProviderSfstEntryDataListener"
     class="org.opendaylight.sfc.provider.listeners.SfcProviderSfstEntryDataListener"
     destroy-method="close">
-    <argument ref="dataBroker"/>
+    <argument ref="dataBroker" />
+  </bean>
+
+  <bean id="serviceFunctionListener"
+    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionListener"
+    init-method="init" destroy-method="close">
+    <argument ref="dataBroker" />
   </bean>
 </blueprint>

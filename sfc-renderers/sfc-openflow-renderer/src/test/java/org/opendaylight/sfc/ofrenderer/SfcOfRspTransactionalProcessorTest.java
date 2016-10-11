@@ -131,6 +131,17 @@ public class SfcOfRspTransactionalProcessorTest {
         return theMap.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
     }
 
+    /**
+     * Attempt to delete an RSP that does not exist
+     */
+    @Test
+    public void deleteNonExistentRsp() {
+        sfcFlowWriterTestMock.deleteRspFlows((long) 31);
+        Set<SfcOfFlowWriterImpl.FlowDetails> flowsToDelete = Whitebox
+                .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
+        Assert.assertEquals(0, flowsToDelete.size());
+    }
+
     /*
      * Create RSP, then delete it.
      *   - Check that all SFFs are returned to the "uninitialized" state

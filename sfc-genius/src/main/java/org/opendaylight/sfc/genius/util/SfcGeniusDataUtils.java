@@ -25,6 +25,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SfcGeniusDataUtils {
+    // hide the default constructor
+    private SfcGeniusDataUtils() {}
+
     /**
      * Fetches the SF's MAC address, given a neutron port name
      *
@@ -39,7 +42,6 @@ public class SfcGeniusDataUtils {
 
         return Optional.ofNullable(SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf()))
                     .map(SfcGeniusUtilsDataGetter::getBridgeFromDpnId)
-                    .filter(Optional::isPresent)
                     .map(bridgeRef -> bridgeRef.get().getBridgeReference())
                     .map(OvsdbBridgeRef::getValue)
                     .map(iid -> iid.firstKeyOf(Node.class))

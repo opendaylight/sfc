@@ -65,7 +65,6 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     private static final String LOGSTR_THREAD_EXCEPTION = "Exception executing Thread: {}";
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfFlowWriterImpl.class);
 
-    //private ExecutorService threadPoolExecutorServiceDelete;
     private ExecutorService threadPoolExecutorService;
 
     private FlowBuilder flowBuilder;
@@ -74,10 +73,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     // indexed by the corresponding SFFs
     private Map<Long, Map<String, List<FlowDetails>>> rspNameToFlowsMap;
 
-    //temporary list of flows to be deleted. All of them will be transactionaly deleted on
+    // temporary list of flows to be deleted. All of them will be deleted when
     // deleteFlowSet() invokation
     private Set<FlowDetails> setOfFlowsToDelete;
-    // temporary list of flows to be deleted. All of them will be transactionally deleted on
+    // temporary list of flows to be added. All of them will be deleted when
     // flushFlows() invokation
     private Set<FlowDetails> setOfFlowsToAdd;
 
@@ -91,6 +90,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
     /**
      * Shutdown the thread pool
+     *
+     * @throws ExecutionException     thrown when attempting to retrieve the result of an aborted task
+     * @throws InterruptedException   thrown when the executor is waiting, sleeping, or occupied, and it is interrupted
      */
     @Override
     public void shutdown() throws ExecutionException, InterruptedException {
@@ -138,7 +140,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
             try {
                 submitFuture.checkedGet();
             } catch (TransactionCommitFailedException e) {
-                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
             }
         }
     }
@@ -176,7 +178,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
             try {
                 submitFuture.checkedGet();
             } catch (TransactionCommitFailedException e) {
-                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
             }
         }
     }
@@ -199,7 +201,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
          * @param tableKey - the table identifier
          * @param flow - The flow to be written
          */
-        public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow) {
+        protected FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow) {
             this.sffNodeName = sffNodeName;
             this.flowKey = flowKey;
             this.tableKey = tableKey;
@@ -213,7 +215,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
          * @param flowKey - the flow identifier
          * @param tableKey - the table identifier
          */
-        public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
+        protected FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
             this(sffNodeName, flowKey, tableKey, null);
         }
     }
@@ -263,7 +265,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         try {
             threadPoolExecutorService.execute(writerThread);
         } catch (Exception ex) {
-            LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString());
+            LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
         }
 
         // Clear the entries
@@ -376,7 +378,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
             try {
                 threadPoolExecutorService.execute(fsrt);
             } catch (Exception ex) {
-                LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString());
+                LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
             }
 
         // Clear the entries

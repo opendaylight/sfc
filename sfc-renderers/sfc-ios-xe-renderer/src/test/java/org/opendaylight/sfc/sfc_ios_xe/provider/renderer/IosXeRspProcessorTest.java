@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
@@ -48,11 +47,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
     private final String forwarderName = "forwarder";
     private final SfName firstFunctionName = new SfName("firstFunction");
     private final SfName secondFunctionName = new SfName("secondFunction");
@@ -64,7 +63,8 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     @Before
     public void init() {
         dataBroker = getDataBroker();
-        odl.setDataProvider(dataBroker);
+        //odl.setDataProvider(dataBroker);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
         nodeManager = mock(NodeManager.class);
         prepareSfcEntities();
     }

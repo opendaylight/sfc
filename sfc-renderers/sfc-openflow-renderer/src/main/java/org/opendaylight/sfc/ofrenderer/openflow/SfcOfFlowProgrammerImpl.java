@@ -332,29 +332,15 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 tableId);
 
         // Add our drop action to a list
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionDropPacket(0));
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        int order = 0;
-        ib.setKey(new InstructionKey(order));
-        ib.setOrder(order++);
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
+        List<Action> actionList = new ArrayList<Action>(){{
+            add(SfcOpenflowUtils.createActionDropPacket(0));
+        }};
 
         // Match any
         MatchBuilder match = new MatchBuilder();
 
         // Finish up the instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
@@ -372,24 +358,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyFlow, tableId [{}] nextTableId [{}]",
                 tableId, nextTableId);
 
-        // Action, goto next table
-        GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(nextTableId);
-
-        InstructionBuilder ib = new InstructionBuilder();
-        int order = 0;
-        ib.setKey(new InstructionKey(order));
-        ib.setOrder(order++);
-        ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
-
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-
         // Match any
         MatchBuilder match = new MatchBuilder();
 
-        // Finish up the instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = appendGotoTableInstruction(new InstructionsBuilder(), nextTableId);
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
@@ -448,8 +420,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshVxgpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
+        MatchBuilder match = getNshMatches(nshNsp);
 
         FlowBuilder transportIngressFlow =
                 configureTransportIngressFlow(match, getTableId(TABLE_INDEX_NEXT_HOP));
@@ -517,14 +488,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private FlowBuilder configureTransportIngressFlow(MatchBuilder match, short nextTable) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportIngressFlow");
 
-        // Action, goto the nextTable
-        GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(nextTable);
-
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build());
-        ib.setKey(new InstructionKey(1));
-        ib.setOrder(0);
-        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(ib);
+        InstructionsBuilder isb = appendGotoTableInstruction(new InstructionsBuilder(), nextTable);
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(
@@ -563,17 +527,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxMoveRegToArpSpaAction(order++));
         actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++));
 
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        int ibOrder = 0;
-        InstructionBuilder actionsIb = new InstructionBuilder();
-        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        actionsIb.setKey(new InstructionKey(ibOrder));
-        actionsIb.setOrder(ibOrder++);
-
         // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
         FlowBuilder arpTransportIngressFlow =
@@ -600,17 +555,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionOutPort((int) sffPort, 0));
 
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        int ibOrder = 0;
-        InstructionBuilder actionsIb = new InstructionBuilder();
-        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        actionsIb.setKey(new InstructionKey(ibOrder));
-        actionsIb.setOrder(ibOrder++);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
         FlowBuilder sfFlow =
@@ -635,17 +580,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.LOCAL.toString(), 0));
 
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        int ibOrder = 0;
-        InstructionBuilder actionsIb = new InstructionBuilder();
-        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        actionsIb.setKey(new InstructionKey(ibOrder));
-        actionsIb.setOrder(ibOrder++);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = SfcOpenflowUtils.createInstructionsBuilder(actionsIb);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
         FlowBuilder sfFlow =
@@ -756,38 +691,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         LOG.debug("SfcProviderSffFlowWriter.configurePathMapperFlow sff [{}] pathId [{}]",
                 pathId);
 
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-
-        int ibOrder = 0;
-        int actionOrder = 0;
-        InstructionBuilder metadataIb = new InstructionBuilder();
-        metadataIb.setInstruction(
-                SfcOpenflowUtils.createInstructionMetadata(
-                        actionOrder++,
-                        getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH));
-        metadataIb.setKey(new InstructionKey(ibOrder));
-        metadataIb.setOrder(ibOrder++);
-        instructions.add(metadataIb.build());
-
-        InstructionBuilder actionsIb = new InstructionBuilder();
-        actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        actionsIb.setKey(new InstructionKey(ibOrder));
-        actionsIb.setOrder(ibOrder++);
-
-        GoToTableBuilder gotoNextHop = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_NEXT_HOP));
-        InstructionBuilder gotoNextHopIb = new InstructionBuilder();
-        gotoNextHopIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoNextHop.build()).build());
-        gotoNextHopIb.setKey(new InstructionKey(ibOrder));
-        gotoNextHopIb.setOrder(ibOrder++);
-
-        // Put our Instruction in a list of Instructions
-        instructions.add(actionsIb.build());
-        instructions.add(gotoNextHopIb.build());
-        isb.setInstruction(instructions);
+        // Apply actions take actions instantly - so, does not matter which order they take - let's assume first
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
+        appendMetadataInstruction(isb, pathId);
+        appendGotoTableInstruction(isb, getTableId(TABLE_INDEX_NEXT_HOP));
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(
@@ -815,34 +722,14 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 "SfcProviderSffFlowWriter.configurePathMapperAclFlow sff [{}] srcIp [{}] dstIp [{}] pathId [{}]",
                 sffNodeName, pktSrcIpStr, pktDstIpStr, pathId);
 
-        //
         // Match on the Src and Dst IPs
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
         SfcOpenflowUtils.addMatchSrcIpv4(match, pktSrcIpStr, 32);
         SfcOpenflowUtils.addMatchDstIpv4(match, pktDstIpStr, 32);
 
-        // Set the PathId in the metadata and goto the TransportEgress table
-        int ibOrder = 0;
-        InstructionBuilder metadataIb = new InstructionBuilder();
-        metadataIb.setInstruction(SfcOpenflowUtils.createInstructionMetadata(ibOrder,
-                getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH));
-        metadataIb.setKey(new InstructionKey(ibOrder));
-        metadataIb.setOrder(ibOrder++);
-
-        GoToTableBuilder gotoNextHop = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_NEXT_HOP));
-        InstructionBuilder gotoNextHopIb = new InstructionBuilder();
-        gotoNextHopIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoNextHop.build()).build());
-        gotoNextHopIb.setKey(new InstructionKey(ibOrder));
-        gotoNextHopIb.setOrder(ibOrder++);
-
-        // Put our Instruction in a list of Instructions
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(metadataIb.build());
-        instructions.add(gotoNextHopIb.build());
-
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = appendMetadataInstruction(new InstructionsBuilder(), pathId);
+        appendGotoTableInstruction(isb, getTableId(TABLE_INDEX_NEXT_HOP));
 
         // Create and configure the FlowBuilder
         FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(
@@ -905,9 +792,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nshNsp,
             final short nshNsi) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
 
         int order = 0;
         List<Action> actionList = new ArrayList<>();
@@ -931,9 +816,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshEthNextHopFlow(String sffNodeName, String dstMac, long nsp, short nsi) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nsi);
+        MatchBuilder match = getNshMatches(nsp, nsi);
 
         int order = 0;
         List<Action> actionList = new ArrayList<>();
@@ -968,29 +851,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private FlowBuilder configureNextHopFlow(MatchBuilder match, List<Action> actionList, int flowPriority) {
         LOG.debug("SfcProviderSffFlowWriter.configureNextHopFlow");
 
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        GoToTableBuilder gotoTb = SfcOpenflowUtils.createActionGotoTable(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
-
-        InstructionBuilder gotoTbIb = new InstructionBuilder();
-        gotoTbIb.setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoTb.build()).build());
-        gotoTbIb.setKey(new InstructionKey(1));
-        gotoTbIb.setOrder(1);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        instructions.add(gotoTbIb.build());
-        isb.setInstruction(instructions);
+        // this apply actions has an 'order' of 0 - first one executed
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
+        appendGotoTableInstruction(isb, getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(
@@ -1194,9 +1057,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureNshVxgpeLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi,
             String port) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
 
         // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
         int order = 0;
@@ -1228,9 +1089,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp, final short nshNsi) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
 
         // On the last hop just remove nsh header and resubmit to the dispatcher table
         int order = 0;
@@ -1243,21 +1102,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Proceed with other services
         actionList.add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, order++));
 
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Make the cookie
         BigInteger cookie =
@@ -1309,9 +1154,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             final String sffNodeName, final long nshNsp, final short nshNsi, String inport, String outport) {
         int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
 
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
         if(!inport.startsWith(OutputPortValues.INPORT.toString())) {
             // if we output to a port that's the same as the inport, the pkt will be dropped
             SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(inport));
@@ -1355,9 +1198,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureNshNscTransportEgressFlowThread, sff [{}] nsp [{}] nsi [{}] port [{}]",
                 sffNodeName, nshNsp, nshNsi, port);
 
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
         SfcOpenflowUtils.addMatchNshNsc1(match, 0l);
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
@@ -1367,7 +1208,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
-                        match, new ArrayList<Action>(), port,
+                        match, new ArrayList<>(), port,
                         order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
                         TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
@@ -1388,9 +1229,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         int ip = InetAddresses.coerceToInteger(InetAddresses.forString(sffIp));
         long ipl = ip & 0xffffffffL;
 
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
         SfcOpenflowUtils.addMatchNshNsc1(match, ipl);
 
         // Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
@@ -1425,9 +1264,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port) {
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
 
         int order = 0;
         List<Action> actionList = new ArrayList<>();
@@ -1509,21 +1346,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionOutPort(port, order++));
         }
 
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Make the cookie
         BigInteger cookie =
@@ -1637,22 +1460,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(groupAction);
 
         // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-
-        //
         // Create and configure the FlowBuilder
         FlowBuilder nextHopFlow =
                 SfcOpenflowUtils.createFlowBuilder(
@@ -1707,28 +1516,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         LOG.debug("configureTransportEgressFlow:starting. ofname:{} instructions: {}", openflowName, actionList);
 
-        MatchBuilder match = new MatchBuilder();
-        SfcOpenflowUtils.addMatchNshNsp(match, nshNsp);
-        SfcOpenflowUtils.addMatchNshNsi(match, nshNsi);
+        MatchBuilder match = getNshMatches(nshNsp, nshNsi);
+        InstructionsBuilder isb = wrapActionsIntoApplyActionsInstruction(actionList);
 
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        int order = 0;
-        ib.setKey(new InstructionKey(order));
-        ib.setOrder(order++);
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-
-        // Finish up the instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        isb.setInstruction(instructions);
-
-     // Make the cookie
+        // Make the cookie
         BigInteger cookie =
                 new BigInteger(
                         new String(TRANSPORT_EGRESS_COOKIE_STR_BASE + cookieStr),
@@ -1755,5 +1546,70 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void setTableIndexMapper(SfcTableIndexMapper tableIndexMapper) {
         this.tableIndexMapper = tableIndexMapper;
+    }
+
+    private  InstructionsBuilder wrapActionsIntoApplyActionsInstruction(List<Action> theActions) {
+        // Create an Apply Action
+        ApplyActionsBuilder aab = new ApplyActionsBuilder();
+        aab.setAction(theActions);
+
+        // Wrap our Apply Action in an Instruction
+        InstructionBuilder ib = new InstructionBuilder();
+        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+        ib.setOrder(0);
+        ib.setKey(new InstructionKey(0));
+
+        // Put our Instruction in a list of Instructions
+        List<Instruction> instructions = new ArrayList<>();
+        instructions.add(ib.build());
+        return new InstructionsBuilder().setInstruction(instructions);
+    }
+
+    private MatchBuilder getNshMatches(long nsp, short nsi) {
+        MatchBuilder theMatch = new MatchBuilder();
+        SfcOpenflowUtils.addMatchNshNsp(theMatch, nsp);
+        SfcOpenflowUtils.addMatchNshNsi(theMatch, nsi);
+        return theMatch;
+    }
+
+    private MatchBuilder getNshMatches(long nsp) {
+        MatchBuilder theMatch = new MatchBuilder();
+        SfcOpenflowUtils.addMatchNshNsp(theMatch, nsp);
+        return theMatch;
+    }
+
+    private InstructionsBuilder appendGotoTableInstruction(InstructionsBuilder isb, short nextTableId) {
+        if(isb.getInstruction() == null) {
+            isb.setInstruction(new ArrayList<>());
+        }
+        isb.getInstruction().add(createGotoTableInstruction(nextTableId, isb.getInstruction().size()));
+        return isb;
+    }
+
+    private Instruction createGotoTableInstruction(short nextTableId, int order) {
+        GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(nextTableId);
+
+        return new InstructionBuilder()
+                .setKey(new InstructionKey(order))
+                .setOrder(order)
+                .setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build())
+                .build();
+    }
+
+    private InstructionsBuilder appendMetadataInstruction(InstructionsBuilder isb, long pathId) {
+        if(isb.getInstruction() == null) {
+            isb.setInstruction(new ArrayList<>());
+        }
+        isb.getInstruction().add(createAddMetadataInstruction(pathId, isb.getInstruction().size()));
+        return isb;
+    }
+
+    private Instruction createAddMetadataInstruction(long pathId, int order) {
+        return new InstructionBuilder()
+                .setInstruction(SfcOpenflowUtils
+                        .createInstructionMetadata(order, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH))
+                .setKey(new InstructionKey(order))
+                .setOrder(order)
+                .build();
     }
 }

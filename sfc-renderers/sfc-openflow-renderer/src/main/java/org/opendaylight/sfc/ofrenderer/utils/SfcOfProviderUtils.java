@@ -13,9 +13,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -65,6 +66,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     private Map<Long, RspContext> rspIdToContext;
+    protected static ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public SfcOfProviderUtils() {
         rspIdToContext = new HashMap<>();
@@ -156,7 +158,8 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         if(sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
             throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsBridgeAugmentation.");
         }
-        Node node = SfcOvsUtil.lookupTopologyNode(sff, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+        //we shouldn't use the getter getOpendaylightSfcObj, but nobody uses getPortNumberFromName
+        Node node = SfcOvsUtil.lookupTopologyNode(sff, executor);
         if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
         }

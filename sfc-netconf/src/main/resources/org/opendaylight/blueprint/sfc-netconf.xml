@@ -9,16 +9,21 @@
   <reference id="bindingRegistry"
     interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
 
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
-    <property name="broker" ref="bindingRegistry"/>
+  <bean id="sfcprovidersfdescriptionmonitorapi"
+        class="org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI">
+     <property name="bindingRegistry" ref="bindingRegistry"/>
+  </bean>
+
+  <bean id="sfcnetconfservicefunctionapi"
+        class="org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI">
+     <property name="sfcProviderSfDescriptionMonitorAPI" ref="sfcprovidersfdescriptionmonitorapi"/>
   </bean>
 
   <bean id="sfcNetconfNodeDataListener"
-    class="org.opendaylight.sfc.sfc_netconf.provider.listener.SfcNetconfNodeDataListener"
-    destroy-method="close">
-    <argument ref="opendaylightSfc"/>
+        class="org.opendaylight.sfc.sfc_netconf.provider.listener.SfcNetconfNodeDataListener"
+            destroy-method="close">
+    <argument ref="dataBroker"/>
+    <property name="sfcProviderSfDescriptionMonitorAPI" ref="sfcprovidersfdescriptionmonitorapi"/>
   </bean>
+
 </blueprint>

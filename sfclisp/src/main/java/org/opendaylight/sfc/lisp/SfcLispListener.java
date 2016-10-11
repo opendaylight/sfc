@@ -14,7 +14,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 //import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-//import org.opendaylight.sfc.provider.OpendaylightSfc;
 
 public class SfcLispListener implements ISfcLispListener, BindingAwareConsumer {
 

@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.provider;
 
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
@@ -104,11 +105,21 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
+    private static DataBroker dataBroker = null;
+
 
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();
+    }
+
+    //blueprint setter
+    public void setDataProvider(DataBroker r) {
+        dataBroker = r;
+    }
+
+    //aux setter just for test
+    public static void setDataProviderAux(DataBroker r) {
+        dataBroker = r;
     }
 
     @Override
@@ -214,7 +225,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 serviceFunctionChainsBuilder.setServiceFunctionChain(input.getServiceFunctionChain());
         ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
 
-        if (!SfcDataStoreAPI.writeMergeTransactionAPI(OpendaylightSfc.SFC_IID, sfcs,
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(SfcInstanceIdentifiers.SFC_IID, sfcs,
                 LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }

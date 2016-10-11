@@ -21,7 +21,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
@@ -50,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 
 /**
  * Implementation of {@link OperDsUpdateHandlerInterface} for the Logical SFF
@@ -61,8 +61,10 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
     private static final Logger LOG = LoggerFactory.getLogger(OperDsUpdateHandlerLSFFImpl.class);
 
     private ExecutorService threadPoolExecutorService;
+    private DataBroker dataBroker=null;
 
-    public OperDsUpdateHandlerLSFFImpl() {
+    public OperDsUpdateHandlerLSFFImpl(DataBroker r) {
+        dataBroker=r;
         threadPoolExecutorService = Executors.newSingleThreadExecutor();
     }
 
@@ -235,7 +237,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
     @Override
     public void onRspCreation(SffGraph theGraph, RenderedServicePath rsp) {
 
-        WriteTransaction trans = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction trans = dataBroker.newWriteOnlyTransaction();
         updateRenderedServicePathOperationalStateWithDpnIds(theGraph, rsp, trans);
         updateSffStateWithDpnIds(theGraph, rsp, trans);
         commitChangesAsync(trans);
@@ -244,7 +246,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
     @Override
     public void onRspDeletion(RenderedServicePath rsp) {
 
-        WriteTransaction trans = OpendaylightSfc.getOpendaylightSfcObj().getDataProvider().newWriteOnlyTransaction();
+        WriteTransaction trans = dataBroker.newWriteOnlyTransaction();
         deleteRspFromSffState(rsp, trans);
         commitChangesAsync(trans);
     }

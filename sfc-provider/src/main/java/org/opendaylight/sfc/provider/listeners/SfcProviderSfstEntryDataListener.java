@@ -17,7 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcConcurrencyAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
@@ -46,8 +46,8 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
     private void registerListeners() {
         //SF Schedule type Entry
         try {
-            sfstEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
-                            OpendaylightSfc.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
+            sfstEntryDataChangeListenerRegistration = broker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+                            SfcInstanceIdentifiers.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
         } catch (final Exception e) {
             LOG.error("SfcProviderSfstEntryDataListener: DataChange listener registration fail!", e);
             throw new IllegalStateException("SfcProviderSfstEntryDataListener: registration Listener failed.", e);

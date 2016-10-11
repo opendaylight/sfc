@@ -13,7 +13,6 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * @since 2014-07-28
  */
 public abstract class SfcProviderAbstractRestAPI implements Runnable {
-    protected static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private static final Logger LOG = LoggerFactory.getLogger
             (SfcProviderAbstractRestAPI.class);
     private String methodName = null;

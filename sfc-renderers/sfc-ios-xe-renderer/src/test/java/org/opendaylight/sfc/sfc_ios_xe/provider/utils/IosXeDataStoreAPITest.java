@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -51,7 +50,6 @@ import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.T
 
 public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc odl = new OpendaylightSfc();
     private final String REMOTE_FORWARDER = "remote-forwarder";
     private final String SERVICE_NAME = "service-function";
     private IosXeDataStoreAPI iosXeDataStoreAPI;
@@ -61,7 +59,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     public void init() {
         // Initialize datastore
         mountpoint = getDataBroker();
-        odl.setDataProvider(mountpoint);
+        //odl.setDataProvider(mountpoint);
     }
 
     @Test

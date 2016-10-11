@@ -9,6 +9,7 @@ package org.opendaylight.sfc.sfc_lisp.provider.listener;
 
 
 import java.util.Map;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
@@ -35,13 +36,16 @@ public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
     private LispUpdater lispUpdater;
 
-    public SfcLispSfEntryDataListener(OpendaylightSfc odlSfc, LispUpdater lispUpdater) {
-        setOpendaylightSfc(odlSfc);
-        setDataBroker(odlSfc.getDataProvider());
+    public SfcLispSfEntryDataListener(LispUpdater lispUpdater) {
         setInstanceIdentifier(OpendaylightSfc.SF_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.CONFIGURATION);
-        registerAsDataChangeListener();
         this.lispUpdater = lispUpdater;
+    }
+
+    public void setDataProvider(DataBroker r){
+        setDataBroker(r);
+        registerAsDataChangeListener();
+        LOG.info("Initialized SF listener");
     }
 
     @Override

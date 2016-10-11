@@ -104,11 +104,21 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
-    private OpendaylightSfc odlSfc = OpendaylightSfc.getOpendaylightSfcObj();
-    private DataBroker dataBroker = odlSfc.getDataProvider();
+    private static DataBroker dataBroker = null;
+
 
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();
+    }
+
+    //blueprint setter
+    public void setDataProvider(DataBroker r) {
+        dataBroker = r;
+    }
+
+    //aux setter just for test
+    public static void setDataProviderAux(DataBroker r) {
+        dataBroker = r;
     }
 
     @Override

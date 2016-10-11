@@ -7,30 +7,20 @@
  */
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
-import java.util.concurrent.ExecutionException;
 
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class SfcSbRestProviderModule implements AutoCloseable{
+public class SfcSbRestProviderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcSbRestProviderModule.class);
-    private static OpendaylightSfc opendaylightSfc;
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public void startSbRestKeepAliveSocket() {
-        opendaylightSfc = OpendaylightSfc.getOpendaylightSfcObj();
-        opendaylightSfc.getExecutor().execute(new SbRestKeepAliveSocket());
-    }
-
-    @Override
-    public void close() throws Exception {
-        try {
-            opendaylightSfc.close();
-        } catch (ExecutionException | InterruptedException e) {
-            LOG.error("Failed to close OpendaylightSfc instance {} cleanly", this);
-        }
+        executor.execute(new SbRestKeepAliveSocket());
     }
 }

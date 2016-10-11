@@ -47,7 +47,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 public class SfcProviderSffEntryDataListener implements DataChangeListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSffEntryDataListener.class);
-    private static final OpendaylightSfc ODL_SFC = OpendaylightSfc.getOpendaylightSfcObj();
     private final DataBroker broker;
     private ListenerRegistration<DataChangeListener> sffDataChangeListenerRegistration;
 

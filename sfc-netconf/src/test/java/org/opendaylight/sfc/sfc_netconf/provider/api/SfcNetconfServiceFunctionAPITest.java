@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -59,7 +58,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
 
-    private final OpendaylightSfc opendaylightSfc = new OpendaylightSfc();
     private static final String IP_MGMT_ADDRESS = "192.168.1.2";
     private static final int DP_PORT = 6633;
     private static final SfName SF_NAME = new SfName("dummySF");
@@ -68,7 +66,8 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     @Before
     public void before() {
         DataBroker dataBroker = getDataBroker();
-        opendaylightSfc.setDataProvider(dataBroker);
+        SfcDataStoreAPI.setDataProviderAux(dataBroker);
+        SfcNetconfServiceFunctionAPI.setDataProvider(dataBroker);
     }
 
     public void testCreateReadServiceFunctionDescription() {

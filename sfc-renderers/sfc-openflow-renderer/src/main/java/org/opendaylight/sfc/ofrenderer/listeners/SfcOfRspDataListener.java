@@ -17,7 +17,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
 
     public SfcOfRspDataListener(DataBroker dataBroker, SfcOfRspProcessor sfcOfRspProcessor) {
         rspListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL, OpendaylightSfc.RSP_ENTRY_IID),
+                LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID),
                 this);
         this.sfcOfRspProcessor = sfcOfRspProcessor;
     }

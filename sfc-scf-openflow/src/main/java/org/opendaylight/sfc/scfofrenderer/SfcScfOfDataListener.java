@@ -14,7 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -31,8 +31,7 @@ public class SfcScfOfDataListener implements DataChangeListener, AutoCloseable {
     public SfcScfOfDataListener(
             DataBroker dataBroker,
             SfcScfOfProcessor sfcScfProcessor) {
-        registerListener = dataBroker.registerDataChangeListener(
-            LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SCF_ENTRY_IID,
+        registerListener = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SCF_ENTRY_IID,
             this, DataBroker.DataChangeScope.BASE);
         this.sfcScfProcessor = sfcScfProcessor;
     }

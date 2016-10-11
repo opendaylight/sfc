@@ -25,7 +25,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -97,13 +97,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
  * @author Miguel Duarte (miguel.duarte.de.mora.barroso@ericsson.com)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, OpendaylightSfc.class, OperDsUpdateHandlerLSFFImpl.class})
+@PrepareForTest({SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, SfcInstanceIdentifiers.class, OperDsUpdateHandlerLSFFImpl.class})
 public class SfcOfLogicalSffRspProcessorTest {
     @InjectMocks
     private SfcGeniusRpcClient geniusClient;
 
     @Mock
-    private OpendaylightSfc odlSfc;
+    private SfcInstanceIdentifiers odlSfc;
 
     @Mock
     private OdlInterfaceRpcService interfaceManagerRpcService;
@@ -137,7 +137,7 @@ public class SfcOfLogicalSffRspProcessorTest {
     public SfcOfLogicalSffRspProcessorTest() throws Exception {
         initMocks(this);
 
-        operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl());
+        operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl(dataBroker));
         flowProgrammer.setFlowWriter(ofFlowWriter);
         sfcUtils = new SfcOfProviderUtilsTestMock();
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(
@@ -182,9 +182,6 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.when(SfcGeniusDataUtils.getSfLogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(theLogicalIfName);
 
-        PowerMockito.mockStatic(OpendaylightSfc.class);
-        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj()).thenReturn(odlSfc);
-        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj().getDataProvider()).thenReturn(dataBroker);
         PowerMockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(null);
 
         PowerMockito.when(SfcGeniusDataUtils.isSfUsingALogicalInterface(any(ServiceFunction.class)))

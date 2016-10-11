@@ -6,16 +6,14 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-  <reference id="bindingRegistry"
-    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker" />
 
   <bean id="opendaylightSfc" class="org.opendaylight.sfc.provider.OpendaylightSfc"
     destroy-method="close">
-    <property name="dataProvider" ref="dataBroker" />
-    <property name="broker" ref="bindingRegistry" />
   </bean>
 
-  <bean id="sfcProviderRpc" class="org.opendaylight.sfc.provider.SfcProviderRpc">
+  <bean id="sfcProviderRpc"
+    class="org.opendaylight.sfc.provider.SfcProviderRpc">
+    <property name="dataProvider" ref="dataBroker"/>
   </bean>
 
   <odl:rpc-implementation ref="sfcProviderRpc" />
@@ -42,5 +40,10 @@
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionClassifierListener"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
+  </bean>
+
+   <bean id="sfcdatastoreApi"
+        class="org.opendaylight.sfc.provider.api.SfcDataStoreAPI">
+    <property name="dataProvider" ref="dataBroker"/>
   </bean>
 </blueprint>

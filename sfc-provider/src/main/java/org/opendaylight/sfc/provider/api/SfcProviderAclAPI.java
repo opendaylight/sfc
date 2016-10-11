@@ -26,17 +26,16 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
- * This class has the APIs to operate on the ACL
- * datastore.
+ * This class has the APIs to operate on the ACL datastore.
  * <p>
- * It is normally called from onDataChanged() through a executor
- * service. We need to use an executor service because we can not
- * operate on a datastore while on onDataChanged() context.
+ * It is normally called from onDataChanged() through a executor service. We
+ * need to use an executor service because we can not operate on a datastore
+ * while on onDataChanged() context.
  *
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
- * @see org.opendaylight.sfc.provider.listeners.SfcProviderSfEntryDataListener
- * <p>
+ * @see org.opendaylight.sfc.provider.listeners.ServiceFunctionListener
+ *      <p>
  * @since 2014-11-04
  */
 public class SfcProviderAclAPI {
@@ -46,8 +45,11 @@ public class SfcProviderAclAPI {
     /**
      * This method reads a Access List from DataStore
      * <p>
-     * @param aclName Acl name
-     * @param aclType Acl type
+     *
+     * @param aclName
+     *            Acl name
+     * @param aclType
+     *            Acl type
      * @return ACL object or null if not found
      */
     public static Acl readAccessList(String aclName, java.lang.Class<? extends AclBase> aclType) {
@@ -56,8 +58,7 @@ public class SfcProviderAclAPI {
         Acl acl;
         InstanceIdentifier<Acl> aclIID;
         AclKey aclKey = new AclKey(aclName, aclType);
-        aclIID = InstanceIdentifier.builder(AccessLists.class)
-                .child(Acl.class, aclKey).build();
+        aclIID = InstanceIdentifier.builder(AccessLists.class).child(Acl.class, aclKey).build();
 
         acl = SfcDataStoreAPI.readTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -68,8 +69,11 @@ public class SfcProviderAclAPI {
     /**
      * This method reads a Access List state from Operational DataStore
      * <p>
-     * @param aclName Acl name
-     * @param aclType Acl type
+     *
+     * @param aclName
+     *            Acl name
+     * @param aclType
+     *            Acl type
      * @return ACL state object or null if not found
      */
     public static AccessListState readAccessListState(String aclName, java.lang.Class<? extends AclBase> aclType) {
@@ -86,31 +90,34 @@ public class SfcProviderAclAPI {
         return aclState;
     }
 
-
     /**
      * Adds Classifier to Access List state
      * <p>
-     * @param aclName Acl name
-     * @param aclType Acl type
-     * @param serviceClassifierName Service Classifier name
+     *
+     * @param aclName
+     *            Acl name
+     * @param aclType
+     *            Acl type
+     * @param serviceClassifierName
+     *            Service Classifier name
      * @return true if success.
      */
-    public static boolean addClassifierToAccessListState (String aclName, java.lang.Class<? extends AclBase> aclType, String serviceClassifierName) {
+    public static boolean addClassifierToAccessListState(String aclName, java.lang.Class<? extends AclBase> aclType,
+            String serviceClassifierName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<AclServiceFunctionClassifier> aclIID;
         boolean ret = false;
 
         AclServiceFunctionClassifierBuilder aclServiceClassifierBuilder = new AclServiceFunctionClassifierBuilder();
-        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(serviceClassifierName);
+        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(
+                serviceClassifierName);
         aclServiceClassifierBuilder.setKey(aclServiceClassifierKey).setName(serviceClassifierName);
 
         AccessListStateKey accessListStateKey = new AccessListStateKey(aclName, aclType);
 
-        aclIID = InstanceIdentifier.builder(AccessListsState.class)
-                .child(AccessListState.class, accessListStateKey)
-                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey)
-                .build();
+        aclIID = InstanceIdentifier.builder(AccessListsState.class).child(AccessListState.class, accessListStateKey)
+                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(aclIID, aclServiceClassifierBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL)) {
@@ -126,25 +133,29 @@ public class SfcProviderAclAPI {
     /**
      * Deletes Classifier from Access List state
      * <p>
-     * @param aclName Acl name
-     * @param aclType Acl type
-     * @param serviceClassifierName Service Classifier name
+     *
+     * @param aclName
+     *            Acl name
+     * @param aclType
+     *            Acl type
+     * @param serviceClassifierName
+     *            Service Classifier name
      * @return true if success.
      */
-    public static boolean deleteClassifierFromAccessListState (String aclName, java.lang.Class<? extends AclBase> aclType, String serviceClassifierName) {
+    public static boolean deleteClassifierFromAccessListState(String aclName,
+            java.lang.Class<? extends AclBase> aclType, String serviceClassifierName) {
 
         printTraceStart(LOG);
         InstanceIdentifier<AclServiceFunctionClassifier> aclIID;
         boolean ret = false;
 
-        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(serviceClassifierName);
+        AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(
+                serviceClassifierName);
 
         AccessListStateKey accessListStateKey = new AccessListStateKey(aclName, aclType);
 
-        aclIID = InstanceIdentifier.builder(AccessListsState.class)
-                .child(AccessListState.class, accessListStateKey)
-                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey)
-                .build();
+        aclIID = InstanceIdentifier.builder(AccessListsState.class).child(AccessListState.class, accessListStateKey)
+                .child(AclServiceFunctionClassifier.class, aclServiceClassifierKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(aclIID, LogicalDatastoreType.OPERATIONAL)) {
             ret = true;

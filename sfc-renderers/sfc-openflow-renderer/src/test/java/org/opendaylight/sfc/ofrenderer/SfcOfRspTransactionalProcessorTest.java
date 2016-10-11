@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
@@ -85,6 +86,7 @@ public class SfcOfRspTransactionalProcessorTest {
     RenderedServicePath nshRsp, nshRsp2;
     SfcOfFlowWriterInterface sfcFlowWriterTestMock;
     OperDsUpdateHandlerInterface operDsUpdateHandlerMock;
+    DataBroker  dataBroker;
 
     public SfcOfRspTransactionalProcessorTest() {
         LOG.info("SfcOfRspTransactionalProcessorTest constructor");
@@ -95,7 +97,7 @@ public class SfcOfRspTransactionalProcessorTest {
         Mockito.doNothing().when(sfcFlowWriterTestMock).flushFlows();
         Mockito.doNothing().when(sfcFlowWriterTestMock).deleteFlowSet();
 
-        this.operDsUpdateHandlerMock = Mockito.spy(new OperDsUpdateHandlerLSFFImpl());
+        this.operDsUpdateHandlerMock = Mockito.spy(new OperDsUpdateHandlerLSFFImpl(dataBroker));
         Mockito.doNothing().when(operDsUpdateHandlerMock).onRspDeletion(anyObject());
 
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();

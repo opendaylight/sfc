@@ -23,7 +23,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
@@ -60,7 +60,7 @@ public class SfcProviderSfstEntryDataListenerTest extends AbstractDataStoreManag
     Logger LOG = LoggerFactory.getLogger(SfcProviderSfstEntryDataListenerTest.class);
 
     public ListenerRegistration<DataChangeListener> registerAsDataChangeListener() {
-        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, OpendaylightSfc.SFST_ENTRY_IID,
+        return dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFST_ENTRY_IID,
                 sfstEntryDataListener, DataBroker.DataChangeScope.SUBTREE);
     }
 

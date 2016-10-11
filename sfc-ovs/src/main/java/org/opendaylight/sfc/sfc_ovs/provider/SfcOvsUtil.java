@@ -23,9 +23,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
@@ -97,6 +97,7 @@ public class SfcOvsUtil {
     public static final String DPL_NAME_INTERNAL = "Internal";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
     /**
      * Submits callable for execution by given ExecutorService.
      * Thanks to this wrapper method, boolean result will be returned instead of Future.
@@ -504,7 +505,7 @@ public class SfcOvsUtil {
 
     public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {
         Node managerNode =
-                lookupTopologyNode(serviceFunctionForwarder, OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                lookupTopologyNode(serviceFunctionForwarder, executor);
         if (managerNode == null) {
             LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -545,7 +546,7 @@ public class SfcOvsUtil {
                 new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE, methodParams);
 
         OvsdbBridgeAugmentation readBridge = (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge,
-                OpendaylightSfc.getOpendaylightSfcObj().getExecutor());
+                executor);
 
         if (readBridge == null) {
             return null;

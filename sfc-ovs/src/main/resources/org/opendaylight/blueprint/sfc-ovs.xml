@@ -7,26 +7,20 @@
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
-  <bean id="opendaylightSfc"
-    class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
-    <property name="dataProvider" ref="dataBroker"/>
-  </bean>
-
-  <bean id="sfcOvsRpc" class="org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc" />
+ <bean id="sfcOvsRpc" class="org.opendaylight.sfc.sfc_ovs.provider.SfcOvsRpc" />
 
   <odl:rpc-implementation ref="sfcOvsRpc"/>
 
   <bean id="sfcOvsNodeDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <property name="dataProvider" ref="dataBroker"/>
   </bean>
 
   <bean id="sfcOvsSffEntryDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener"
     destroy-method="closeDataChangeListener">
-    <argument ref="opendaylightSfc"/>
+    <property name="dataProvider" ref="dataBroker"/>
   </bean>
 
 </blueprint>

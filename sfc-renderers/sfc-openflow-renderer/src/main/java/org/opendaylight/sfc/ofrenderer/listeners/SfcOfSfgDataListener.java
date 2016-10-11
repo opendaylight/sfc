@@ -18,7 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
-import org.opendaylight.sfc.provider.OpendaylightSfc;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAlgAPI;
@@ -63,7 +63,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
         this.sfcOfProviderUtils = sfcOfProviderUtils;
 
         setDataBroker(dataBroker);
-        setIID(OpendaylightSfc.SFG_ENTRY_IID);
+        setIID(SfcInstanceIdentifiers.SFG_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
     }
 

@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_2f0c3594",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-13T20:57:18Z",
+      "side": 1,
+      "message": "Really not sure on how clean it would look like. \n\nI agree, not worth it.",
+      "parentUuid": "7a6b29fe_b668bd22",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 95,
+        "endChar": 24
+      },
+      "revId": "ab44c7a52f5b71f5fc5f52b5a6a772e84f83170f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_56cfa9b3",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
         "patchSetId": 5

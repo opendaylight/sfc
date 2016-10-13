@@ -22,6 +22,30 @@
       "revId": "fb6b387281ed32ca68e359bbe17308cbb0e256b6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_09b5f9cc",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1551,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-13T12:40:30Z",
+      "side": 1,
+      "message": "Ok, will do.",
+      "parentUuid": "7a6b29fe_aee4cbac",
+      "range": {
+        "startLine": 1551,
+        "startChar": 33,
+        "endLine": 1551,
+        "endChar": 71
+      },
+      "revId": "fb6b387281ed32ca68e359bbe17308cbb0e256b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

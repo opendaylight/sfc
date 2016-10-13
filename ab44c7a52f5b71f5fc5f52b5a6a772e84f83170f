@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_b668bd22",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-10-13T16:18:23Z",
+      "side": 1,
+      "message": "Thats right but its just a few lines of functional code. Factoring this common code either can end up not as clean or require more code than we save, time and effort. Is it worth it?",
+      "parentUuid": "7a6b29fe_b6d8bd80",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 95,
+        "endChar": 24
+      },
+      "revId": "ab44c7a52f5b71f5fc5f52b5a6a772e84f83170f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_56cfa9b3",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusServiceHandler.java",
         "patchSetId": 5

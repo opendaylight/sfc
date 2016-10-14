@@ -25,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 public class SfcScfOfUtils {
     private static final short TABLE_INDEX_CLASSIFIER = 0;
@@ -68,6 +70,75 @@ public class SfcScfOfUtils {
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_MATCH_ANY, "MatchAny",
                 match, isb);
         return SfcOpenflowUtils.writeFlowToDataStore(nodeName, fb);
+    }
+
+   /**
+    * create classifier DPDK output flow.
+    * The function returns true if successful.
+    * The function returns false if unsuccessful.
+    *
+    * @param  nodeName flow table node name
+    * @param  outPort  flow out port
+    * @return true if successful, false otherwise
+    */
+    public static boolean initClassifierDpdkOutputFlow(String nodeName, Long outPort)
+    {
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(OutputPortValues.LOCAL.toString()));
+
+        int order = 0;
+
+        // Action output
+        List<Action> actionList = new ArrayList<>();
+        String outPortStr = "output:" + outPort.toString();
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierDpdkOutputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        TABLE_INDEX_CLASSIFIER,
+                        FLOW_PRIORITY_CLASSIFIER,
+                        "classifier_dpdk_output",
+                        match, isb);
+
+        return SfcOpenflowUtils.writeFlowToDataStore(nodeName, classifierDpdkOutputFlow);
+    }
+
+   /**
+    * create classifier DPDK input flow.
+    * The function returns true if successful.
+    * The function returns false if unsuccessful.
+    *
+    * @param  nodeName flow table node name
+    * @param  inPort  flow in port
+    * @return true if successful, false otherwise
+    */
+    public static boolean initClassifierDpdkInputFlow(String nodeName, Long inPort)
+    {
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchInPort(match, new NodeId(nodeName), inPort);
+
+        int order = 0;
+
+        // Action NORMAL
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierDpdkInputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        TABLE_INDEX_CLASSIFIER,
+                        FLOW_PRIORITY_CLASSIFIER,
+                        "classifier_dpdk_input",
+                        match, isb);
+
+        return SfcOpenflowUtils.writeFlowToDataStore(nodeName, classifierDpdkInputFlow);
     }
 
    /**

@@ -9,7 +9,10 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -26,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.r
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
 public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
+    private final Map<String, String> ovsDpdkFlowDone = new HashMap<>();
 
     /*
      * Set the RSP path egress DPL and SFF Hop Ingress DPLs for
@@ -281,6 +285,20 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
             this.sfcFlowProgrammer.configureNshVxgpeAppCoexistTransportEgressFlow(
                     sffNodeName, nsp, nsi, new String(srcSffLocator.getIp().getValue()));
         } else {
+            /* For OVS DPDK node, we need extra flows */
+            if (!ovsDpdkFlowDone.containsKey(sffNodeName)) {
+                Long outputPort = SfcOvsUtil.getDpdkOfPort(sffNodeName, null);
+                if (outputPort != null) {
+                    LOG.info("Set OVS DPDK flows for Node Openflow:{}", sffNodeName);
+                    IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
+                    this.sfcFlowProgrammer.configureClassifierTableVxlanGpeOutput(sffNodeName, new String(dstSffLocator.getIp().getValue()), outputPort);
+
+                    IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
+                    this.sfcFlowProgrammer.configureClassifierTableVxlanGpeInput(sffNodeName, new String(srcSffLocator.getIp().getValue()));
+                    ovsDpdkFlowDone.put(sffNodeName, sffNodeName);
+                }
+            }
+
             this.sfcFlowProgrammer.configureNshVxgpeTransportEgressFlow(
                     sffNodeName, nsp, nsi, srcOfsPortStr);
         }

@@ -237,6 +237,79 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
+     * Set VxLAN-gpe output flow in the Classifier table for OVS DPDK
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureClassifierTableVxlanGpeOutput(final String sffNodeName, final String nextSffIp, Long outPort) {
+        if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+        SfcOpenflowUtils.addMatchDstIpv4(match, nextSffIp, 32);
+
+        int order = 0;
+
+        // Action output
+        List<Action> actionList = new ArrayList<>();
+        String outPortStr = "output:" + outPort.toString();
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierVxlanGpeOutputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_CLASSIFIER),
+                        0,
+                        "classifier_vxlangpe_output",
+                        match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierVxlanGpeOutputFlow);
+    }
+
+    /**
+     * Set VxLAN-gpe input flow in the Classifier table for OVS DPDK
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureClassifierTableVxlanGpeInput(final String sffNodeName, final String sffIp) {
+        if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+        SfcOpenflowUtils.addMatchDstIpv4(match, sffIp, 32);
+
+        int order = 0;
+
+        // Action NORMAL
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierVxlanGpeOutputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_CLASSIFIER),
+                        0,
+                        "classifier_vxlangpe_output",
+                        match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierVxlanGpeOutputFlow);
+    }
+
+    /**
      * Set the match any flow in the Transport Ingress table to drop.
      *
      * @param sffNodeName - the SFF to write the flow to
@@ -250,6 +323,24 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         FlowBuilder flowBuilder =
                 configureTableMatchAnyDropFlow(
+                        getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
+    }
+
+    /**
+     * Set NORMAL action flow in the Transport Ingress table for OVS DPDK.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureTransportIngressTableDefaultNormalAction(final String sffNodeName) {
+        if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
+        FlowBuilder flowBuilder =
+                configureTableDefaultNormalActionFlow(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
@@ -314,6 +405,20 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
+     * Set NORMAL action flow in the Transport Egress table for OVS DPDK.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureTransportEgressTableDefaultNormalAction(final String sffNodeName) {
+        // This is the last table, cant set next table AND doDrop should be false
+        FlowBuilder flowBuilder =
+                configureTableDefaultNormalActionFlow(
+                        getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
+    }
+
+    /**
      * Internal util method to create the Match Any Drop flow
      *
      * @param tableId - the table to write to
@@ -333,6 +438,30 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
 
         // Finish up the instructions
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+    }
+
+    /**
+     * Internal util method to create the default flow for OVS DPDK
+     *
+     * @param tableId - the table to write to
+     *
+     * @return the created flow
+     */
+    private FlowBuilder configureTableDefaultNormalActionFlow(short tableId) {
+        LOG.debug("SfcProviderSffFlowWriter.configureTableDefaultNormalActionFlow, tableId [{}]", tableId);
+        int order = 0;
+
+        // Match any
+        MatchBuilder match = new MatchBuilder();
+
+        // Action NORMAL
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder

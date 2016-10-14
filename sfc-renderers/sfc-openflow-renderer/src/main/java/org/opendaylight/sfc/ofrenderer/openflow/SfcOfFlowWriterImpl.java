@@ -393,6 +393,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     public Set<NodeId> clearSffsIfNoRspExists() {
         Set<NodeId> sffNodeIDs = new HashSet<>();
 
+        if (!rspNameToFlowsMap.containsKey(SfcOfRspProcessor.SFC_FLOWS)) {
+            LOG.warn("clearSffsIfNoRspExists() - Attempting to delete initialization flows, and they do not exist");
+            return sffNodeIDs;
+        }
+
         Map<String, List<FlowDetails>> theInitializationFlows =
                 rspNameToFlowsMap.get(SfcOfRspProcessor.SFC_FLOWS);
 

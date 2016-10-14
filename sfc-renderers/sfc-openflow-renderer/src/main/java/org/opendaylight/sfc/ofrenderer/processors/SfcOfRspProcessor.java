@@ -20,6 +20,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -485,6 +486,14 @@ public class SfcOfRspProcessor {
         NodeId sffNodeId = new NodeId(sffNodeName);
         if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
+
+            /* For OVS DPDK, add default NORMAL action flows */
+            Long outputPort = SfcOvsUtil.getDpdkOfPort(sffNodeName, null);
+            if (outputPort != null) {
+                this.sfcOfFlowProgrammer.configureClassifierTableDpdkOutput(sffNodeName, outputPort);
+                this.sfcOfFlowProgrammer.configureClassifierTableDpdkInput(sffNodeName, outputPort);
+            }
+
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);

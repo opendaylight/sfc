@@ -108,8 +108,13 @@ public class SfcScfOfProcessor {
                 continue;
             }
 
-            Long outPort = SfcOvsUtil.getVxlanOfPort(nodeName);
+            Long outPort = SfcOvsUtil.getVxlanGpeOfPort(nodeName);
             SfcScfOfUtils.initClassifierTable(nodeName);
+            Long dpdkPort = SfcOvsUtil.getDpdkOfPort(nodeName, null);
+            if (dpdkPort != null) {
+                SfcScfOfUtils.initClassifierDpdkOutputFlow(nodeName, dpdkPort);
+                SfcScfOfUtils.initClassifierDpdkInputFlow(nodeName, dpdkPort);
+            }
 
             if (sclsff.getAttachmentPointType() instanceof Interface) {
                 Interface itf = (Interface) sclsff.getAttachmentPointType();
@@ -212,7 +217,6 @@ public class SfcScfOfProcessor {
                         } else {
                             LOG.debug("createdServiceFunctionClassifier: relay node is {}\n", lastNodeName);
                         }
-                        outPort = SfcOvsUtil.getVxlanOfPort(lastNodeName);
                         key = new StringBuffer();
                         key.append(scf.getName()).append(aclName).append(ruleName).append(".relay");
                         Ip ip = SfcOvsUtil.getSffVxlanDataLocator(sff);

@@ -43,6 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathTypeNetdev;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdk;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
@@ -724,5 +726,66 @@ public class SfcOvsUtil {
             }
         }
         return getOvsPort(nodeName, new VxlanGpePortCompare());
+    }
+
+    /**
+     * This gets DPDK Openflow port of the given DPDK port or the
+     * first DPDK port in the given Openflow node
+     * @param nodeName Openflow node name
+     * @param dpdkPortName DPDK port name
+     * @return port number if exists, otherwise null
+     */
+    public static Long getDpdkOfPort(String nodeName, String dpdkPortName) {
+        Long dpdkOfPort = null;
+
+        if (nodeName == null) {
+            return null;
+        }
+
+        if (dpdkPortName == null) {
+            dpdkPortName = new String("dpdk0");
+        }
+
+        InstanceIdentifier<Topology> topoIID = buildOvsdbTopologyIID();
+
+        Topology topo = null;
+        try {
+            topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
+        }
+        catch(NullPointerException e) {
+            //Fix unit tests failure before SfcDataStoreAPI isn't initialized
+            topo = null;
+        }
+
+        if (topo == null) {
+            return null;
+        }
+
+        List<Node> nodes = topo.getNode();
+        for (Node node : nodes) {
+            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+            if (ovsdbBridgeAugmentation == null) {
+                continue;
+            }
+
+            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals("openflow:" + String.valueOf(dpid))) {
+                if (!ovsdbBridgeAugmentation.getDatapathType().equals(DatapathTypeNetdev.class)) {
+                   break;
+                }
+
+                List<TerminationPoint> tpList = node.getTerminationPoint();
+                for (TerminationPoint tp : tpList) {
+                    if (tp.getTpId().getValue().equals(dpdkPortName)) {
+                        OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+                        if ((otp != null) && otp.getInterfaceType().equals(InterfaceTypeDpdk.class)) {
+                            dpdkOfPort = otp.getOfport();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return dpdkOfPort;
     }
 }

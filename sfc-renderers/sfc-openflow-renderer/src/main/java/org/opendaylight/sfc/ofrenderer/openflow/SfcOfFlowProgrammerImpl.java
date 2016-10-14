@@ -102,6 +102,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final int FLOW_PRIORITY_NEXT_HOP = 550;
     public static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 650;
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
+    public static final int FLOW_PRIORITY_CLASSIFIER = 1000;
 
     private static final int PKTIN_IDLE_TIMEOUT = 60;
     private static final String EMPTY_SWITCH_PORT = "";
@@ -235,6 +236,77 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                         getTableId(TABLE_INDEX_CLASSIFIER),
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
+    }
+
+    /**
+     * Set DPDK output flow in the Classifier table for OVS DPDK
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureClassifierTableDpdkOutput(final String sffNodeName, Long outPort) {
+        if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(OutputPortValues.LOCAL.toString()));
+
+        int order = 0;
+
+        // Action output
+        List<Action> actionList = new ArrayList<>();
+        String outPortStr = "output:" + outPort.toString();
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierDpdkOutputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_CLASSIFIER),
+                        FLOW_PRIORITY_CLASSIFIER,
+                        "classifier_dpdk_output",
+                        match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierDpdkOutputFlow);
+    }
+
+    /**
+     * Set DPDK input flow in the Classifier table for OVS DPDK
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureClassifierTableDpdkInput(final String sffNodeName, Long inPort) {
+        if(getTableBase() > APP_COEXISTENCE_NOT_SET) {
+            // We dont need this flow with App Coexistence.
+            return;
+        }
+
+        // Create the match criteria
+        MatchBuilder match = new MatchBuilder();
+        SfcOpenflowUtils.addMatchInPort(match, new NodeId(sffNodeName), inPort);
+
+        int order = 0;
+
+        // Action NORMAL
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Create and configure the FlowBuilder
+        FlowBuilder classifierDpdkInputFlow =
+                SfcOpenflowUtils.createFlowBuilder(
+                        getTableId(TABLE_INDEX_CLASSIFIER),
+                        FLOW_PRIORITY_CLASSIFIER,
+                        "classifier_dpdk_input",
+                        match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierDpdkInputFlow);
     }
 
     /**

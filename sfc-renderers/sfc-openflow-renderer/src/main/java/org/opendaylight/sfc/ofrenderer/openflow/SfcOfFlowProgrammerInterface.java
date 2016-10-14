@@ -172,6 +172,10 @@ public interface SfcOfFlowProgrammerInterface {
 
     public void configureTransportEgressTableMatchAny(final String sffNodeName);
 
+    /* OVS DPDK only, these APIs will add extra flows for OVS DPDK */
+    public void configureClassifierTableDpdkOutput(final String sffNodeName, Long outPort);
+    public void configureClassifierTableDpdkInput(final String sffNodeName, Long inPort);
+
     // group configuration
     public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName,
             final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);

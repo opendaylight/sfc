@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_619be172",
+        "filename": "sfc-ui/module/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-10-14T02:26:01Z",
+      "side": 0,
+      "message": "This just made the sfc-ui-module version go backwards to 0.4.0-SNAPSHOT. When it was 0.5.0-SNAPSHOT. When you don\u0027t specify a version in your pom. Maven will use the version of your parent as declared above between the \u003cparent\u003e sections.",
+      "range": {
+        "startLine": 22,
+        "startChar": 4,
+        "endLine": 22,
+        "endChar": 38
+      },
+      "revId": "bab8a99472f5b9ea7f01e4ea03f317a8a3f16c99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -59,6 +59,11 @@ module service-function-scheduler-type {
     description "Weighted Shortest Path.";
   }
 
+  identity load-path-aware {
+    base "service-function-scheduler-type-identity";
+    description "Load Path Aware.";
+  }
+
   identity user-defined {
     base "service-function-scheduler-type-identity";
     description "User Defined Scheduler Type.";

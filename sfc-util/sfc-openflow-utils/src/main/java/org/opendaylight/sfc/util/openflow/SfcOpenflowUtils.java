@@ -695,6 +695,18 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
+    public static Action createActionNormal(final int order) {
+        OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(new Integer(30));
+        Uri normal = new Uri(OutputPortValues.NORMAL.toString());
+        output.setOutputNodeConnector(normal);
+
+        ActionBuilder ab = createActionBuilder(order);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+
+        return ab.build();
+    }
+
     public static Action createActionSetDlSrc(String srcMac, int order) {
         EthernetSourceBuilder ethSrc = new EthernetSourceBuilder();
         ethSrc.setAddress(new MacAddress(srcMac));

@@ -20,6 +20,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -483,12 +484,24 @@ public class SfcOfRspProcessor {
         NodeId sffNodeId = new NodeId(sffNodeName);
         if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
+
+            /* For OVS DPDK, default NORMAL action flows */
+            Long outputPort = SfcOvsUtil.getDpdkOfPort(sffNodeName, null);
+
             this.sfcOfFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            if (outputPort != null) {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableDefaultNormalAction(sffNodeName);
+            } else {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            }
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureNextHopTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
+            if (outputPort != null) {
+                this.sfcOfFlowProgrammer.configureTransportEgressTableDefaultNormalAction(sffNodeName);
+            } else {
+                this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
+            }
 
             setSffInitialized(sffNodeId, true);
         }

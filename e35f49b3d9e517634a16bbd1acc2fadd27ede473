@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_2804257d",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorMpls.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-17T12:36:07Z",
+      "side": 1,
+      "message": "SfcRenderingException is derived from RuntimeException -\u003e don\u0027t need to be declared in method headers",
+      "range": {
+        "startLine": 204,
+        "startChar": 3,
+        "endLine": 206,
+        "endChar": 42
+      },
+      "revId": "e35f49b3d9e517634a16bbd1acc2fadd27ede473",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

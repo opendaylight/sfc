@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_4b035b73",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/util/SfcGeniusDataUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "If you don\u0027t need the exceptions, you can always do: \n\nreturn SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName).map(theIf -\u003e theIf.getPhysAddress());",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 78
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_abf78f8b",
+        "filename": "sfc-genius/src/test/java/org/opendaylight/sfc/genius/util/SfcGeniusDataUtilsTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "mac is an optional, thus will never be null.\n\nWouldn\u0027t this be mac.isPresent() ?",
+      "range": {
+        "startLine": 164,
+        "startChar": 26,
+        "endLine": 164,
+        "endChar": 37
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_4b119bab",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "NPE if the MAC is not available",
+      "range": {
+        "startLine": 240,
+        "startChar": 11,
+        "endLine": 240,
+        "endChar": 73
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_4b887be7",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "only switch \u003d first switch ? not sure which one is it",
+      "range": {
+        "startLine": 221,
+        "startChar": 56,
+        "endLine": 221,
+        "endChar": 68
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_6b83b7cc",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "very good explanation",
+      "range": {
+        "startLine": 225,
+        "startChar": 8,
+        "endLine": 227,
+        "endChar": 97
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_cb1c8bc4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "clearly explained +1",
+      "range": {
+        "startLine": 231,
+        "startChar": 8,
+        "endLine": 231,
+        "endChar": 47
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_ab25cf0b",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "which is the only switch? Did you mean to write this?",
+      "range": {
+        "startLine": 235,
+        "startChar": 24,
+        "endLine": 235,
+        "endChar": 57
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_eb1fc7b5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "clearly explained +1",
+      "range": {
+        "startLine": 235,
+        "startChar": 0,
+        "endLine": 236,
+        "endChar": 115
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_eb76a705",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "we can delete this filter, since the previous map function returns an Optional (the following map function is not executed if the optional is empty) \n\n(I know this was already like this)",
+      "range": {
+        "startLine": 388,
+        "startChar": 16,
+        "endLine": 388,
+        "endChar": 44
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_cb73eb13",
+        "filename": "sfc-util/sfc-openflow-utils/src/test/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtilsTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T15:59:07Z",
+      "side": 1,
+      "message": "nice !",
+      "range": {
+        "startLine": 278,
+        "startChar": 0,
+        "endLine": 307,
+        "endChar": 5
+      },
+      "revId": "a97f9527513b1902d77712a258ffa3f3a83600e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

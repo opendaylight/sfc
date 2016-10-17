@@ -47,9 +47,13 @@ function start_demo {
     #wait for openflow effective
     sleep 60
 
+    echo "OpenFlow flows classifier1"
     docker exec -it classifier1 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows classifier2"
     docker exec -it classifier2 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows sff1"
     docker exec -it sff1 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows sff2"
     docker exec -it sff2 ovs-ofctl dump-flows -OOpenflow13 br-sfc
 
     docker exec -it classifier1 ip netns exec app wget http://192.168.2.2
@@ -61,9 +65,13 @@ function start_demo {
     #wait for openflow effective
     sleep 60
 
+    echo "OpenFlow flows classifier1"
     docker exec -it classifier1 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows classifier2"
     docker exec -it classifier2 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows sff1"
     docker exec -it sff1 ovs-ofctl dump-flows -OOpenflow13 br-sfc
+    echo "OpenFlow flows sff2"
     docker exec -it sff2 ovs-ofctl dump-flows -OOpenflow13 br-sfc
 
     docker exec -it classifier1 ip netns exec app wget http://192.168.2.2

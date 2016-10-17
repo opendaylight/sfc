@@ -4,14 +4,14 @@ set -eux
 
 function ovs_start {
     service openvswitch-switch start
-    ovs-vsctl set-manager tcp:192.168.1.5:6640
-    ovs-vsctl add-br br-sfc
+    ovs-vsctl set-manager tcp:$CONTROLLER:6640
+    ovs-vsctl add-br $BRIDGE
 }
 
 function ovs_add_app_veth-br {
     ip netns add app
     ip link add veth-app type veth peer name veth-br
-    ovs-vsctl add-port br-sfc veth-br
+    ovs-vsctl add-port $BRIDGE veth-br
     ip link set dev veth-br up
     ip link set veth-app netns app
 }
@@ -44,6 +44,6 @@ elif [ $host == 'sff1' ] || [ $host == 'sff2' ]; then
 elif [ $host == 'sf1' ] || [ $host == 'sf2' ]; then
     cd /sfc/sfc-py;
     pip3 install -r requirements.txt
-    nohup python3.4 sfc/sfc_agent.py --rest --odl-ip-port 192.168.1.5:8181 &
+    nohup python3.4 sfc/sfc_agent.py --rest --odl-ip-port $CONTROLLER:$DEFAULT_PORT &
 fi
 /bin/bash

@@ -7,7 +7,9 @@ services:
     container_name: classifier1
     hostname: classifier1
     environment:
-      - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:
@@ -28,7 +30,9 @@ services:
     container_name: classifier2
     hostname: classifier2
     environment:
-      - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:
@@ -49,7 +53,9 @@ services:
     container_name: sff1
     hostname: sff1
     environment:
-     - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:
@@ -62,7 +68,9 @@ services:
     container_name: sff2
     hostname: sff2
     environment:
-     - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:
@@ -75,7 +83,9 @@ services:
     container_name: sf1
     hostname: sf1
     environment:
-     - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:
@@ -90,7 +100,9 @@ services:
     container_name: sf2
     hostname: sf2
     environment:
-     - CONTROLLER=192.168.1.5
+      - CONTROLLER
+      - BRIDGE
+      - DEFAULT_PORT
     privileged: true
     tty: true
     networks:

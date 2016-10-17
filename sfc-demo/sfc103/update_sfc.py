@@ -7,11 +7,13 @@ import time
 import sys
 import os
 
-controller='192.168.1.5'
-DEFAULT_PORT='8181'
+CONTROLLER=os.environ['CONTROLLER']
+DEFAULT_PORT=os.environ['DEFAULT_PORT']
 
 USERNAME='admin'
 PASSWORD='admin'
+
+DEBUG=True
 
 def put(host, port, uri, data, debug=False):
     '''Perform a PUT rest operation, using the URL and data provided'''
@@ -155,10 +157,9 @@ def get_service_function_classifiers_data():
 }
 
 if __name__ == "__main__":
-
     print "sending rendered service path"
-    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
+    post(CONTROLLER, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), DEBUG)
     print "updating service function acl"
-    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), DEBUG)
     print "updating service function classifiers"
-    put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), DEBUG)

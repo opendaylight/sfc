@@ -138,7 +138,7 @@ public abstract class SfcRspTransportProcessorBase {
             ServiceFunctionForwarder srcSff =
                     sfcProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
             if (srcSff == null) {
-                throw new RuntimeException("processSffDpls srcSff is null [" + entry.getSrcSff() + "]");
+                throw new SfcRenderingException("processSffDpls srcSff is null [" + entry.getSrcSff() + "]");
             }
 
             // may be null if its EGRESS
@@ -147,7 +147,7 @@ public abstract class SfcRspTransportProcessorBase {
             if (dstSff != null) {
                 // Set the SFF-SFF Hop DPL
                 if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
-                    throw new RuntimeException(
+                    throw new SfcRenderingException(
                             "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
                                     + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
                 }
@@ -159,7 +159,7 @@ public abstract class SfcRspTransportProcessorBase {
                 SffDataPlaneLocator srcSffIngressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
                         sffGraph.getSffIngressDpl(entry.getSrcSff(), entry.getPathId()));
                 if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffIngressDpl, true)) {
-                    throw new RuntimeException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
+                    throw new SfcRenderingException("Unable to get SFF egress DPL srcSff [" + entry.getSrcSff()
                             + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
                 }
             } else {
@@ -167,7 +167,7 @@ public abstract class SfcRspTransportProcessorBase {
                 SffDataPlaneLocator srcSffEgressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
                         sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
                 if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffEgressDpl, false)) {
-                    throw new RuntimeException("Unable to get SFF HOP ingress DPL srcSff [" + entry.getSrcSff()
+                    throw new SfcRenderingException("Unable to get SFF HOP ingress DPL srcSff [" + entry.getSrcSff()
                             + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
                 }
             }

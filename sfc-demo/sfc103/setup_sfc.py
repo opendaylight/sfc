@@ -7,11 +7,14 @@ import time
 import sys
 import os
 
-controller='192.168.1.5'
-DEFAULT_PORT='8181'
+CONTROLLER=os.environ['CONTROLLER']
+BRIDGE=os.environ['BRIDGE']
+DEFAULT_PORT=os.environ['DEFAULT_PORT']
 
 USERNAME='admin'
 PASSWORD='admin'
+
+DEBUG=True
 
 def put(host, port, uri, data, debug=False):
     '''Perform a PUT rest operation, using the URL and data provided'''
@@ -147,7 +150,7 @@ def get_service_function_forwarders_data():
                 "name": "Classifier1",
                 "service-node": "classifier1",
                 "service-function-forwarder-ovs:ovs-bridge": {
-                    "bridge-name": "br-sfc",
+                    "bridge-name": str(BRIDGE),
                 },
                 "sff-data-plane-locator": [
                     {
@@ -176,7 +179,7 @@ def get_service_function_forwarders_data():
                 "name": "SFF1",
                 "service-node": "sff1",
                 "service-function-forwarder-ovs:ovs-bridge": {
-                    "bridge-name": "br-sfc",
+                    "bridge-name": str(BRIDGE),
                 },
                 "sff-data-plane-locator": [
                     {
@@ -214,7 +217,7 @@ def get_service_function_forwarders_data():
                 "name": "SFF2",
                 "service-node": "sff2",
                 "service-function-forwarder-ovs:ovs-bridge": {
-                    "bridge-name": "br-sfc",
+                    "bridge-name": str(BRIDGE),
                 },
                 "sff-data-plane-locator": [
                     {
@@ -252,7 +255,7 @@ def get_service_function_forwarders_data():
                 "name": "Classifier2",
                 "service-node": "classifier2",
                 "service-function-forwarder-ovs:ovs-bridge": {
-                    "bridge-name": "br-sfc",
+                    "bridge-name": str(BRIDGE),
                 },
                 "sff-data-plane-locator": [
                     {
@@ -349,8 +352,8 @@ def get_service_function_paths_data():
                     }
                 ]
             }
-        ] 
-    } 
+        ]
+    }
 }
 
 def get_service_function_metadata_uri():
@@ -482,22 +485,21 @@ def get_service_function_classifiers_data():
 }
 
 if __name__ == "__main__":
-
     print "sending service nodes"
-    put(controller, DEFAULT_PORT, get_service_nodes_uri(), get_service_nodes_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_nodes_uri(), get_service_nodes_data(), DEBUG)
     print "sending service functions"
-    put(controller, DEFAULT_PORT, get_service_functions_uri(), get_service_functions_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_functions_uri(), get_service_functions_data(), DEBUG)
     print "sending service function forwarders"
-    put(controller, DEFAULT_PORT, get_service_function_forwarders_uri(), get_service_function_forwarders_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_forwarders_uri(), get_service_function_forwarders_data(), DEBUG)
     print "sending service function chains"
-    put(controller, DEFAULT_PORT, get_service_function_chains_uri(), get_service_function_chains_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_chains_uri(), get_service_function_chains_data(), DEBUG)
     print "sending service function metadata"
-    put(controller, DEFAULT_PORT, get_service_function_metadata_uri(), get_service_function_metadata_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_metadata_uri(), get_service_function_metadata_data(), DEBUG)
     print "sending service function paths"
-    put(controller, DEFAULT_PORT, get_service_function_paths_uri(), get_service_function_paths_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_paths_uri(), get_service_function_paths_data(), DEBUG)
     print "sending service function acl"
-    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), DEBUG)
     print "sending rendered service path"
-    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
+    post(CONTROLLER, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), DEBUG)
     print "sending service function classifiers"
-    put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)
+    put(CONTROLLER, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), DEBUG)

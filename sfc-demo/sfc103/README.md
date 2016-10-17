@@ -1,22 +1,16 @@
-SFC103 Demo
-===========
+# SFC103 Demo
 
-Overview
---------
+## Overview
 
-SFC103 demo is to show standalone SFC classifier including dynamic insert
-& remove service function.
+SFC103 demo is to show standalone SFC classifier including dynamic insert & remove service function.
 
-Note
-----
+## Note
 
-It takes long time to complete the demo including vagrant box download,
-SFC download/build and ovs with NSH installation. The duration depends
-On your network. Normally, it takes several hours.
+It takes long time to complete the demo including vagrant box download, SFC download/build and ovs with NSH installation. The duration depends On your network. Normally, it takes several hours.
 
-Global Topology
----------------
+## Global Topology
 
+```
                            +-----------------+
                            |       SFC       |
                            |   192.168.1.5   |
@@ -34,10 +28,11 @@ Global Topology
                    |     DPI-1     |  |     FW-1     |
                    | 192.168.1.30  |  | 192.168.1.40 |
                    +---------------+  +--------------+
+```
 
-Classifiers Topology
---------------------
+## Classifiers Topology
 
+```
             +---------------------------------+
             |            ARP Cache            |
             + - - - - - - - - - - - - - - - - +
@@ -69,17 +64,15 @@ Classifiers Topology
             + - - - - - - - - - - - - - - - - +
             | 192.168.2.1 | 00:00:11:11:11:11 |
             +---------------------------------+
+```
 
-Setup Demo
-----------
+## Setup Demo
+
 1. Install virtualbox & vagrant(>=1.8.0) in ubuntu 14.04.03
 2. ./demo.sh
 
+## Cleanup Demo
 
-Cleanup Demo
-------------
 1. vagrant destroy -f
 
-
-Trouble Shooting(TBD)
---------------------
+## Trouble Shooting(TBD)

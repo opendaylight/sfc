@@ -10,6 +10,13 @@ package org.opendaylight.sfc.genius.impl.utils;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+<<<<<<< Updated upstream
+=======
+
+import static org.opendaylight.genius.mdsalutil.NwConstants.SCF_SERVICE_INDEX;
+
+import java.math.BigInteger;
+>>>>>>> Stashed changes
 
 /**
  * Holds constants that are used throughout the sfc-genius module.
@@ -26,8 +33,23 @@ public class SfcGeniusConstants {
      */
     public static final TopologyId OVSDB_TOPOLOGY_ID = new TopologyId(new Uri("ovsdb:1"));
 
+
+    /**
+     * Root node for OVS DB entities in the topology
+     */
+    public static final TopologyId OVSDB_TOPOLOGY_ID = new TopologyId(new Uri("ovsdb:1"));
+
     /**
      * Key for the MAC address of the SF within the external interface info map
      */
     public static final String MAC_KEY = "attached-mac";
+    /**
+     * Key for the MAC address of the SF within the external interface info map
+     */
+<<<<<<< Updated upstream
+    public static final String MAC_KEY = "attached-mac";
+=======
+    public static final short SFC_TRANSPORT_INGRESS_TABLE = 82;
+
+>>>>>>> Stashed changes
 }

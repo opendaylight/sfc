@@ -202,7 +202,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSfTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
+            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl)
+            throws SfcRenderingException {
         Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId();
         if (vlanTag == null) {
             return;
@@ -210,7 +211,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
 
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
         if (srcOfsPortStr == null) {
-            throw new RuntimeException("configureSffTransportEgressFlow OFS port not avail for SFF ["
+            throw new SfcRenderingException("configureSffTransportEgressFlow OFS port not avail for SFF ["
                     + entry.getDstSff() + "] sffDpl [" + srcSffDpl.getName().getValue() + "]");
         }
 
@@ -244,10 +245,11 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSffTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
+            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl)
+            throws SfcRenderingException {
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
         if (srcOfsPortStr == null) {
-            throw new RuntimeException("configureSffTransportEgressFlow OFS port not avail for SFF ["
+            throw new SfcRenderingException("configureSffTransportEgressFlow OFS port not avail for SFF ["
                     + entry.getDstSff() + "] sffDpl [" + srcSffDpl.getName().getValue() + "]");
         }
 

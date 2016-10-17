@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_28a1c5a9",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/utils/SfcGeniusConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T12:16:36Z",
+      "side": 1,
+      "message": "This is a git merge gone wrong - must be fixed",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 23
+      },
+      "revId": "63a5502250f4d7d3aade9b6ff7b819b612ff814f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_68abbd89",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/utils/SfcGeniusConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-10-17T12:16:36Z",
+      "side": 1,
+      "message": "same here; merge gone wrong",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 23
+      },
+      "revId": "63a5502250f4d7d3aade9b6ff7b819b612ff814f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

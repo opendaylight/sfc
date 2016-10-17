@@ -8,26 +8,43 @@
 
 package org.opendaylight.sfc.genius.impl.utils;
 
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import static org.opendaylight.genius.mdsalutil.NwConstants.SCF_SERVICE_INDEX;
+
+import java.math.BigInteger;
 
 /**
  * Holds constants that are used throughout the sfc-genius module.
  */
+// TODO move appropriate constants to genius NwConstants
 public class SfcGeniusConstants {
 
     /**
-     * Virtual network identifier used for SFC service: {@value SFC_VNID}.
+     * SFC service index used on genius binding.
+     */
+    public static final short SFC_SERVICE_INDEX = SCF_SERVICE_INDEX;
+
+    /**
+     * SFC service name used on genius binding.
+     */
+    public static final String SFC_SERVICE_NAME = "SFC_SERVICE";
+
+    /**
+     * Cookie used in the genius dispatcher flow for SFC
+     */
+    public static final BigInteger COOKIE_SFC_INGRESS_TABLE = new BigInteger("8030000", 16);
+
+    /**
+     * Priority used in the genius dispatcher flow for SFC
+     */
+    public static final int SFC_SERVICE_PRIORITY = 6;
+
+    /**
+     * Virtual network identifier used for SFC service.
      */
     public static final int SFC_VNID = 0;
 
     /**
-     * Root node for OVS DB entities in the topology
+     * SFC transport ingress table, first table of the SFC pipeline.
      */
-    public static final TopologyId OVSDB_TOPOLOGY_ID = new TopologyId(new Uri("ovsdb:1"));
-
-    /**
-     * Key for the MAC address of the SF within the external interface info map
-     */
-    public static final String MAC_KEY = "attached-mac";
+    public static final short SFC_TRANSPORT_INGRESS_TABLE = 76;
 }

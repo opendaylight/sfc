@@ -122,7 +122,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
         Optional<MacAddress> theMacAddr = getMacAddress(dstSfDpl);
         if (!theMacAddr.isPresent()) {
-            throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
+            throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(),
@@ -153,7 +153,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
         Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl);
         if (!dstSfMac.isPresent()) {
-            throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
+            throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(), entry.getDstDpnId()),
@@ -201,7 +201,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                     .getInstance().getEgressActionsFromGeniusRPC(
                             sfLogicalInterface, false);
             if (!actionList.isPresent() || actionList.get().isEmpty()) {
-                throw new RuntimeException("Failure during transport egress config. Genius did not return"
+                throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                         + " egress actions for logical interface [" + sfLogicalInterface
                         + "] (sf:" + sfDst + ")");
             }
@@ -240,7 +240,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 Optional<String> targetInterfaceName = SfcGeniusRpcClient.getInstance()
                         .getTargetInterfaceFromGeniusRPC(srcDpid, dstDpid);
                 if (!targetInterfaceName.isPresent()) {
-                    throw new RuntimeException("Failure during transport egress config. Genius did not return"
+                    throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                             + " the interface to use between src dpnid:"
                             + srcDpid + "and dst dpnid:" + dstDpid + ")");
                 }
@@ -252,7 +252,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                         .getInstance().getEgressActionsFromGeniusRPC(
                                 targetInterfaceName.get(), true);
                 if (!actionList.isPresent() || actionList.get().isEmpty()) {
-                    throw new RuntimeException("Failure during transport egress config. Genius did not return"
+                    throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                             + " egress actions for logical interface [" + targetInterfaceName.get()
                             + "] (src dpnid:" + srcDpid + "; dst dpnid:" + dstDpid + ")");
                 }

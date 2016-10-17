@@ -145,8 +145,8 @@ public class SfcOfRspProcessor {
 
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
-        } catch (RuntimeException e) {
-            LOG.error("RuntimeException in processRenderedServicePath: ", e.getMessage(), e);
+        } catch (SfcRenderingException e) {
+            LOG.error("SfcRenderingException in processRenderedServicePath: ", e.getMessage(), e);
         } finally {
             // If there were any errors, purge any remaining flows so they're not written
             this.sfcOfFlowProgrammer.purgeFlows();
@@ -176,7 +176,7 @@ public class SfcOfRspProcessor {
      *
      * @return an RSP Transport Processor for the RSP.
      */
-    public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
+    public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) throws SfcRenderingException {
         try {
             String transportProcessorKey = sffGraph.isUsingLogicalSFF() ?
                     LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY :
@@ -196,7 +196,7 @@ public class SfcOfRspProcessor {
 
             return transportProcessor;
         } catch(Exception e) {
-            throw new RuntimeException(
+            throw new SfcRenderingException(
                     "getTransportProcessor no processor for transport [" +
                     rsp.getTransportType().getName() +
                     "] encap [" + rsp.getSfcEncapsulation() + "] " + e);
@@ -209,7 +209,7 @@ public class SfcOfRspProcessor {
      * @param rsp - input to create the graph
      * @return a newly populates SffGraph
      */
-    private SffGraph populateSffGraph(RenderedServicePath rsp) {
+    private SffGraph populateSffGraph(RenderedServicePath rsp) throws SfcRenderingException {
         SffGraph sffGraph = new SffGraph();
 
         // Setting to INGRESS for the first graph entry, which is the RSP Ingress
@@ -243,7 +243,7 @@ public class SfcOfRspProcessor {
                 LOG.debug("populateSffGraph: SF uses a logical interface -> storing id for the dataplane node (interface:{})", logicalInterfaceName);
                 Optional<DpnIdType> dpnid = SfcGeniusRpcClient.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
                 if (!dpnid.isPresent()) {
-                    throw new RuntimeException("populateSffGraph:failed.dpnid for interface ["
+                    throw new SfcRenderingException("populateSffGraph:failed.dpnid for interface ["
                             + logicalInterfaceName + "] was not returned by genius. "
                             + "Rendered service path cannot be generated at this time");
                 }
@@ -470,14 +470,14 @@ public class SfcOfRspProcessor {
      *
      * @param entry - contains the SFF and RSP id
      */
-    private void initializeSff(SffGraph.SffGraphEntry entry) {
+    private void initializeSff(SffGraph.SffGraphEntry entry) throws SfcRenderingException{
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             return;
         }
 
         String sffNodeName = sfcOfProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId());
         if (sffNodeName == null) {
-            throw new RuntimeException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
+            throw new SfcRenderingException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
         }
 
         NodeId sffNodeId = new NodeId(sffNodeName);

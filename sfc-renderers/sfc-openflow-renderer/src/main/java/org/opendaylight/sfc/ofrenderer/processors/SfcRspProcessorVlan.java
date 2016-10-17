@@ -209,7 +209,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
 
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
         if (srcOfsPortStr == null) {
-            throw new RuntimeException("configureSffTransportEgressFlow OFS port not avail for SFF ["
+            throw new SfcRenderingException("configureSffTransportEgressFlow OFS port not avail for SFF ["
                     + entry.getDstSff() + "] sffDpl [" + srcSffDpl.getName().getValue() + "]");
         }
 
@@ -253,7 +253,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
 
         String srcOfsPortStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
         if (srcOfsPortStr == null) {
-            throw new RuntimeException("configureSffTransportEgressFlow OFS port not avail for SFF ["
+            throw new SfcRenderingException("configureSffTransportEgressFlow OFS port not avail for SFF ["
                     + entry.getDstSff() + "] sffDpl [" + srcSffDpl.getName().getValue() + "]");
         }
 

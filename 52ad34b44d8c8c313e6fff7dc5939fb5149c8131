@@ -93,6 +93,29 @@
       "revId": "52ad34b44d8c8c313e6fff7dc5939fb5149c8131",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_9cd01bf9",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/writers/SfcGeniusBoundServiceWriter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-18T12:22:13Z",
+      "side": 1,
+      "message": "Ok, I understand now.",
+      "range": {
+        "startLine": 74,
+        "startChar": 18,
+        "endLine": 74,
+        "endChar": 51
+      },
+      "revId": "52ad34b44d8c8c313e6fff7dc5939fb5149c8131",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.provider.listeners;
 
 import static org.junit.Assert.assertEquals;
@@ -91,7 +90,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     private final Collection<DataTreeModification<ServiceFunction>> collection = new ArrayList<>();
     private DataTreeModification<ServiceFunction> dataTreeModification;
-    DataObjectModification<ServiceFunction> dataObjectModification;
+    private DataObjectModification<ServiceFunction> dataObjectModification;
 
     // Class under test
     private ServiceFunctionListener serviceFunctionListener;
@@ -256,7 +255,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
-    public void testOnDataChanged_UpdateSFDataWithRSP() throws Exception {
+    public void testOnServiceFunctionUpdatedWithRSP() throws Exception {
         String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();

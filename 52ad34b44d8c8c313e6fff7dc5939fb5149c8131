@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_71dd6842",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 9
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-18T07:39:59Z",
+      "side": 1,
+      "message": "Will there be multiple types of flows created in the same table with this same cookie from different methods? If yes, then it would be easier to debug with a different cookie suffix for each flow. If not, then its ok as is.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 8
+      },
+      "revId": "52ad34b44d8c8c313e6fff7dc5939fb5149c8131",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b1f8a0c5",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/writers/SfcGeniusBoundServiceWriter.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-10-18T07:39:59Z",
+      "side": 1,
+      "message": "If we\u0027re going to return effectively an empty CompletableFuture, why return anything at all? Lets just make the method return type void.",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 55
+      },
+      "revId": "52ad34b44d8c8c313e6fff7dc5939fb5149c8131",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

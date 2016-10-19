@@ -49,8 +49,8 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
             sfstEntryDataChangeListenerRegistration = broker.registerDataChangeListener( LogicalDatastoreType.CONFIGURATION,
                             OpendaylightSfc.SFST_ENTRY_IID, SfcProviderSfstEntryDataListener.this, DataBroker.DataChangeScope.SUBTREE);
         } catch (final Exception e) {
-            LOG.error("SfcProviderScfEntryDataListener: DataChange listener registration fail!", e);
-            throw new IllegalStateException("SfcProviderScfEntryDataListener: registration Listener failed.", e);
+            LOG.error("SfcProviderSfstEntryDataListener: DataChange listener registration fail!", e);
+            throw new IllegalStateException("SfcProviderSfstEntryDataListener: registration Listener failed.", e);
         }
     }
 
@@ -97,7 +97,7 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
                                         serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
                                 for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
                                     if (sfst.isEnabled() == true) {
-                                        if (!(sfst.getType().equals(createdServiceFunctionSchedulerType.getType()))) {
+                                        if (!sfst.getType().equals(createdServiceFunctionSchedulerType.getType())) {
                                             ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
                                                                                         .setName(sfst.getName())
                                                                                         .setType(sfst.getType())
@@ -129,7 +129,7 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
                 Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject
                         = change.getUpdatedData();
                 for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-                    if ((entry.getValue() instanceof ServiceFunctionSchedulerType) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
+                    if (entry.getValue() instanceof ServiceFunctionSchedulerType && !dataCreatedObject.containsKey(entry.getKey())) {
                         ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) entry.getValue();
 
                         LOG.debug("\n########## updatedServiceFunctionSchedulerType {} {}",
@@ -144,7 +144,7 @@ public class SfcProviderSfstEntryDataListener implements DataChangeListener, Aut
                                             serviceFunctionSchedulerTypes.getServiceFunctionSchedulerType();
                                     for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
                                         if (sfst.isEnabled() == true) {
-                                            if (!(sfst.getType().equals(updatedServiceFunctionSchedulerType.getType()))) {
+                                            if (!sfst.getType().equals(updatedServiceFunctionSchedulerType.getType())) {
                                                 ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
                                                                                             .setName(sfst.getName())
                                                                                             .setType(sfst.getType())

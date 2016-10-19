@@ -17,13 +17,8 @@
 
   <bean id="sfcProviderRpc" class="org.opendaylight.sfc.provider.SfcProviderRpc">
   </bean>
-  <odl:rpc-implementation ref="sfcProviderRpc" />
 
-  <bean id="sfcProviderScfEntryDataListener"
-    class="org.opendaylight.sfc.provider.listeners.SfcProviderScfEntryDataListener"
-    destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
+  <odl:rpc-implementation ref="sfcProviderRpc" />
 
   <bean id="sfcProviderSfstEntryDataListener"
     class="org.opendaylight.sfc.provider.listeners.SfcProviderSfstEntryDataListener"
@@ -37,8 +32,14 @@
     <argument ref="dataBroker" />
   </bean>
 
-    <bean id="serviceFunctionForwarderListener"
+  <bean id="serviceFunctionForwarderListener"
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionForwarderListener"
+    init-method="init" destroy-method="close">
+    <argument ref="dataBroker" />
+  </bean>
+
+  <bean id="serviceFunctionClassifierListener"
+    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionClassifierListener"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
   </bean>

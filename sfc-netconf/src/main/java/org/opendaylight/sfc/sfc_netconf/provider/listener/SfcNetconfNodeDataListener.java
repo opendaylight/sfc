@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev14120
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.sfc.sf.desc.mon.MonitoringInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeFields;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -72,9 +73,9 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
 
     private static boolean isServiceFunction(NetconfNode netconfNode) {
         boolean ret = false;
-        List<String> capabilities = netconfNode.getAvailableCapabilities().getAvailableCapability();
-        for (String cap : capabilities) {
-            if (cap.endsWith("service-function-description-monitor-report")) {
+        List<AvailableCapability> capabilities = netconfNode.getAvailableCapabilities().getAvailableCapability();
+        for (AvailableCapability cap : capabilities) {
+            if (cap.getCapability().endsWith("service-function-description-monitor-report")) {
                 ret = true;
                 break;
             }
@@ -152,7 +153,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
                             // Fully connected, all services for remote device available from
                             // MountPointService
                             LOG.debug("NETCONF Node: {} is fully connected", nodeId.getValue());
-                            List<String> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
+                            List<AvailableCapability> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
                             LOG.debug("Capabilities: {}", capabilities);
 
                             /* Identify it is SF or SFF */

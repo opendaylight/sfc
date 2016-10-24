@@ -22,6 +22,30 @@
       "revId": "93504e73368f4e206b2d8a613e5e19882a835b4c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_a882dc4f",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-10-24T07:59:55Z",
+      "side": 1,
+      "message": "The copyright message was wrong in a previous commit and that\u0027s why I had to change it with this one.",
+      "parentUuid": "7a6b29fe_e50cfd96",
+      "range": {
+        "startLine": 2,
+        "startChar": 20,
+        "endLine": 2,
+        "endChar": 30
+      },
+      "revId": "93504e73368f4e206b2d8a613e5e19882a835b4c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

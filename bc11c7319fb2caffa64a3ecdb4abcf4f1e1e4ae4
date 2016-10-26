@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_57f84ee5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfRspDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-26T08:35:41Z",
+      "side": 1,
+      "message": "Is this really necessary? In SfcGeniusRspHandler, delete + create is being used, so I don\u0027t see use for this (in addition to that, I\u0027m afraid this code will colide with the RSP update that we will issue from the renderer for adding dpnid info)",
+      "range": {
+        "startLine": 77,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 106
+      },
+      "revId": "bc11c7319fb2caffa64a3ecdb4abcf4f1e1e4ae4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

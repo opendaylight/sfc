@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_1be71c42",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-10-27T13:35:19Z",
+      "side": 1,
+      "message": "Throwables do not need brackets, I would think.",
+      "parentUuid": "3a65312a_c924c1c8",
+      "range": {
+        "startLine": 139,
+        "startChar": 106,
+        "endLine": 139,
+        "endChar": 115
+      },
+      "revId": "24382f425d73f454b76ddd29a3079ead2b4e5b07",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_aef4eb87",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfRspDataListener.java",
         "patchSetId": 3

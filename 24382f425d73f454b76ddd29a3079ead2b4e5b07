@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_aef4eb87",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfRspDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-10-27T08:03:17Z",
+      "side": 1,
+      "message": "I know you tested this and it seems to work, but still, I think \"equals\" should be used here. Semantically it is \"equality\" (data being the same before and after modification) and not \"object equality\" (both nodes containing a reference to the same object) what needs to be checked; the fact that the same object instance is being assigned in this case is a mdsal implementation detail which might change without notice anytime",
+      "range": {
+        "startLine": 69,
+        "startChar": 55,
+        "endLine": 69,
+        "endChar": 57
+      },
+      "revId": "24382f425d73f454b76ddd29a3079ead2b4e5b07",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

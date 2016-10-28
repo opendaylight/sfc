@@ -338,7 +338,7 @@ public class SfcProviderSfEntryDataListenerTest extends AbstractDataStoreManager
     @SuppressWarnings({"unchecked"})
     @Test
     public void testOnDataChanged_UpdateSFDataWithRSP() throws Exception {
-        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
+        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.112";
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> dataChangeEvent =
                 Mockito.mock(AsyncDataChangeEvent.class);
         Map<InstanceIdentifier<?>, DataObject> createdData = new HashMap<>();

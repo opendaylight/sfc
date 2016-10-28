@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.provider;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +22,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -90,23 +92,7 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                             LOG.error("Failed to delete Service Function Type for SF: {}",
                                     originalServiceFunction.getName());
                         }
-
-                        /*
-                         * Before removing RSPs used by this Service Function, we need to remove all
-                         * references in the SFF/SF operational trees
-                         */
-                        SfName sfName = originalServiceFunction.getName();
-                        List<RspName> rspList = SfcProviderServiceFunctionAPI.getRspsBySfName(sfName);
-                        if ((rspList != null) && (!rspList.isEmpty())) {
-                            if (SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
-                            } else {
-                                LOG.error("{}: Failed to delete SF {} operational state",
-                                        Thread.currentThread().getStackTrace()[1], sfName);
-                            }
-                            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspList);
-
-                            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
-                        }
+                        deleteSfRsps(originalServiceFunction);
                     }
                 }
 
@@ -119,41 +105,17 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
                         ServiceFunction originalServiceFunction = (ServiceFunction) dataObject;
                         ServiceFunction updatedServiceFunction = (ServiceFunction) entry.getValue();
 
-                        // We only update SF type entry if type has changed
-                        if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
-                            // We remove the original SF from SF type list
-                            SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction);
-                            // We create a independent entry
-                            SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(updatedServiceFunction);
-                        }
-
-                        /*
-                         * Before removing RSPs used by this Service Function, we need to remove all
-                         * references in the SFF/SF operational trees
-                         */
-                        SfName sfName = originalServiceFunction.getName();
-                        List<SfServicePath> sfServicePathList =
-                                SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
-                        List<RspName> rspList = new ArrayList<>();
-                        if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
-                            if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
-                                LOG.error("{}: Failed to delete SF {} operational state",
-                                        Thread.currentThread().getStackTrace()[1], sfName);
+                        if(!compareSfs(originalServiceFunction, updatedServiceFunction)) {
+                            // We only update SF type entry if type has changed
+                            if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
+                                // We remove the original SF from SF type list
+                                SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction);
+                                // We create a independent entry
+                                SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(updatedServiceFunction);
                             }
-                            for (SfServicePath sfServicePath : sfServicePathList) {
-                                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
 
-                                RspName rspName = new RspName(sfServicePath.getName().getValue());
-                                SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
-                                rspList.add(rspName);
-                            }
-                            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
+                            deleteSfRsps(originalServiceFunction);
                         }
-                        /*
-                         * We do not update the SFF dictionary. Since the user configured it in the
-                         * first place,
-                         * (s)he is also responsible for updating it.
-                         */
                     }
                 }
             } finally {
@@ -165,4 +127,87 @@ public class SfcProviderSfEntryDataListener implements DataChangeListener {
         printTraceStop(LOG);
     }
 
+    private boolean compareSfs(ServiceFunction origSf, ServiceFunction sf) {
+        //
+        // Compare SFF IP Mgmt Addresses
+        //
+        if(sf.getIpMgmtAddress() != null && origSf.getIpMgmtAddress() != null) {
+            if(!sf.getIpMgmtAddress().toString().equals(origSf.getIpMgmtAddress().toString())) {
+                LOG.info("compareSFs: IP mgmt addresses changed orig [{}] new [{}]",
+                        origSf.getIpMgmtAddress().toString(),
+                        sf.getIpMgmtAddress().toString());
+                return false;
+            }
+        } else if(origSf.getIpMgmtAddress() != null && sf.getIpMgmtAddress() == null) {
+            LOG.info("compareSFFs: the IP mgmt address has been removed");
+            return false;
+        }
+
+        //
+        // Compare SF Types
+        //
+        if(!sf.getType().getValue().equals(origSf.getType().getValue())) {
+            LOG.info("compareSFs: SF type changed orig [{}] new [{}]",
+                    origSf.getType().getValue(),
+                    sf.getType().getValue());
+            return false;
+        }
+
+        //
+        // Compare SF DPLs
+        //
+        List<SfDataPlaneLocator> origSfDplList = origSf.getSfDataPlaneLocator();;
+        List<SfDataPlaneLocator> sfDplList = sf.getSfDataPlaneLocator();;
+
+        if(origSfDplList.size() > sfDplList.size()) {
+            LOG.info("compareSfDpls An SF DPL has been removed");
+            // TODO should we check if the removed SF DPL is used??
+            return false;
+        }
+
+        Collection<SfDataPlaneLocator> differentSfDpls = new ArrayList<>(sfDplList);
+        // This will remove everything in common, thus leaving only the different values
+        differentSfDpls.removeAll(origSfDplList);
+
+        // If the different SfDpl entries are all contained in the sfDplList,
+        // then this was a simple case of adding a new SfDpl entry, else one
+        // of the entries was modified, and the RSPs should be deleted
+        if(!sfDplList.containsAll(differentSfDpls)) {
+            LOG.info("compareSfDpls An SF DPL has been modified");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void deleteSfRsps(ServiceFunction sf) {
+        /*
+         * Before removing RSPs used by this Service Function, we need to remove all
+         * references in the SFF/SF operational trees
+         */
+        SfName sfName = sf.getName();
+        List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
+        List<RspName> rspList = new ArrayList<>();
+        if ((sfServicePathList != null) && (!sfServicePathList.isEmpty())) {
+            if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
+                LOG.error("{}: Failed to delete SF {} operational state",
+                        Thread.currentThread().getStackTrace()[1], sfName);
+            }
+            for (SfServicePath sfServicePath : sfServicePathList) {
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+
+                RspName rspName = new RspName(sfServicePath.getName().getValue());
+                SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
+                LOG.info("Deleting RSP [{}] on SF [{}]", rspName, sfName);
+                rspList.add(rspName);
+            }
+            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
+        }
+
+        /*
+         * We do not update the SFF dictionary. Since the user configured it in the
+         * first place,
+         * (s)he is also responsible for updating it.
+         */
+    }
 }

@@ -1,0 +1,89 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  #config.proxy.http     = "#{ENV['http_proxy']}"
+  #config.proxy.https    = "#{ENV['https_proxy']}"
+  #config.proxy.no_proxy = "localhost,127.0.0.1,192.168.1.0/24"
+  config.vm.box = "#{ENV['UBUNTU_VBOX_NAME']}"
+  config.vm.box_url = "file://./#{ENV['UBUNTU_VBOX_IMAGE']}"
+  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--memory", 4096]
+    v.customize ["modifyvm", :id, "--cpus", 4]
+  end
+
+  config.vm.define "#{ENV['CLASSIFIER1_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['CLASSIFIER1_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['CLASSIFIER1_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['CLASSIFIER1_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['CLASSIFIER1_VPP_VAGRANT_MAC']}"]
+    end
+  end
+
+  config.vm.define "#{ENV['SFF1_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['SFF1_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['SFF1_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['SFF1_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['SFF1_VPP_VAGRANT_MAC']}"]
+    end
+  end
+
+  config.vm.define "#{ENV['SF1_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['SF1_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['SF1_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['SF1_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['SF1_VPP_VAGRANT_MAC']}"]
+    end
+  end
+
+  config.vm.define "#{ENV['SF2_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['SF2_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['SF2_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['SF2_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['SF2_VPP_VAGRANT_MAC']}"]
+    end
+  end
+
+  config.vm.define "#{ENV['SFF2_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['SFF2_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['SFF2_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['SFF2_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['SFF2_VPP_VAGRANT_MAC']}"]
+    end
+  end
+
+  config.vm.define "#{ENV['CLASSIFIER2_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['CLASSIFIER2_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['CLASSIFIER2_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['CLASSIFIER2_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['CLASSIFIER2_VPP_VAGRANT_MAC']}"]
+    end
+  end
+end

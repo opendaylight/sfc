@@ -41,11 +41,12 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -83,6 +84,7 @@ public class SfcOfRspTransactionalProcessorTest {
     List<SftTypeName> serviceFunctionChain1, serviceFunctionChain2;
     RenderedServicePath nshRsp, nshRsp2;
     SfcOfFlowWriterInterface sfcFlowWriterTestMock;
+    OperDsUpdateHandlerInterface operDsUpdateHandlerMock;
 
     public SfcOfRspTransactionalProcessorTest() {
         LOG.info("SfcOfRspTransactionalProcessorTest constructor");
@@ -93,6 +95,9 @@ public class SfcOfRspTransactionalProcessorTest {
         Mockito.doNothing().when(sfcFlowWriterTestMock).flushFlows();
         Mockito.doNothing().when(sfcFlowWriterTestMock).deleteFlowSet();
 
+        this.operDsUpdateHandlerMock = Mockito.spy(new OperDsUpdateHandlerLSFFImpl());
+        Mockito.doNothing().when(operDsUpdateHandlerMock).onRspDeletion(anyObject());
+
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         // spied in order to check private methods
         this.sfcOfRspProcessor = PowerMockito.spy(
@@ -100,7 +105,8 @@ public class SfcOfRspTransactionalProcessorTest {
                     this.flowProgrammerTestMock,
                     this.sfcUtilsTestMock,
                     new SfcSynchronizer(),
-                    null));
+                    null,
+                    this.operDsUpdateHandlerMock));
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();
@@ -163,13 +169,13 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         PowerMockito.verifyPrivate(
-                this.sfcOfRspProcessor, times(2)).invoke("setSffInitialized", (Uri) anyObject(), Matchers.eq(true));
+                this.sfcOfRspProcessor, times(2)).invoke("setSffInitialized", anyObject(), Matchers.eq(true));
 
         LOG.info("testSingleRSPDeletion: flow creation completed - starting deletion");
         this.sfcOfRspProcessor.deleteRenderedServicePath(nshRsp);
 
         PowerMockito.verifyPrivate(
-                this.sfcOfRspProcessor, times(2)).invoke("setSffInitialized", (Object) anyObject(), Matchers.eq(false));
+                this.sfcOfRspProcessor, times(2)).invoke("setSffInitialized", anyObject(), Matchers.eq(false));
 
         // fetch the list of flows to be deleted
         Set<SfcOfFlowWriterImpl.FlowDetails> deletedFlows = Whitebox

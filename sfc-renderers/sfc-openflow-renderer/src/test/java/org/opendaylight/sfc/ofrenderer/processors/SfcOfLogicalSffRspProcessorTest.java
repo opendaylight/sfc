@@ -24,6 +24,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
@@ -63,6 +64,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import static org.powermock.api.support.membermodification.MemberModifier.suppress;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import org.powermock.reflect.Whitebox;
 import java.util.List;
 import java.util.Set;
@@ -81,6 +84,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TABLE_INDEX_CLASSIFIER;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.genius.mdsalutil.NwConstants;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
@@ -91,7 +97,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
  * @author Miguel Duarte (miguel.duarte.de.mora.barroso@ericsson.com)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcGeniusRpcClient.class, SfcGeniusDataUtils.class})
+@PrepareForTest({SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, OpendaylightSfc.class, OperDsUpdateHandlerLSFFImpl.class})
 public class SfcOfLogicalSffRspProcessorTest {
     @InjectMocks
     private SfcGeniusRpcClient geniusClient;
@@ -111,6 +117,10 @@ public class SfcOfLogicalSffRspProcessorTest {
     @Spy
     private SfcOfFlowWriterImpl ofFlowWriter;
 
+    @Mock
+    private DataBroker dataBroker;
+
+    private OperDsUpdateHandlerLSFFImpl operDsUpdateHandler;
     private SfcOfRspProcessor sfcOfRspProcessor;
     private SfcOfProviderUtilsTestMock sfcUtils;
     private RspBuilder rspBuilder;
@@ -120,14 +130,22 @@ public class SfcOfLogicalSffRspProcessorTest {
     private static final MacAddress theMacAddressSfSide = new MacAddress("11:22:33:44:55:66");
     private static final MacAddress theMacAddressOvsSide = new MacAddress("aa:bb:cc:dd:ee:ff");
 
-    public SfcOfLogicalSffRspProcessorTest() {
+    /**
+     * Test constructor
+     * @throws Exception when something fails during private method suppression
+     */
+    public SfcOfLogicalSffRspProcessorTest() throws Exception {
         initMocks(this);
+
+        operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl());
         flowProgrammer.setFlowWriter(ofFlowWriter);
         sfcUtils = new SfcOfProviderUtilsTestMock();
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(
                 flowProgrammer,
                 sfcUtils,
-                new SfcSynchronizer(),null));
+                new SfcSynchronizer(),
+                null,
+                operDsUpdateHandler));
         rspBuilder = new RspBuilder(sfcUtils);
         sfTypes = new ArrayList<SftTypeName>() {{
             add(new SftTypeName("firewall"));
@@ -136,10 +154,20 @@ public class SfcOfLogicalSffRspProcessorTest {
         Mockito.doNothing().when(ofFlowWriter).flushFlows();
         Mockito.doNothing().when(ofFlowWriter).deleteFlowSet();
         Mockito.doNothing().when(ofFlowWriter).purgeFlows();
+
+        // Disable the execution of private methods interacting with the datastore
+        suppress(method(OperDsUpdateHandlerLSFFImpl.class, "updateRenderedServicePathOperationalStateWithDpnIds",
+                SffGraph.class, RenderedServicePath.class, WriteTransaction.class));
+        suppress(method(OperDsUpdateHandlerLSFFImpl.class, "updateSffStateWithDpnIds",
+                SffGraph.class, RenderedServicePath.class, WriteTransaction.class));
+        suppress(method(OperDsUpdateHandlerLSFFImpl.class, "deleteRspFromSffState",
+                RenderedServicePath.class, WriteTransaction.class));
+        suppress(method(OperDsUpdateHandlerLSFFImpl.class, "commitChangesAsync",
+                WriteTransaction.class));
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         sfcUtils.resetCache();
 
         PowerMockito.spy(SfcGeniusRpcClient.class);
@@ -153,6 +181,11 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         PowerMockito.when(SfcGeniusDataUtils.getSfLogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(theLogicalIfName);
+
+        PowerMockito.mockStatic(OpendaylightSfc.class);
+        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj()).thenReturn(odlSfc);
+        PowerMockito.when(OpendaylightSfc.getOpendaylightSfcObj().getDataProvider()).thenReturn(dataBroker);
+        PowerMockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(null);
 
         PowerMockito.when(SfcGeniusDataUtils.isSfUsingALogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(true);
@@ -178,6 +211,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                                 new GetDpidFromInterfaceOutputBuilder()
                                     .setDpid(new BigInteger("1234567890")))
                                     .build()));
+
     }
 
     @Test
@@ -197,6 +231,7 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         int nHops = sfTypes.size() + 1;
 
+        checkOperationalDatastoreUpdateOnRSPCreation();
 
         verify(interfaceManagerRpcService, times(nHops))
                 .getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class));
@@ -291,6 +326,44 @@ public class SfcOfLogicalSffRspProcessorTest {
                 addedFlows.size() - checkedFlows.size(),
                 addedFlows.stream().filter(flowd -> !checkedFlows.contains(flowd.flow))
                         .filter(flowd -> flowd.flow.getFlowName().equals("MatchAny")).count());
+    }
+
+    /*
+     * Delete a RSP
+     *   - Check that Operational Datastore is updated accordingly
+     */
+    @Test
+    public void testOperationalDatastoreUpdateOnRSPDeletion() throws Exception {
+        RenderedServicePath rsp = rspBuilder
+                .createRspFromSfTypes(this.sfTypes, true);
+        sfcOfRspProcessor.deleteRenderedServicePath(rsp);
+        checkOperationalDatastoreUpdateOnRSPDeletion();
+    }
+
+    /**
+     * Verifications regarding operational datastore updates for logical sff (at RSP creation time)
+     * @throws Exception when some problem occur during verification
+     */
+    private void checkOperationalDatastoreUpdateOnRSPCreation() throws Exception {
+        Mockito.verify(operDsUpdateHandler).onRspCreation(any(), any());
+        PowerMockito.verifyPrivate(operDsUpdateHandler).invoke(
+                "updateRenderedServicePathOperationalStateWithDpnIds", any(), any(), any());
+        PowerMockito.verifyPrivate(operDsUpdateHandler).invoke(
+                "updateSffStateWithDpnIds", any(), any(), any());
+        PowerMockito.verifyPrivate(operDsUpdateHandler).invoke(
+                "commitChangesAsync", any());
+        PowerMockito.verifyNoMoreInteractions(operDsUpdateHandler);
+    }
+
+    /**
+     * Verifications regarding operational datastore updates for logical sff (at RSP deletion time)
+     * @throws Exception when some problem occur during verification
+     */
+    private void checkOperationalDatastoreUpdateOnRSPDeletion() throws Exception {
+        Mockito.verify(operDsUpdateHandler).onRspDeletion(any());
+        PowerMockito.verifyPrivate(operDsUpdateHandler).invoke("deleteRspFromSffState", any(), any());
+        PowerMockito.verifyPrivate(operDsUpdateHandler).invoke("commitChangesAsync", any());
+        PowerMockito.verifyNoMoreInteractions(operDsUpdateHandler);
     }
 
     private boolean matchTransportEgress(Flow transportEgressFlow, boolean lastHop, long rspId) {

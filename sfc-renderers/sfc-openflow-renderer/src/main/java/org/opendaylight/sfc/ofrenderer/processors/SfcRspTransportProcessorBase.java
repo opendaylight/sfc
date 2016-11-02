@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -355,5 +356,19 @@ public abstract class SfcRspTransportProcessorBase {
      */
     public void configureClassifierTableMatchAny(final String sffNodeName) {
         this.sfcFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
+    }
+
+
+    /**
+     * Update the operational datastore with information related to the rendered path
+     * @param operDsHandler the class in charge of performing async Operational DS
+     *                      updates
+     * @param theGraph the graph on which the just-rendered path was based
+     * @param rsp the rendered service path
+     */
+    public void updateOperationalDSInfo(
+            OperDsUpdateHandlerInterface operDsHandler, SffGraph theGraph,
+            RenderedServicePath rsp) {
+     // Overriden by transport processors which do perform operational datastore updates
     }
 }

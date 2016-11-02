@@ -56,42 +56,23 @@ module service-function-forwarder-logical {
     container dpn-rsps {
       description "For each DPN id, the list contains all RSPs that
                    are using the data plane node";
-      uses dpn-grouping;
-      list rsps {
+      // uses dpn-grouping;
+      list dpn {
         description
-          "List of service paths using this data plane node";
-        key "name";
-        leaf name {
-          type sfc-common:sfp-name;
-          description "The name of the Service Path";
-        }
-      }
-    }
-  }
-
-  grouping sf-logical-sff-dictionary {
-    list sf-logical-sff-dictionary {
-      key "name";
-      leaf name {
-        type sfc-common:sf-name;
-        description
-          "The name of the service function";
-      }
-      container sff-sf-data-plane-locator {
-        description
-          "SFF and SF data plane locators to use when sending
-          packets from this SFF to the associated SF";
-        leaf sf-dpl-name {
-          type sfc-common:sf-data-plane-locator-name;
-          description
-            "The SF data plane locator to use when sending
-            packets to the associated service function";
-        }
+          "List of all dpn ids part of this logical sff";
         uses dpn-grouping;
+        key dpn-id;
+        container rsps-for-dpnid {
+          list rsps {
+            key "name";
+            leaf name {
+              type sfc-common:sfp-name;
+              description "The name of the Service Path";
+            }
+          }
+        }
       }
     }
-    description
-      "A list of all Service Functions attached to this SFF.";
   }
 
   augment "/sfc-sf:service-functions/"
@@ -111,7 +92,6 @@ module service-function-forwarder-logical {
     description "Augments the SFF state to hold logical SFF specific information";
     ext:augment-identifier "sff-logical-sff-augmentation";
     uses dpnid-rsps;
-    uses sf-logical-sff-dictionary;
   }
 
   augment "/rsp:rendered-service-paths/"

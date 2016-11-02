@@ -32,6 +32,8 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
@@ -63,6 +65,7 @@ public class SfcOfRspProcessorTest {
     RspBuilder rspBuilder;
     SfcOfFlowProgrammerInterface flowProgrammerTestMoc;
     SfcOfProviderUtilsTestMock sfcUtilsTestMock;
+    OperDsUpdateHandlerInterface operDsHandler;
     List<SftTypeName> sfTypes;
 
     public SfcOfRspProcessorTest() {
@@ -70,11 +73,14 @@ public class SfcOfRspProcessorTest {
 
         this.flowProgrammerTestMoc = mock(SfcOfFlowProgrammerImpl.class);
         this.flowProgrammerTestMoc.setFlowWriter(mock(SfcOfFlowWriterInterface.class));
+        this.operDsHandler = mock(OperDsUpdateHandlerLSFFImpl.class);
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         this.sfcOfRspProcessor = new SfcOfRspProcessor(
                 this.flowProgrammerTestMoc,
                 this.sfcUtilsTestMock,
-                new SfcSynchronizer(), null);
+                new SfcSynchronizer(),
+                null,
+                operDsHandler);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();
@@ -136,8 +142,8 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), eq((long) 0), eq(false));
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), eq((long) 0), eq(false));
         // the next 2 are SF vlans, these calls should instead be configureVlanSfPathMapperFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_0", 2, (long) 0, true);
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_1", 3, (long) 0, true);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_0", 2, 0, true);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_1", 3, 0, true);
 
         // Verify calls to configureNextHopFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureMacNextHopFlow("SFF_0", 0, null, "00:00:00:00:00:00");

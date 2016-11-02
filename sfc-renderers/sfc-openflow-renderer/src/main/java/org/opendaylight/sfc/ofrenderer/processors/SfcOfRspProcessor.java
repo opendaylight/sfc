@@ -20,6 +20,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -49,6 +50,7 @@ public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
+    private OperDsUpdateHandlerInterface operDsHandler;
     private SfcSynchronizer sfcSynchronizer;
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
@@ -65,10 +67,12 @@ public class SfcOfRspProcessor {
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils,
             SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry) {
+            RpcProviderRegistry rpcProviderRegistry,
+            OperDsUpdateHandlerInterface operDsHandler) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
+        this.operDsHandler = operDsHandler;
         this.sffInitialized = new HashMap<>();
 
         //FIXME this is temporary. SfcGeniusRpcClient will self-initialize via blueprint injection when the module is finished
@@ -144,6 +148,9 @@ public class SfcOfRspProcessor {
             // Flush the flows to the data store
             this.sfcOfFlowProgrammer.flushFlows();
 
+            // Update the operational datastore if necessary (without blocking)
+            transportProcessor.updateOperationalDSInfo(operDsHandler, sffGraph, rsp);
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (SfcRenderingException e) {
@@ -166,6 +173,10 @@ public class SfcOfRspProcessor {
         for(NodeId sffNodeId : clearedSffNodeIDs){
             setSffInitialized(sffNodeId, false);
         }
+
+        // not necessary to build a transport processor; simply update SFF state if the RSP
+        // being deleted contains dpnid information (asynchronously)
+        operDsHandler.onRspDeletion(rsp);
     }
 
     /**
@@ -346,6 +357,7 @@ public class SfcOfRspProcessor {
                 // If its Ingress, nothing else to be done
                 return;
             } else {
+
                 ServiceFunctionForwarder sffSrc =
                         sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
                 SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffSrc,

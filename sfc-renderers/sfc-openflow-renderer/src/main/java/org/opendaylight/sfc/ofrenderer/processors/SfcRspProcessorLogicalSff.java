@@ -16,6 +16,8 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -318,4 +320,9 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         // classifier table is not used in chains rendered by the LogicalSFF processor
     }
 
+    @Override
+    public void updateOperationalDSInfo(OperDsUpdateHandlerInterface operDsHandler,
+            SffGraph theGraph, RenderedServicePath rsp) {
+        operDsHandler.onRspCreation(theGraph, rsp);
+    }
 }

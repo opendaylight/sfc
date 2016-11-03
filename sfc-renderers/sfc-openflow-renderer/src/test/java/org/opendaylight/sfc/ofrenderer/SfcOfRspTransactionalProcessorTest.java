@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
@@ -106,7 +107,8 @@ public class SfcOfRspTransactionalProcessorTest {
                     this.sfcUtilsTestMock,
                     new SfcSynchronizer(),
                     null,
-                    this.operDsUpdateHandlerMock));
+                    this.operDsUpdateHandlerMock,
+                    new SfcGeniusRpcClient(null)));
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();

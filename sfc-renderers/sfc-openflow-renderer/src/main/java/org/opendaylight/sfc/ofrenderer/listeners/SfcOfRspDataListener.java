@@ -14,6 +14,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
@@ -50,7 +51,9 @@ public class SfcOfRspDataListener extends SfcOfAbstractDataListener {
         setIID(OpendaylightSfc.RSP_ENTRY_IID);
         registerAsDataChangeListener(LogicalDatastoreType.OPERATIONAL);
         this.sfcOfRspProcessor = new SfcOfRspProcessor(
-                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry, new OperDsUpdateHandlerLSFFImpl());
+                sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer, rpcProviderRegistry,
+                new OperDsUpdateHandlerLSFFImpl(),
+                new SfcGeniusRpcClient(rpcProviderRegistry));
     }
 
     @Override

@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_c173e3af",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionClassifierListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-03T14:52:35Z",
+      "side": 1,
+      "message": "2016",
+      "range": {
+        "startLine": 2,
+        "startChar": 17,
+        "endLine": 2,
+        "endChar": 21
+      },
+      "revId": "0b617a37c19570b2f722c2479b2cb99cc5e5d418",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_a19b47c8",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionClassifierListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-03T14:52:35Z",
+      "side": 1,
+      "message": "We\u0027re still Ericsson (I just checked) ;)",
+      "range": {
+        "startLine": 2,
+        "startChar": 22,
+        "endLine": 2,
+        "endChar": 34
+      },
+      "revId": "0b617a37c19570b2f722c2479b2cb99cc5e5d418",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_81872b61",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionClassifierListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-03T14:52:35Z",
+      "side": 1,
+      "message": "java standard for method names is the so-called \"camel notation\". This is, buildServiceFunctionClassifier (no underscores, first letter lowercase, first letter for each other word uppercase)",
+      "range": {
+        "startLine": 193,
+        "startChar": 30,
+        "endLine": 193,
+        "endChar": 63
+      },
+      "revId": "0b617a37c19570b2f722c2479b2cb99cc5e5d418",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_61b92f2e",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionClassifierListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-03T14:52:35Z",
+      "side": 1,
+      "message": "Missing protection modificator (public/private)",
+      "range": {
+        "startLine": 193,
+        "startChar": 1,
+        "endLine": 193,
+        "endChar": 3
+      },
+      "revId": "0b617a37c19570b2f722c2479b2cb99cc5e5d418",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

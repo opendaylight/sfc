@@ -49,8 +49,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
     private final SfcTableIndexMapper tableIndexMapper;
+    private SfcGeniusRpcClient sfcGeniusRpcClient;
+    private OperDsUpdateHandlerInterface operDsHandler;
 
-    public SfcRspProcessorLogicalSff() {
+    public SfcRspProcessorLogicalSff(SfcGeniusRpcClient sfcGeniusRpcClient, OperDsUpdateHandlerInterface operDsHandler) {
         // This transport processor relies on Genius for retrieving correct table indexes. In order
         // not to create a circular dependency between this class and Genius, this processor
         // provides Genius mapping class with the tables it uses for each function
@@ -62,6 +64,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         builder.setTransportEgressTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
 
         tableIndexMapper = builder.build();
+        this.sfcGeniusRpcClient = sfcGeniusRpcClient;
+        this.operDsHandler = operDsHandler;
     }
     //
     // TransportIngress methods
@@ -146,7 +150,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     }
 
     /*
-     * Configure the Next Hop flow from an SFF to an SF
+     * Configure the Next Hop flow from an SF to an SF
      *
      * @param entry - RSP hop info used to create the flow
      * @param srcSfDpl - not used in this processor
@@ -169,7 +173,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     }
 
     /*
-     * Configure the Next Hop flow from an SFF to an SFF
+     * Configure the Next Hop flow from an SFF to an SFFq
      *
      */
     @Override
@@ -203,8 +207,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 sfLogicalInterface, entry.getServiceIndex());
 
         // When the SF is using a logical SFF, the transport egress flows are provided by Genius
-        Optional<List<Action>> actionList = SfcGeniusRpcClient
-                    .getInstance().getEgressActionsFromGeniusRPC(
+        Optional<List<Action>> actionList = sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(
                             sfLogicalInterface, false);
             if (!actionList.isPresent() || actionList.get().isEmpty()) {
                 throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
@@ -254,7 +257,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 DpnIdType srcDpid = entry.getSrcDpnId();
                 DpnIdType dstDpid = entry.getDstDpnId();
                 // 2, use genius to retrieve dst interface name (ITM manager RPC)
-                Optional<String> targetInterfaceName = SfcGeniusRpcClient.getInstance()
+                Optional<String> targetInterfaceName = sfcGeniusRpcClient
                         .getTargetInterfaceFromGeniusRPC(srcDpid, dstDpid);
                 if (!targetInterfaceName.isPresent()) {
                     throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
@@ -265,8 +268,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 LOG.debug("configureSffTransportEgressFlow: srcDpn [{}] destDpn [{}] interface to use: [{}]",
                         srcDpid, dstDpid, targetInterfaceName.get());
                 // 3, use genius for retrieving egress actions (Interface Manager RPC)
-                Optional<List<Action>> actionList = SfcGeniusRpcClient
-                        .getInstance().getEgressActionsFromGeniusRPC(
+                Optional<List<Action>> actionList = sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(
                                 targetInterfaceName.get(), true);
                 if (!actionList.isPresent() || actionList.get().isEmpty()) {
                     throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
@@ -321,8 +323,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     }
 
     @Override
-    public void updateOperationalDSInfo(OperDsUpdateHandlerInterface operDsHandler,
-            SffGraph theGraph, RenderedServicePath rsp) {
+    public void updateOperationalDSInfo(SffGraph theGraph, RenderedServicePath rsp) {
         operDsHandler.onRspCreation(theGraph, rsp);
     }
 }

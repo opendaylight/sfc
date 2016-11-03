@@ -33,8 +33,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
@@ -42,8 +42,6 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
@@ -85,7 +83,6 @@ public class SfcOfRspTransactionalProcessorTest {
     List<SftTypeName> serviceFunctionChain1, serviceFunctionChain2;
     RenderedServicePath nshRsp, nshRsp2;
     SfcOfFlowWriterInterface sfcFlowWriterTestMock;
-    OperDsUpdateHandlerInterface operDsUpdateHandlerMock;
     DataBroker  dataBroker;
 
     public SfcOfRspTransactionalProcessorTest() {
@@ -97,8 +94,8 @@ public class SfcOfRspTransactionalProcessorTest {
         Mockito.doNothing().when(sfcFlowWriterTestMock).flushFlows();
         Mockito.doNothing().when(sfcFlowWriterTestMock).deleteFlowSet();
 
-        this.operDsUpdateHandlerMock = Mockito.spy(new OperDsUpdateHandlerLSFFImpl(dataBroker));
-        Mockito.doNothing().when(operDsUpdateHandlerMock).onRspDeletion(anyObject());
+        dataBroker = Mockito.mock(DataBroker.class);
+        Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(Mockito.mock(WriteTransaction.class));
 
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         // spied in order to check private methods
@@ -108,7 +105,10 @@ public class SfcOfRspTransactionalProcessorTest {
                     this.sfcUtilsTestMock,
                     new SfcSynchronizer(),
                     null,
-                    this.operDsUpdateHandlerMock));
+                    dataBroker
+                    ));
+
+
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();

@@ -151,7 +151,11 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
         while (hops.hasNext()) {
             aHop = hops.next();
             SffName sffName =  aHop.getServiceFunctionForwarder();
-            DpnIdType dpnid = aHop.getAugmentation(RspLogicalSffAugmentation.class).getDpnId();
+            RspLogicalSffAugmentation lsffAugmentation = aHop.getAugmentation(RspLogicalSffAugmentation.class);
+            if (lsffAugmentation == null) {
+                continue;
+            }
+            DpnIdType dpnid = lsffAugmentation.getDpnId();
             if (dpnid == null) {
                 continue;
             }

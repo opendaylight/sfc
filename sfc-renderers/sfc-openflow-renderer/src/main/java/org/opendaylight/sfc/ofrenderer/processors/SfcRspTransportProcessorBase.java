@@ -34,6 +34,7 @@ public abstract class SfcRspTransportProcessorBase {
     protected SfcOfBaseProviderUtils sfcProviderUtils;
     protected RenderedServicePath rsp;
     protected SffGraph sffGraph;
+    protected OperDsUpdateHandlerInterface operDsHandler;
 
     private static final String FUNCTION = "function";
     private static final String IP = "ip";
@@ -358,16 +359,13 @@ public abstract class SfcRspTransportProcessorBase {
         this.sfcFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
     }
 
-
-    /**
+   /**
      * Update the operational datastore with information related to the rendered path
-     * @param operDsHandler the class in charge of performing async Operational DS
-     *                      updates
      * @param theGraph the graph on which the just-rendered path was based
      * @param rsp the rendered service path
      */
     public void updateOperationalDSInfo(
-            OperDsUpdateHandlerInterface operDsHandler, SffGraph theGraph,
+            SffGraph theGraph,
             RenderedServicePath rsp) {
      // Overriden by transport processors which do perform operational datastore updates
     }

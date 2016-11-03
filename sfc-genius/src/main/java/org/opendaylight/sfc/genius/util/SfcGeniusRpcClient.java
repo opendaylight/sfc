@@ -39,33 +39,25 @@ public class SfcGeniusRpcClient {
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusRpcClient.class);
     private ItmRpcService itmRpcService;
     private OdlInterfaceRpcService interfaceManagerRpcService;
-    private static SfcGeniusRpcClient sfcGeniusRpcClient;
     /*
      * Tunnel key used in the transport zone created to support the logical SFF
      */
     private static final long LOGICAL_SFF_TZ_DEFAULT_TUNNEL_KEY = 0;
 
-     private SfcGeniusRpcClient() {
-     }
-
-    public static SfcGeniusRpcClient getInstance() {
-
-        if (sfcGeniusRpcClient == null) {
-            sfcGeniusRpcClient = new SfcGeniusRpcClient();
-        }
-
-        return sfcGeniusRpcClient;
-    }
-
-    public void initialize(RpcProviderRegistry rpcProviderRegistry) {
-        LOG.info("initialize: starting");
+    /**
+     * Constructor
+     * @param rpcProviderRegistry The registry used to retrieve RPC services
+     */
+    public SfcGeniusRpcClient(RpcProviderRegistry rpcProviderRegistry) {
+        LOG.debug("SfcGeniusRpcClient: starting");
         try {
             if(rpcProviderRegistry != null) {
                 itmRpcService = rpcProviderRegistry.getRpcService(ItmRpcService.class);
                 interfaceManagerRpcService = rpcProviderRegistry.getRpcService(OdlInterfaceRpcService.class);
             }
         } catch (Exception e) {
-            LOG.error("setSessionHelper:failed to register as MDSAL consumer!." , e);
+            LOG.error("SfcGeniusRpcClient: failed on rpc services retrieval!" , e);
+            throw e;
         }
     }
 

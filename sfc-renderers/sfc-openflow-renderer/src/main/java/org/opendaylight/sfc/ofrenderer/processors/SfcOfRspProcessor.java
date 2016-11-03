@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
@@ -21,6 +22,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -50,10 +52,11 @@ public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
-    private OperDsUpdateHandlerInterface operDsHandler;
     private SfcSynchronizer sfcSynchronizer;
     private Map<NodeId, Boolean> sffInitialized;
-    private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
+    private OperDsUpdateHandlerInterface operDsHandler;
+    private Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
+    private SfcGeniusRpcClient theGeniusRpcClient;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /* Logical SFF always assumes vxlan-gpe tunnels for inter-sff transport, and eth-encapsulated
@@ -63,34 +66,36 @@ public class SfcOfRspProcessor {
     private static final String LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY =
             LogicalInterface.class.getName() + TRANSPORT_ENCAP_SEPARATOR_STRING + Nsh.class.getName();
 
+
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils,
             SfcSynchronizer sfcSynchronizer,
             RpcProviderRegistry rpcProviderRegistry,
-            OperDsUpdateHandlerInterface operDsHandler) {
+            DataBroker dataBroker) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
-        this.operDsHandler = operDsHandler;
         this.sffInitialized = new HashMap<>();
-
-        //FIXME this is temporary. SfcGeniusRpcClient will self-initialize via blueprint injection when the module is finished
-        SfcGeniusRpcClient.getInstance().initialize(rpcProviderRegistry);
-
+        this.theGeniusRpcClient = new SfcGeniusRpcClient(rpcProviderRegistry);
+        this.operDsHandler = new OperDsUpdateHandlerLSFFImpl(dataBroker);
         this.rspTransportProcessors = new HashMap<>();
+
         this.rspTransportProcessors.put(
                 getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
-                SfcRspProcessorNshVxgpe.class);
+                new SfcRspProcessorNshVxgpe());
         this.rspTransportProcessors.put(
                 getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
-                SfcRspProcessorMpls.class);
+                new SfcRspProcessorMpls());
         this.rspTransportProcessors.put(
                 getTransportEncapName(Mac.class.getName(), Transport.class.getName()),
-                SfcRspProcessorVlan.class);
+                new SfcRspProcessorVlan());
         this.rspTransportProcessors.put(
                 LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY,
-                SfcRspProcessorLogicalSff.class);
+                new SfcRspProcessorLogicalSff(getGeniusRpcClient(), getOperDsHandler())
+                );
+        rspTransportProcessors.forEach((k,v) -> v.setFlowProgrammer(sfcOfFlowProgrammer));
+        rspTransportProcessors.forEach((k,v) -> v.setSfcProviderUtils(sfcOfProviderUtils));
     }
 
     /**
@@ -149,7 +154,7 @@ public class SfcOfRspProcessor {
             this.sfcOfFlowProgrammer.flushFlows();
 
             // Update the operational datastore if necessary (without blocking)
-            transportProcessor.updateOperationalDSInfo(operDsHandler, sffGraph, rsp);
+            transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
 
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
@@ -176,43 +181,55 @@ public class SfcOfRspProcessor {
 
         // not necessary to build a transport processor; simply update SFF state if the RSP
         // being deleted contains dpnid information (asynchronously)
-        operDsHandler.onRspDeletion(rsp);
+        getOperDsHandler().onRspDeletion(rsp);
+    }
+
+    private OperDsUpdateHandlerInterface getOperDsHandler() {
+        return operDsHandler;
+    }
+
+   /**
+    * Given the RSP transport type + encapsulation (and the rsp graph, for lsff),
+    * return a RSP Transport Processor that will call the appropriate
+    * FlowProgrammer methods.
+    *
+    * @param sffGraph - sffGraph generated for the RSP
+    * @param rsp - contains the RSP transport type & encapsulation
+    *
+    * @return an RSP Transport Processor for the RSP.
+    */
+    private SfcRspTransportProcessorBase getReusableTransporProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
+        String transportProcessorKey = sffGraph.isUsingLogicalSFF() ?
+                LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY :
+                getTransportEncapName(
+                    rsp.getTransportType().getName(),
+                    rsp.getSfcEncapsulation().getName());
+        SfcRspTransportProcessorBase transportProcessor = rspTransportProcessors.get(transportProcessorKey);
+        if (transportProcessor == null) {
+            throw new SfcRenderingException(
+                    "getTransportProcessor no processor for transport [" +
+                    rsp.getTransportType().getName() +
+                    "] encap [" + rsp.getSfcEncapsulation() + "] " );
+        }
+        LOG.debug("getTransportProcessor :: transport [{}] encap [{} selected transport processor [{}]]",
+                rsp.getTransportType().getName(), rsp.getSfcEncapsulation(), transportProcessor.getClass());
+        return transportProcessor;
     }
 
     /**
-     * Given the RSP transport type, return an Rsp Transport Processor that
+     * Given the RSP transport type + encapsulation, return an Rsp Transport Processor that
      * will call the appropriate FlowProgrammer methods.
      *
-     * @param sffGraph - used to inject dependencies into the newly created object.
-     * @param rsp - contains the RSP transport type
+     * @param sffGraph - the graph used for rsp generation
+     * @param rsp - contains the RSP transport type and encapsulation
      *
      * @return an RSP Transport Processor for the RSP.
      */
     public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
-        try {
-            String transportProcessorKey = sffGraph.isUsingLogicalSFF() ?
-                    LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY :
-                    getTransportEncapName(
-                        rsp.getTransportType().getName(),
-                        rsp.getSfcEncapsulation().getName());
-
-            Class<? extends SfcRspTransportProcessorBase> transportClass =
-                    rspTransportProcessors.get(transportProcessorKey);
-            LOG.debug("getTransportProcessor :: transport [{}] encap [{} selected transport processor [{}]]",
-                    rsp.getTransportType().getName(), rsp.getSfcEncapsulation(), transportClass);
-            SfcRspTransportProcessorBase transportProcessor = transportClass.newInstance();
-            transportProcessor.setFlowProgrammer(sfcOfFlowProgrammer);
-            transportProcessor.setRsp(rsp);
-            transportProcessor.setSffGraph(sffGraph);
-            transportProcessor.setSfcProviderUtils(sfcOfProviderUtils);
-
-            return transportProcessor;
-        } catch(Exception e) {
-            throw new SfcRenderingException(
-                    "getTransportProcessor no processor for transport [" +
-                    rsp.getTransportType().getName() +
-                    "] encap [" + rsp.getSfcEncapsulation() + "] " + e);
-        }
+        SfcRspTransportProcessorBase transportProcessor = getReusableTransporProcessor(sffGraph, rsp);
+        transportProcessor.setRsp(rsp);
+        transportProcessor.setSffGraph(sffGraph);
+        return transportProcessor;
     }
 
     /**
@@ -253,7 +270,7 @@ public class SfcOfRspProcessor {
             if (SfcGeniusDataUtils.isSfUsingALogicalInterface(sf)) {
                 String logicalInterfaceName = sfcOfProviderUtils.getSfLogicalInterfaceName(sf);
                 LOG.debug("populateSffGraph: SF uses a logical interface -> storing id for the dataplane node (interface:{})", logicalInterfaceName);
-                Optional<DpnIdType> dpnid = SfcGeniusRpcClient.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
+                Optional<DpnIdType> dpnid = getGeniusRpcClient().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
                 if (!dpnid.isPresent()) {
                     throw new SfcRenderingException("populateSffGraph:failed.dpnid for interface ["
                             + logicalInterfaceName + "] was not returned by genius. "
@@ -559,5 +576,13 @@ public class SfcOfRspProcessor {
                 append(encapName);
         LOG.info("getTransportEncapName :: transport [{}] encap [{}] result [{}]", transportName, encapName, sb.toString());
         return sb.toString();
+    }
+
+    /**
+     * Private getter (eases mocking)
+     * @return the instance providing access to Genius RPCs
+     */
+    private SfcGeniusRpcClient getGeniusRpcClient() {
+        return theGeniusRpcClient;
     }
 }

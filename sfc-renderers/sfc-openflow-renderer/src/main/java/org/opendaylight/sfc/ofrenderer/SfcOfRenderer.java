@@ -23,18 +23,14 @@ import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-//
-// This class is instantiated from:
-//      org.opendaylight.controller.config.yang.config.sfc_ofrenderer.impl.SfcOfRendererModule.createInstance()
-// It is a general entry point for the sfc-openflow-renderer feature/plugin
-//
-
+/**
+ * Entry point for the sfc openflow renderer (blueprint-instantiated)
+ */
 public class SfcOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
@@ -62,7 +58,8 @@ public class SfcOfRenderer implements AutoCloseable {
                 sfcOfProviderUtils,
                 sfcSynchronizer,
                 rpcProviderRegistry,
-                new OperDsUpdateHandlerLSFFImpl(dataBroker));
+                dataBroker);
+
         this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfRspProcessor);
         this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);
         this.sfcOfRendererListener = new SfcOfRendererDataListener(dataBroker, sfcOfFlowProgrammer, sfcSynchronizer);

@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.Mockito;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
@@ -84,11 +83,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TABLE_INDEX_CLASSIFIER;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 
 /**
@@ -99,7 +97,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, OpendaylightSfc.class, OperDsUpdateHandlerLSFFImpl.class})
 public class SfcOfLogicalSffRspProcessorTest {
-    @InjectMocks
+
     private SfcGeniusRpcClient geniusClient;
 
     @Mock
@@ -121,6 +119,10 @@ public class SfcOfLogicalSffRspProcessorTest {
     private DataBroker dataBroker;
 
     private OperDsUpdateHandlerLSFFImpl operDsUpdateHandler;
+
+    @Mock
+    private RpcProviderRegistry rpcProviderRegistry;
+
     private SfcOfRspProcessor sfcOfRspProcessor;
     private SfcOfProviderUtilsTestMock sfcUtils;
     private RspBuilder rspBuilder;
@@ -140,12 +142,15 @@ public class SfcOfLogicalSffRspProcessorTest {
         operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl());
         flowProgrammer.setFlowWriter(ofFlowWriter);
         sfcUtils = new SfcOfProviderUtilsTestMock();
+        geniusClient = PowerMockito.spy(new SfcGeniusRpcClient(rpcProviderRegistry));
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(
                 flowProgrammer,
                 sfcUtils,
                 new SfcSynchronizer(),
-                null,
-                operDsUpdateHandler));
+                rpcProviderRegistry,
+                operDsUpdateHandler,
+                geniusClient));
+
         rspBuilder = new RspBuilder(sfcUtils);
         sfTypes = new ArrayList<SftTypeName>() {{
             add(new SftTypeName("firewall"));
@@ -170,10 +175,10 @@ public class SfcOfLogicalSffRspProcessorTest {
     public void setUp() throws Exception {
         sfcUtils.resetCache();
 
-        PowerMockito.spy(SfcGeniusRpcClient.class);
-        PowerMockito.when(SfcGeniusRpcClient.getInstance()).thenReturn(geniusClient);
-
         PowerMockito.mockStatic(SfcGeniusDataUtils.class);
+
+        PowerMockito.when(geniusClient, "getInterfaceManagerRpcService").thenReturn(interfaceManagerRpcService);
+        PowerMockito.when(geniusClient, "getItmRpcService").thenReturn(itmRpcService);
         PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(anyString()))
                 .thenReturn(Optional.of(theMacAddressSfSide));
         PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(anyString()))

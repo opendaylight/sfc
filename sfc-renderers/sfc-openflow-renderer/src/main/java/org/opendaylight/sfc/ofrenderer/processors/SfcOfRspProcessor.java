@@ -52,6 +52,7 @@ public class SfcOfRspProcessor {
     private SfcSynchronizer sfcSynchronizer;
     private Map<NodeId, Boolean> sffInitialized;
     private Map<String, Class<? extends SfcRspTransportProcessorBase>> rspTransportProcessors;
+    private SfcGeniusRpcClient sfcGeniusRpcClient;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /* Logical SFF always assumes vxlan-gpe tunnels for inter-sff transport, and eth-encapsulated
@@ -61,19 +62,18 @@ public class SfcOfRspProcessor {
     private static final String LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY =
             LogicalInterface.class.getName() + TRANSPORT_ENCAP_SEPARATOR_STRING + Nsh.class.getName();
 
+
     public SfcOfRspProcessor(
             SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils,
             SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry) {
+            RpcProviderRegistry rpcProviderRegistry,
+            SfcGeniusRpcClient geniusClient) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<>();
-
-        //FIXME this is temporary. SfcGeniusRpcClient will self-initialize via blueprint injection when the module is finished
-        SfcGeniusRpcClient.getInstance().initialize(rpcProviderRegistry);
-
+        this.sfcGeniusRpcClient = geniusClient;
         this.rspTransportProcessors = new HashMap<>();
         this.rspTransportProcessors.put(
                 getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
@@ -194,6 +194,9 @@ public class SfcOfRspProcessor {
             transportProcessor.setRsp(rsp);
             transportProcessor.setSffGraph(sffGraph);
             transportProcessor.setSfcProviderUtils(sfcOfProviderUtils);
+            if (sffGraph.isUsingLogicalSFF()) {
+                ((SfcRspProcessorLogicalSff)transportProcessor).setGeniusRpcClient(getGeniusRpcClient());
+            }
 
             return transportProcessor;
         } catch(Exception e) {
@@ -242,7 +245,7 @@ public class SfcOfRspProcessor {
             if (SfcGeniusDataUtils.isSfUsingALogicalInterface(sf)) {
                 String logicalInterfaceName = sfcOfProviderUtils.getSfLogicalInterfaceName(sf);
                 LOG.debug("populateSffGraph: SF uses a logical interface -> storing id for the dataplane node (interface:{})", logicalInterfaceName);
-                Optional<DpnIdType> dpnid = SfcGeniusRpcClient.getInstance().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
+                Optional<DpnIdType> dpnid = getGeniusRpcClient().getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
                 if (!dpnid.isPresent()) {
                     throw new SfcRenderingException("populateSffGraph:failed.dpnid for interface ["
                             + logicalInterfaceName + "] was not returned by genius. "
@@ -547,5 +550,9 @@ public class SfcOfRspProcessor {
                 append(encapName);
         LOG.info("getTransportEncapName :: transport [{}] encap [{}] result [{}]", transportName, encapName, sb.toString());
         return sb.toString();
+    }
+
+    private SfcGeniusRpcClient getGeniusRpcClient() {
+        return sfcGeniusRpcClient;
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
@@ -74,7 +75,9 @@ public class SfcOfRspProcessorTest {
         this.sfcOfRspProcessor = new SfcOfRspProcessor(
                 this.flowProgrammerTestMoc,
                 this.sfcUtilsTestMock,
-                new SfcSynchronizer(), null);
+                new SfcSynchronizer(),
+                null,
+                new SfcGeniusRpcClient(null));
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();

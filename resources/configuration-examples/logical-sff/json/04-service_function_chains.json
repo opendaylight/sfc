@@ -6,11 +6,11 @@
                 "symmetric": "true",
                 "sfc-service-function": [
                     {
-                        "name": "dpi-abstract1",
+                        "name": "dpi-1",
                         "type": "dpi"
                     },
                     {
-                        "name": "firewall-abstract1",
+                        "name": "firewall-1",
                         "type": "firewall"
                     }
                 ]
@@ -20,7 +20,7 @@
                 "symmetric": "true",
                 "sfc-service-function": [
                     {
-                        "name": "dpi-abstract1",
+                        "name": "dpi-1",
                         "type": "dpi"
                     }
                 ]

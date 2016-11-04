@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
@@ -201,8 +202,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * explicitly. - Cleans up
      */
     @Test
-    public void testOnServiceFunctionForwarderUpdatedWithRSP() throws Exception {
-        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
+    public void testOnServiceFunctionForwarderUpdated_UpdateIpMgmt() throws Exception {
+        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.110";
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
         assertNotNull(renderedServicePath);
@@ -220,15 +221,14 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         updatedServiceFunctionForwarderBuilder.setIpMgmtAddress(updatedIpMgmtAddress);
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to remove the entry through the listener
+        // Now we prepare to update the entry through the listener
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
         when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
         when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
 
         // The listener will remove the Original Service Function Forwarder
-        // Entry and
-        // create a new one with the new type
+        // Entry and associated RSPs
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
         Thread.sleep(500);
@@ -244,10 +244,220 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
     }
 
     /**
+     * In this test we create a RSP and update a SFF used by it. This will trigger a more complete
+     * code coverage within the listener.
+     * In order to simulate a removal from the data store this test does the following:
+     * - Create RSP
+     * - Update the Service node used by the SFF by setting it to null, which should cause the RSP to be deleted.
+     * - creates a IID and add to removedPaths data structure. This IID points to the SFF objects
+     * stored in the
+     * original data
+     * - Call listener explicitly.
+     * - Cleans up
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdated_UpdateServiceNode() throws Exception {
+        RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
+        assertNotNull(renderedServicePath);
+
+        // Get the original SFF
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the Service Node
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder =
+                new ServiceFunctionForwarderBuilder(originalServiceFunctionForwarder);
+        updatedServiceFunctionForwarderBuilder.setServiceNode(null);
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will remove the Original Service Function Forwarder
+        // Entry and associated RSPs
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNull(sffServicePathList);
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+    }
+
+    /**
+     * In this test we create a RSP and update a SFF used by it. This will trigger a more complete
+     * code coverage within the listener.
+     * In order to simulate a removal from the data store this test does the following:
+     * - Create RSP
+     * - Update the SfDictionary by adding a new SF. The RSP should NOT be deleted.
+     * - creates a IID and add to removedPaths data structure. This IID points to the SFF objects
+     * stored in the
+     * original data
+     * - Call listener explicitly.
+     * - Cleans up
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdated_UpdateSfDict() throws Exception {
+        RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
+        assertNotNull(renderedServicePath);
+
+        // Prepare to remove the first SF used by the RSP.
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the SffSfDictionary
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder =
+                new ServiceFunctionForwarderBuilder(originalServiceFunctionForwarder);
+        addSfToSfDict(updatedServiceFunctionForwarderBuilder);
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will NOT remove the RSP
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was NOT removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNotNull(sffServicePathList);
+        /*
+         * for (SffServicePath sffServicePath : sffServicePathList) {
+         * assertNotEquals(sffServicePath.getName(), renderedServicePath.getName());
+         * }
+         */
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+    }
+
+    /**
+     * In this test we create a RSP and update a SFF used by it. This will trigger a more complete
+     * code coverage within the listener.
+     * In order to simulate a removal from the data store this test does the following:
+     * - Create RSP
+     * - Update the SFF DPL by removing an entry, which should cause the RSP to be deleted.
+     * - creates a IID and add to removedPaths data structure. This IID points to the SFF objects
+     * stored in the
+     * original data
+     * - Call listener explicitly.
+     * - Cleans up
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdated_UpdateSffDpl() throws Exception {
+        RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
+        assertNotNull(renderedServicePath);
+
+        // Prepare to remove the first SF used by the RSP.
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the DataPlaneLocator
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder =
+                new ServiceFunctionForwarderBuilder(originalServiceFunctionForwarder);
+        removeSffDpl(updatedServiceFunctionForwarderBuilder);
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will remove the RSP
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNull(sffServicePathList);
+        /*
+         * for (SffServicePath sffServicePath : sffServicePathList) {
+         * assertNotEquals(sffServicePath.getName(), renderedServicePath.getName());
+         * }
+         */
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(OpendaylightSfc.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+    }
+
+    private void addSfToSfDict(ServiceFunctionForwarderBuilder sffBuilder) {
+        List<ServiceFunctionDictionary> sffSfDict = sffBuilder.getServiceFunctionDictionary();
+        List<ServiceFunctionDictionary> newSffSfDict = new ArrayList<>();
+
+        // First create a builder by copying the existing entries
+        for(ServiceFunctionDictionary sffSfDictEntry : sffSfDict) {
+            ServiceFunctionDictionaryBuilder sffSfDictBuilder = new ServiceFunctionDictionaryBuilder();
+            sffSfDictBuilder.setName(sffSfDictEntry.getName())
+            .setKey(sffSfDictEntry.getKey())
+            .setSffSfDataPlaneLocator(sffSfDictEntry.getSffSfDataPlaneLocator())
+            .setFailmode(Open.class)
+            .setSffInterfaces(null);
+            newSffSfDict.add(sffSfDictBuilder.build());
+        }
+
+        // Now add another entry
+        String newName = "NEW NAME";
+        SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+        sffSfDataPlaneLocatorBuilder.setSfDplName(new SfDataPlaneLocatorName(newName))
+        .setSffDplName(new SffDataPlaneLocatorName(newName));
+        ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
+        dictionaryEntryBuilder.setName(new SfName(newName))
+        .setKey(new ServiceFunctionDictionaryKey(new SfName(newName)))
+        .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build())
+        .setFailmode(Open.class)
+        .setSffInterfaces(null);
+        newSffSfDict.add(dictionaryEntryBuilder.build());
+
+        sffBuilder.setServiceFunctionDictionary(newSffSfDict);
+    }
+
+    private void removeSffDpl(ServiceFunctionForwarderBuilder sffBuilder) {
+        List<SffDataPlaneLocator> sffDplList = sffBuilder.getSffDataPlaneLocator();
+        List<SffDataPlaneLocator> locatorList = new ArrayList<>();
+
+        // We want to remove a DPL entry, so just copy all but the last one
+        for(int i = 0; i < sffDplList.size()-1; i++) {
+            SffDataPlaneLocator sffDpl = sffDplList.get(i);
+            SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder(sffDpl);
+            locatorList.add(locatorBuilder.build());
+        }
+
+        sffBuilder.setSffDataPlaneLocator(locatorList);
+    }
+
+    /**
      * Builds a complete service Function Object
      *
      * @return ServiceFunction object
      */
+    @SuppressWarnings("serial")
     ServiceFunctionForwarder build_service_function_forwarder() {
         SffName name = new SffName("SFF1");
         List<SfName> sfNames = new ArrayList<SfName>() {
@@ -321,6 +531,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      *
      * @return RSP object
      */
+    @SuppressWarnings("serial")
     RenderedServicePath build_and_commit_rendered_service_path() throws Exception {
 
         List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
@@ -498,8 +709,11 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
                     .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
-                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
-                    .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
+                    .setSffDataPlaneLocator(locatorList)
+                    .setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList)
+                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(i))))
+                    .setServiceNode(new SnName(SFF_NAMES.get(i).getValue()));
             ServiceFunctionForwarder sff = sffBuilder.build();
             sffList.add(sff);
         }

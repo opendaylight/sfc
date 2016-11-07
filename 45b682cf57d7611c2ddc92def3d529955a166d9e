@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_6d6d9932",
+        "filename": "sfc-demo/sfc104/run_demo.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-07T07:50:23Z",
+      "side": 1,
+      "message": "Cant we just remove the entries in question with \"ssh-keygen -R hostname\" as shown here: http://askubuntu.com/a/20869",
+      "parentUuid": "3a65312a_adc4d140",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 24
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_0d9fc553",
         "filename": "sfc-demo/sfc104/run_demo.sh",
         "patchSetId": 3
@@ -172,6 +196,24 @@
       "side": 1,
       "message": "My point is sfc104 can run without sfc dir tree.",
       "parentUuid": "3a65312a_adadf18a",
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_8d7475fe",
+        "filename": "sfc-demo/sfc104/vxlan_tool.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-07T07:50:23Z",
+      "side": 1,
+      "message": "Ok, then can we add a comment at the top stating its a copy of the version from the sfc source tree, and refer there if a newer version is needed or if edits are necessary.",
+      "parentUuid": "3a65312a_eddd2916",
       "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

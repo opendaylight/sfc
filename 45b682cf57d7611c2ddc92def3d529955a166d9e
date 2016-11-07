@@ -2,6 +2,75 @@
   "comments": [
     {
       "key": {
+        "uuid": "3a65312a_df11f0ad",
+        "filename": "sfc-demo/sfc104/common/install_ovs.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-07T10:54:31Z",
+      "side": 1,
+      "message": "Is the mounting of the huge pages filesystem needed? In some other cases I managed to get VPP up and running just by setting the number of hugepages to a proper value. I was expecting the vpp package to mount the fs (vnet/vnet/devices/dpdk/init.c)",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 47
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7f1a5c18",
+        "filename": "sfc-demo/sfc104/common/setup_classifier.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-07T10:54:31Z",
+      "side": 1,
+      "message": "This is only specific to ovs, correct? If so, could it be placed in the ovs specific part instead of common? I have to admit that at first I got confused when I saw it.",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 152
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_9f3138a5",
+        "filename": "sfc-demo/sfc104/common/setup_sfc.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-07T10:54:31Z",
+      "side": 1,
+      "message": "Isn\u0027t this specific to OVS? Is VPP requiring this info?\n\nI guess this is for the OVS part only but since it is in \u0027common\u0027 I find it confusing. Wouldn\u0027t it be better to have a setup_sfc file for ovs and another for vpp?",
+      "range": {
+        "startLine": 178,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 44
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_4da09d90",
         "filename": "sfc-demo/sfc104/run_demo.sh",
         "patchSetId": 3

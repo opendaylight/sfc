@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_d8f8e6e7",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_f53b2be9",
+      "range": {
+        "startLine": 87,
+        "startChar": 60,
+        "endLine": 87,
+        "endChar": 82
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_982b0e82",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
         "patchSetId": 6
@@ -36,6 +60,30 @@
       "writtenOn": "2016-11-07T15:59:18Z",
       "side": 1,
       "message": "Instead of so many nested ifs, can we instead do something like this:\nif (aGraphEntry.getDstSff().equals(SffGraph.EGRESS)) {\n    continue;\n}\nif (aGraphEntry.getDstDpnId() \u003d\u003d null) {\n    continue;\n}",
+      "range": {
+        "startLine": 90,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 56
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b8d08a54",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_982b0e82",
       "range": {
         "startLine": 90,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_f8ca02a0",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_f857a200",
+      "range": {
+        "startLine": 105,
+        "startChar": 47,
+        "endLine": 105,
+        "endChar": 51
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_784b9259",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
         "patchSetId": 6
@@ -82,6 +154,30 @@
       "writtenOn": "2016-11-07T15:59:18Z",
       "side": 1,
       "message": "Same comment about nested ifs",
+      "range": {
+        "startLine": 151,
+        "startChar": 0,
+        "endLine": 151,
+        "endChar": 32
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b837eaaf",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_784b9259",
       "range": {
         "startLine": 151,
         "startChar": 0,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_d8cf46af",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_38411a3a",
+      "range": {
+        "startLine": 154,
+        "startChar": 0,
+        "endLine": 154,
+        "endChar": 76
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_98794e96",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
         "patchSetId": 6
@@ -140,6 +260,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_38c47a91",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_98794e96",
+      "range": {
+        "startLine": 155,
+        "startChar": 53,
+        "endLine": 155,
+        "endChar": 57
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_18653ee1",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
         "patchSetId": 6
@@ -151,6 +295,30 @@
       "writtenOn": "2016-11-07T15:59:18Z",
       "side": 1,
       "message": "same comment about nested ifs",
+      "range": {
+        "startLine": 198,
+        "startChar": 0,
+        "endLine": 198,
+        "endChar": 67
+      },
+      "revId": "88b099e7a8b10724d072b8f6a112eca0521ae757",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d8462623",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operDsUpdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-07T16:16:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a65312a_18653ee1",
       "range": {
         "startLine": 198,
         "startChar": 0,

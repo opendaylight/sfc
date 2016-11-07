@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_02366f52",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "I believe that an exception as last parameter does not required them: http://slf4j.org/faq.html#paramException",
+      "parentUuid": "3a65312a_fffe6c6a",
+      "range": {
+        "startLine": 139,
+        "startChar": 84,
+        "endLine": 139,
+        "endChar": 115
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_bf04f47e",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
         "patchSetId": 11
@@ -36,6 +60,30 @@
       "writtenOn": "2016-11-07T11:31:44Z",
       "side": 1,
       "message": "Is this a blocking call? If so, is the calling thread expecting it to block? There are situations in ODL where the calling thread may timeout if the implemented processing takes too long, for example DataStore listeners.",
+      "range": {
+        "startLine": 143,
+        "startChar": 17,
+        "endLine": 143,
+        "endChar": 21
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_2223ab06",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "Yes, thsi is blocking call and the calling thread is aware of this, and is not the data listener thread. Is a dedicated separate own thread.",
+      "parentUuid": "3a65312a_bf04f47e",
       "range": {
         "startLine": 143,
         "startChar": 17,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_c27917fe",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/SfcGeniusInterfaceServiceManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "Same as above.",
+      "parentUuid": "3a65312a_9f093898",
+      "range": {
+        "startLine": 159,
+        "startChar": 17,
+        "endLine": 159,
+        "endChar": 21
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_9f301858",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/readers/SfcGeniusRspReader.java",
         "patchSetId": 11
@@ -82,6 +154,30 @@
       "writtenOn": "2016-11-07T11:31:44Z",
       "side": 1,
       "message": "What\u0027s the difference between this class and org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI.readRenderedServicePath()?\n\nOne of the 2 is duplicate code and should be removed. I guess the same goes for most of the rest of the classes in the org.opendaylight.sfc.genius.impl.handlers.readers package.",
+      "range": {
+        "startLine": 27,
+        "startChar": 13,
+        "endLine": 27,
+        "endChar": 31
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_627e43b0",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/readers/SfcGeniusRspReader.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "The difference is that sfc.provider.api is blocking and synchronous, and readers package is asynchronous. I do agree that it would be interesting \u0026 better to provide an asynchronous API on the sfc.provider.api package. \n\nI don\u0027t see it as sharing much code if any with what is there today. To me it is more of a refactoring of the package so that we can leverage asynchronous code to be used synchronously (as opposed to use any of the current synchronous code asynchronously, which we cant)",
+      "parentUuid": "3a65312a_9f301858",
       "range": {
         "startLine": 27,
         "startChar": 13,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_d581cf4b",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/readers/SfcGeniusSfStatesReader.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "Same discussion as before: synchronous vs asynchronous.",
+      "parentUuid": "3a65312a_22372be5",
+      "range": {
+        "startLine": 49,
+        "startChar": 44,
+        "endLine": 49,
+        "endChar": 56
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_020aef20",
         "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/writers/SfcGeniusRspWriter.java",
         "patchSetId": 11
@@ -128,6 +248,30 @@
       "writtenOn": "2016-11-07T11:31:44Z",
       "side": 1,
       "message": "Why this class and not what\u0027s already implemented in org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI ?\nIf there is functionality missing in the mentioned class, we should add it, and not duplicate here.",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 31
+      },
+      "revId": "d701ad1638d8c67a1479ee0d0c7bfffa2169a002",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d5b9cfea",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/handlers/writers/SfcGeniusRspWriter.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-07T15:12:59Z",
+      "side": 1,
+      "message": "I agree. I do think that what we do here (delete \u0026 add the same RSP within the same transaction) is kind of a trick and probably not suitable for an API.",
+      "parentUuid": "3a65312a_020aef20",
       "range": {
         "startLine": 22,
         "startChar": 13,

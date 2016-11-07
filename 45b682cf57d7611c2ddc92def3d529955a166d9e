@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_6dcab950",
+        "filename": "sfc-demo/sfc104/run_demo.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T07:12:40Z",
+      "side": 1,
+      "message": "this is for ODL sfc karaf, I used ssh to login to ODL SFC karaf and install necessary features.",
+      "parentUuid": "3a65312a_4da09d90",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 16
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_cd94ad39",
         "filename": "sfc-demo/sfc104/run_demo.sh",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-11-07T06:49:49Z",
       "side": 1,
       "message": "Why do you do this?? We cant remove everyone\u0027s known_hosts files.",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 24
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_adc4d140",
+        "filename": "sfc-demo/sfc104/run_demo.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T07:12:40Z",
+      "side": 1,
+      "message": "sshpass can\u0027t work if karaf key is changed. So I have to remove it.",
+      "parentUuid": "3a65312a_cd94ad39",
       "range": {
         "startLine": 54,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_8dc11531",
+        "filename": "sfc-demo/sfc104/run_demo.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T07:12:40Z",
+      "side": 1,
+      "message": "ok.",
+      "parentUuid": "3a65312a_0d9fc553",
+      "range": {
+        "startLine": 61,
+        "startChar": 31,
+        "endLine": 61,
+        "endChar": 38
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_adadf18a",
         "filename": "sfc-demo/sfc104/vxlan_tool.py",
         "patchSetId": 3
@@ -82,6 +154,24 @@
       "writtenOn": "2016-11-07T06:49:49Z",
       "side": 1,
       "message": "Why is this file copied here, when its already available here: ${SFC-git-repo}/sfc-test/nsh-tools/vxlan_tool.py\n\nWe risk not having the latest version, and having 2 disparate/competing versions.",
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_eddd2916",
+        "filename": "sfc-demo/sfc104/vxlan_tool.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T07:12:40Z",
+      "side": 1,
+      "message": "My point is sfc104 can run without sfc dir tree.",
+      "parentUuid": "3a65312a_adadf18a",
       "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

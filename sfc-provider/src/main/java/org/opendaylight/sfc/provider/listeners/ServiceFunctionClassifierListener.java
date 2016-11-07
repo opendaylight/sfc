@@ -84,7 +84,7 @@ public class ServiceFunctionClassifierListener
             ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         // TODO: literally copied from the existing code. It should be
         // optimized
-        if (originalServiceFunctionClassifier != null && originalServiceFunctionClassifier.getAcl() != null
+        if ( originalServiceFunctionClassifier != null && originalServiceFunctionClassifier.getAcl() != null
                 && updatedServiceFunctionClassifier.getAcl() != null
                 && !originalServiceFunctionClassifier.getAcl().equals(updatedServiceFunctionClassifier.getAcl())) {
 
@@ -95,16 +95,11 @@ public class ServiceFunctionClassifierListener
                         updatedServiceFunctionClassifier.getAcl().getType(),
                         updatedServiceFunctionClassifier.getName());
             }
-            // if Access List is empty string, Classifier should be not more
-            // linked to the origin Access List
-            else {
-                // call executor to delete <ACL, Classifier> entry from ACL
-                // operational store
-                SfcProviderAclAPI.deleteClassifierFromAccessListState(
-                        originalServiceFunctionClassifier.getAcl().getName(),
-                        originalServiceFunctionClassifier.getAcl().getType(),
-                        originalServiceFunctionClassifier.getName());
-            }
+            // Remove old  <ACL, Classifier> entry from ACL
+            SfcProviderAclAPI.deleteClassifierFromAccessListState(
+                    originalServiceFunctionClassifier.getAcl().getName(),
+                    originalServiceFunctionClassifier.getAcl().getType(),
+                    originalServiceFunctionClassifier.getName());
         }
     }
 

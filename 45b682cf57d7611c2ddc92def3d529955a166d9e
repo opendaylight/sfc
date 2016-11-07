@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_5f9040ec",
+        "filename": "sfc-demo/sfc104/common/install_ovs.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T11:19:04Z",
+      "side": 1,
+      "message": "Both VPP and OVS DPDK need it, where it is mounted doesn\u0027t matter.",
+      "parentUuid": "3a65312a_df11f0ad",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 47
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_7f1a5c18",
         "filename": "sfc-demo/sfc104/common/setup_classifier.sh",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_bf635419",
+        "filename": "sfc-demo/sfc104/common/setup_classifier.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T11:19:04Z",
+      "side": 1,
+      "message": "it is only for classifier, VPP demo used it. It will be removed once VPP classifier integration is ready.",
+      "parentUuid": "3a65312a_7f1a5c18",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 152
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_9f3138a5",
         "filename": "sfc-demo/sfc104/common/setup_sfc.py",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2016-11-07T10:54:31Z",
       "side": 1,
       "message": "Isn\u0027t this specific to OVS? Is VPP requiring this info?\n\nI guess this is for the OVS part only but since it is in \u0027common\u0027 I find it confusing. Wouldn\u0027t it be better to have a setup_sfc file for ovs and another for vpp?",
+      "range": {
+        "startLine": 178,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 44
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7f589c56",
+        "filename": "sfc-demo/sfc104/common/setup_sfc.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-07T11:19:04Z",
+      "side": 1,
+      "message": "setup_sfc.py is for OVS and OVS DPDK, setup_sfc_vpp.py is for VPP. But I keep all the information there. Yes, some information is helpless for VPP, but it won\u0027t have side effect to keep them there.",
+      "parentUuid": "3a65312a_9f3138a5",
       "range": {
         "startLine": 178,
         "startChar": 0,

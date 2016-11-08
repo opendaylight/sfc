@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_296a6e1a",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/sfc_netconf/provider/listener/SfcNetconfNodeDataListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-08T11:43:49Z",
+      "side": 1,
+      "message": "Can we remove this line.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 118
+      },
+      "revId": "fcb3fef969b322c229c68ce774dc715f6f15af49",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -261,6 +261,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_5f2cc0ab",
+        "filename": "sfc-demo/sfc104/run_demo.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-08T00:44:31Z",
+      "side": 1,
+      "message": "Unfortunately \"ssh-keygen -R hostname\" can\u0027t work on My Fedora 20 host, it is openssh version related.\n\n\"sshpass -p karaf ssh -o UserKnownHostsFile\u003d/dev/null -o StrictHostKeyChecking\u003dno -l karaf -p 8101 127.0.0.1 system:name\" can work without known_hosts, perfect solution :-)",
+      "parentUuid": "3a65312a_6d6d9932",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 24
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_0d9fc553",
         "filename": "sfc-demo/sfc104/run_demo.sh",
         "patchSetId": 3
@@ -355,6 +379,24 @@
       "side": 1,
       "message": "Ok, then can we add a comment at the top stating its a copy of the version from the sfc source tree, and refer there if a newer version is needed or if edits are necessary.",
       "parentUuid": "3a65312a_eddd2916",
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_df173050",
+        "filename": "sfc-demo/sfc104/vxlan_tool.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-08T00:44:31Z",
+      "side": 1,
+      "message": "No problem.",
+      "parentUuid": "3a65312a_8d7475fe",
       "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

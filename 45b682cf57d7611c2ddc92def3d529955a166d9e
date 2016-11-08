@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_2210cb4d",
+        "filename": "sfc-demo/sfc104/common/setup_classifier.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-08T07:50:12Z",
+      "side": 1,
+      "message": "Ok, but if VPP Classifier is not working yet, why do we have it",
+      "parentUuid": "3a65312a_bf635419",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 152
+      },
+      "revId": "45b682cf57d7611c2ddc92def3d529955a166d9e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_9f3138a5",
         "filename": "sfc-demo/sfc104/common/setup_sfc.py",
         "patchSetId": 3

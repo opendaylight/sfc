@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_cac5a95c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-08T15:34:53Z",
+      "side": 1,
+      "message": "Instead of instantiating SfcOfRspProcessor with a geniusClient and only using it to pass it on to an internal object (namely an instance of SfcOfBaseProviderUtils), how about instead we refactor the instantiation of the SfcOfBaseProviderUtils implementations either by injecting them with blueprint or by creating a factory.",
+      "range": {
+        "startLine": 74,
+        "startChar": 12,
+        "endLine": 74,
+        "endChar": 43
+      },
+      "revId": "691d36a4da8aad14948681134eb810944fabec26",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

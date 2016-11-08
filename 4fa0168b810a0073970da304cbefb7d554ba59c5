@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_2ef55483",
+        "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-08T08:02:15Z",
+      "side": 1,
+      "message": "make sense, I\u0027ll remove them.",
+      "parentUuid": "3a65312a_ceb660dc",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 18
+      },
+      "revId": "4fa0168b810a0073970da304cbefb7d554ba59c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_eeb51cce",
         "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2016-11-08T07:50:12Z",
       "side": 1,
       "message": "Is this the hook/mount point with the VPP? I mean, how does SFF relate to the actual VPP registered in ODL?",
+      "range": {
+        "startLine": 149,
+        "startChar": 1,
+        "endLine": 150,
+        "endChar": 1
+      },
+      "revId": "4fa0168b810a0073970da304cbefb7d554ba59c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_0e369852",
+        "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-08T08:02:15Z",
+      "side": 1,
+      "message": "This indicated it is a VPP node, its management IP will be used to mount it by netconf connector.",
+      "parentUuid": "3a65312a_eeb51cce",
       "range": {
         "startLine": 149,
         "startChar": 1,

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_a42b4381",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-08T11:43:49Z",
+      "side": 1,
+      "message": "Ive seen that this method is being used now instead of the OpendaylightSfc.getDataProvider() method.\n\nI would prefer to not do this, and for those modules that need a DataBroker, that it be injected therein via blueprint.",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 5
+      },
+      "revId": "9fb1bc9b0a145a9d65dc5f51374e979fbca7b842",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

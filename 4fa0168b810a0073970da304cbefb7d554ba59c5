@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_ceb660dc",
+        "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-08T07:50:12Z",
+      "side": 1,
+      "message": "Since this file is specific for VPP and these couple of lines refer to OVS, they shoud be removed.",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 18
+      },
+      "revId": "4fa0168b810a0073970da304cbefb7d554ba59c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_eeb51cce",
+        "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-08T07:50:12Z",
+      "side": 1,
+      "message": "Is this the hook/mount point with the VPP? I mean, how does SFF relate to the actual VPP registered in ODL?",
+      "range": {
+        "startLine": 149,
+        "startChar": 1,
+        "endLine": 150,
+        "endChar": 1
+      },
+      "revId": "4fa0168b810a0073970da304cbefb7d554ba59c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_4eca5050",
+        "filename": "sfc-demo/sfc104/common/setup_sfc_vpp.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 5849
+      },
+      "writtenOn": "2016-11-08T07:50:12Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be removed as well?",
+      "range": {
+        "startLine": 158,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 25
+      },
+      "revId": "4fa0168b810a0073970da304cbefb7d554ba59c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

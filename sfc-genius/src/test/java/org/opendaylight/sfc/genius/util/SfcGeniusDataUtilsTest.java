@@ -305,7 +305,6 @@ public class SfcGeniusDataUtilsTest {
                         .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                         .setRestUri(new Uri(dpiIpAddress.concat(":5000")))
                         .setType(new SftTypeName("dpi"))
-                        .setNshAware(true)
                         .setSfDataPlaneLocator(dpLocators)
                         .build();
 
@@ -341,7 +340,6 @@ public class SfcGeniusDataUtilsTest {
                 .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000")))
                 .setType(new SftTypeName("dpi"))
-                .setNshAware(true)
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
@@ -381,7 +379,6 @@ public class SfcGeniusDataUtilsTest {
                 .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000")))
                 .setType(new SftTypeName("dpi"))
-                .setNshAware(true)
                 .setSfDataPlaneLocator(dpLocators)
                 .build();
 
@@ -414,7 +411,6 @@ public class SfcGeniusDataUtilsTest {
                         .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                         .setRestUri(new Uri(dpiIpAddress.concat(":5000")))
                         .setType(new SftTypeName("dpi"))
-                        .setNshAware(true)
                         .setSfDataPlaneLocator(dpLocators)
                         .build();
 

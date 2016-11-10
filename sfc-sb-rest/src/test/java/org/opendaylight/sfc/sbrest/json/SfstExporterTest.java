@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
@@ -139,14 +140,14 @@ public class SfstExporterTest {
                 ShortestPath.class);
 
         private String value = null;
-        private boolean enabled;
-        private Class identity;
+        private final Class<? extends ServiceFunctionSchedulerTypeIdentity> identity;
 
         SfstTestValues(String value) {
             this.value = value;
+            this.identity = null;
         }
 
-        SfstTestValues(String value, Class identity) {
+        SfstTestValues(String value, Class<? extends ServiceFunctionSchedulerTypeIdentity> identity) {
             this.value = value;
             this.identity = identity;
         }
@@ -155,7 +156,7 @@ public class SfstExporterTest {
             return this.value;
         }
 
-        public Class getIdentity() {
+        public Class<? extends ServiceFunctionSchedulerTypeIdentity> getIdentity() {
             return this.identity;
         }
     }

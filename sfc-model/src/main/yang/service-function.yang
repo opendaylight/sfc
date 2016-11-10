@@ -90,18 +90,6 @@ module service-function {
       type inet:uri;
       description "URI of REST based management";
     }
-    leaf request_reclassification {
-      type boolean;
-      status deprecated;
-      description
-        "This leaf determines whether SF can request
-         reclassification by the SFF";
-    }
-    leaf nsh-aware {
-      type boolean;
-      status deprecated;
-      description "Whether this SF can process NSH headers";
-    }
     uses service-function-base;
   }
 

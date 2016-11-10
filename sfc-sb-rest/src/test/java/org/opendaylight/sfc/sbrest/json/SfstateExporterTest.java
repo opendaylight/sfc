@@ -171,7 +171,7 @@ public class SfstateExporterTest {
                             new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
                     .build();
 
-        List<SfServicePath> sfServicePaths = new ArrayList<SfServicePath>();
+        List<SfServicePath> sfServicePaths = new ArrayList<>();
         ServiceStatistic pathserviceStatistics =
                 new ServiceStatisticBuilder()
                     .setBytesIn(new ZeroBasedCounter64(
@@ -213,7 +213,7 @@ public class SfstateExporterTest {
     }
 
     private DescriptionInfo buildSfDescriptionInfo() {
-        List<PortBandwidth> portBandwidthList = new ArrayList<PortBandwidth>();
+        List<PortBandwidth> portBandwidthList = new ArrayList<>();
 
         PortBandwidthKey portBandwidthKey1 = new PortBandwidthKey(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()));
         PortBandwidthKey portBandwidthKey2 = new PortBandwidthKey(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()));
@@ -257,7 +257,7 @@ public class SfstateExporterTest {
     }
 
     private MonitoringInfo buildSfMonitoringInfo() {
-        List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<PortBandwidthUtilization>();
+        List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<>();
 
         PortBandwidthUtilizationKey portBandwidthUtilKey1 =
                 new PortBandwidthUtilizationKey(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()));
@@ -363,13 +363,14 @@ public class SfstateExporterTest {
                                                                                                                                                                                                                                                                 "30");
 
         private final String value;
-        private Class identity;
+        private final Class<?> identity;
 
         SfstateTestValues(String value) {
             this.value = value;
+            this.identity = null;
         }
 
-        SfstateTestValues(String value, Class identity) {
+        SfstateTestValues(String value, Class<?> identity) {
             this.value = value;
             this.identity = identity;
         }
@@ -378,7 +379,7 @@ public class SfstateExporterTest {
             return this.value;
         }
 
-        public Class getIdentity() {
+        public Class<?> getIdentity() {
             return this.identity;
         }
     }

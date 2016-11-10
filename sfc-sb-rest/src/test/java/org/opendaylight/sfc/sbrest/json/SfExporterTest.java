@@ -47,7 +47,6 @@ public class SfExporterTest {
 
     private static final String FULL_JSON = "/SfJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SfJsonStrings/NameOnly.json";
-    private static final int port1 = 6640, port2 = 6633;
 
     // create string, that represents .json file
     private String gatherServiceFunctionJsonStringFromFile(String testFileName) {
@@ -132,8 +131,6 @@ public class SfExporterTest {
             .setType(SfTestValues.TYPE.getSftType())
             .setRestUri(new Uri(SfTestValues.REST_URI.getValue()))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(SfTestValues.IP_MGMT_ADDRESS.getValue())))
-            .setRequestReclassification(Boolean.parseBoolean(SfTestValues.REQUEST_RECLASSIFICATION.getValue()))
-            .setNshAware(Boolean.parseBoolean(SfTestValues.NSH_AWARE.getValue()))
             .setSfDataPlaneLocator(this.buildSfDataPlaneLocator());
 
         return serviceFunctionBuilder.build();
@@ -175,10 +172,11 @@ public class SfExporterTest {
                                         "6640"), PORT2("6633");
 
         private final String value;
-        private SftTypeName sftType;
+        private final SftTypeName sftType;
 
         SfTestValues(String value) {
             this.value = value;
+            this.sftType = null;
         }
 
         SfTestValues(String value, SftTypeName sftType) {

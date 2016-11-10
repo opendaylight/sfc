@@ -40,8 +40,6 @@ class SfExporter extends AbstractExporter implements Exporter {
     public static final String _TYPE = "type";
     public static final String _REST_URI = "rest-uri";
     public static final String _IP_MGMT_ADDRESS = "ip-mgmt-address";
-    public static final String _REQUEST_RECLASSIFICATION = "request_reclassification";
-    public static final String _NSH_AWARE = "nsh-aware";
     public static final String _SF_DATA_PLANE_LOCATOR = "sf-data-plane-locator";
     public static final String _SERVICE_FUNCTION_FORWARDER = "service-function-forwarder";
 
@@ -66,8 +64,6 @@ class SfExporter extends AbstractExporter implements Exporter {
             if (sf.getType() != null) {
                 sfNode.put(_TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sf.getType().getValue().toLowerCase());
             }
-            sfNode.put(_NSH_AWARE, sf.isNshAware());
-            sfNode.put(_REQUEST_RECLASSIFICATION, sf.isRequestReclassification());
 
             if (sf.getSfDataPlaneLocator() != null) {
                 ArrayNode locatorArray = mapper.createArrayNode();

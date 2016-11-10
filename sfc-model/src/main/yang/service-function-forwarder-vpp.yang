@@ -16,6 +16,14 @@ module service-function-forwarder-vpp {
         revision-date 2013-07-15;
     }
 
+    organization "Cisco Systems, Inc.";
+    contact "Ed Warnicke <eaw@cisco.com>";
+
+    description
+    "This module contains a collection of YANG definitions used
+     to augment Service Function Forwarder configuration with
+     Honeycomb specific information.";
+
     revision 2016-07-06 {
         description "Initial revision";
     }
@@ -28,14 +36,6 @@ module service-function-forwarder-vpp {
         base netconf-node-type-base;
         description "Type for honeycomb netconf nodes";
     }
-
-    organization "Cisco Systems, Inc.";
-    contact "Ed Warnicke <eaw@cisco.com>";
-
-      description
-    "This module contains a collection of YANG definitions used
-     to augment Service Function Forwarder configuration with
-     Honeycomb specific information.";
 
     typedef netconf-node-type {
         type identityref {

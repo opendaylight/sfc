@@ -14,12 +14,6 @@
 
   <odl:rpc-implementation ref="sfcProviderRpc" />
 
-  <bean id="sfcProviderSfstEntryDataListener"
-    class="org.opendaylight.sfc.provider.listeners.SfcProviderSfstEntryDataListener"
-    destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
-
   <bean id="serviceFunctionListener"
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionListener"
     init-method="init" destroy-method="close">
@@ -41,5 +35,11 @@
    <bean id="sfcdatastoreApi"
         class="org.opendaylight.sfc.provider.api.SfcDataStoreAPI">
     <property name="dataProvider" ref="dataBroker"/>
+  </bean>
+
+  <bean id="serviceFunctionSchedulerTypeListener"
+        class="org.opendaylight.sfc.provider.listeners.ServiceFunctionSchedulerTypeListener"
+        init-method="init" destroy-method="close">
+    <argument ref="dataBroker" />
   </bean>
 </blueprint>

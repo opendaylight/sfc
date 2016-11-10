@@ -63,6 +63,12 @@ scheduler types are derived.</text>
       <text>Weighted Shortest Path.</text>
     </description>
   </identity>
+  <identity name="load-path-aware">
+    <base name="service-function-scheduler-type-identity"/>
+    <description>
+      <text>LoadPath Aware.</text>
+    </description>
+  </identity>
   <identity name="user-defined">
     <base name="service-function-scheduler-type-identity"/>
     <description>

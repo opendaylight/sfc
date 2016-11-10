@@ -454,6 +454,7 @@
     "SFC_CHAIN_MODAL_SCHED_TYPE_LOAD_BALANCE": "Load Balance",
     "SFC_CHAIN_MODAL_SCHED_TYPE_SHORTEST_PATH": "Shortest Path",
     "SFC_CHAIN_MODAL_SCHED_TYPE_WEIGHTED_SP": "Weighted SP",
+    "SFC_CHAIN_MODAL_SCHED_TYPE_LOAD_PATH_AWARE": "Load Path Aware",
     "SFC_CHAIN_MODAL_SCHED_TYPE_USER_DEFINED": "User Defined",
     "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_HEAD": "Update schedule type successfully",
     "SFC_CHAIN_MODAL_SCHED_TYPE_SUCESS_BODY": "Service Function Schedule Algorithm is updated to:<br><br>",

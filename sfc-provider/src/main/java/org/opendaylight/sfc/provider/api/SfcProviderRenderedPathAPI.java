@@ -55,6 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadPathAware;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -91,6 +92,8 @@ public class SfcProviderRenderedPathAPI {
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         } else if (serviceFunctionSchedulerType == ShortestPath.class) {
             scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
+        } else if (serviceFunctionSchedulerType == LoadPathAware.class) {
+            scheduler = new SfcServiceFunctionLoadPathAwareSchedulerAPI();
         } else {
             scheduler = new SfcServiceFunctionRandomSchedulerAPI();
         }

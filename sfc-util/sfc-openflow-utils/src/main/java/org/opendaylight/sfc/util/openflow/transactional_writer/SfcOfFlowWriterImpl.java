@@ -1,16 +1,12 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.ofrenderer.openflow;
-
-
-import com.google.common.util.concurrent.CheckedFuture;
-
+package org.opendaylight.sfc.util.openflow.transactional_writer;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -29,14 +25,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -74,23 +66,34 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     private Map<Long, Map<String, List<FlowDetails>>> rspNameToFlowsMap;
 
     // temporary list of flows to be deleted. All of them will be deleted when
-    // deleteFlowSet() invokation
+    // deleteFlowSet() is called
     private Set<FlowDetails> setOfFlowsToDelete;
     // temporary list of flows to be added. All of them will be deleted when
-    // flushFlows() invokation
+    // flushFlows() is called
     private Set<FlowDetails> setOfFlowsToAdd;
-    private DataBroker dataprovider = null;
+
+    private DataBroker dataProvider = null;
+
+    // TODO - define this in a single place... (both here and in the SfcOfRspProcessor)
+    public static final long SFC_FLOWS = 0xdeadbeef;
+
+    private WriteTransaction tx;
 
     public SfcOfFlowWriterImpl() {
-        this.threadPoolExecutorService = Executors.newSingleThreadExecutor();;
+        this.threadPoolExecutorService = Executors.newSingleThreadExecutor();
         this.rspNameToFlowsMap = new ConcurrentHashMap<>();
         this.flowBuilder = null;
         this.setOfFlowsToDelete = new HashSet<>();
         this.setOfFlowsToAdd = new HashSet<>();
     }
 
+    public SfcOfFlowWriterImpl(WriteTransaction theTx) {
+        this();
+        tx = theTx;
+    }
+
     public void setDataProvider(DataBroker r){
-        dataprovider = r;
+        dataProvider = r;
     }
 
     /**
@@ -108,122 +111,6 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
             List<Runnable> droppedTasks = threadPoolExecutorService.shutdownNow();
             LOG.error("SfcOfFlowProgrammerImpl Executor was abruptly shut down. [{}] tasks will not be executed.",
                     droppedTasks.size());
-        }
-    }
-
-    /**
-     * A thread class used to write the flows to the data store. It receives the list of flows to create at creation time.
-     * The flows are written together in a single data store transaction
-     */
-    class FlowSetWriterTask implements Runnable {
-        Set<FlowDetails> flowsToWrite = new HashSet<>();
-
-        public FlowSetWriterTask(Set<FlowDetails> flowsToWrite) {
-            this.flowsToWrite.addAll(flowsToWrite);
-        }
-
-        @Override
-        public void run(){
-            WriteTransaction trans = dataprovider.newWriteOnlyTransaction();
-
-            LOG.debug("FlowSetWriterTask: starting addition of {} flows", flowsToWrite.size());
-
-            for (FlowDetails f: flowsToWrite) {
-                NodeKey theKey = new NodeKey(new NodeId(f.sffNodeName));
-
-                InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class)
-                            .child(Node.class, theKey)
-                            .augmentation(FlowCapableNode.class)
-                            .child(Table.class, f.tableKey)
-                            .child(Flow.class, f.flowKey)
-                            .build();
-
-                trans.put(LogicalDatastoreType.CONFIGURATION, iidFlow, f.flow, true);
-            }
-
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans.submit();
-
-            try {
-                submitFuture.checkedGet();
-            } catch (TransactionCommitFailedException e) {
-                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
-     * A thread class used to transactionally delete a set of flows belonging to a given RSP in a single transaction
-     */
-    class FlowSetRemoverTask implements Runnable {
-
-        Set<FlowDetails> flowsToDelete = new HashSet<>();
-
-        public FlowSetRemoverTask(Set<FlowDetails> flowsToDelete) {
-            this.flowsToDelete.addAll(flowsToDelete);
-        }
-
-        @Override
-        public void run(){
-
-            WriteTransaction writeTx = dataprovider.newWriteOnlyTransaction();
-
-            LOG.debug("FlowSetRemoverTask: starting deletion of {} flows", flowsToDelete.size());
-
-            for (FlowDetails f: flowsToDelete) {
-                NodeKey theKey = new NodeKey(new NodeId(f.sffNodeName));
-                InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class)
-                            .child(Node.class, theKey)
-                            .augmentation(FlowCapableNode.class)
-                            .child(Table.class, f.tableKey)
-                            .child(Flow.class, f.flowKey)
-                            .build();
-
-                writeTx.delete(LogicalDatastoreType.CONFIGURATION, iidFlow);
-            }
-
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
-            try {
-                submitFuture.checkedGet();
-            } catch (TransactionCommitFailedException e) {
-                LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
-     * Internal class used to store the details of a flow for easy creation / deletion later
-     */
-    public class FlowDetails {
-
-        public String sffNodeName;
-        public FlowKey flowKey;
-        public TableKey tableKey;
-        public Flow flow;
-
-        /**
-         * This constructor is used for storing flows to be added
-         *
-         * @param sffNodeName - which SFF to write the flow to
-         * @param flowKey - the flow identifier
-         * @param tableKey - the table identifier
-         * @param flow - The flow to be written
-         */
-        protected FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow) {
-            this.sffNodeName = sffNodeName;
-            this.flowKey = flowKey;
-            this.tableKey = tableKey;
-            this.flow = flow;
-        }
-
-        /**
-         * This constructor is used for storing flows to be deleted. Only the path ids are needed
-         *
-         * @param sffNodeName - which SFF to write the flow to
-         * @param flowKey - the flow identifier
-         * @param tableKey - the table identifier
-         */
-        protected FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
-            this(sffNodeName, flowKey, tableKey, null);
         }
     }
 
@@ -249,6 +136,16 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     }
 
     @Override
+    public void writeFlow(FlowDetails theFlowData) {
+        LOG.debug("writeFlow storing flow to Node {}, table {}", theFlowData.sffNodeName, theFlowData.flow.getTableId());
+
+        // Add the flow to the set of flows to be added in a single transaction
+        setOfFlowsToAdd.add(theFlowData);
+
+        // No use for caching when using this...
+    }
+
+    @Override
     public void removeFlow(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
 
@@ -256,6 +153,15 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
       FlowDetails flowDetail = new FlowDetails(sffNodeName, flowKey, tableKey);
       setOfFlowsToDelete.add(flowDetail);
+    }
+
+    @Override
+    public void removeFlow(FlowDetails theFlowData) {
+        LOG.debug("removeFlow: removing flow with key {} from table {} in sff {}",
+                theFlowData.flowKey.getId().getValue(),
+                theFlowData.tableKey.getId(),
+                theFlowData.sffNodeName);
+        setOfFlowsToDelete.add(theFlowData);
     }
 
     /**
@@ -267,7 +173,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         LOG.info("flushFlows: creating flowWriter task, writing [{}] flows.",
                 setOfFlowsToAdd.size());
 
-        FlowSetWriterTask writerThread = new FlowSetWriterTask(setOfFlowsToAdd);
+        FlowSetWriterTask writerThread =
+                tx == null ?
+                    new FlowSetWriterTask(dataProvider, setOfFlowsToAdd) : new FlowSetWriterTask(setOfFlowsToAdd, tx);
 
         try {
             threadPoolExecutorService.execute(writerThread);
@@ -381,16 +289,20 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     @Override
     public void deleteFlowSet() {
         LOG.info("deleteFlowSet: deleting {} flows", setOfFlowsToDelete.size());
-        FlowSetRemoverTask fsrt = new FlowSetRemoverTask(setOfFlowsToDelete);
-            try {
-                threadPoolExecutorService.execute(fsrt);
-            } catch (Exception ex) {
-                LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
-            }
+
+        FlowSetRemoverTask fsrt = tx == null ?
+                new FlowSetRemoverTask(dataProvider, setOfFlowsToDelete) : new FlowSetRemoverTask(setOfFlowsToDelete, tx);
+
+        try {
+            threadPoolExecutorService.execute(fsrt);
+        } catch (Exception ex) {
+            LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
+        }
 
         // Clear the entries
         setOfFlowsToDelete.clear();
     }
+
 
     /**
      * Clear all flows from the SFFs whenever they are not featured in any RSP
@@ -400,13 +312,13 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     public Set<NodeId> clearSffsIfNoRspExists() {
         Set<NodeId> sffNodeIDs = new HashSet<>();
 
-        if (!rspNameToFlowsMap.containsKey(SfcOfRspProcessor.SFC_FLOWS)) {
+        if (!rspNameToFlowsMap.containsKey(SFC_FLOWS)) {
             LOG.warn("clearSffsIfNoRspExists() - Attempting to delete initialization flows, and they do not exist");
             return sffNodeIDs;
         }
 
         Map<String, List<FlowDetails>> theInitializationFlows =
-                rspNameToFlowsMap.get(SfcOfRspProcessor.SFC_FLOWS);
+                rspNameToFlowsMap.get(SFC_FLOWS);
 
         // an orphan SFF is a forwarder not featured in any RSP
         Predicate <String> isOrphanSff =

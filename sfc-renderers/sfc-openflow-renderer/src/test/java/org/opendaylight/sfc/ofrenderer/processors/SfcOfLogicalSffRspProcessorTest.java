@@ -21,7 +21,7 @@ import org.mockito.Spy;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
@@ -88,6 +88,7 @@ import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.T
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.genius.mdsalutil.NwConstants;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 
@@ -241,7 +242,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .getDpidFromInterface(any(GetDpidFromInterfaceInput.class));
 
         // fetch the set of added flows from the openflow writer
-        Set<SfcOfFlowWriterImpl.FlowDetails> addedFlows =
+        Set<FlowDetails> addedFlows =
                 Whitebox.getInternalState(ofFlowWriter, "setOfFlowsToAdd");
 
         // Make sure we have the right amount of flows in each relevant table

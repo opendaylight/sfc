@@ -76,18 +76,22 @@ public class SfcGeniusRpcClient {
      * @param interfaceIsPartOfTheTransportZone true when the interface is part of the transport zone (i.e. it is
      *        an interface between switching elements in different compute nodes); false when it is the
      *        neutron interface of a SF
+     * @param actionOffset offsets the order parameter of the actions gotten from genius RPC
      * @return The egress instructions to use, or empty when the RPC invokation failed
      */
-    public Optional<List<Action>> getEgressActionsFromGeniusRPC(String targetInterfaceName,
-            boolean interfaceIsPartOfTheTransportZone) {
+    public Optional<List<Action>> getEgressActionsFromGeniusRPC(
+            String targetInterfaceName,
+            boolean interfaceIsPartOfTheTransportZone,
+            int actionOffset) {
 
         Optional<List<Action>> result = Optional.empty();
         boolean successful = false;
 
         LOG.debug("getEgressActionsFromGeniusRPC: starting (target interface={} in the transport zone:{})",
                 targetInterfaceName, interfaceIsPartOfTheTransportZone);
-        GetEgressActionsForInterfaceInputBuilder builder = new GetEgressActionsForInterfaceInputBuilder();
-        builder.setIntfName(targetInterfaceName);
+        GetEgressActionsForInterfaceInputBuilder builder = new GetEgressActionsForInterfaceInputBuilder()
+                .setIntfName(targetInterfaceName)
+                .setActionKey(actionOffset);
         if (interfaceIsPartOfTheTransportZone) {
             builder.setTunnelKey(LOGICAL_SFF_TZ_DEFAULT_TUNNEL_KEY);
         }

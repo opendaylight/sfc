@@ -364,6 +364,7 @@ public class SfcOfRspProcessor {
     private void configureNextHopFlows(SffGraph.SffGraphEntry entry,
             SffGraph sffGraph, SfcRspTransportProcessorBase transportProcessor) {
 
+        LOG.debug("configureNextHopFlows: entry:{}, sffGraph:{}", entry, sffGraph);
         ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
         SfDataPlaneLocator sfDstDpl = (sfDst == null) ? null : sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
         if (sfDstDpl != null) {
@@ -392,6 +393,11 @@ public class SfcOfRspProcessor {
             transportProcessor.configureNextHopFlow(entry, sfSrcDpl, (SffDataPlaneLocator) null);
         }
 
+        if (entry.isIntraLogicalSFFEntry()) {
+            // SFF-SFF nexthop is not needed in logical SFF,
+            // the underlying tunnels already have ips set in the tunnel mesh
+            return;
+        }
 
         SfDataPlaneLocator sfSrcDpl = null;
         if (entry.getPrevSf() != null) {
@@ -401,10 +407,8 @@ public class SfcOfRspProcessor {
 
         // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
         if (sfSrcDpl != null) {
-            if ( (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue()))
-                    && !((entry.isIntraLogicalSFFEntry() && (!entry.getSrcDpnId().equals(entry.getDstDpnId()))))) {
+            if (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())) {
                 // If the next hop is on this SFF then go straight to the next SF
-                // Also used in logical SFF, but only when both dpnids are the same (two SFs in the same compute node)
                 // Configure SF-SFF-SF NextHop on the same SFF
                 transportProcessor.configureNextHopFlow(entry, sfSrcDpl, sfDstDpl);
             } else {

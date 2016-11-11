@@ -54,12 +54,16 @@ module service-function-chain {
       }
       leaf symmetric {
         type boolean;
+        status deprecated;
         default false;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse
            the egress service path in the reverse order of the
-           ingress path";
+           ingress path. This field is now deprecated: Use the
+           ServiceFunctionType bidirectionality field instead.
+           If at least one SF is of an SF-Type that sets the
+           flag to true, then the RSP will be symmetric.";
       }
       list sfc-service-function {
         key "name";

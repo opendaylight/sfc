@@ -730,6 +730,11 @@ public class SfcProviderRenderedPathAPI {
 
             SffName sffName = renderedServicePathHop.getServiceFunctionForwarder();
             SffDataPlaneLocatorName sffLocatorName = renderedServicePathHop.getServiceFunctionForwarderLocator();
+
+            if (sffLocatorName == null) {
+                return renderedServicePathFirstHopBuilder.build();
+            }
+
             SffDataPlaneLocator sffDataPlaneLocator = SfcProviderServiceForwarderAPI
                 .readServiceFunctionForwarderDataPlaneLocator(sffName, sffLocatorName);
 

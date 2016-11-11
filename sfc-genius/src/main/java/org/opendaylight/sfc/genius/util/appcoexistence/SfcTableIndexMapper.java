@@ -34,20 +34,16 @@ public class SfcTableIndexMapper {
 
     private HashMap<Short, Short> mappingTable = new HashMap();
 
-    protected SfcTableIndexMapper(short externalTransportIngressTable,
+    protected SfcTableIndexMapper(short externalClassifierTable, short externalTransportIngressTable,
             short externalPathMapperTable, short externalPathMapperAclTable,
             short externalNextHopTable, short externalTransportEgressTable) {
 
-        addMapping(externalTransportIngressTable,
-                NwConstants.SFC_TRANSPORT_INGRESS_TABLE);
-        addMapping(externalPathMapperTable,
-                NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE);
-        addMapping(externalPathMapperAclTable,
-                NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE);
-        addMapping(externalNextHopTable,
-                NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE);
-        addMapping(externalTransportEgressTable,
-                NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
+        addMapping(externalClassifierTable, NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE);
+        addMapping(externalTransportIngressTable, NwConstants.SFC_TRANSPORT_INGRESS_TABLE);
+        addMapping(externalPathMapperTable, NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE);
+        addMapping(externalPathMapperAclTable, NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE);
+        addMapping(externalNextHopTable, NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE);
+        addMapping(externalTransportEgressTable, NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
     }
 
     private void addMapping(short externalTableIndex,

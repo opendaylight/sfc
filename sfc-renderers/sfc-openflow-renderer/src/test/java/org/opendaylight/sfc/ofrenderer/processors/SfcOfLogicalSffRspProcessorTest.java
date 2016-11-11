@@ -21,7 +21,7 @@ import org.mockito.Spy;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
@@ -88,6 +88,7 @@ import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.T
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.genius.mdsalutil.NwConstants;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 
@@ -241,7 +242,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .getDpidFromInterface(any(GetDpidFromInterfaceInput.class));
 
         // fetch the set of added flows from the openflow writer
-        Set<SfcOfFlowWriterImpl.FlowDetails> addedFlows =
+        Set<FlowDetails> addedFlows =
                 Whitebox.getInternalState(ofFlowWriter, "setOfFlowsToAdd");
 
         // Make sure we have the right amount of flows in each relevant table
@@ -255,35 +256,35 @@ public class SfcOfLogicalSffRspProcessorTest {
         // Logical SFF processor never uses table 0 as classifier (it uses genius,
         // which uses that table for service binding)
         Assert.assertEquals(0, addedFlows.stream().filter(
-                flow -> flow.tableKey.getId().equals(TABLE_INDEX_CLASSIFIER)).count());
+                flow -> flow.getTableKey().getId().equals(TABLE_INDEX_CLASSIFIER)).count());
 
         // transport ingress: one (initialization in the only switch) + one per (hops -1, this is the
         // number of "SF ingresses" in the chain)
         Assert.assertEquals(1 + (nHops -1), addedFlows.stream().filter(
-                flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the only switch that it is used in this test
         Assert.assertEquals(1, addedFlows.stream().filter(
-                flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE)).count());
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE)).count());
 
         // path mapper acl: again, initialization only
         Assert.assertEquals(1, addedFlows.stream().filter(
-                flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE)).count());
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE)).count());
 
         // next hop: 1 (initialization in the only switch) + 2 * (nhops -1) (i.e. ingress + egress to each SF) -1 (both
         // sfs are sharing the switch, so one less flow (the one for going from one SFF to the next one) is written
         Assert.assertEquals(1 + (2 * (nHops -1) -1) , addedFlows.stream().filter(
-                flow -> flow.tableKey.getId().equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).count());
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).count());
 
         // match any: these are the 5 initialization flows for the 5 SFC tables in the switch
-        Assert.assertEquals(5, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
+        Assert.assertEquals(5, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("MatchAny")).count());
 
-        Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
+        Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("ingress_Transport_Flow")).count());
-        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
+        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("nextHop")).count());
-        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.flow).filter(
+        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("default egress flow")).count());
 
         // we'll save in this set all the flows that are checked,
@@ -292,28 +293,28 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         // nextHop
         Assert.assertTrue(addedFlows.stream()
-                .map(flowDetail -> flowDetail.flow)
+                .map(flowDetail -> flowDetail.getFlow())
                 .filter(flow -> flow.getFlowName().equals("nextHop"))
                 .peek(checkedFlows::add)
                 .allMatch(nextHopFlow -> matchNextHop(nextHopFlow, vlanRsp.getPathId())));
 
         // transport ingress
         Assert.assertTrue(addedFlows.stream()
-                .map(flowDetail -> flowDetail.flow)
+                .map(flowDetail -> flowDetail.getFlow())
                 .filter(flow -> flow.getFlowName().equals("ingress_Transport_Flow"))
                 .peek(checkedFlows::add)
                 .allMatch(flow -> matchTransportIngress(flow, vlanRsp.getPathId())));
 
         // transport egress between SFFs
         Assert.assertTrue(addedFlows.stream()
-                .map(flowDetail -> flowDetail.flow)
+                .map(flowDetail -> flowDetail.getFlow())
                 .filter(flow -> flow.getFlowName().equals("default egress flow"))
                 .peek(checkedFlows::add)
                 .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, false, vlanRsp.getPathId())));
 
         // transport egress last hop
         Assert.assertTrue(addedFlows.stream()
-                .map(flowDetail -> flowDetail.flow)
+                .map(flowDetail -> flowDetail.getFlow())
                 .filter(flow -> flow.getFlowName().equals("last hop egress flow"))
                 .peek(checkedFlows::add)
                 .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, true, vlanRsp.getPathId())));
@@ -321,8 +322,8 @@ public class SfcOfLogicalSffRspProcessorTest {
         // assure that the only flows we didn't check are the MatchAny flows
         Assert.assertEquals(
                 addedFlows.size() - checkedFlows.size(),
-                addedFlows.stream().filter(flowd -> !checkedFlows.contains(flowd.flow))
-                        .filter(flowd -> flowd.flow.getFlowName().equals("MatchAny")).count());
+                addedFlows.stream().filter(flowd -> !checkedFlows.contains(flowd.getFlow()))
+                        .filter(flowd -> flowd.getFlow().getFlowName().equals("MatchAny")).count());
     }
 
     /*

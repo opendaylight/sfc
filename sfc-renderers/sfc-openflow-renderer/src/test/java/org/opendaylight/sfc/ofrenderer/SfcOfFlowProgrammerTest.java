@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;

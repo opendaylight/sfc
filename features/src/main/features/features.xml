@@ -64,6 +64,8 @@
         <feature version="${project.version}">odl-sfc-ovs</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
+        <feature version="${genius.version}">odl-genius</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-scf-openflow/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
     </feature>

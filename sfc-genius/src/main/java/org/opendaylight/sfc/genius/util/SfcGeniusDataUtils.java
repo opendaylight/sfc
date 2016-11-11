@@ -30,7 +30,6 @@ public class SfcGeniusDataUtils {
 
     /**
      * Fetches the SF's MAC address, given a neutron port name
-     *
      * @param ifName    the name of the neutron port to which the SF is connected
      * @return          the MAC address used by the SF, when available
      */
@@ -61,7 +60,6 @@ public class SfcGeniusDataUtils {
 
     /**
      * Fetches the MAC address for the switch port to which a given SF is connected
-     *
      * @param ifName    the name of the neutron port to which the SF is connected
      * @return          the MAC address used by the SFF port to which
      *      the SF is connected, when available
@@ -107,6 +105,17 @@ public class SfcGeniusDataUtils {
             throw new IllegalArgumentException(
                     String.format("We *must* have a single LogicalInterface locator. Got %d", theDpls.size()));
         }
+    }
+
+    /**
+     * Get the information of all physical interfaces mapped to a given logical interface
+     * @param theIfName     the name of the logical interface
+     * @return              a list of all the physical interfaces mapped to the given logical interface
+     */
+    public static List<String> getInterfaceLowerLayerIf(String theIfName) {
+        return SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(theIfName)
+                .map(Interface::getLowerLayerIf)
+                .orElse(Collections.emptyList());
     }
 
     /**

@@ -207,8 +207,9 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 sfLogicalInterface, entry.getServiceIndex());
 
         // When the SF is using a logical SFF, the transport egress flows are provided by Genius
-        Optional<List<Action>> actionList = sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(
-                            sfLogicalInterface, false);
+        Optional<List<Action>> actionList =
+                sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(sfLogicalInterface, false, 0);
+
             if (!actionList.isPresent() || actionList.get().isEmpty()) {
                 throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                         + " egress actions for logical interface [" + sfLogicalInterface
@@ -268,8 +269,9 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 LOG.debug("configureSffTransportEgressFlow: srcDpn [{}] destDpn [{}] interface to use: [{}]",
                         srcDpid, dstDpid, targetInterfaceName.get());
                 // 3, use genius for retrieving egress actions (Interface Manager RPC)
-                Optional<List<Action>> actionList = sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(
-                                targetInterfaceName.get(), true);
+                Optional<List<Action>> actionList =
+                        sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(targetInterfaceName.get(), true, 0);
+
                 if (!actionList.isPresent() || actionList.get().isEmpty()) {
                     throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                             + " egress actions for logical interface [" + targetInterfaceName.get()

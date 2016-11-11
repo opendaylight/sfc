@@ -131,6 +131,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
             throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
+        LOG.debug("configureNextHopFlow from SFF to SF, SrcDpnId: {}, srcSfMac:{}, DstDpnId: {}, dstSfMac:{}, nsi:{}",
+                   entry.getSrcDpnId(), srcSfMac, entry.getDstDpnId(), dstSfMac, entry.getServiceIndex());
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(),
                         entry.getPathId(), entry.getDstDpnId()),
@@ -145,31 +147,18 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SffDataPlaneLocator dstSffDpl) {
         // SF-SFF nexthop is not needed in logical SFF
-        // (the underlying tunnels already have ips setted in the tunnel mesh, only transport
+        // (the underlying tunnels already have ips set in the tunnel mesh, only transport
         // egress port selection is required)
     }
 
     /*
      * Configure the Next Hop flow from an SF to an SF
-     *
-     * @param entry - RSP hop info used to create the flow
-     * @param srcSfDpl - not used in this processor
-     * @param dstSfDpl - the particular SF DPL used to create the flow
      */
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SfDataPlaneLocator dstSfDpl) {
-
-        Optional<MacAddress> srcSfMac = getMacAddress(dstSfDpl, true);
-        Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl, false);
-        if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
-            throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
-        }
-        this.sfcFlowProgrammer.configureNshEthNextHopFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(), entry.getDstDpnId()),
-                srcSfMac.get().getValue(),
-                dstSfMac.get().getValue(),
-                entry.getPathId(),
-                entry.getServiceIndex());
+        // SF-SF nexthop is not needed in logical SFF
+        // (the underlying tunnels already have ips set in the tunnel mesh, only transport
+        // egress port selection is required)
     }
 
     /*
@@ -179,7 +168,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl) {
         // SFF-SFF nexthop is not needed in logical SFF
-        // (the underlying tunnels already have ips setted in the tunnel mesh, only port selection
+        // (the underlying tunnels already have ips set in the tunnel mesh, only port selection
         //is required)
     }
 

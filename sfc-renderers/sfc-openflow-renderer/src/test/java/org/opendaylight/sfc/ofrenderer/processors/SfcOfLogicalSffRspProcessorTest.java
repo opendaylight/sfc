@@ -13,38 +13,38 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.mockito.Mockito;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.OdlInterfaceRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
@@ -63,32 +63,18 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.powermock.api.support.membermodification.MemberModifier.suppress;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import org.powermock.reflect.Whitebox;
-import java.util.List;
-import java.util.Set;
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Collections;
-import java.math.BigInteger;
 
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TABLE_INDEX_CLASSIFIER;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.genius.mdsalutil.NwConstants;
-import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 
 /**
  * Component tests to test the Logical Sff feature
@@ -134,8 +120,10 @@ public class SfcOfLogicalSffRspProcessorTest {
     private SfcRspTransportProcessorBase logicalSffProcessor;
 
     private static final String theLogicalIfName = "tap40c552e0-36";
-    private static final MacAddress theMacAddressSfSide = new MacAddress("11:22:33:44:55:66");
-    private static final MacAddress theMacAddressOvsSide = new MacAddress("aa:bb:cc:dd:ee:ff");
+    private MacAddress[] theMacAddressSfSide = {new MacAddress("00:00:00:00:00:11"),
+                                                new MacAddress("00:00:00:00:00:22")};
+    private MacAddress[] theMacAddressOvsSide = {new MacAddress("00:00:00:00:00:aa"),
+                                                 new MacAddress("00:00:00:00:00:ff")};
 
     /**
      * Test constructor
@@ -190,10 +178,19 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.doReturn(logicalSffProcessor).when(sfcOfRspProcessor, "getReusableTransporProcessor", any(), any());
         PowerMockito.when(geniusClient, "getInterfaceManagerRpcService").thenReturn(interfaceManagerRpcService);
         PowerMockito.when(geniusClient, "getItmRpcService").thenReturn(itmRpcService);
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(anyString()))
-                .thenReturn(Optional.of(theMacAddressSfSide));
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(anyString()))
-                .thenReturn(Optional.of(theMacAddressOvsSide));
+
+        String ifName0 = rspBuilder.getLogicalInterfaceName(0);
+        String ifName1 = rspBuilder.getLogicalInterfaceName(1);
+
+        PowerMockito.mockStatic(SfcGeniusDataUtils.class);
+        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName0)).
+                thenReturn(Optional.of(theMacAddressSfSide[0]));
+        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName0)).
+                thenReturn(Optional.of(theMacAddressOvsSide[0]));
+        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName1)).
+                thenReturn(Optional.of(theMacAddressSfSide[1]));
+        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName1)).
+                thenReturn(Optional.of(theMacAddressOvsSide[1]));
 
         PowerMockito.when(SfcGeniusDataUtils.getSfLogicalInterface(any(ServiceFunction.class)))
                 .thenReturn(theLogicalIfName);
@@ -217,18 +214,17 @@ public class SfcOfLogicalSffRspProcessorTest {
                                 new GetTunnelInterfaceNameOutputBuilder()
                                     .setInterfaceName(theLogicalIfName))
                                     .build()));
+    }
 
+    @Test
+    public void testEthNshFlowCreationSameComputeNode() throws Exception {
         when(interfaceManagerRpcService.getDpidFromInterface(any(GetDpidFromInterfaceInput.class)))
+                // return the same dpid for every call, i.e. both SFs are hosted in the same compute node
                 .thenReturn(Futures.immediateFuture(
                         RpcResultBuilder.success(
                                 new GetDpidFromInterfaceOutputBuilder()
                                     .setDpid(new BigInteger("1234567890")))
                                     .build()));
-
-    }
-
-    @Test
-    public void testEthNshFlowCreation() throws Exception {
         when(interfaceManagerRpcService.getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class)))
                 .thenReturn(
                         Futures.immediateFuture(
@@ -278,6 +274,11 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals(1 + (nHops -1), addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
+        // transport egress: one (initialization in the only switch) + two per (hops -1), this is the
+        // number of "SF egresses" in the chain)
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 1 + 2*(nHops -1), addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
+
         // path mapper: only the initialization flow in the only switch that it is used in this test
         Assert.assertEquals(1, addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE)).count());
@@ -286,9 +287,8 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals(1, addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE)).count());
 
-        // next hop: 1 (initialization in the only switch) + 2 * (nhops -1) (i.e. ingress + egress to each SF) -1 (both
-        // sfs are sharing the switch, so one less flow (the one for going from one SFF to the next one) is written
-        Assert.assertEquals(1 + (2 * (nHops -1) -1) , addedFlows.stream().filter(
+        // next hop: 1 (initialization in the only switch) + sfTypes.size() (next hop to each SF)
+        Assert.assertEquals("SFC_TRANSPORT_NEXT_HOP_TABLE", 1 + sfTypes.size() , addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).count());
 
         // match any: these are the 5 initialization flows for the 5 SFC tables in the switch
@@ -297,9 +297,133 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("ingress_Transport_Flow")).count());
-        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+        Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("nextHop")).count());
         Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+                flow -> flow.getFlowName().equals("default egress flow")).count());
+
+        // we'll save in this set all the flows that are checked,
+        // so that we can assure that all flows were accounted for
+        Set<Flow> checkedFlows = new HashSet<>();
+
+        // nextHop
+        Assert.assertTrue(addedFlows.stream()
+                .map(flowDetail -> flowDetail.getFlow())
+                .filter(flow -> flow.getFlowName().equals("nextHop"))
+                .peek(checkedFlows::add)
+                .allMatch(nextHopFlow -> matchNextHop(nextHopFlow, vlanRsp.getPathId())));
+
+        // transport ingress
+        Assert.assertTrue(addedFlows.stream()
+                .map(flowDetail -> flowDetail.getFlow())
+                .filter(flow -> flow.getFlowName().equals("ingress_Transport_Flow"))
+                .peek(checkedFlows::add)
+                .allMatch(flow -> matchTransportIngress(flow, vlanRsp.getPathId())));
+
+        // transport egress between SFFs
+        Assert.assertTrue(addedFlows.stream()
+                .map(flowDetail -> flowDetail.getFlow())
+                .filter(flow -> flow.getFlowName().equals("default egress flow"))
+                .peek(checkedFlows::add)
+                .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, false, vlanRsp.getPathId())));
+
+        // transport egress last hop
+        Assert.assertTrue(addedFlows.stream()
+                .map(flowDetail -> flowDetail.getFlow())
+                .filter(flow -> flow.getFlowName().equals("last hop egress flow"))
+                .peek(checkedFlows::add)
+                .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, true, vlanRsp.getPathId())));
+
+        // assure that the only flows we didn't check are the MatchAny flows
+        Assert.assertEquals(
+                addedFlows.size() - checkedFlows.size(),
+                addedFlows.stream().filter(flowd -> !checkedFlows.contains(flowd.getFlow()))
+                        .filter(flowd -> flowd.getFlow().getFlowName().equals("MatchAny")).count());
+    }
+
+    @Test
+    public void testEthNshFlowCreationDifferentComputeNode() throws Exception {
+        GetDpidFromInterfaceInput if1 = new GetDpidFromInterfaceInputBuilder().setIntfName("tap0000-00").build();
+        GetDpidFromInterfaceInput if2 = new GetDpidFromInterfaceInputBuilder().setIntfName("tap0000-01").build();
+        when(interfaceManagerRpcService.getDpidFromInterface(if1))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(
+                                new GetDpidFromInterfaceOutputBuilder()
+                                        .setDpid(new BigInteger("1234567890")))
+                                        .build()));
+        when(interfaceManagerRpcService.getDpidFromInterface(if2))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(
+                                new GetDpidFromInterfaceOutputBuilder()
+                                        .setDpid(new BigInteger("9876543210")))
+                                        .build()));
+        when(interfaceManagerRpcService.getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class)))
+                .thenReturn(
+                        Futures.immediateFuture(
+                                RpcResultBuilder.success(
+                                        new GetEgressActionsForInterfaceOutputBuilder()
+                                                .setAction(new ArrayList<Action>() {{
+                                                    add( new ActionBuilder().build());
+                                                }}))
+                                        .build()));
+
+        RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, true);
+        sfcOfRspProcessor.processRenderedServicePath(vlanRsp);
+
+        int nHops = sfTypes.size() + 1;
+
+        verify(interfaceManagerRpcService, times(nHops))
+                .getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class));
+
+        // 2 SFFs, meaning 1 hop between SFFs, must get the logical interface between them just once
+        verify(itmRpcService).getTunnelInterfaceName(any(GetTunnelInterfaceNameInput.class));
+
+        // 2 SFs, must get their respective DpnId twice in total
+        verify(interfaceManagerRpcService, times(sfTypes.size()))
+                .getDpidFromInterface(any(GetDpidFromInterfaceInput.class));
+
+        // fetch the set of added flows from the openflow writer
+        Set<FlowDetails> addedFlows =
+                Whitebox.getInternalState(ofFlowWriter, "setOfFlowsToAdd");
+
+        // Make sure we have the right amount of flows in each relevant table
+
+        // Logical SFF processor never uses table 0 as classifier (it uses genius,
+        // which uses that table for service binding)
+        Assert.assertEquals(0, addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(TABLE_INDEX_CLASSIFIER)).count());
+
+        // transport ingress: one (initialization in the only switch) + one per (hops -1, this is the
+        // number of "SF ingresses" in the chain)
+        Assert.assertEquals("SFC_TRANSPORT_INGRESS_TABLE", 2 + (nHops -1), addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
+
+        // transport egress: one (initialization in the only switch) + one per (hops -1, this is the
+        // number of "SF egresses" in the chain)
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2*(nHops -1), addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
+
+        // path mapper: only the initialization flow in the two switches that are used in this test
+        Assert.assertEquals(2, addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE)).count());
+
+        // path mapper acl: again, initialization only
+        Assert.assertEquals(2, addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE)).count());
+
+        // next hop: 2 (initialization in the two switches) + sfTypes.size() (next hop to each SF)
+        Assert.assertEquals("SFC_TRANSPORT_NEXT_HOP_TABLE", 2 +  sfTypes.size() , addedFlows.stream().filter(
+                flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).count());
+
+        // match any: these are the 10 initialization flows for the 5 SFC tables in the switch
+        Assert.assertEquals("MatchAny", 10, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+                flow -> flow.getFlowName().equals("MatchAny")).count());
+
+        Assert.assertEquals("ingress_Transport_Flow", sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+                flow -> flow.getFlowName().equals("ingress_Transport_Flow")).count());
+        Assert.assertEquals("nextHop", sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+                flow -> flow.getFlowName().equals("nextHop")).count());
+        Assert.assertEquals("default egress flow", nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("default egress flow")).count());
 
         // we'll save in this set all the flows that are checked,
@@ -459,6 +583,13 @@ public class SfcOfLogicalSffRspProcessorTest {
             return false;
         }
 
+        Short theNsi = theNciraExtensions.stream()
+                .filter(node -> node.getNxmNxNsi() != null)
+                .map(NxAugMatchNodesNodeTableFlow::getNxmNxNsi)
+                .findFirst()
+                .map(NxmNxNsi::getNsi)
+                .get();
+
         // handle the Actions part
         // assure 1 goto table instruction; goto table transport egress
         Optional<Short> goToTableId = getGotoTableIdFromIntructions(nextHopFlow);
@@ -489,9 +620,12 @@ public class SfcOfLogicalSffRspProcessorTest {
         if (macAddresses.size() != 2) {
             return false;
         }
-        List<MacAddress> expectedMacs = new ArrayList<MacAddress>();
-        expectedMacs.add(theMacAddressSfSide);
-        expectedMacs.add(theMacAddressOvsSide);
+        Short startingIndex = rspBuilder.getStartingIndex();
+        // we assign mac addresses in order, so first hop corresponds to first addr set, and so on:
+        Integer macAddrIndex = startingIndex - theNsi;
+        List<MacAddress> expectedMacs = new ArrayList<>();
+        expectedMacs.add(theMacAddressSfSide[macAddrIndex]);
+        expectedMacs.add(theMacAddressOvsSide[macAddrIndex]);
         if (!macAddresses.containsAll(expectedMacs)) {
             return false;
         }

@@ -13,11 +13,18 @@ package org.opendaylight.sfc.genius.util.appcoexistence;
 public class SfcTableIndexMapperBuilder {
 
     public static final short EXTERNAL_TABLE_NOT_SET = -1;
+    private short externalTransportClassifierTable = EXTERNAL_TABLE_NOT_SET;
     private short externalTransportIngressTable = EXTERNAL_TABLE_NOT_SET;
     private short externalPathMapperTable = EXTERNAL_TABLE_NOT_SET;
     private short externalPathMapperAclTable = EXTERNAL_TABLE_NOT_SET;
     private short externalNextHopTable = EXTERNAL_TABLE_NOT_SET;
     private short externalTransportEgressTable = EXTERNAL_TABLE_NOT_SET;
+
+    public SfcTableIndexMapperBuilder setClassifierTable(
+            short externalTransportClassifierTable) {
+        this.externalTransportClassifierTable = externalTransportClassifierTable;
+        return this;
+    }
 
     public SfcTableIndexMapperBuilder setTransportIngressTable(
             short externalTransportIngressTable) {
@@ -50,7 +57,7 @@ public class SfcTableIndexMapperBuilder {
     }
 
     public SfcTableIndexMapper build() {
-        return new SfcTableIndexMapper(externalTransportIngressTable,
+        return new SfcTableIndexMapper(externalTransportClassifierTable, externalTransportIngressTable,
                 externalPathMapperTable, externalPathMapperAclTable,
                 externalNextHopTable, externalTransportEgressTable);
     }

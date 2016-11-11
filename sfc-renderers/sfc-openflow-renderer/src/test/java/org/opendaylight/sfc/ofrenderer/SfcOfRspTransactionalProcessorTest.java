@@ -37,8 +37,8 @@ import org.junit.runner.RunWith;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowWriterInterface;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -53,6 +53,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,8 +135,8 @@ public class SfcOfRspTransactionalProcessorTest {
      * @return true if all SFFs are free of initialization flows, false otherwise
      */
     private boolean
-    areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theMap) {
-        Predicate<Map.Entry<String, List<SfcOfFlowWriterImpl.FlowDetails>>> emptySff =
+    areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<FlowDetails>>> theMap) {
+        Predicate<Map.Entry<String, List<FlowDetails>>> emptySff =
                 theInputEntry -> theInputEntry.getValue().size() == 0;
         return theMap.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
     }
@@ -146,7 +147,7 @@ public class SfcOfRspTransactionalProcessorTest {
     @Test
     public void deleteNonExistentRsp() {
         sfcFlowWriterTestMock.deleteRspFlows((long) 31);
-        Set<SfcOfFlowWriterImpl.FlowDetails> flowsToDelete = Whitebox
+        Set<FlowDetails> flowsToDelete = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
         Assert.assertTrue(flowsToDelete.isEmpty());
     }
@@ -180,11 +181,11 @@ public class SfcOfRspTransactionalProcessorTest {
                 this.sfcOfRspProcessor, times(2)).invoke("setSffInitialized", anyObject(), Matchers.eq(false));
 
         // fetch the list of flows to be deleted
-        Set<SfcOfFlowWriterImpl.FlowDetails> deletedFlows = Whitebox
+        Set<FlowDetails> deletedFlows = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
         // fetch the flow cache
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theMap =
+        Map<Long, Map<String, List<FlowDetails>>> theMap =
                 Whitebox.getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
 
         // all the initialization flows belong to a dummy RSP - check SfcOfRspProcessor SFC_FLOWS constant
@@ -192,7 +193,7 @@ public class SfcOfRspTransactionalProcessorTest {
         assertThat(theMap.entrySet().size(), is(1));
 
         // get all the current flows
-        Set<SfcOfFlowWriterImpl.FlowDetails> currentFlows =
+        Set<FlowDetails> currentFlows =
                 theMap.entrySet().stream()
                         .flatMap(rspEntry -> rspEntry.getValue().entrySet().stream())
                         .flatMap(sffEntry -> sffEntry.getValue().stream())
@@ -225,13 +226,13 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap1 = Whitebox
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap1 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock).flushFlows();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> allFlowsAfterRsp1 = new HashSet<>();
+        Set<FlowDetails> allFlowsAfterRsp1 = new HashSet<>();
 
-        for (Map<String, List<SfcOfFlowWriterImpl.FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
+        for (Map<String, List<FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
             flowsInRsp.values().forEach(theFlows -> {
                 allFlowsAfterRsp1.addAll(theFlows);
             });
@@ -248,12 +249,12 @@ public class SfcOfRspTransactionalProcessorTest {
         // ---------------------
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp2);
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap2 = Whitebox.
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap2 = Whitebox.
                 getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock, times(2)).flushFlows();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> allFlowsAfterRsp2 = new HashSet<>();
-        for (Map<String, List<SfcOfFlowWriterImpl.FlowDetails>> flowsInRsp: rspToFlowsMap2.values()) {
+        Set<FlowDetails> allFlowsAfterRsp2 = new HashSet<>();
+        for (Map<String, List<FlowDetails>> flowsInRsp: rspToFlowsMap2.values()) {
             flowsInRsp.values().forEach( theFlows -> {
                 allFlowsAfterRsp2.addAll(theFlows);
             });
@@ -271,11 +272,11 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.deleteRenderedServicePath(nshRsp2);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap3 = Whitebox
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap3 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock).deleteFlowSet();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> deletedFlowsRsp2 = Whitebox
+        Set<FlowDetails> deletedFlowsRsp2 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
         LOG.debug("testMultiRSPDeletionSymmetrical: After deletion of RSP2: "
@@ -293,12 +294,12 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.deleteRenderedServicePath(nshRsp);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap4 = Whitebox.
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap4 = Whitebox.
                 getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock, times(2)).deleteFlowSet();
 
         // get the list of deleted flows belonging to RSP1
-        Set<SfcOfFlowWriterImpl.FlowDetails> allDeletedFlows = Whitebox
+        Set<FlowDetails> allDeletedFlows = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
         LOG.debug("testMultiRSPDeletionSymmetrical: After deletion of RSP2: "
@@ -334,14 +335,14 @@ public class SfcOfRspTransactionalProcessorTest {
         // with the set of flows after C:RSP1-C:RSP2-D:RSP1 (end of Step 3)
         // ---------------------------------------------------------------------------------------------------------
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp2);
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> currentRspCache = Whitebox.
+        Map<Long, Map<String, List<FlowDetails>>> currentRspCache = Whitebox.
                 getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
 
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> theRspToFlowsMapWithRSP2Only =
+        Map<Long, Map<String, List<FlowDetails>>> theRspToFlowsMapWithRSP2Only =
                 new HashMap<>(currentRspCache);
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> allFlowsAfterCreatingRSP2Only = new HashSet<>();
-        for (Map<String, List<SfcOfFlowWriterImpl.FlowDetails>> flowsInRsp: theRspToFlowsMapWithRSP2Only.values()) {
+        Set<FlowDetails> allFlowsAfterCreatingRSP2Only = new HashSet<>();
+        for (Map<String, List<FlowDetails>> flowsInRsp: theRspToFlowsMapWithRSP2Only.values()) {
             flowsInRsp.values().forEach(theFlows -> {
                 allFlowsAfterCreatingRSP2Only.addAll(theFlows);
             });
@@ -363,13 +364,13 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap1 =
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap1 =
                 Whitebox.getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
 
         verify(sfcFlowWriterTestMock, times(2)).flushFlows();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> allFlowsAfterRsp1 = new HashSet<>();
-        for (Map<String, List<SfcOfFlowWriterImpl.FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
+        Set<FlowDetails> allFlowsAfterRsp1 = new HashSet<>();
+        for (Map<String, List<FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
             flowsInRsp.values().forEach(theFlows -> {
                 allFlowsAfterRsp1.addAll(theFlows);
             });
@@ -385,12 +386,12 @@ public class SfcOfRspTransactionalProcessorTest {
         // ---------------------
         this.sfcOfRspProcessor.processRenderedServicePath(nshRsp2);
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap2 = Whitebox
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap2 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock, times(3)).flushFlows();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> allFlowsAfterRsp2 = new HashSet<>();
-        for (Map<String, List<SfcOfFlowWriterImpl.FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
+        Set<FlowDetails> allFlowsAfterRsp2 = new HashSet<>();
+        for (Map<String, List<FlowDetails>> flowsInRsp: rspToFlowsMap1.values()) {
             flowsInRsp.values().forEach(theFlows -> {
                 allFlowsAfterRsp2.addAll(theFlows);
             });
@@ -408,11 +409,11 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.deleteRenderedServicePath(nshRsp);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap3 = Whitebox.
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap3 = Whitebox.
                 getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock, times(2)).deleteFlowSet();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> deletedFlowsRsp1 = Whitebox
+        Set<FlowDetails> deletedFlowsRsp1 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
         LOG.debug("testMultiRSPDeletionSymmetrical: After deletion of RSP2: "
@@ -436,11 +437,11 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcOfRspProcessor.deleteRenderedServicePath(nshRsp2);
 
         // Store the list of flows created at this point
-        Map<Long, Map<String, List<SfcOfFlowWriterImpl.FlowDetails>>> rspToFlowsMap4 = Whitebox
+        Map<Long, Map<String, List<FlowDetails>>> rspToFlowsMap4 = Whitebox
                 .getInternalState(sfcFlowWriterTestMock, "rspNameToFlowsMap");
         verify(sfcFlowWriterTestMock, times(3)).deleteFlowSet();
 
-        Set<SfcOfFlowWriterImpl.FlowDetails> deleteAllFlows =
+        Set<FlowDetails> deleteAllFlows =
                 Whitebox.getInternalState(sfcFlowWriterTestMock, "setOfFlowsToDelete");
 
         LOG.debug("testMultiRSPDeletionASymmetrical: After deletion of RSP2: "

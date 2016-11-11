@@ -14,10 +14,11 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -43,6 +44,19 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.powermock.reflect.Whitebox;
 
 public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePathAPITest {
+
+    @Before
+    public void before() throws Exception {
+        // AbstractDataStoreManager.setupSfc() initializes a new dataBroker
+        // for each test, thus starting with a clean data store
+        setupSfc();
+    }
+
+    @After
+    public void after() throws Exception {
+        // AbstractDataStoreManager.close() deletes all SFC entries from the data store
+        close();
+    }
 
     @Test
     // test, whether scheduler type create right scheduler instance
@@ -80,7 +94,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
-        createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
         try {
             renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
                     createRenderedPathInputBuilder.build());
@@ -118,29 +131,33 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     public void testReadRspFirstHopBySftList() {
         init();
 
-        @SuppressWarnings("serial")
-        List<SftTypeName> sftList = new ArrayList<SftTypeName>() {
-
-            {
-                add(new SftTypeName("firewall"));
-                add(new SftTypeName("dpi"));
-                add(new SftTypeName("napt44"));
-                add(new SftTypeName("http-header-enrichment"));
-                add(new SftTypeName("qos"));
-
-            }
-        };
-        assertEquals("sftList size should be 5", sftList.size(), 5);
         RenderedServicePathFirstHop firstHop = null;
         try {
-            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sftList);
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sfTypes);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
         assertNotNull("Must be not null", firstHop);
+        assertNull("Symmetric Path must not be created", firstHop.getSymmetricPathId());
         LOG.debug("First hop IP: {}, port: {}", firstHop.getIp().toString(), firstHop.getPort());
         assertEquals("Must be equal", firstHop.getIp(), new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(0))));
         assertEquals("Must be equal", firstHop.getPort(), new PortNumber(PORT.get(0)));
+    }
+
+    @Test
+    public void testReadRspFirstHopBySftList_SymmetricRsp() {
+        // Create the SF types with Bidirectionality=true, which
+        // should cause the RSP to be created symmetrically
+        initWithTypes(true);
+
+        RenderedServicePathFirstHop firstHop = null;
+        try {
+            firstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(null, sfTypes);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        assertNotNull("Must not be null", firstHop);
+        assertNotNull("Symmetric Path must be created", firstHop.getSymmetricPathId());
     }
 
     @SuppressWarnings(value = {"serial", "static-access"})

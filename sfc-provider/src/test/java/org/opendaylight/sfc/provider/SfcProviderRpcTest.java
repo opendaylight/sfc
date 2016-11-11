@@ -23,10 +23,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.api.AbstractSfcRendererServicePathAPITest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPITest;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAPI;
@@ -64,7 +64,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorKey;
@@ -83,28 +82,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocatorBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroupKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeKey;
@@ -112,17 +99,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SfcProviderRpcTest extends AbstractDataStoreManager {
+public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
     private final List<SffName> sffNames = new ArrayList<SffName>() {
         private static final long serialVersionUID = 1L;
@@ -135,33 +118,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         }
     };
 
-    // XXX TODO Why can't we consolidate these two SFF lists ?
-    private final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            add(new SffName("SFF1"));
-            add(new SffName("SFF2"));
-            add(new SffName("SFF3"));
-            add(new SffName("SFF4"));
-            add(new SffName("SFF4"));
-        }
-    };
-    private final String[][] TO_SFF_NAMES =
-            {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
-
-    List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            add("196.168.66.101");
-            add("196.168.66.102");
-            add("196.168.66.103");
-            add("196.168.66.104");
-            add("196.168.66.105");
-        }
-    };
-
     @SuppressWarnings("serial")
     private final List<SffDataPlaneLocatorName> sffDplNames = new ArrayList<SffDataPlaneLocatorName>() {
 
@@ -170,33 +126,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
             add(new SffDataPlaneLocatorName("sffDpl2"));
             add(new SffDataPlaneLocatorName("sffDpl3"));
             add(new SffDataPlaneLocatorName("sffDpl4"));
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private final List<SfName> sfNames = new ArrayList<SfName>() {
-
-        {
-            add(new SfName("sf1"));
-            add(new SfName("sf2"));
-            add(new SfName("sf3"));
-            add(new SfName("sf4"));
-            add(new SfName("sf5"));
-            add(new SfName("sf6"));
-            add(new SfName("sf7"));
-            add(new SfName("sf8"));
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final List<SfName> sfNames2 = new ArrayList<SfName>() {
-
-        {
-            add(new SfName("unittest-fw-1"));
-            add(new SfName("unittest-dpi-1"));
-            add(new SfName("unittest-napt-1"));
-            add(new SfName("unittest-http-header-enrichment-1"));
-            add(new SfName("unittest-qos-1"));
         }
     };
 
@@ -246,75 +175,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         }
     };
 
-    @SuppressWarnings("serial")
-    private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
-
-        {
-            add("196.168.55.1");
-            add("196.168.55.2");
-            add("196.168.55.3");
-            add("196.168.55.4");
-            add("196.168.55.5");
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
-
-        {
-            add("196.168.55.101");
-            add("196.168.55.102");
-            add("196.168.55.103");
-            add("196.168.55.104");
-            add("196.168.55.105");
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final List<Integer> PORT = new ArrayList<Integer>() {
-
-        {
-            add(1111);
-            add(2222);
-            add(3333);
-            add(4444);
-            add(5555);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    List<SftTypeName> sfTypes = new ArrayList<SftTypeName>() {
-
-        {
-            add(new SftTypeName("firewall"));
-            add(new SftTypeName("dpi"));
-            add(new SftTypeName("napt44"));
-            add(new SftTypeName("http-header-enrichment"));
-            add(new SftTypeName("qos"));
-
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
-
-        {
-            add("firewall");
-            add("dpi");
-            add("napt44");
-            add("http-header-enrichment");
-            add("qos");
-        }
-    };
-
-    private static final SfcName SFC_NAME = new SfcName("unittest-chain-1");
-    private static final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
-    private static final RspName RSP_NAME = new RspName("unittest-rsp-1");
-
-    private final List<ServiceFunction> sfList = new ArrayList<>();
-
     SfcProviderRpc sfcProviderRpc;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
 
     @Before
     public void setUp() {
@@ -325,138 +186,6 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     @After
     public void after() throws ExecutionException, InterruptedException {
         close();
-    }
-
-    // auxiliary method
-    private void init() {
-        // Create Service Functions
-        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames2.size()];
-        final IpAddress[] locatorIpAddress = new IpAddress[sfNames2.size()];
-        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames2.size()];
-        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames2.size()];
-        for (int i = 0; i < sfNames2.size(); i++) {
-            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
-            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
-            PortNumber portNumber = new PortNumber(PORT.get(i));
-            key[i] = new ServiceFunctionKey(sfNames2.get(i));
-
-            IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
-            SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
-                .setLocatorType(ipBuilder.build())
-                .setServiceFunctionForwarder(SFF_NAMES.get(i));
-            sfDataPlaneLocator[i] = locatorBuilder.build();
-
-            ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-            List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
-            dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(sfNames2.get(i))
-                .setKey(key[i])
-                .setType(sfTypes.get(i))
-                .setIpMgmtAddress(ipMgmtAddress[i])
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
-            sfList.add(sfBuilder.build());
-        }
-
-        ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
-        sfsBuilder.setServiceFunction(sfList);
-
-        InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
-        SfcDataStoreAPI.writePutTransactionAPI(sfsIID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-
-        // Create ServiceFunctionTypeEntry for all ServiceFunctions
-        for (ServiceFunction serviceFunction : sfList) {
-            boolean ret = SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
-            LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
-            assertTrue("Must be true", ret);
-        }
-
-        // Create Service Function Forwarders
-        for (int i = 0; i < SFF_NAMES.size(); i++) {
-            // ServiceFunctionForwarders connected to SFF_NAMES[i]
-            List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
-            for (int j = 0; j < 2; j++) {
-                ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry =
-                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
-                sffDictionaryList.add(sffDictEntry);
-            }
-
-            // ServiceFunctions attached to SFF_NAMES[i]
-            List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
-            ServiceFunction serviceFunction = sfList.get(i);
-            SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-            sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
-            SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
-            ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
-            dictionaryEntryBuilder.setName(serviceFunction.getName())
-                .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                .setFailmode(Open.class)
-                .setSffInterfaces(null);
-            ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
-            sfDictionaryList.add(sfDictEntry);
-
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
-            IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(PORT.get(i)));
-            DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
-            sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
-            SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
-                .setDataPlaneLocator(sffLocatorBuilder.build());
-            locatorList.add(locatorBuilder.build());
-            ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(SFF_NAMES.get(i))
-                .setKey(new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
-                .setSffDataPlaneLocator(locatorList)
-                .setServiceFunctionDictionary(sfDictionaryList)
-                .setConnectedSffDictionary(sffDictionaryList)
-                .setServiceNode(null);
-            ServiceFunctionForwarder sff = sffBuilder.build();
-            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
-                .builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
-                .build();
-            SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
-        }
-
-        // Create Service Function Chain
-        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
-        List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
-
-        for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
-            SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i)))
-                .setType(sfTypes.get(i))
-                .build();
-            sfcServiceFunctionList.add(sfcServiceFunction);
-        }
-        ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
-
-        InstanceIdentifier<ServiceFunctionChain> sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-            .child(ServiceFunctionChain.class, sfcKey)
-            .build();
-        SfcDataStoreAPI.writePutTransactionAPI(sfcIID, sfcBuilder.build(), LogicalDatastoreType.CONFIGURATION);
-
-        // Check if Service Function Chain was created
-        Object result = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
-        ServiceFunctionChain sfc2 = (ServiceFunctionChain) result;
-
-        assertNotNull("Must be not null", sfc2);
-        assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfcServiceFunctionList);
-
-        /* Create ServiceFunctionPath */
-        ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
-        pathBuilder.setName(SFP_NAME).setServiceChainName(SFC_NAME).setSymmetric(true);
-        ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
-        assertNotNull("Must be not null", serviceFunctionPath);
-        boolean ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
-        assertTrue("Must be true", ret);
     }
 
     @Test
@@ -523,6 +252,53 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertEquals(SFP_NAME.getValue(), serviceFunctionClassifierFromDataStore.getName());
     }
 
+    /**
+     * Test that the RSP is symmetric when one of the SFs has bidirectionality set True
+     * but the SFP does not set the symmetric flag.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void createSymmetricRenderedPathTest() throws Exception {
+        // Create the SF types with Bidirectionality=true, which
+        // should cause the RSP to be created symmetrically
+        initWithTypes(true);
+
+        // Create the SFP with a null symmetric flag meaning the value isnt present
+        ServiceFunctionPath sfp = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(0));
+
+        assertTrue("Must be true", createServiceFunctionPath(pathNames.get(0), SFC_NAME, null));
+        sfp = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(0));
+        assertNotNull("SFP cant be null", sfp);
+
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue())
+            .setParentServiceFunctionPath(pathNames.get(0).getValue());
+        CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
+
+        Future<RpcResult<CreateRenderedPathOutput>> futureTask = sfcProviderRpc.createRenderedPath(createRenderedPathInput);
+
+        RpcResult<CreateRenderedPathOutput> rpcResult = null;
+        try {
+            // noinspection unchecked
+            rpcResult = futureTask.get();
+            assertTrue("Must be true", rpcResult.isSuccessful());
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("failed to ....", e);
+        }
+
+
+        // get created rendered service paths
+        RenderedServicePath createdRsp = null;
+        if (rpcResult != null) {
+            createdRsp =
+                    SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult.getResult().getName()));
+        }
+
+        assertNotNull("Must not be null", createdRsp);
+        assertNotNull("RSP is symmetric", createdRsp.getSymmetricPathId());
+    }
+
     private void assertHop(long hopNumber, SffName name, RenderedServicePathHop hop) {
         assertEquals(hopNumber, (long) hop.getHopNumber());
         assertEquals(name, hop.getServiceFunctionForwarder());
@@ -536,8 +312,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setName(RSP_NAME.getValue())
-            .setParentServiceFunctionPath(SFP_NAME.getValue())
-            .setSymmetric(true);
+            .setParentServiceFunctionPath(SFP_NAME.getValue());
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
         SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
@@ -611,8 +386,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
                 new PutServiceFunctionChainsInputBuilder();
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
         serviceFunctionChainBuilder.setName(new SfcName("SFC1"))
-            .setKey(new ServiceFunctionChainKey(new SfcName("SFC1")))
-            .setSymmetric(false);
+            .setKey(new ServiceFunctionChainKey(new SfcName("SFC1")));
         ServiceFunctionChain serviceFunctionChain = serviceFunctionChainBuilder.build();
         List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
         serviceFunctionChainList.add(serviceFunctionChain);
@@ -704,7 +478,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     private void createRenderedServicePath(RspName pathName) throws Exception {
         CreateRenderedPathInputBuilder inputBuilder = new CreateRenderedPathInputBuilder();
-        inputBuilder.setName(pathName.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue()).setSymmetric(true);
+        inputBuilder.setName(pathName.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue());
         CreateRenderedPathInput input = inputBuilder.build();
         Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(input);
         assertTrue("Failed to create rendered service path.",
@@ -835,6 +609,20 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         List<SfName> chainSf1 = new ArrayList<>(); // list of Sf-s in chain 1
         List<SfName> chainSf2 = new ArrayList<>(); // list of Sf-s in chain 2
         List<SfName> chainSf3 = new ArrayList<>(); // list of Sf-s in chain 3
+        List<SfName> multipleRspSfNames = new ArrayList<SfName>() {
+            private static final long serialVersionUID = 1L;
+            {
+                add(new SfName("sf1"));
+                add(new SfName("sf2"));
+                add(new SfName("sf3"));
+                add(new SfName("sf4"));
+                add(new SfName("sf5"));
+                add(new SfName("sf6"));
+                add(new SfName("sf7"));
+                add(new SfName("sf8"));
+                }
+            };
+
         Future<RpcResult<CreateRenderedPathOutput>> futureTask1, futureTask2, futureTask3;
         RpcResult<CreateRenderedPathOutput> rpcResult1 = null, rpcResult2 = null, rpcResult3 = null;
         RenderedServicePath createdRsp1 = null, createdRsp2 = null, createdRsp3 = null;
@@ -848,33 +636,33 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         // 8 functions + lists
         // SFF1
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(0), new SftTypeName("firewall"), sfDplNames.get(0), sffNames.get(0)));
+                createServiceFunction(multipleRspSfNames.get(0), new SftTypeName("firewall"), sfDplNames.get(0), sffNames.get(0)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(1), new SftTypeName("dpi"), sfDplNames.get(1), sffNames.get(0)));
+                createServiceFunction(multipleRspSfNames.get(1), new SftTypeName("dpi"), sfDplNames.get(1), sffNames.get(0)));
         // SFF2
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(2), new SftTypeName("qos"), sfDplNames.get(2), sffNames.get(1)));
+                createServiceFunction(multipleRspSfNames.get(2), new SftTypeName("qos"), sfDplNames.get(2), sffNames.get(1)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(3), new SftTypeName("napt44"), sfDplNames.get(3), sffNames.get(1)));
+                createServiceFunction(multipleRspSfNames.get(3), new SftTypeName("napt44"), sfDplNames.get(3), sffNames.get(1)));
         // SFF3
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(4), new SftTypeName("firewall"), sfDplNames.get(4), sffNames.get(2)));
+                createServiceFunction(multipleRspSfNames.get(4), new SftTypeName("firewall"), sfDplNames.get(4), sffNames.get(2)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(5), new SftTypeName("dpi"), sfDplNames.get(5), sffNames.get(2)));
+                createServiceFunction(multipleRspSfNames.get(5), new SftTypeName("dpi"), sfDplNames.get(5), sffNames.get(2)));
         // SFF4
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(6), new SftTypeName("qos"), sfDplNames.get(6), sffNames.get(3)));
+                createServiceFunction(multipleRspSfNames.get(6), new SftTypeName("qos"), sfDplNames.get(6), sffNames.get(3)));
         assertTrue("Must be true",
-                createServiceFunction(sfNames.get(7), new SftTypeName("firewall"), sfDplNames.get(7), sffNames.get(3)));
+                createServiceFunction(multipleRspSfNames.get(7), new SftTypeName("firewall"), sfDplNames.get(7), sffNames.get(3)));
 
-        firewallSfs.add(sfNames.get(0));
-        firewallSfs.add(sfNames.get(4));
-        firewallSfs.add(sfNames.get(7));
-        dpiSfs.add(sfNames.get(1));
-        dpiSfs.add(sfNames.get(5));
-        qosSfs.add(sfNames.get(2));
-        qosSfs.add(sfNames.get(6));
-        napt44Sfs.add(sfNames.get(3));
+        firewallSfs.add(multipleRspSfNames.get(0));
+        firewallSfs.add(multipleRspSfNames.get(4));
+        firewallSfs.add(multipleRspSfNames.get(7));
+        dpiSfs.add(multipleRspSfNames.get(1));
+        dpiSfs.add(multipleRspSfNames.get(5));
+        qosSfs.add(multipleRspSfNames.get(2));
+        qosSfs.add(multipleRspSfNames.get(6));
+        napt44Sfs.add(multipleRspSfNames.get(3));
 
         // types
         assertTrue("Must be true", createServiceFunctionType(new SftTypeName("firewall"), firewallSfs));
@@ -889,32 +677,32 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertTrue("Must be true", createServiceFunctionGroup(groupNames.get(3), qosSfs, new SftTypeName("napt44")));
 
         // chain + path 1 (SFF1 & SFF2)
-        chainSf1.add(sfNames.get(0));
-        chainSf1.add(sfNames.get(1));
-        chainSf1.add(sfNames.get(2));
-        chainSf1.add(sfNames.get(3));
+        chainSf1.add(multipleRspSfNames.get(0));
+        chainSf1.add(multipleRspSfNames.get(1));
+        chainSf1.add(multipleRspSfNames.get(2));
+        chainSf1.add(multipleRspSfNames.get(3));
         assertTrue("Must be true", createServiceFunctionChain(chainNames.get(0), chainSf1));
         assertTrue("Must be true", createServiceFunctionPath(pathNames.get(0), chainNames.get(0), false));
 
         // chain + path 2 (SFF3 & SFF4)
-        chainSf2.add(sfNames.get(4));
-        chainSf2.add(sfNames.get(5));
-        chainSf2.add(sfNames.get(6));
-        chainSf2.add(sfNames.get(7));
+        chainSf2.add(multipleRspSfNames.get(4));
+        chainSf2.add(multipleRspSfNames.get(5));
+        chainSf2.add(multipleRspSfNames.get(6));
+        chainSf2.add(multipleRspSfNames.get(7));
         assertTrue("Must be true", createServiceFunctionChain(chainNames.get(1), chainSf2));
         assertTrue("Must be true", createServiceFunctionPath(pathNames.get(1), chainNames.get(1), false));
 
         // chain + path 3 (all SF & SFF)
-        for (SfName sfName : sfNames) {
+        for (SfName sfName : multipleRspSfNames) {
             chainSf3.add(sfName);
         }
         assertTrue("Must be true", createServiceFunctionChain(chainNames.get(2), chainSf3));
         assertTrue("Must be true", createServiceFunctionPath(pathNames.get(2), chainNames.get(2), true));
 
         // create rendered service paths
-        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(0).getValue(), true));
-        futureTask2 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(1).getValue(), true));
-        futureTask3 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(2).getValue(), true));
+        futureTask1 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(0).getValue()));
+        futureTask2 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(1).getValue()));
+        futureTask3 = sfcProviderRpc.createRenderedPath(createRenderedPathInput(pathNames.get(2).getValue()));
 
         // test
         try {
@@ -959,16 +747,19 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         ServiceFunctionPath serviceFunctionPath1 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(0));
         assertNotNull("Must not be null", serviceFunctionPath1);
         assertFalse("Must be false", serviceFunctionPath1.isSymmetric()); // path is not symmetric
+        assertNull("RSP1 is not symmetric", createdRsp1.getSymmetricPathId());
 
         // path 2
         ServiceFunctionPath serviceFunctionPath2 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(1));
         assertNotNull("Must not be null", serviceFunctionPath2);
         assertFalse("Must be false", serviceFunctionPath2.isSymmetric()); // path is not symmetric
+        assertNull("RSP2 is not symmetric", createdRsp2.getSymmetricPathId());
 
         // path 3
         ServiceFunctionPath serviceFunctionPath3 = SfcProviderServicePathAPI.readServiceFunctionPath(pathNames.get(2));
         assertNotNull("Must not be null", serviceFunctionPath3);
         assertTrue("Must be true", serviceFunctionPath3.isSymmetric()); // path not symmetric
+        assertNotNull("RSP3 is symmetric", createdRsp3.getSymmetricPathId());
 
     }
 
@@ -1108,13 +899,15 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function path
      * specify path name, name of used chain and whether the path is symmetric or not
      */
-    private boolean createServiceFunctionPath(SfpName pathName, SfcName chainName, boolean symmetric) {
+    private boolean createServiceFunctionPath(SfpName pathName, SfcName chainName, Boolean symmetric) {
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(pathName)
-            .setKey(new ServiceFunctionPathKey(pathName))
-            .setServiceChainName(chainName)
-            .setSymmetric(symmetric);
+            //.setKey(new ServiceFunctionPathKey(pathName))
+            .setServiceChainName(chainName);
+        if(symmetric != null) {
+            serviceFunctionPathBuilder.setSymmetric(symmetric);
+        }
         return SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPathBuilder.build());
     }
 
@@ -1122,10 +915,10 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * input parameter, needs path name, classifiers and if path is symmetric or not
      */
 
-    private CreateRenderedPathInput createRenderedPathInput(String pathName, boolean symmetric) {
+    private CreateRenderedPathInput createRenderedPathInput(String pathName) {
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName).setSymmetric(symmetric);
+        createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName);
         return createRenderedPathInputBuilder.build();
     }
 }

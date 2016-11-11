@@ -90,12 +90,14 @@ module service-function-path {
 
       leaf symmetric {
         type boolean;
-        default false;
         description
           "If the chain is symmetric we will create two service
            paths, one ingress and another egress. Packets traverse
            the egress service path in the reverse order of the
-           ingress path";
+           ingress path. If present, this value will override the
+           setting in the SF-Type. If not present, if at least one
+           SF is of an SF-Type that sets the bidirectionality flag
+           to true, then the RSP will be symmetric.";
       }
       leaf classifier {
         type string;

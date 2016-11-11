@@ -53,6 +53,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
@@ -285,7 +291,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
+        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList);
 
         SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build());
 
@@ -304,4 +310,38 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
         assertTrue("Must be true", ret);
     }
 
+    /**
+     * Initialize SF types, then delegate the rest of the initialization to init()
+     * @param isTypeBidirectional - flag indicating if the SF types should be bidirectional or not
+     */
+    protected void initWithTypes(boolean isTypeBidirectional) {
+        List<ServiceFunctionType> sfTypeList = new ArrayList<>();
+
+        for (int i = 0; i < sfTypes.size(); i++) {
+            // Set the Service Function that use this SF-type
+            SfName sfName = new SfName(sfNames.get(i));
+            SftServiceFunctionNameBuilder sftSfNameBuilder = new SftServiceFunctionNameBuilder();
+            sftSfNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
+
+            List<SftServiceFunctionName> sftSfNames = new ArrayList<>();
+            sftSfNames.add(sftSfNameBuilder.build());
+
+            // Create the SF type
+            ServiceFunctionTypeBuilder sftBuilder = new ServiceFunctionTypeBuilder()
+                    .setType(sfTypes.get(i))
+                    .setSftServiceFunctionName(sftSfNames)
+                    .setBidirectional(isTypeBidirectional);
+            sfTypeList.add(sftBuilder.build());
+        }
+
+        ServiceFunctionTypesBuilder sfTypesBuilder = new ServiceFunctionTypesBuilder();
+        sfTypesBuilder.setServiceFunctionType(sfTypeList);
+
+        SfcDataStoreAPI.writePutTransactionAPI(
+                SfcInstanceIdentifiers.SFT_IID,
+                sfTypesBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
+
+        init();
+    }
 }

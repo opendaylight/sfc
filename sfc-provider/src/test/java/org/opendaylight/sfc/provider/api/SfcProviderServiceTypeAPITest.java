@@ -44,10 +44,9 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         SftTypeName sftType = new SftTypeName("firewall");
         serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
             .setType(sftType)
-            .setBidirectionality(false)
+            .setBidirectional(false)
             .setNshAware(false)
-            .setRequestReclassification(false)
-            .setSymmetry(false);
+            .setRequestReclassification(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
 
         assertTrue(SfcProviderServiceTypeAPI.putServiceFunctionType(serviceFunctionType));

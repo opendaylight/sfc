@@ -64,11 +64,7 @@ module service-function-type {
         "Service Function type names such as firewall,
          dpi, tcp-proxy, etc";
     }
-    leaf symmetry {
-      type boolean;
-      description "SF is involved in a symmetric service path";
-    }
-    leaf bidirectionality {
+    leaf bidirectional {
       type boolean;
       description "SF handles uplink and downlink traffic";
     }

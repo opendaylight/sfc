@@ -626,7 +626,7 @@ public class SfcProviderRenderedPathAPI {
         RspName returnRspName = null;
         RenderedServicePath renderedServicePath =
                 SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
-        if ((renderedServicePath != null) && (renderedServicePath.getSymmetricPathId() != null) ) {
+        if (renderedServicePath != null && renderedServicePath.getSymmetricPathId() != null ) {
             // The RSP has a symmetric ("Reverse") Path
             returnRspName = SfcProviderRenderedPathAPI.generateReversedPathName(renderedServicePath.getName());
         }
@@ -753,7 +753,8 @@ public class SfcProviderRenderedPathAPI {
             RenderedServicePathFirstHopBuilder renderedServicePathFirstHopBuilder =
                     new RenderedServicePathFirstHopBuilder();
             renderedServicePathFirstHopBuilder.setPathId(renderedServicePath.getPathId())
-                .setStartingIndex(renderedServicePath.getStartingIndex());
+                .setStartingIndex(renderedServicePath.getStartingIndex())
+                .setSymmetricPathId(renderedServicePath.getSymmetricPathId());
 
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
             RenderedServicePathHop renderedServicePathHop = renderedServicePathHopList.get(0);
@@ -903,7 +904,6 @@ public class SfcProviderRenderedPathAPI {
         /* We need to provide the same information as we would through the RPC */
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
 
         renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
                 createRenderedPathInputBuilder.build(), scheduler);
@@ -912,12 +912,14 @@ public class SfcProviderRenderedPathAPI {
             return null;
         }
 
-        if (serviceFunctionPath.isSymmetric() != null && serviceFunctionPath.isSymmetric()) {
+        if (isChainSymmetric(serviceFunctionPath, renderedServicePath)) {
             revRenderedServicePath =
                     SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
             if (revRenderedServicePath == null) {
                 LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
             }
+            // Set the symmetric path ID on the original RSP
+            SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
         }
 
         firstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(renderedServicePath.getName());
@@ -946,5 +948,41 @@ public class SfcProviderRenderedPathAPI {
         renderedServicePathBuilder.setSymmetricPathId(pathId);
         return SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePathBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL);
+    }
+
+    /**
+     * Determine if a Rendered Service Path should be Symmetric.
+     * The Service Function Path symmetric field, if present, has
+     * priority over the SF SF-type bidirectionality fields. First
+     * use the SFP symmetric value, if its not present, then use
+     * the SF SF-type bidirectionality values by iterating the
+     * ServiceFunctions in the RSP Hops to check if there is at
+     * least one SF with an SF-Type that has the bidirectionality
+     * field set true.
+     *
+     * @param sfp - used to get the symmetric flag
+     * @param rsp - the RSP to iterate over the SFs in the hops
+     * @return True is there the RSP is symmetric, false otherwise.
+     */
+    public static boolean isChainSymmetric(ServiceFunctionPath sfp, RenderedServicePath rsp) {
+        if(sfp.isSymmetric() != null) {
+            return sfp.isSymmetric();
+        }
+
+        List<RenderedServicePathHop> rspHops = rsp.getRenderedServicePathHop();
+        for(RenderedServicePathHop hop : rspHops) {
+            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(hop.getServiceFunctionName());
+            ServiceFunctionType sfType = SfcProviderServiceTypeAPI.readServiceFunctionType(sf.getType());
+            if(sfType == null) {
+                LOG.error("Service Function type [{}] for Service Function [{}] does not exist.", sf.getType(), sf.getName());
+                continue;
+            }
+
+            if(sfType.isBidirectional() != null && sfType.isBidirectional()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

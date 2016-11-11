@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.ofrenderer;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,6 +101,8 @@ public class RspBuilder {
     private int VLAN_SFF_INDEX = 0;
     private int VLAN_SF_INDEX = 0;
     private int MPLS_SFF_INDEX = 0;
+    private int IF_NAME_INDEX = 0;
+    private Short STARTING_INDEX = 255;
 
     SfcOfProviderUtilsTestMock sfcUtilsTestMock;
 
@@ -146,6 +146,14 @@ public class RspBuilder {
         }
 
         return createRsp(sfTypes, sfList, sffList, transportType, sfcEncap);
+    }
+
+    public String getLogicalInterfaceName(int index) {
+        return String.format("tap0000-%02d", index);
+    };
+
+    public Short getStartingIndex() {
+        return STARTING_INDEX;
     }
 
     private RenderedServicePath createRsp(List<SftTypeName> sfTypes,
@@ -202,7 +210,7 @@ public class RspBuilder {
         RspName rspName = new RspName(RSP_NAME_PREFIX + String.valueOf(RSP_NAME_INDEX++));
         RenderedServicePathBuilder rspBuilder = new RenderedServicePathBuilder();
         rspBuilder.setKey(new RenderedServicePathKey(rspName));
-        rspBuilder.setStartingIndex((short) 255);
+        rspBuilder.setStartingIndex(STARTING_INDEX);
         rspBuilder.setName(rspName);
         rspBuilder.setParentServiceFunctionPath(sfp.getName());
         rspBuilder.setPathId(RSP_PATHID_INDEX++);
@@ -210,7 +218,7 @@ public class RspBuilder {
         rspBuilder.setSfcEncapsulation(sfp.getSfcEncapsulation());
 
         short index = 0;
-        short serviceIndex = 255;
+        short serviceIndex = STARTING_INDEX;
         List<RenderedServicePathHop> rspHopList = new ArrayList<>();
         for (ServiceFunction sf : sfList) {
             ServiceFunctionForwarder sff = sffList.get(usesLogicalSff ? 0 : index);
@@ -379,9 +387,7 @@ public class RspBuilder {
     }
 
     private String getNextLogicalInterfaceName() {
-        SecureRandom random = new SecureRandom();
-        String seed = new BigInteger(130, random).toString(16);
-        return "tap" + String.format("%s-%s", seed.substring(0,7), seed.substring(10,12));
+        return String.format("tap0000-%02d", IF_NAME_INDEX++);
     }
 
     private LocatorType buildSfLocatorType(Class<? extends SlTransportType> transport) {

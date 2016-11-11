@@ -107,7 +107,6 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private static DataBroker dataBroker = null;
 
-
     public static SfcProviderRpc getSfcProviderRpc() {
         return new SfcProviderRpc();
     }
@@ -160,13 +159,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
-        return Futures.transform(writeTx.submit(), new Function<Void, RpcResult<Void>>() {
-
-            @Override
-            public RpcResult<Void> apply(Void input) {
-                return RpcResultBuilder.<Void>success().build();
-            }
-        });
+        return Futures.transform(writeTx.submit(), (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build());
     }
 
     @Override
@@ -267,8 +260,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 retRspName = renderedServicePath.getName();
                 createRenderedPathOutputBuilder.setName(retRspName.getValue());
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
-                if ((createdServiceFunctionPath.isSymmetric() != null) && createdServiceFunctionPath.isSymmetric()) {
-
+                if (SfcProviderRenderedPathAPI.isChainSymmetric(createdServiceFunctionPath, renderedServicePath)) {
                     revRenderedServicePath =
                             SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
                     if (revRenderedServicePath == null) {

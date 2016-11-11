@@ -347,6 +347,7 @@ public class SfcOfRspProcessor {
     private void configureNextHopFlows(SffGraph.SffGraphEntry entry,
             SffGraph sffGraph, SfcRspTransportProcessorBase transportProcessor) {
 
+        LOG.debug("configureNextHopFlows: entry:{}, sffGraph:{}", entry, sffGraph);
         ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
         SfDataPlaneLocator sfDstDpl = (sfDst == null) ? null : sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
         if (sfDstDpl != null) {

@@ -127,6 +127,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
             throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }
+        LOG.debug("configureNextHopFlow from SFF to SF, SrcDpnId: {}, srcSfMac:{}, DstDpnId: {}, dstSfMac:{}, nsi:{}",
+                   entry.getSrcDpnId(), srcSfMac, entry.getDstDpnId(), dstSfMac, entry.getServiceIndex());
         this.sfcFlowProgrammer.configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(),
                         entry.getPathId(), entry.getDstDpnId()),
@@ -146,7 +148,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     }
 
     /*
-     * Configure the Next Hop flow from an SFF to an SF
+     * Configure the Next Hop flow from an SF to an SF
      *
      * @param entry - RSP hop info used to create the flow
      * @param srcSfDpl - not used in this processor
@@ -157,6 +159,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
         Optional<MacAddress> srcSfMac = getMacAddress(dstSfDpl, true);
         Optional<MacAddress> dstSfMac = getMacAddress(dstSfDpl, false);
+        LOG.debug("configureNextHopFlow from SF to SF, SrcDpnId: {}, srcSfMac:{}, DstDpnId: {}, dstSfMac:{}, nsi:{}",
+                entry.getSrcDpnId(), srcSfMac, entry.getDstDpnId(), dstSfMac, entry.getServiceIndex());
         if (!srcSfMac.isPresent() || !dstSfMac.isPresent()) {
             throw new SfcRenderingException("Failed on mac address retrieval for dst SF dpl [" + dstSfDpl + "]");
         }

@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_90bbcce4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "isn\u0027t it easier / simpler to mock the method depending on the parameter? like:\n\nPowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(if1)).thenReturn(mac1);\n\nPowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(if2)).thenReturn(mac2);",
+      "range": {
+        "startLine": 177,
+        "startChar": 87,
+        "endLine": 185,
+        "endChar": 9
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_70bef0d5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 186,
+        "startChar": 100,
+        "endLine": 192,
+        "endChar": 40
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_10cfbc80",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "It\u0027s the first time I see System.out refered in the project. why not use the logger? \n\nFurthermore, is this really needed?",
+      "range": {
+        "startLine": 260,
+        "startChar": 20,
+        "endLine": 260,
+        "endChar": 90
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_70a550b4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "why have these 2 for the same input? which, incidentally is any input.",
+      "range": {
+        "startLine": 358,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 35
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f0904050",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "same as above; I guess System.out is not meant to be used anywhere and I don\u0027t see why this trace is useful (the latter can be seen as an opìnion)",
+      "range": {
+        "startLine": 398,
+        "startChar": 0,
+        "endLine": 408,
+        "endChar": 21
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_309bd873",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:03:45Z",
+      "side": 1,
+      "message": "no clue at all as to why this is not needed. \n\nCould you add a comment?",
+      "range": {
+        "startLine": 637,
+        "startChar": 0,
+        "endLine": 642,
+        "endChar": 11
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

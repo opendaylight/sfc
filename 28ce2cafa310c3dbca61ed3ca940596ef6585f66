@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_50dc9412",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6378
+      },
+      "writtenOn": "2016-11-14T16:30:00Z",
+      "side": 1,
+      "message": "But the parameter is the interface name, and it changes randomly in each execution, it\u0027s the ouput from getNextLogicalInterfaceName in RspBuilder",
+      "parentUuid": "3a65312a_90bbcce4",
+      "range": {
+        "startLine": 177,
+        "startChar": 87,
+        "endLine": 185,
+        "endChar": 9
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_70bef0d5",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
         "patchSetId": 2
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_30ee38b5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 6378
+      },
+      "writtenOn": "2016-11-14T16:30:00Z",
+      "side": 1,
+      "message": "I\u0027ll try to use the logger, I couldn\u0027t in a first attempt.\nWe could remove this log, but it was really the one which showed that a flow was being repeated.",
+      "parentUuid": "3a65312a_10cfbc80",
+      "range": {
+        "startLine": 260,
+        "startChar": 20,
+        "endLine": 260,
+        "endChar": 90
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_70a550b4",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
         "patchSetId": 2
@@ -82,6 +130,30 @@
       "writtenOn": "2016-11-14T16:03:45Z",
       "side": 1,
       "message": "why have these 2 for the same input? which, incidentally is any input.",
+      "range": {
+        "startLine": 358,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 35
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_10405ca4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 6378
+      },
+      "writtenOn": "2016-11-14T16:30:00Z",
+      "side": 1,
+      "message": "It\u0027s the way I found to stub consecutive calls with different return value. See http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#10",
+      "parentUuid": "3a65312a_70a550b4",
       "range": {
         "startLine": 358,
         "startChar": 0,
@@ -128,6 +200,30 @@
       "writtenOn": "2016-11-14T16:03:45Z",
       "side": 1,
       "message": "no clue at all as to why this is not needed. \n\nCould you add a comment?",
+      "range": {
+        "startLine": 637,
+        "startChar": 0,
+        "endLine": 642,
+        "endChar": 11
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7016f0a8",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 6378
+      },
+      "writtenOn": "2016-11-14T16:30:00Z",
+      "side": 1,
+      "message": "Now Mac Addresses change randomly in each execution, because they depend on interface names, so I cannot check easily their values. I will remove this check.",
+      "parentUuid": "3a65312a_309bd873",
       "range": {
         "startLine": 637,
         "startChar": 0,

@@ -7,10 +7,6 @@
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
-  <bean id="opendaylightSfc" class="org.opendaylight.sfc.provider.OpendaylightSfc"
-    destroy-method="close">
-  </bean>
-
   <bean id="sfcProviderRpc"
     class="org.opendaylight.sfc.provider.SfcProviderRpc">
     <property name="dataProvider" ref="dataBroker"/>

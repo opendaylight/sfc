@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_106e9c2f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:46:41Z",
+      "side": 1,
+      "message": "got it. \n\nI\u0027d prefer for that interface name generator to be predictable (like pretty much all other generators in the RspBuilder). This way, you would know the name of the interface, and could mock this accordingly.\n\nMy bad when I created that method (did not foresee this issue)",
+      "parentUuid": "3a65312a_50dc9412",
+      "range": {
+        "startLine": 177,
+        "startChar": 87,
+        "endLine": 185,
+        "endChar": 9
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_70bef0d5",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
         "patchSetId": 2
@@ -119,6 +143,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_507814f2",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:46:41Z",
+      "side": 1,
+      "message": "Yes and no; Now that we know exactly which flows are to be written in each scenario, we have to test against those figures, making the test fail when it changes.",
+      "parentUuid": "3a65312a_30ee38b5",
+      "range": {
+        "startLine": 260,
+        "startChar": 20,
+        "endLine": 260,
+        "endChar": 90
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_70a550b4",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
         "patchSetId": 2
@@ -154,6 +202,30 @@
       "side": 1,
       "message": "It\u0027s the way I found to stub consecutive calls with different return value. See http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#10",
       "parentUuid": "3a65312a_70a550b4",
+      "range": {
+        "startLine": 358,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 35
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b0d528bb",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:46:41Z",
+      "side": 1,
+      "message": "Ok, so it is about the order. Didn\u0027t know that.\n\nI\u0027d prefer for this to be idempotent, since it would be easier to understand what\u0027s happening, but I guess we can live w/ it that way. \n\nPlease add a comment explaining that.",
+      "parentUuid": "3a65312a_10405ca4",
       "range": {
         "startLine": 358,
         "startChar": 0,
@@ -224,6 +296,30 @@
       "side": 1,
       "message": "Now Mac Addresses change randomly in each execution, because they depend on interface names, so I cannot check easily their values. I will remove this check.",
       "parentUuid": "3a65312a_309bd873",
+      "range": {
+        "startLine": 637,
+        "startChar": 0,
+        "endLine": 642,
+        "endChar": 11
+      },
+      "revId": "28ce2cafa310c3dbca61ed3ca940596ef6585f66",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_10dcdce3",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-14T16:46:41Z",
+      "side": 1,
+      "message": "Hm, I think this makes the argument about replacing the interface name generator in the RspBuilder to something predictable even stronger.",
+      "parentUuid": "3a65312a_7016f0a8",
       "range": {
         "startLine": 637,
         "startChar": 0,

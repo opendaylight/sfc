@@ -46,6 +46,30 @@
       "revId": "cc01939c39db119efbfd5d40d713df26548d3f69",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_51e81610",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-15T10:55:59Z",
+      "side": 1,
+      "message": "I agree that for 2 simple calls, it is more readable this way.",
+      "parentUuid": "3a65312a_11de9e6d",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 90
+      },
+      "revId": "cc01939c39db119efbfd5d40d713df26548d3f69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

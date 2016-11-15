@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_511e5664",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-15T09:41:13Z",
+      "side": 1,
+      "message": "Change AbstractClusteredDataTreeChangeListener by AbstractDataTreeChangeListener.",
+      "range": {
+        "startLine": 34,
+        "startChar": 16,
+        "endLine": 34,
+        "endChar": 55
+      },
+      "revId": "b30a136bf83d00e49631557cabbd090335954de1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

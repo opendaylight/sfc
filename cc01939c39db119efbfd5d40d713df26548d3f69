@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_514c9670",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-15T09:58:42Z",
+      "side": 1,
+      "message": "cool. \n\nit can be done like: \n\nrspTransportProcessors.forEach((k,v) -\u003e {\n v.setFlowProgrammer(sfcOfFlowProgrammer);\n v.setSfcProviderUtils(sfcOfProviderUtils);\n});\n\nbut not sure which one is more readable",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 90
+      },
+      "revId": "cc01939c39db119efbfd5d40d713df26548d3f69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

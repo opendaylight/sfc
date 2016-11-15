@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class listens to changes (addition, update, removal) in Service
- * Function Forwarders taking the appropriate actions.
+ * This class listens to changes (addition, update, removal) in Service Function
+ * Forwarders taking the appropriate actions.
  *
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  *
  */
-public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeChangeListener<ServiceFunctionForwarder> {
+public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionForwarderListener.class);
 
     private final DataBroker dataBroker;
@@ -81,7 +81,7 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
     protected void update(ServiceFunctionForwarder originalServiceFunctionForwarder,
             ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
-        if(!compareSFFs(originalServiceFunctionForwarder, updatedServiceFunctionForwarder)) {
+        if (!compareSFFs(originalServiceFunctionForwarder, updatedServiceFunctionForwarder)) {
             // Only delete the SFF RSPs for changes the require it
             removeRSPs(updatedServiceFunctionForwarder);
         }
@@ -133,25 +133,26 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
     }
 
     /**
-     * Compare 2 Service Function Forwarders for basic equality. That is
-     * only compare the ServiceNode, DataPlaneLocator, and SfDictionary
+     * Compare 2 Service Function Forwarders for basic equality. That is only
+     * compare the ServiceNode, DataPlaneLocator, and SfDictionary
      *
-     * @param originalSff - The SFF before the change
-     * @param sff - The changed SFF
+     * @param originalSff
+     *            the SFF before the change
+     * @param sff
+     *            the changed SFF
      * @return true on basic equality, false otherwise
      */
     private boolean compareSFFs(ServiceFunctionForwarder originalSff, ServiceFunctionForwarder sff) {
         //
         // Compare SFF Service Nodes
         //
-        if(sff.getServiceNode() != null && originalSff.getServiceNode() != null) {
-            if(!sff.getServiceNode().getValue().equals(originalSff.getServiceNode().getValue())) {
+        if (sff.getServiceNode() != null && originalSff.getServiceNode() != null) {
+            if (!sff.getServiceNode().getValue().equals(originalSff.getServiceNode().getValue())) {
                 LOG.info("compareSFFs: service nodes changed orig [{}] new [{}]",
-                        originalSff.getServiceNode().getValue(),
-                        sff.getServiceNode().getValue());
+                        originalSff.getServiceNode().getValue(), sff.getServiceNode().getValue());
                 return false;
             }
-        } else if(originalSff.getServiceNode() != null && sff.getServiceNode() == null) {
+        } else if (originalSff.getServiceNode() != null && sff.getServiceNode() == null) {
             LOG.info("compareSFFs: the service node has been removed");
             return false;
         }
@@ -159,14 +160,13 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
         //
         // Compare SFF IP Mgmt Addresses
         //
-        if(sff.getIpMgmtAddress() != null && originalSff.getIpMgmtAddress() != null) {
-            if(!sff.getIpMgmtAddress().toString().equals(originalSff.getIpMgmtAddress().toString())) {
+        if (sff.getIpMgmtAddress() != null && originalSff.getIpMgmtAddress() != null) {
+            if (!sff.getIpMgmtAddress().toString().equals(originalSff.getIpMgmtAddress().toString())) {
                 LOG.info("compareSFFs: IP mgmt addresses changed orig [{}] new [{}]",
-                        originalSff.getIpMgmtAddress().toString(),
-                        sff.getIpMgmtAddress().toString());
+                        originalSff.getIpMgmtAddress().toString(), sff.getIpMgmtAddress().toString());
                 return false;
             }
-        } else if(originalSff.getIpMgmtAddress() != null && sff.getIpMgmtAddress() == null) {
+        } else if (originalSff.getIpMgmtAddress() != null && sff.getIpMgmtAddress() == null) {
             LOG.info("compareSFFs: the IP mgmt address has been removed");
             return false;
         }
@@ -174,14 +174,14 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
         //
         // Compare SFF ServiceFunction Dictionaries
         //
-        if(!compareSffSfDictionaries(originalSff.getServiceFunctionDictionary(), sff.getServiceFunctionDictionary())) {
+        if (!compareSffSfDictionaries(originalSff.getServiceFunctionDictionary(), sff.getServiceFunctionDictionary())) {
             return false;
         }
 
         //
         // Compare SFF Data Plane Locators
         //
-        if(!compareSffDpls(originalSff.getSffDataPlaneLocator(), sff.getSffDataPlaneLocator())) {
+        if (!compareSffDpls(originalSff.getSffDataPlaneLocator(), sff.getSffDataPlaneLocator())) {
             return false;
         }
 
@@ -191,25 +191,30 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
     /**
      * Compare 2 lists of SffSfDictionaries for equality
      *
-     * @param origSffSfDict a list of the original SffSfDict entries before the change
-     * @param sffSfDict a list of the SffSfDict entries after the change was made
+     * @param origSffSfDict
+     *            a list of the original SffSfDict entries before the change
+     * @param sffSfDict
+     *            a list of the SffSfDict entries after the change was made
      * @return true if the lists are equal, false otherwise
      */
-    private boolean compareSffSfDictionaries(List<ServiceFunctionDictionary> origSffSfDict,List<ServiceFunctionDictionary> sffSfDict) {
-        if(origSffSfDict.size() > sffSfDict.size()) {
+    private boolean compareSffSfDictionaries(List<ServiceFunctionDictionary> origSffSfDict,
+            List<ServiceFunctionDictionary> sffSfDict) {
+        if (origSffSfDict.size() > sffSfDict.size()) {
             LOG.info("compareSffSfDictionaries An SF has been removed");
             // TODO should we check if the removed SF is used??
             return false;
         }
 
         Collection<ServiceFunctionDictionary> differentSffSfs = new ArrayList<>(sffSfDict);
-        // This will remove everything in common, thus leaving only the different values
+        // This will remove everything in common, thus leaving only the
+        // different values
         differentSffSfs.removeAll(origSffSfDict);
 
-        // If the different SffSfDict entries are all contained in the sffSfDict,
+        // If the different SffSfDict entries are all contained in the
+        // sffSfDict,
         // then this was a simple case of adding a new SffSfDict entry, else one
         // of the entries was modified, and the RSPs should be deleted
-        if(!sffSfDict.containsAll(differentSffSfs)) {
+        if (!sffSfDict.containsAll(differentSffSfs)) {
             return false;
         }
 
@@ -219,29 +224,31 @@ public class ServiceFunctionForwarderListener extends AbstractClusteredDataTreeC
     /**
      * Compare 2 lists of SffDataPlaneLocators for equality
      *
-     * @param origSffDplList a list of the original SffDpl entries before the change
-     * @param sffDplList a list of the SffDpl entries after the change was made
+     * @param origSffDplList
+     *            a list of the original SffDpl entries before the change
+     * @param sffDplList
+     *            a list of the SffDpl entries after the change was made
      * @return true if the lists are equal, false otherwise
      */
     private boolean compareSffDpls(List<SffDataPlaneLocator> origSffDplList, List<SffDataPlaneLocator> sffDplList) {
-        if(origSffDplList.size() > sffDplList.size()) {
+        if (origSffDplList.size() > sffDplList.size()) {
             LOG.info("compareSffDpls An SFF DPL has been removed");
             // TODO should we check if the removed SFF DPL is used??
             return false;
         }
 
         Collection<SffDataPlaneLocator> differentSffDpls = new ArrayList<>(sffDplList);
-        // This will remove everything in common, thus leaving only the different values
+        // This will remove everything in common, thus leaving only the
+        // different values
         differentSffDpls.removeAll(origSffDplList);
 
         // If the different SffDpl entries are all contained in the sffDplList,
         // then this was a simple case of adding a new SffDpl entry, else one
         // of the entries was modified, and the RSPs should be deleted
-        if(!sffDplList.containsAll(differentSffDpls)) {
+        if (!sffDplList.containsAll(differentSffDpls)) {
             return false;
         }
 
         return true;
     }
-
 }

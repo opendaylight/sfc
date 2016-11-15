@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  *
  */
-public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeListener<ServiceFunction> {
+public class ServiceFunctionListener extends AbstractDataTreeChangeListener<ServiceFunction> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionListener.class);
 
     private final DataBroker dataBroker;
@@ -91,7 +91,7 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
         if (originalServiceFunction != null) {
             LOG.debug("Updating Service Function: {}", originalServiceFunction.getName());
 
-            if(!compareSfs(originalServiceFunction, updatedServiceFunction)) {
+            if (!compareSfs(originalServiceFunction, updatedServiceFunction)) {
                 // We only update SF type entry if type has changed
                 if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
                     // We remove the original SF from SF type list
@@ -109,14 +109,13 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
         //
         // Compare SFF IP Mgmt Addresses
         //
-        if(sf.getIpMgmtAddress() != null && origSf.getIpMgmtAddress() != null) {
-            if(!sf.getIpMgmtAddress().toString().equals(origSf.getIpMgmtAddress().toString())) {
+        if (sf.getIpMgmtAddress() != null && origSf.getIpMgmtAddress() != null) {
+            if (!sf.getIpMgmtAddress().toString().equals(origSf.getIpMgmtAddress().toString())) {
                 LOG.info("compareSFs: IP mgmt addresses changed orig [{}] new [{}]",
-                        origSf.getIpMgmtAddress().toString(),
-                        sf.getIpMgmtAddress().toString());
+                        origSf.getIpMgmtAddress().toString(), sf.getIpMgmtAddress().toString());
                 return false;
             }
-        } else if(origSf.getIpMgmtAddress() != null && sf.getIpMgmtAddress() == null) {
+        } else if (origSf.getIpMgmtAddress() != null && sf.getIpMgmtAddress() == null) {
             LOG.info("compareSFFs: the IP mgmt address has been removed");
             return false;
         }
@@ -124,9 +123,8 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
         //
         // Compare SF Types
         //
-        if(!sf.getType().getValue().equals(origSf.getType().getValue())) {
-            LOG.info("compareSFs: SF type changed orig [{}] new [{}]",
-                    origSf.getType().getValue(),
+        if (!sf.getType().getValue().equals(origSf.getType().getValue())) {
+            LOG.info("compareSFs: SF type changed orig [{}] new [{}]", origSf.getType().getValue(),
                     sf.getType().getValue());
             return false;
         }
@@ -134,23 +132,24 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
         //
         // Compare SF DPLs
         //
-        List<SfDataPlaneLocator> origSfDplList = origSf.getSfDataPlaneLocator();;
-        List<SfDataPlaneLocator> sfDplList = sf.getSfDataPlaneLocator();;
+        List<SfDataPlaneLocator> origSfDplList = origSf.getSfDataPlaneLocator();
+        List<SfDataPlaneLocator> sfDplList = sf.getSfDataPlaneLocator();
 
-        if(origSfDplList.size() > sfDplList.size()) {
+        if (origSfDplList.size() > sfDplList.size()) {
             LOG.info("compareSfDpls An SF DPL has been removed");
             // TODO should we check if the removed SF DPL is used??
             return false;
         }
 
         Collection<SfDataPlaneLocator> differentSfDpls = new ArrayList<>(sfDplList);
-        // This will remove everything in common, thus leaving only the different values
+        // This will remove everything in common, thus leaving only the
+        // different values
         differentSfDpls.removeAll(origSfDplList);
 
         // If the different SfDpl entries are all contained in the sfDplList,
         // then this was a simple case of adding a new SfDpl entry, else one
         // of the entries was modified, and the RSPs should be deleted
-        if(!sfDplList.containsAll(differentSfDpls)) {
+        if (!sfDplList.containsAll(differentSfDpls)) {
             LOG.info("compareSfDpls An SF DPL has been modified");
             return false;
         }
@@ -165,19 +164,20 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
      */
     private void deleteSfRsps(ServiceFunction sf) {
         /*
-         * Before removing RSPs used by this Service Function, we need to remove all
-         * references in the SFF/SF operational trees
+         * Before removing RSPs used by this Service Function, we need to remove
+         * all references in the SFF/SF operational trees
          */
         SfName sfName = sf.getName();
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
         List<RspName> rspList = new ArrayList<>();
         if (sfServicePathList != null && !sfServicePathList.isEmpty()) {
             if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
-                LOG.error("{}: Failed to delete SF {} operational state",
-                        Thread.currentThread().getStackTrace()[1], sfName);
+                LOG.error("{}: Failed to delete SF {} operational state", Thread.currentThread().getStackTrace()[1],
+                        sfName);
             }
             for (SfServicePath sfServicePath : sfServicePathList) {
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings -
+                // alagalah
 
                 RspName rspName = new RspName(sfServicePath.getName().getValue());
                 SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
@@ -188,9 +188,8 @@ public class ServiceFunctionListener extends AbstractClusteredDataTreeChangeList
         }
 
         /*
-         * We do not update the SFF dictionary. Since the user configured it in the
-         * first place,
-         * (s)he is also responsible for updating it.
+         * We do not update the SFF dictionary. Since the user configured it in
+         * the first place, (s)he is also responsible for updating it.
          */
     }
 }

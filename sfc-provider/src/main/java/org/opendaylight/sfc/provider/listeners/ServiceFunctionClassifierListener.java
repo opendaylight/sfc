@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ServiceFunctionClassifierListener
-        extends AbstractClusteredDataTreeChangeListener<ServiceFunctionClassifier> {
+        extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionClassifierListener.class);
 
     private final DataBroker dataBroker;

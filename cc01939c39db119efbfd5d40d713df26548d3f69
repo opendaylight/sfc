@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "3a65312a_516db697",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/SfcOfRenderer.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-15T11:22:50Z",
+      "side": 1,
+      "message": "Now that we\u0027re using Blueprint, this comment is no longer valid. As a matter of fact, I wonder if this class is still needed.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 111
+      },
+      "revId": "cc01939c39db119efbfd5d40d713df26548d3f69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_514c9670",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
         "patchSetId": 7
@@ -60,6 +83,30 @@
       "writtenOn": "2016-11-15T10:55:59Z",
       "side": 1,
       "message": "I agree that for 2 simple calls, it is more readable this way.",
+      "parentUuid": "3a65312a_11de9e6d",
+      "range": {
+        "startLine": 97,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 90
+      },
+      "revId": "cc01939c39db119efbfd5d40d713df26548d3f69",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_91890e29",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-15T11:22:50Z",
+      "side": 1,
+      "message": "Its not that big a deal, since the number of RspTransportProcessors is quite small, but Miguel\u0027s solution is more efficient, since he\u0027s only iterating the collection once, whereas Diego is iterating the collection once per setter.",
       "parentUuid": "3a65312a_11de9e6d",
       "range": {
         "startLine": 97,

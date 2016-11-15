@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_167854c3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-15T09:13:52Z",
+      "side": 1,
+      "message": "looked better before",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 35
+      },
+      "revId": "485b8763ce5f117667eed993c879fc54cc104edf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_76670826",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-15T09:13:52Z",
+      "side": 1,
+      "message": "why not just delete the semi-colon?",
+      "range": {
+        "startLine": 135,
+        "startChar": 79,
+        "endLine": 136,
+        "endChar": 9
+      },
+      "revId": "485b8763ce5f117667eed993c879fc54cc104edf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d66edc00",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-15T09:13:52Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 137,
+        "startChar": 71,
+        "endLine": 138,
+        "endChar": 9
+      },
+      "revId": "485b8763ce5f117667eed993c879fc54cc104edf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

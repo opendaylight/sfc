@@ -22,6 +22,30 @@
       "revId": "fdb331cb14b6b0b51a663123cc204325fd1c6d40",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d97d6c70",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-15T18:46:48Z",
+      "side": 1,
+      "message": "Brady, that constant is a different type.",
+      "parentUuid": "3a65312a_431ccdc1",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 122
+      },
+      "revId": "fdb331cb14b6b0b51a663123cc204325fd1c6d40",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

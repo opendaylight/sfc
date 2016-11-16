@@ -70,10 +70,6 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
     </feature>
 
-    <feature name="odl-sfcofl2" version="${project.version}" description="OpenDaylight :: sfcofl2 (DEPRECATED)">
-        <details>Feature odl-sfcofl2 was renamed to odl-sfc-openflow-renderer in Boron release.</details>
-        <feature version="${project.version}">odl-sfc-openflow-renderer</feature>
-    </feature>
     <feature name="odl-sfc-openflow-renderer" version="${project.version}" description="OpenDaylight :: sfc-openflow-renderer">
         <feature version="${project.version}">odl-sfc-ovs</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>

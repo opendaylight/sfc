@@ -36,3 +36,4 @@ coverage/
 .checkstyle
 .vagrant
 *.log
+**/yang/gen

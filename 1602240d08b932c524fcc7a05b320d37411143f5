@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_5c1b0a1b",
+        "filename": "features/src/main/features/features.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-16T09:42:31Z",
+      "side": 1,
+      "message": "Do we need both the genius feature and the bundle? As I understand it, the SFC classifier wont always use Genius.",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 72
+      },
+      "revId": "1602240d08b932c524fcc7a05b320d37411143f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

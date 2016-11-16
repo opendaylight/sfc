@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_3c73ae16",
+        "filename": "resources/configuration-examples/logical-sff/json/02-service_functions.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-16T10:14:57Z",
+      "side": 1,
+      "message": "Why would we name an SF \"abstract\"? I could imagine the type being abstract, but not the name.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 35
+      },
+      "revId": "f29158c4174bab3593b827b291421d731d825bfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7ce1a6cf",
+        "filename": "resources/configuration-examples/logical-sff/json/02-service_functions.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-16T10:14:57Z",
+      "side": 1,
+      "message": "Looks like there are some extra spaces here.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 24
+      },
+      "revId": "f29158c4174bab3593b827b291421d731d825bfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_9c61223c",
+        "filename": "resources/configuration-examples/logical-sff/json/02-service_functions.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-16T10:14:57Z",
+      "side": 1,
+      "message": "Same question here.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 30
+      },
+      "revId": "f29158c4174bab3593b827b291421d731d825bfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_bceb3eaf",
+        "filename": "resources/configuration-examples/logical-sff/json/06-service_function_paths.json",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-16T10:14:57Z",
+      "side": 1,
+      "message": "Can you remove these extra spaces.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 6
+      },
+      "revId": "f29158c4174bab3593b827b291421d731d825bfa",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

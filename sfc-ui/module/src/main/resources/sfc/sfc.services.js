@@ -746,13 +746,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
     ServiceFunctionSvc.prototype.stripNamespacePrefixes = function (sfsArray) {
 
       var locatorMatcher = new RegExp("^service-locator:");
-      var sfTypeMatcher = new RegExp("^service-function-type:");
 
       _.each(sfsArray, function (sf) {
-
-        if (!_.isEmpty(sf.type)) {
-          sf.type = sf.type.replace(sfTypeMatcher, "");
-        }
 
         _.each(sf['sf-data-plane-locator'], function (locator) {
           if (!_.isEmpty(locator.transport)) {
@@ -766,15 +761,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     // @override
     ServiceFunctionSvc.prototype.addNamespacePrefixes = function (sf) {
-      var sfTypeMatcher = new RegExp("^service-function-type:");
-      var sfTypePrefix = "service-function-type:";
       var locatorMatcher = new RegExp("^service-locator:");
       var locatorPrefix = "service-locator:";
-
-      if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
-        // add prefix
-        sf.type = sfTypePrefix + sf.type;
-      }
 
       _.each(sf['sf-data-plane-locator'], function (locator) {
         if (angular.isDefined(locator['transport']) && locator['transport'].search(locatorMatcher) < 0) {
@@ -803,14 +791,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     // @override
     ServiceFunctionTypeSvc.prototype.stripNamespacePrefixes = function (sfsArray) {
-
-      var sfTypeMatcher = new RegExp("^service-function-type:");
-
-      _.each(sfsArray, function (sf) {
-        if (!_.isEmpty(sf.type)) {
-          sf.type = sf.type.replace(sfTypeMatcher, "");
-        }
-      });
 
       return sfsArray;
     };
@@ -859,31 +839,12 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     // @override
     ServiceChainSvc.prototype.stripNamespacePrefixes = function (sfcsArray) {
-      var sfTypeMatcher = new RegExp("^service-function-type:");
-
-      _.each(sfcsArray, function (sfc) {
-        _.each(sfc['sfc-service-function'], function (sf) {
-          if (!_.isEmpty(sf.type)) {
-            sf.type = sf.type.replace(sfTypeMatcher, "");
-          }
-        });
-      });
 
       return sfcsArray;
     };
 
     // @override
     ServiceChainSvc.prototype.addNamespacePrefixes = function (sfc) {
-      var sfTypeMatcher = new RegExp("^service-function-type:");
-      var sfTypePrefix = "service-function-type:";
-
-      _.each(sfc['sfc-service-function'], function (sf) {
-        //if there is no prefix add it
-        if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
-          // add prefix
-          sf['type'] = sfTypePrefix + sf['type'];
-        }
-      });
 
       return sfc;
     };
@@ -1000,7 +961,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       var matcher = new RegExp("^service-function-forwarder:");
       var serviceLocatorMatcher = new RegExp("^service-locator:");
-      var sfTypeMatcher = new RegExp("^service-function-type:");
 
 
       _.each(sffArray, function (sff) {
@@ -1029,10 +989,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (!_.isEmpty(sff['service-function-dictionary'])) {
 
           _.each(sff['service-function-dictionary'], function (dictionary) {
-
-            if (angular.isDefined(dictionary['type'])) {
-              dictionary['type'] = dictionary['type'].replace(sfTypeMatcher, "");
-            }
 
             if (angular.isDefined(dictionary['failmode'])) {
               dictionary['failmode'] = dictionary['failmode'].replace(matcher, "");
@@ -1063,8 +1019,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
     // @override
     ServiceForwarderSvc.prototype.addNamespacePrefixes = function (sff) {
-      var sfTypeMatcher = new RegExp("^service-function-type:");
-      var sfTypePrefix = "service-function-type:";
       var locatorMatcher = new RegExp("^service-locator:");
       var locatorPrefix = "service-locator:";
       var sffMatcher = new RegExp("^sevice-function-forwarder:");
@@ -1083,10 +1037,6 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       if (!_.isEmpty(sff['service-function-dictionary'])) {
         _.each(sff['service-function-dictionary'], function (sf) {
-          if (angular.isDefined(sf['type']) && sf['type'].search(sfTypeMatcher) < 0) {
-            // add prefix
-            sf['type'] = sfTypePrefix + sf['type'];
-          }
 
           if (angular.isDefined(sf['failmode']) && sf['failmode'].search(sffMatcher) < 0) {
             sf['failmode'] = sffPrefix + sf['failmode'];

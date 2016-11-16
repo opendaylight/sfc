@@ -1,92 +1,96 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others.  All rights reserved.
+ * Copyright (c) 2016 Ericsson Spain and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
+
 package org.opendaylight.sfc.scfofrenderer;
 
-import java.util.Map;
-import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
+import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcScfOfDataListener implements DataChangeListener, AutoCloseable {
+/**
+ * Test Suite to test the SfcScfOfDataListener class.
+ *
+ * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
+ */
+
+public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfDataListener.class);
-    private SfcScfOfProcessor sfcScfProcessor;
-    private ListenerRegistration<DataChangeListener> registerListener;
 
-    public SfcScfOfDataListener(
-            DataBroker dataBroker,
-            SfcScfOfProcessor sfcScfProcessor) {
-        registerListener = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SCF_ENTRY_IID,
-            this, DataBroker.DataChangeScope.BASE);
+    private SfcScfOfProcessor sfcScfProcessor;
+
+    private final DataBroker dataBroker;
+    private ListenerRegistration<SfcScfOfDataListener> listenerRegistration;
+
+    public SfcScfOfDataListener(final DataBroker dataBroker, SfcScfOfProcessor sfcScfProcessor) {
+        this.dataBroker = dataBroker;
         this.sfcScfProcessor = sfcScfProcessor;
+    }
+
+    public void init() {
+        LOG.debug("Initializing...");
+        registerListeners();
+    }
+
+    private void registerListeners() {
+        final DataTreeIdentifier<ServiceFunctionClassifier> treeId = new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
+    }
+
+
+    // Classifier CREATION
+    @Override
+    protected void add(ServiceFunctionClassifier serviceFunctionClassifier) {
+        if (serviceFunctionClassifier != null) {
+            LOG.debug("Created ServiceFunctionClassifier name: {}\n",
+                    serviceFunctionClassifier.getName());
+            this.sfcScfProcessor.createdServiceFunctionClassifier(serviceFunctionClassifier);
+
+        }
+    }
+
+    // Classifier UPDATE
+    @Override
+    protected void update(ServiceFunctionClassifier originalServiceFunctionClassifier,
+                          ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+
+        if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
+                && !(originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier))) {
+            LOG.debug("Updated ServiceFunctionClassifier name: {}\n", updatedServiceFunctionClassifier.getName());
+            this.sfcScfProcessor.deletedServiceFunctionClassifier(originalServiceFunctionClassifier);
+            this.sfcScfProcessor.createdServiceFunctionClassifier(updatedServiceFunctionClassifier);
+        }
+    }
+
+    // Classifier DELETION
+    @Override
+    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier){
+        if (serviceFunctionClassifier != null) {
+            LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
+            this.sfcScfProcessor.deletedServiceFunctionClassifier(serviceFunctionClassifier);
+        }
     }
 
     @Override
     public void close() throws Exception {
-        if (registerListener != null)
-            registerListener.close();
-    }
-
-    @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        ServiceFunctionClassifier originScf = null;
-
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalConfigurationObject = change.getOriginalData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionClassifier) {
-                originScf = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("Original ServiceFunctionClassifier name: {}\n", originScf.getName());
-            }
-        }
-
-        // Classifier CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionClassifier) {
-                ServiceFunctionClassifier scf = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("Created ServiceFunctionClassifier name: {}\n", scf.getName());
-                this.sfcScfProcessor.createdServiceFunctionClassifier(scf);
-            }
-        }
-
-        // Classifier UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionClassifier) && (!(dataCreatedObject.containsKey(entry.getKey())))) {
-                ServiceFunctionClassifier scf = (ServiceFunctionClassifier) entry.getValue();
-                LOG.debug("Updated ServiceFunctionClassifier name: {}\n", scf.getName());
-                this.sfcScfProcessor.deletedServiceFunctionClassifier(originScf);
-                this.sfcScfProcessor.createdServiceFunctionClassifier(scf);
-            }
-        }
-
-        // Classifier DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalConfigurationObject.get(instanceIdentifier);
-            if (dataObject instanceof ServiceFunctionClassifier) {
-                ServiceFunctionClassifier scf = (ServiceFunctionClassifier) dataObject;
-                LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", scf.getName());
-                this.sfcScfProcessor.deletedServiceFunctionClassifier(scf);
-            }
+        LOG.debug("Closing listener...");
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
         }
     }
 }

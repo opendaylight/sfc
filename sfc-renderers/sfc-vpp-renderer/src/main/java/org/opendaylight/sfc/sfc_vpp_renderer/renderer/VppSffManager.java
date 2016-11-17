@@ -9,14 +9,8 @@
 package org.opendaylight.sfc.sfc_vpp_renderer.renderer;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-//import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.ServiceForwarderListener;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.vpp.rev160706.SffNetconfAugmentation;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
-//import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.slf4j.Logger;
@@ -27,13 +21,11 @@ public class VppSffManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppSffManager.class);
 
-    private final ServiceForwarderListener sffListener;
     private final VppNodeManager nodeManager;
 
     public VppSffManager(DataBroker dataBroker, VppNodeManager nodeManager) {
         // Register SFF listener
         this.nodeManager = nodeManager;
-        sffListener = new ServiceForwarderListener(dataBroker, this);
     }
 
     public void disposeSff(ServiceFunctionForwarder sff, boolean disconnect) {
@@ -81,7 +73,4 @@ public class VppSffManager {
         }
     }
 
-    public void unregisterSffListener() {
-        sffListener.getRegistrationObject().close();
-    }
 }

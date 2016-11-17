@@ -11,7 +11,7 @@
 
   <bean id="renderer"
     class="org.opendaylight.sfc.sfc_vpp_renderer.SfcVppRenderer"
-    destroy-method="unregisterListeners">
+    destroy-method="close">
     <argument ref="dataBroker"/>
     <argument ref="bindingRegistry"/>
   </bean>

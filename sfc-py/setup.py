@@ -62,6 +62,7 @@ def readme(file):
             content = _file.read()
     return content
 
+
 setup(
     name='sfc',
     version='0.1.4',

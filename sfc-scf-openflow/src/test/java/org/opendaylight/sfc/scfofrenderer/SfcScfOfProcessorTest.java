@@ -10,30 +10,48 @@ package org.opendaylight.sfc.scfofrenderer;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-
-//import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcProviderAclAPI.class, SfcProviderServiceForwarderAPI.class, SfcOvsUtil.class, SfcScfOfUtils.class})
+@PrepareForTest({
+        SfcProviderAclAPI.class,
+        SfcProviderServiceForwarderAPI.class,
+        SfcProviderRenderedPathAPI.class,
+        SfcOvsUtil.class,
+        SfcScfOfUtils.class,
+        OpenflowClassifierProcessor.class,
+        SfcNshHeader.class})
 public class SfcScfOfProcessorTest {
 
     private SfcScfOfProcessor sfcScfProcessor;
@@ -43,20 +61,37 @@ public class SfcScfOfProcessorTest {
     private List<Ace> acesList;
     private List<SclServiceFunctionForwarder> sfflist;
     private ServiceFunctionForwarder sff;
+    private DataBroker dataBroker;
+
 
     private void initTest() {
-        sfcScfProcessor = new SfcScfOfProcessor();
+        ReadWriteTransaction readWriteTransaction = mock(ReadWriteTransaction.class);
+
+        dataBroker = mock(DataBroker.class);
+        when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
+
+        SfcOfFlowWriterInterface openflowWriter = spy(new SfcOfFlowWriterImpl());
+        Mockito.doNothing().when(openflowWriter).flushFlows();
+
+        OpenflowClassifierProcessor classifierProcessor = mock(OpenflowClassifierProcessor.class);
+        when(classifierProcessor.processClassifier(any(SclServiceFunctionForwarder.class), any(Acl.class), anyBoolean()))
+                .thenReturn(Collections.emptyList());
+
+        RpcProviderRegistry rpcProvider = mock(RpcProviderRegistry.class);
+        sfcScfProcessor = new SfcScfOfProcessor(dataBroker, rpcProvider, openflowWriter, classifierProcessor);
+
         scf = mock(ServiceFunctionClassifier.class);
         acl = mock(Acl.class);
-        Ace ace = mock(Ace.class);
-        acesList = new ArrayList<>();
-        acesList.add(ace);
+
+        // must mock the ACE object (the ACL *must* figure at least one ACE)
+        acesList = new ArrayList<Ace>() {{ add(mock(Ace.class)); }};
         accessListEntries = mock(AccessListEntries.class);
 
         sfflist = new ArrayList<>();
         SclServiceFunctionForwarder sclSff = mock(SclServiceFunctionForwarder.class);
         sfflist.add(sclSff);
 
+        // mock the classifier
         when(sclSff.getName()).thenReturn("sffName");
         when(scf.getSclServiceFunctionForwarder()).thenReturn(sfflist);
         when(scf.getAcl()).thenReturn(mock(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.Acl.class));
@@ -68,26 +103,18 @@ public class SfcScfOfProcessorTest {
             .toReturn(acl);
 
         sff = mock(ServiceFunctionForwarder.class);
+
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder"))
             .toReturn(sff);
 
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff"))
             .toReturn("sff");
 
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsPort"))
+                .toReturn(2L);
+
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort"))
             .toReturn(0L);
-
-        PowerMockito.stub(PowerMockito.method(SfcScfOfUtils.class, "initClassifierTable"))
-            .toReturn(true);
-
-        PowerMockito.stub(PowerMockito.method(SfcScfOfUtils.class, "createClassifierOutFlow"))
-            .toReturn(true);
-
-        PowerMockito.stub(PowerMockito.method(SfcScfOfUtils.class, "createClassifierInFlow"))
-            .toReturn(true);
-
-        PowerMockito.stub(PowerMockito.method(SfcScfOfUtils.class, "createClassifierRelayFlow"))
-            .toReturn(true);
     }
 
     @Test

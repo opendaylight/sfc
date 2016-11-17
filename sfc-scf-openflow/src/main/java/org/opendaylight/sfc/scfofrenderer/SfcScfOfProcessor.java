@@ -9,34 +9,68 @@
 package org.opendaylight.sfc.scfofrenderer;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.Actions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcScfOfProcessor {
+class SfcScfOfProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfProcessor.class);
+    private static SfcOfFlowWriterInterface openflowWriter;
+    private OpenflowClassifierProcessor classifierProcessor;
+    private WriteTransaction tx;
+    private DataBroker dataBroker;
+    private RpcProviderRegistry rpcProvider;
 
-    public SfcScfOfProcessor() {}
+    public SfcScfOfProcessor(DataBroker theDataBroker, RpcProviderRegistry theRpcProvider) {
+        tx = theDataBroker.newReadWriteTransaction();
+        initProcessor(tx, theDataBroker, theRpcProvider);
+    }
+
+    public SfcScfOfProcessor(DataBroker theDataBroker,
+                             RpcProviderRegistry theRpcProvider,
+                             SfcOfFlowWriterInterface theOpenflowWriter) {
+        dataBroker = theDataBroker;
+        rpcProvider = theRpcProvider;
+        tx = dataBroker.newReadWriteTransaction();
+        openflowWriter = theOpenflowWriter;
+        classifierProcessor = new OpenflowClassifierProcessor(tx, theRpcProvider);
+    }
+
+    public SfcScfOfProcessor(DataBroker theDataBroker,
+                             RpcProviderRegistry theRpcProvider,
+                             SfcOfFlowWriterInterface theOpenflowWriter,
+                             OpenflowClassifierProcessor theClassifierProcessor) {
+        dataBroker = theDataBroker;
+        rpcProvider = theRpcProvider;
+        tx = dataBroker.newReadWriteTransaction();
+        openflowWriter = theOpenflowWriter;
+        classifierProcessor = theClassifierProcessor;
+    }
+
+    private void initProcessor(WriteTransaction theTx, DataBroker theDataBroker, RpcProviderRegistry theRpcProvider) {
+        openflowWriter = new SfcOfFlowWriterImpl(theTx);
+        classifierProcessor = new OpenflowClassifierProcessor(theTx, theRpcProvider);
+        dataBroker = theDataBroker;
+        rpcProvider = theRpcProvider;
+    }
 
    /**
     * create flows for service function classifier
@@ -46,189 +80,42 @@ public class SfcScfOfProcessor {
     * @param  scf service function classifier
     * @return          create result
     */
-    public boolean createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
-        if (scf == null) {
-            LOG.error("createdServiceFunctionClassifier: scf is null\n");
+    protected boolean createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+        Optional<Acl> theAcl = Optional.ofNullable(scf)
+                .map(ServiceFunctionClassifier::getAcl)
+                .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
+
+        if ( !theAcl.isPresent() || !validateInputs(theAcl.get()) ) {
+            LOG.error("createdServiceFunctionClassifier: Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
 
-        LOG.debug("create ServiceFunctionClassifier name: {} ACL: {} SFF: {}\n", scf.getName(), scf.getAcl(),
+        LOG.debug("createdServiceFunctionClassifier: ServiceFunctionClassifier name: {} ACL: {} SFF: {}",
+                scf.getName(),
+                scf.getAcl(),
                 scf.getSclServiceFunctionForwarder());
-
-        Acl acl = SfcProviderAclAPI.readAccessList(scf.getAcl().getName(), scf.getAcl().getType());
-        if (acl == null) {
-            LOG.error("createdServiceFunctionClassifier: acl is null\n");
-            return false;
-        }
-
-        String aclName = acl.getAclName();
-        if (aclName == null) {
-            LOG.error("createdServiceFunctionClassifier: aclName is null\n");
-            return false;
-        }
-
-        AccessListEntries accessListEntries = acl.getAccessListEntries();
-        if (accessListEntries == null) {
-            LOG.error("createdServiceFunctionClassifier: accessListEntries is null\n");
-            return false;
-        }
-
-        List<Ace> acesList = accessListEntries.getAce();
-        if (acesList == null) {
-            LOG.error("createdServiceFunctionClassifier: acesList is null\n");
-            return false;
-        }
 
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
         if (sfflist == null) {
-            LOG.error("createdServiceFunctionClassifier: sfflist is null\n");
+            LOG.error("createdServiceFunctionClassifier: sfflist is null");
             return false;
         }
 
-        for (SclServiceFunctionForwarder sclsff : sfflist) {
-            SffName sffName = new SffName(sclsff.getName());
-
-            Long inPort = null;
-
-            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
-            if (sff == null) {
-                LOG.error("createdServiceFunctionClassifier: sff is null\n");
+        for (SclServiceFunctionForwarder classifier : sfflist) {
+            List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, theAcl.get(), true);
+            LOG.debug("createdServiceFunctionClassifier - flow size: {}", allFlows.size());
+            // if no flows were built to be written, we refresh the transaction,
+            // thus discarding the genius interface binding
+            if(allFlows.isEmpty()) {
+                LOG.info("createdServiceFunctionClassifier - Could not successfully process classifier.");
+                refreshTransaction();
                 continue;
             }
-
-            SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-            if (ovsSff == null) {
-                LOG.debug("deletedServiceFunctionClassifier: sff is not ovs\n");
-                continue;
-            }
-
-            String nodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
-            if (nodeName == null) {
-                LOG.error("createdServiceFunctionClassifier: nodeName is null\n");
-                continue;
-            }
-
-            Long outPort = SfcOvsUtil.getVxlanGpeOfPort(nodeName);
-            SfcScfOfUtils.initClassifierTable(nodeName);
-            Long dpdkPort = SfcOvsUtil.getDpdkOfPort(nodeName, null);
-            if (dpdkPort != null) {
-                SfcScfOfUtils.initClassifierDpdkOutputFlow(nodeName, dpdkPort);
-                SfcScfOfUtils.initClassifierDpdkInputFlow(nodeName, dpdkPort);
-            }
-
-            if (sclsff.getAttachmentPointType() instanceof Interface) {
-                Interface itf = (Interface) sclsff.getAttachmentPointType();
-                if (itf == null) {
-                    LOG.error("createdServiceFunctionClassifier: attachment point is null\n");
-                    continue;
-                }
-
-                String itfName = itf.getInterface();
-                if (itfName == null) {
-                    LOG.error("createdServiceFunctionClassifier: interface is null\n");
-                    continue;
-                }
-                inPort = SfcOvsUtil.getOfPortByName(nodeName, itfName);
-                if (inPort == null) {
-                    LOG.error("createdServiceFunctionClassifier: port is null\n");
-                    continue;
-                }
-            }
-
-            for (Ace ace : acesList) {
-
-                String ruleName = ace.getRuleName();
-                if (ruleName == null) {
-                    LOG.error("createdServiceFunctionClassifier: ruleName is null\n");
-                    continue;
-                }
-
-                StringBuffer sb = new StringBuffer();
-                sb.append(nodeName).append(":");
-                sb.append(String.valueOf(inPort));
-                NodeConnectorId port = new NodeConnectorId(sb.toString());
-
-                // Match
-                Match match = new SfcScfMatch()
-                                  .setPortMatch(port)
-                                  .setAclMatch(ace.getMatches())
-                                  .build();
-
-                // Action
-                Actions actions = ace.getActions();
-                if (actions == null) {
-                    LOG.error("createdServiceFunctionClassifier: action is null\n");
-                    continue;
-                }
-
-                Actions1 a1 = actions.getAugmentation(Actions1.class);
-                if (a1 == null) {
-                    LOG.error("createdServiceFunctionClassifier: action augment is null\n");
-                    continue;
-                }
-
-                AclRenderedServicePath path = (AclRenderedServicePath) a1.getSfcAction();
-                if (path == null) {
-                    LOG.error("createdServiceFunctionClassifier: sfc action is null\n");
-                    continue;
-                }
-
-                RspName rspName = new RspName(path.getRenderedServicePath());
-                SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
-
-
-                if (nsh == null) {
-                    LOG.error("createdServiceFunctionClassifier: nsh is null\n");
-                    continue;
-                }
-
-                StringBuffer key = new StringBuffer();
-                key.append(scf.getName()).append(aclName).append(ruleName).append(".out");
-                if (!SfcScfOfUtils.createClassifierOutFlow(nodeName, key.toString(), match, nsh, outPort)) {
-                    LOG.error("createdServiceFunctionClassifier: out flow is null\n");
-                    continue;
-                }
-
-                RspName reverseRspName = null;
-                if (path.getRenderedServicePath().endsWith("-Reverse")) {
-                    reverseRspName = new RspName(path.getRenderedServicePath().replaceFirst("-Reverse", ""));
-                } else {
-                    reverseRspName = new RspName(path.getRenderedServicePath() + "-Reverse");
-                }
-
-                SfcNshHeader reverseNsh = SfcNshHeader.getSfcNshHeader(reverseRspName);
-
-                if (reverseNsh == null) {
-                    LOG.debug("createdServiceFunctionClassifier: reverseNsh is null\n");
-                } else {
-                    key = new StringBuffer();
-                    key.append(scf.getName()).append(aclName).append(ruleName).append(".in");
-                    if (!SfcScfOfUtils.createClassifierInFlow(nodeName, key.toString(), reverseNsh, inPort)) {
-                        LOG.error("createdServiceFunctionClassifier: fail to create in flow\n");
-                    }
-
-                    SffName lastSffName = reverseNsh.getSffName();
-                    if (lastSffName != null &&
-                        !reverseNsh.getSffName().equals(sffName)) {
-                        ServiceFunctionForwarder lastSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
-                        String lastNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(lastSff);
-                        if (lastNodeName == null) {
-                            LOG.error("createdServiceFunctionClassifier: lastNodeName is null\n");
-                        } else {
-                            LOG.debug("createdServiceFunctionClassifier: relay node is {}\n", lastNodeName);
-                        }
-                        key = new StringBuffer();
-                        key.append(scf.getName()).append(aclName).append(ruleName).append(".relay");
-                        Ip ip = SfcOvsUtil.getSffVxlanDataLocator(sff);
-                        reverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address());
-                        reverseNsh.setVxlanUdpPort(ip.getPort());
-                        if (!SfcScfOfUtils.createClassifierRelayFlow(lastNodeName, key.toString(), reverseNsh)) {
-                            LOG.error("createdServiceFunctionClassifier: fail to create relay flow\n");
-                        }
-                    }
-                }
-            }
+            openflowWriter.writeFlows(allFlows);
         }
+
+        openflowWriter.flushFlows();
+        refreshTransaction();
         return true;
     }
 
@@ -238,136 +125,76 @@ public class SfcScfOfProcessor {
     * The function returns false if unsuccessful.
     *
     * @param  scf service function classifier
-    * @return          delete result
+    * @return     delete result
     */
-    public boolean deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
-        if (scf == null) {
-            LOG.error("deletedServiceFunctionClassifier: scf is null\n");
+    protected boolean deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+        Optional<Acl> theAcl = Optional.ofNullable(scf)
+                .map(ServiceFunctionClassifier::getAcl)
+                .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
+
+        if ( !theAcl.isPresent() || !validateInputs(theAcl.get()) ) {
+            LOG.error("deletedServiceFunctionClassifier: Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
-        LOG.debug("delete ServiceFunctionClassifier name: {} ACL: {} SFF: {}\n", scf.getName(), scf.getAcl(),
+
+        LOG.debug("deletedServiceFunctionClassifier: delete ServiceFunctionClassifier name: {} ACL: {} SFF: {}",
+                scf.getName(),
+                scf.getAcl(),
                 scf.getSclServiceFunctionForwarder());
-
-        Acl acl = SfcProviderAclAPI.readAccessList(scf.getAcl().getName(), scf.getAcl().getType());
-        if (acl == null) {
-            LOG.error("deletedServiceFunctionClassifier: acl is null\n");
-            return false;
-        }
-
-        String aclName = acl.getAclName();
-        if (aclName == null) {
-            LOG.error("deletedServiceFunctionClassifier: aclName is null\n");
-            return false;
-        }
-
-        AccessListEntries accessListEntries = acl.getAccessListEntries();
-        if (accessListEntries == null) {
-            LOG.error("deletedServiceFunctionClassifier: accessListEntries is null\n");
-            return false;
-        }
-        List<Ace> acesList = accessListEntries.getAce();
-        if (acesList == null) {
-            LOG.error("deletedServiceFunctionClassifier: acesList is null\n");
-            return false;
-        }
 
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
         if (sfflist == null) {
-            LOG.error("deletedServiceFunctionClassifier: sfflist is null\n");
+            LOG.error("deletedServiceFunctionClassifier: sfflist is null");
             return false;
         }
 
-        for (SclServiceFunctionForwarder sclsff : sfflist) {
-            for (Ace ace : acesList) {
-
-                String ruleName = ace.getRuleName();
-                if (ruleName == null) {
-                    LOG.error("deletedServiceFunctionClassifier: ruleName is null\n");
-                    continue;
-                }
-
-                // Action
-                Actions actions = ace.getActions();
-                if (actions == null) {
-                    LOG.error("createdServiceFunctionClassifier: action is null\n");
-                    continue;
-                }
-
-                Actions1 a1 = actions.getAugmentation(Actions1.class);
-                if (a1 == null) {
-                    LOG.error("createdServiceFunctionClassifier: action augment is null\n");
-                    continue;
-                }
-
-                AclRenderedServicePath path = (AclRenderedServicePath) a1.getSfcAction();
-                if (path == null) {
-                    LOG.error("createdServiceFunctionClassifier: sfc action is null\n");
-                    continue;
-                }
-
-                RspName rspName = new RspName(path.getRenderedServicePath());
-                SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName);
-
-                SffName sffName = new SffName(sclsff.getName());
-
-                ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
-                if (sff == null) {
-                    LOG.error("deletedServiceFunctionClassifier: sff is null\n");
-                    continue;
-                }
-
-                SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-                if (ovsSff == null) {
-                    LOG.debug("deletedServiceFunctionClassifier: sff is not ovs\n");
-                    continue;
-                }
-
-                String nodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
-                if (nodeName == null) {
-                    LOG.error("deletedServiceFunctionClassifier: nodeName is null\n");
-                    continue;
-                }
-
-                StringBuffer key = new StringBuffer();
-                key.append(scf.getName()).append(aclName).append(ruleName).append(".out");
-                SfcScfOfUtils.deleteClassifierFlow(nodeName, key.toString());
-
-                RspName reverseRspName = null;
-                if (path.getRenderedServicePath().endsWith("-Reverse")) {
-                    reverseRspName = new RspName(path.getRenderedServicePath().replaceFirst("-Reverse", ""));
-                } else {
-                    reverseRspName = new RspName(path.getRenderedServicePath() + "-Reverse");
-                }
-                SfcNshHeader reverseNsh = SfcNshHeader.getSfcNshHeader(reverseRspName);
-
-                if (reverseNsh == null) {
-                    LOG.debug("deletedServiceFunctionClassifier: reverseNsh is null\n");
-                } else {
-                    key = new StringBuffer();
-                    key.append(scf.getName()).append(aclName).append(ruleName).append(".in");
-                    if (!SfcScfOfUtils.deleteClassifierFlow(nodeName, key.toString())) {
-                        LOG.error("deletedServiceFunctionClassifier: fail to delete in flow\n");
-                    }
-
-                    SffName lastSffName = reverseNsh.getSffName();
-                    if (lastSffName != null &&
-                        !reverseNsh.getSffName().equals(sffName)) {
-                        ServiceFunctionForwarder lastSff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
-                        String lastNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(lastSff);
-                        if (lastNodeName == null) {
-                            LOG.error("deletedServiceFunctionClassifier: lastNodeName is null\n");
-                        } else {
-                            LOG.debug("deletedServiceFunctionClassifier: relay node is {}\n", lastNodeName);
-                        }
-                        key = new StringBuffer();
-                        key.append(scf.getName()).append(aclName).append(ruleName).append(".relay");
-                        if (!SfcScfOfUtils.deleteClassifierFlow(lastNodeName, key.toString())) {
-                            LOG.error("deletedServiceFunctionClassifier: fail to delete relay flow\n");
-                        }
-                    }
-                }
+        for (SclServiceFunctionForwarder classifier : sfflist) {
+            List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, theAcl.get(), false);
+            // if no flows were built to be written, we refresh the transaction,
+            // thus discarding the genius interface binding
+            if(allFlows.isEmpty()) {
+                LOG.info("deletedServiceFunctionClassifier - Could not successfully delete classifier.");
+                refreshTransaction();
+                continue;
             }
+            openflowWriter.removeFlows(allFlows);
         }
+        openflowWriter.deleteFlowSet();
+        refreshTransaction();
+        return true;
+    }
+
+    /**
+     * Refresh the current datastore transaction, and use the same transaction object within the openflow writer.
+     */
+    private void refreshTransaction() {
+        if (tx != null) {
+            tx = dataBroker.newReadWriteTransaction();
+            initProcessor(tx, dataBroker, rpcProvider);
+        }
+    }
+
+    /**
+     * Check if the supplied ACL is valid.
+     * @param theAcl    the provisioned ACL
+     * @return          true if the ACL is valid, false otherwise
+     */
+    private boolean validateInputs(Acl theAcl) {
+        String aclName = theAcl.getAclName();
+        if (aclName == null) {
+            LOG.error("deletedServiceFunctionClassifier: aclName is null");
+            return false;
+        }
+
+        List<Ace> theAces = Optional.ofNullable(theAcl.getAccessListEntries())
+                .map(AccessListEntries::getAce)
+                .orElse(Collections.emptyList());
+
+        if (theAces.isEmpty()) {
+            LOG.error("deletedServiceFunctionClassifier: acesList is null");
+            return false;
+        }
+
         return true;
     }
 }

@@ -23,7 +23,6 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.VppNodeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
@@ -52,7 +51,6 @@ public class VppNodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppNodeManager.class);
 
-    private final VppNodeListener nodeListener;
     private MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
@@ -68,8 +66,6 @@ public class VppNodeManager implements BindingAwareProvider {
         // Register provider
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
         onSessionInitiated(providerContext);
-        // Node listener
-        nodeListener = new VppNodeListener(dataBroker, this);
         // Capabilities
         requiredCapabilities = initializeRequiredCapabilities();
     }
@@ -82,7 +78,7 @@ public class VppNodeManager implements BindingAwareProvider {
         NodeId netconfNodeId = node.getNodeId();
         if (connectionStatus.equals(ConnectionStatus.Connected)) {
             // Get mountpoint
-            InstanceIdentifier mountPointIid = getMountPointIid(netconfNodeId);
+            InstanceIdentifier<Node> mountPointIid = getMountPointIid(netconfNodeId);
             DataBroker dataBroker = getNetconfNodeDataBroker(mountPointIid);
             if (dataBroker != null) {
                 LOG.info("Node {} registered by SFC", node.getNodeId().getValue());
@@ -105,6 +101,8 @@ public class VppNodeManager implements BindingAwareProvider {
                 activeMountPoints.remove(netconfNodeId);
                 LOG.info("Netconf node {} removed", netconfNodeId.getValue());
             }
+            default:
+                break;
         }
     }
 
@@ -152,7 +150,7 @@ public class VppNodeManager implements BindingAwareProvider {
                 .containsAll(requiredCapabilities);
     }
 
-    private DataBroker getNetconfNodeDataBroker(InstanceIdentifier mountPointIid) {
+    private DataBroker getNetconfNodeDataBroker(InstanceIdentifier<Node> mountPointIid) {
         Optional<MountPoint> optionalObject = mountService.getMountPoint(mountPointIid);
         MountPoint mountPoint;
         if (optionalObject.isPresent()) {
@@ -171,7 +169,7 @@ public class VppNodeManager implements BindingAwareProvider {
         return null;
     }
 
-    private InstanceIdentifier getMountPointIid(NodeId nodeId) {
+    private InstanceIdentifier<Node> getMountPointIid(NodeId nodeId) {
         return InstanceIdentifier.builder(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(topologyId))
                 .child(Node.class, new NodeKey(nodeId)).build();
@@ -207,10 +205,6 @@ public class VppNodeManager implements BindingAwareProvider {
 
     Map<NodeId, DataBroker> getActiveMountPoints() {
         return activeMountPoints;
-    }
-
-    public void unregisterVppNodeListener() {
-        nodeListener.getRegistrationObject().close();
     }
 
     @Override

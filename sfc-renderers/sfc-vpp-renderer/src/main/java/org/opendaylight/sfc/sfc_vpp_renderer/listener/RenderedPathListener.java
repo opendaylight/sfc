@@ -8,55 +8,56 @@
 
 package org.opendaylight.sfc.sfc_vpp_renderer.listener;
 
-import java.util.Collection;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppRspProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class RenderedPathListener implements DataTreeChangeListener<RenderedServicePaths> {
+public class RenderedPathListener extends AbstractDataTreeChangeListener<RenderedServicePaths> {
 
     private final VppRspProcessor rspProcessor;
-    private final ListenerRegistration vppRspListenerRegistration;
+    private final ListenerRegistration<RenderedPathListener> vppRspListenerRegistration;
+    private static final Logger LOG = LoggerFactory.getLogger(RenderedPathListener.class);
 
     public RenderedPathListener(DataBroker dataBroker, VppRspProcessor rspProcessor) {
         this.rspProcessor = rspProcessor;
         // Register listener
-        vppRspListenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
-                        InstanceIdentifier.builder(RenderedServicePaths.class).build()), this);
+        final DataTreeIdentifier<RenderedServicePaths> treeId = new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(RenderedServicePaths.class));
+        vppRspListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<RenderedServicePaths>> changes) {
-        for (DataTreeModification<RenderedServicePaths> modification : changes) {
-            DataObjectModification<RenderedServicePaths> rootNode = modification.getRootNode();
-
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null && rootNode.getDataAfter().getRenderedServicePath() != null) {
-                        rootNode.getDataAfter().getRenderedServicePath().forEach(rspProcessor::updateRsp);
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null && rootNode.getDataBefore().getRenderedServicePath() != null) {
-                        rootNode.getDataBefore().getRenderedServicePath().forEach(rspProcessor::deleteRsp);
-                    }
-                    break;
-            }
+    public void close() throws Exception {
+        LOG.debug("Closing listener...");
+        if (vppRspListenerRegistration != null) {
+            vppRspListenerRegistration.close();
         }
     }
 
-    public ListenerRegistration getRegistrationObject() {
-        return vppRspListenerRegistration;
+    @Override
+    protected void add(RenderedServicePaths newDataObject) {
+        LOG.info("RSPs created");
+        newDataObject.getRenderedServicePath().forEach(rspProcessor::updateRsp);
+    }
+
+    @Override
+    protected void remove(RenderedServicePaths removedDataObject) {
+        LOG.info("RSPs deleted");
+        removedDataObject.getRenderedServicePath().forEach(rspProcessor::deleteRsp);
+    }
+
+    @Override
+    protected void update(RenderedServicePaths originalDataObject, RenderedServicePaths updatedDataObject) {
+        LOG.info("RSPs updated");
+        updatedDataObject.getRenderedServicePath().forEach(rspProcessor::updateRsp);
     }
 }

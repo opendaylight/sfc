@@ -70,6 +70,7 @@ class NSH(Packet):
         s = self.sprintf("NSP: %ServicePath% - NSI: %ServiceIndex%")
         return s
 
+
 bind_layers(NSH, IP, NextProto=1)
 bind_layers(NSH, IPv6, NextProto=2)
 bind_layers(NSH, Ether, NextProto=3)

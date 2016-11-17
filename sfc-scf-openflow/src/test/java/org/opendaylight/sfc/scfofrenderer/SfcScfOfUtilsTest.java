@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 
@@ -46,9 +46,7 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testInitClassifierTable() {
-
-        assertFalse(SfcScfOfUtils.initClassifierTable(null));
-        assertTrue(SfcScfOfUtils.initClassifierTable("node"));
+        assertNotNull(SfcScfOfUtils.initClassifierTable());
     }
 
     @Test
@@ -58,11 +56,11 @@ public class SfcScfOfUtilsTest {
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 
-        assertFalse(SfcScfOfUtils.createClassifierOutFlow(null, null, null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierOutFlow("node", null, null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierOutFlow(null, "flow", null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierOutFlow(null, null, match, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierOutFlow(null, null, null, nsh, 0L));
+        assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierOutFlow("flow", null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierOutFlow(null, match, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, nsh, 0L));
     }
 
     @Test
@@ -71,11 +69,11 @@ public class SfcScfOfUtilsTest {
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 
-        assertFalse(SfcScfOfUtils.createClassifierInFlow(null, null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierInFlow("node", null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierInFlow(null, "flow", null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierInFlow(null, null, null, 0L));
-        assertFalse(SfcScfOfUtils.createClassifierInFlow(null, null, nsh, 0L));
+        assertNull(SfcScfOfUtils.createClassifierInFlow(null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierInFlow(null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierInFlow("flow", null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierInFlow(null, null, 0L));
+        assertNull(SfcScfOfUtils.createClassifierInFlow(null, nsh, 0L));
     }
 
     @Test
@@ -85,10 +83,10 @@ public class SfcScfOfUtilsTest {
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 
-        assertFalse(SfcScfOfUtils.createClassifierRelayFlow(null, null, null));
-        assertFalse(SfcScfOfUtils.createClassifierRelayFlow("node", null, null));
-        assertFalse(SfcScfOfUtils.createClassifierRelayFlow(null, "flow", null));
-        assertFalse(SfcScfOfUtils.createClassifierRelayFlow(null, null, nsh));
+        assertNull(SfcScfOfUtils.createClassifierRelayFlow(null, null));
+        assertNull(SfcScfOfUtils.createClassifierRelayFlow(null, null));
+        assertNull(SfcScfOfUtils.createClassifierRelayFlow("flow", null));
+        assertNull(SfcScfOfUtils.createClassifierRelayFlow(null, nsh));
     }
 
     @Test

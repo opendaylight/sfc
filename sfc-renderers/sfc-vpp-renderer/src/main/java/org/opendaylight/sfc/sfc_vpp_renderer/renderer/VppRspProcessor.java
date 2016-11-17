@@ -21,7 +21,6 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.RenderedPathListener;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -45,37 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.RoutingBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.VxlanBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.VxlanGpeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.interfaces._interface.L2Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.Vpp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.BridgeDomains;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomain;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomainBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.vpp.bridge.domains.BridgeDomainKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeNextProtocol;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeTunnel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanGpeVni;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanTunnel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VxlanVni;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VppInterfaceAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.VppInterfaceAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev150105.l2.base.attributes.interconnection.BridgeBasedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.Ethernet;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.MdType1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshMdType1Augment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.NshMdType1AugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VppNsh;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.NshEntries;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.NshMaps;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntryKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.entries.NshEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMapKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.vpp.nsh.nsh.maps.NshMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev160624.VxlanGpe;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -88,17 +56,12 @@ public class VppRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppRspProcessor.class);
 
-    private final DataBroker dataBroker;
     private final VppNodeManager nodeManager;
-    private final RenderedPathListener rspListener;
     private static final String SFC_BD_NAME = new String("SFCVPP");
     private final Map<String, String> bridgeDomainCreated = new HashMap<>();
 
-    public VppRspProcessor(DataBroker dataBroker, VppNodeManager nodeManager) {
-        this.dataBroker = Preconditions.checkNotNull(dataBroker);
+    public VppRspProcessor(VppNodeManager nodeManager) {
         this.nodeManager = Preconditions.checkNotNull(nodeManager);
-        // Register RSP listener
-        rspListener = new RenderedPathListener(dataBroker, this);
     }
 
     public void updateRsp(RenderedServicePath renderedServicePath) {
@@ -132,7 +95,7 @@ public class VppRspProcessor {
             currentSffName = hop.getServiceFunctionForwarder();
             currentMountpoint = getSffMountpoint(currentSffName);
             if (currentMountpoint == null) {
-                LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
+                LOG.error("Resolving of RSP {} failed in updateRsp, mountpoint for SFF {} is null", renderedServicePath.getName()
                     .getValue(), currentSffName.getValue());
                 return;
             }
@@ -145,7 +108,7 @@ public class VppRspProcessor {
                 return;
             }
             ipList = getSffSfIps(currentSffName, sfName);
-            if ((ipList == null) || ipList.isEmpty()) {
+            if (ipList == null || ipList.isEmpty()) {
                 LOG.error("failed to get IP for DPL for SFF {} in RSP {}", currentSffName.getValue(), renderedServicePath.getName().getValue());
                 return;
             }
@@ -182,7 +145,7 @@ public class VppRspProcessor {
                 }
             }
 
-            if ((previousSffName != null) && (!previousSffName.equals(currentSffName))) {
+            if (previousSffName != null && !previousSffName.equals(currentSffName)) {
                 //previous SFF <-> current SFF
                 ret = configureVxlanGpeNsh(previousMountPoint, previousSffName, preLocalIp, localIp, pathId, serviceIndex);
                 if (!ret) {
@@ -226,7 +189,7 @@ public class VppRspProcessor {
             currentSffName = hop.getServiceFunctionForwarder();
             currentMountpoint = getSffMountpoint(currentSffName);
             if (currentMountpoint == null) {
-                LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
+                LOG.error("Resolving of RSP {} failed in deleteRsp, mountpoint for SFF {} is null", renderedServicePath.getName()
                     .getValue(), currentSffName.getValue());
                 return;
             }
@@ -239,7 +202,7 @@ public class VppRspProcessor {
                 return;
             }
             ipList = getSffSfIps(currentSffName, sfName);
-            if ((ipList == null) || ipList.isEmpty()) {
+            if (ipList == null || ipList.isEmpty()) {
                 LOG.error("failed to get IP for DPL for SFF {} in RSP {}", currentSffName.getValue(), renderedServicePath.getName().getValue());
                 return;
             }
@@ -266,7 +229,7 @@ public class VppRspProcessor {
                 }
             }
 
-            if ((previousSffName != null) && (!previousSffName.equals(currentSffName))) {
+            if (previousSffName != null && !previousSffName.equals(currentSffName)) {
                 removeVxlanGpePort(previousMountPoint, preLocalIp, localIp, Long.valueOf(0), previousSffName.getValue()); //previous SFF <-> current SFF
                 removeVxlanGpePort(currentMountpoint, localIp, preLocalIp, Long.valueOf(0), currentSffName.getValue());  //current SFF <-> previous SFF
             }
@@ -275,8 +238,7 @@ public class VppRspProcessor {
 
     private DataBroker getSffMountpoint(SffName sffName) {
         // Read SFF from Controller CONF
-        org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder sfcForwarder =
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        ServiceFunctionForwarder sfcForwarder = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
         if (sfcForwarder == null) {
             LOG.error("SFF name {} not found in data store", sffName.getValue());
             return null;
@@ -800,7 +762,4 @@ public class VppRspProcessor {
         return true;
     }
 
-    public void unregisterRspListener() {
-        rspListener.getRegistrationObject().close();
-    }
 }

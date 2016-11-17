@@ -8,14 +8,10 @@
 
 package org.opendaylight.sfc.sfc_vpp_renderer.listener;
 
-import java.util.Collection;
-import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppSffManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -26,44 +22,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ServiceForwarderListener implements DataTreeChangeListener<ServiceFunctionForwarder> {
+public class ServiceForwarderListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceForwarderListener.class);
-    private final ListenerRegistration vppSffListenerRegistration;
+    private final ListenerRegistration<ServiceForwarderListener> vppSffListenerRegistration;
     private final VppSffManager sffManager;
 
     public ServiceForwarderListener(DataBroker dataBroker, VppSffManager sffManager) {
         this.sffManager = sffManager;
         // Register listener
-        vppSffListenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build()), this);
+        final DataTreeIdentifier<ServiceFunctionForwarder> treeId = new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class));
+        vppSffListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<ServiceFunctionForwarder>> changes) {
-        for (DataTreeModification<ServiceFunctionForwarder> modification : changes) {
-            DataObjectModification<ServiceFunctionForwarder> rootNode = modification.getRootNode();
-            InstanceIdentifier<ServiceFunctionForwarder> key = modification.getRootPath().getRootIdentifier();
-            LOG.info("SFF change event: key = {}, type = {}", key, rootNode.getModificationType());
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null) {
-                        sffManager.disposeSff(rootNode.getDataAfter(), false);
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null) {
-                        sffManager.disposeSff(rootNode.getDataBefore(), true);
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled modification type " + rootNode.getModificationType());
-            }
+    public void close() throws Exception {
+        LOG.debug("Closing listener...");
+        if (vppSffListenerRegistration != null) {
+            vppSffListenerRegistration.close();
         }
     }
 
-    public ListenerRegistration getRegistrationObject() {
-        return vppSffListenerRegistration;
+    @Override
+    protected void add(ServiceFunctionForwarder newDataObject) {
+        LOG.info("SFF added [{}]", newDataObject.getName());
+        sffManager.disposeSff(newDataObject, false);
     }
+
+    @Override
+    protected void remove(ServiceFunctionForwarder removedDataObject) {
+        LOG.info("SFF removed [{}]", removedDataObject.getName());
+        sffManager.disposeSff(removedDataObject, true);
+    }
+
+    @Override
+    protected void update(ServiceFunctionForwarder originalDataObject, ServiceFunctionForwarder updatedDataObject) {
+        LOG.info("SFF updated original [{}] updated [{}]", originalDataObject.getName(), updatedDataObject.getName());
+        sffManager.disposeSff(updatedDataObject, false);
+    }
+
 }

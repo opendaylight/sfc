@@ -2,49 +2,67 @@ Service Function Chaining
 =========================
 
 Service Function Chaining provides the ability to define an ordered list of a
-network services (e.g. firewalls, load balancers). These service are then
+network services (e.g. firewalls, load balancers). These services are then
 "stitched" together in the network to create a service chain. This project
 provides the infrastructure (chaining logic, APIs) needed for ODL to provision
 a service chain in the network and an end-user application for defining such
 chains.
 
-Instalation
-===========
+Installation
+============
 
-The installation has been tested on Ubuntu Linux.  
+The installation has been tested on Ubuntu Linux.
 
 1.- SFC needs to have Python 3.4 installed
 
-2.- openssl-devel MUST BE INSTALLED as it is pip dependency 
-    sudo apt-get install libssl-dev openssl
-    
+2.- openssl-devel MUST BE INSTALLED as it is pip dependency
+
+    .. code-block:: console
+
+       sudo apt-get install libssl-dev openssl
+ 
 3.- Before you run installation from Pypi,
     be sure you have installed libnetfilter-queue.
     To run installation of libnetfilter-queue:
-    sudo apt-get install libnetfilter-queue-dev
 
-4.- be sure you have installed pip3
-    to run installation of pip3 :
-    sudo apt-get install python3-pip
+    .. code-block:: console
+
+       sudo apt-get install libnetfilter-queue-dev
+
+4.- Be sure you have installed pip3
+    to run installation of pip3:
+
+    .. code-block:: console
+
+       sudo apt-get install python3-pip
 
 5.- Finally the installation of the SFC package:
-    sudo pip3 install sfc
-    
+
+    .. code-block:: console
+
+       sudo pip3 install sfc
+ 
 All other dependencies are handled in the SFC setup.
 
-There is still possibility to download 
+There is still possibility to download
 the sfc-xxx.tar.gz file from Pypi repository,
-unzip it , locate setup.py file and use the python installer
-python3 setup.py install
- 
+unzip it, locate setup.py file and use the python installer as
 
+.. code-block:: console
+
+   python3 setup.py install
+
+ 
 Usage
-=======
- 
-python3.4 sfc_agent --rest --nfq-class ---odl-ip-port=<ODL REST IP:port> --auto-sff-name
+=====
 
-note:
-root privileges are required if `--nfq-class` flag is used
+.. code-block:: console
+ 
+   python3.4 sfc_agent --rest --nfq-class ---odl-ip-port=<ODL REST IP:port> --auto-sff-name
+
+.. note::
+
+   root privileges are required if `--nfq-class` flag is used
 
 SFC Agent
 
@@ -66,7 +84,10 @@ optional arguments:
 
 Example
 =======
-  sudo python3.4 sfc_agent.py --rest --odl-ip-port 192.168.33.11:8181 --auto-sff-name --nfq-class
+
+.. code-block:: console
+
+   sudo python3.4 sfc_agent.py --rest --odl-ip-port 192.168.33.11:8181 --auto-sff-name --nfq-class
   
-  this command will run the sfc_agent using REST, trying to recognize its own SFF name and running 
-  also NFQ classifier instance. 
+this command will run the sfc_agent using REST, trying to recognize its own SFF name and running 
+also NFQ classifier instance. 

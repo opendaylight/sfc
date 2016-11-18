@@ -12,6 +12,7 @@ import com.google.common.collect.Iterables;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionMetadataAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.ContextMetadata;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
@@ -40,6 +41,7 @@ public class SfcNshHeader {
     private Long nshMetaC3 = null;
     private Long nshMetaC4 = null;
     private SffName sffName = null;
+    private SfName sfName = null;
 
     public SfcNshHeader() {
     }
@@ -139,6 +141,15 @@ public class SfcNshHeader {
         return this;
     }
 
+    public SfName getFirstSfName() {
+        return sfName;
+    }
+
+    public SfcNshHeader setFirstSfName(SfName sfName) {
+        this.sfName = sfName;
+        return this;
+    }
+
     public static SfcNshHeader getSfcNshHeader(RspName rspName) {
 
         if (rspName == null) {
@@ -158,10 +169,11 @@ public class SfcNshHeader {
             return null;
         }
 
-        if (rspFirstHop.getIp() == null) {
-            LOG.error("getSfcNshHeader: ip address of rsp first hop is null\n");
-            return null;
-        }
+        // in logical SFF scenarios, the RSP hops don't have IP locators. In fact, they don't have locators at all.
+//        if (rspFirstHop.getIp() == null) {
+//            LOG.error("getSfcNshHeader: ip address of rsp first hop is null\n");
+//            return null;
+//        }
 
         if (renderedServicePath.getRenderedServicePathHop() == null) {
             LOG.error("getSfcNshHeader: getRenderedServicePathHop is null\n");
@@ -175,15 +187,18 @@ public class SfcNshHeader {
             return null;
         }
 
-        SffName sffName = lastRspHop.getServiceFunctionForwarder();
+        RenderedServicePathHop theFirstHop = renderedServicePath.getRenderedServicePathHop().get(0);
 
         SfcNshHeader sfcNshHeader = new SfcNshHeader()
-            .setVxlanIpDst(rspFirstHop.getIp().getIpv4Address())
-            .setVxlanUdpPort(rspFirstHop.getPort())
-            .setNshNsp(renderedServicePath.getPathId())
-            .setNshStartNsi(rspFirstHop.getStartingIndex())
-            .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
-            .setSffName(lastRspHop.getServiceFunctionForwarder());
+                .setNshNsp(renderedServicePath.getPathId())
+                .setNshStartNsi(rspFirstHop.getStartingIndex())
+                .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
+                .setSffName(lastRspHop.getServiceFunctionForwarder())
+                .setFirstSfName(theFirstHop.getServiceFunctionName());
+
+        if (rspFirstHop.getIp() != null) {
+            sfcNshHeader.setVxlanIpDst(rspFirstHop.getIp().getIpv4Address()).setVxlanUdpPort(rspFirstHop.getPort());
+        }
 
         String context = renderedServicePath.getContextMetadata();
         if (context == null) {

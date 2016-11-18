@@ -66,7 +66,7 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
-      {  
+      {
         "name": "SFF1",
         "sff-data-plane-locator": [
           {

@@ -1,0 +1,4 @@
+sudo ovs-vsctl set bridge $NODE protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_dst=80,actions=move:NXM_OF_ETH_DST[0..31]->NXM_NX_REG0[],move:NXM_OF_ETH_DST[32..47]->NXM_NX_REG1[0..15],move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],move:NXM_NX_REG0[0..31]->NXM_OF_ETH_SRC[0..31],move:NXM_NX_REG1[0..15]->NXM_OF_ETH_SRC[32..47],in_port"
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=10,in_port=1,dl_type=0x0800,nw_proto=6,tp_src=80,actions=move:NXM_OF_ETH_DST[0..31]->NXM_NX_REG0[],move:NXM_OF_ETH_DST[32..47]->NXM_NX_REG1[0..15],move:NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[],move:NXM_NX_REG0[0..31]->NXM_OF_ETH_SRC[0..31],move:NXM_NX_REG1[0..15]->NXM_OF_ETH_SRC[32..47],in_port"
+sudo ovs-ofctl -O Openflow13 add-flow $NODE "table=0,priority=1,actions=drop"

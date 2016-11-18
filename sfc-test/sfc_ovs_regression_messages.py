@@ -5,6 +5,7 @@ __version__ = "0.1"
 __email__ = "andrej.kincel@gmail.com"
 __status__ = "Tested with SFC-Karaf distribution as of 04/14/2015"
 
+
 SERVICE_FUNCTION_FORWARDERS_JSON = """
 {
   "service-function-forwarders": {
@@ -50,12 +51,14 @@ SERVICE_FUNCTION_FORWARDERS_JSON = """
         ],
         "ip-mgmt-address": "10.0.2.7",
         "service-node": "",
-        "service-function-forwarder-metadata-features:vxlan-overlay-classifier-type-1": {}
+        {SFF_VXLAN_OVERLAY_CLF_T1}: {}
       }
     ]
   }
 }
-"""
+""".format(SFF_VXLAN_OVERLAY_CLF_T1=(
+    "service-function-forwarder-metadata-features:"
+    "vxlan-overlay-classifier-type-1"))
 
 SERVICE_FUNCTIONS_JSON = """
 {
@@ -181,8 +184,6 @@ SERVICE_FORWARDER_OVS_RPC_RESP = """
     "result": true
   }
 }"""
-
-
 
 SERVICE_FUNCTION_FORWARDERS_OPER_JSON = """
 {

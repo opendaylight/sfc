@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.util.openflow.transactional_writer;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -31,10 +32,14 @@ public interface SfcOfFlowWriterInterface {
 
     void writeFlow(FlowDetails theFlowData);
 
+    boolean writeFlows(Collection<FlowDetails> theFlows);
+
     //Remove flows from MD-SAL datastore
     void removeFlow(final String sffNodeName, FlowKey flowKey, TableKey tableKey);
 
     void removeFlow(FlowDetails theFlowData);
+
+    boolean removeFlows(Collection<FlowDetails> theFlows);
 
     //Write group to MD-SAL datastore
     void writeGroupToDataStore(String sffNodeName, GroupBuilder gb, boolean isAdd);

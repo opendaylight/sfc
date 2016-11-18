@@ -61,7 +61,7 @@ public class TokenTest {
             .setExpires(expires)
             .setId("7a17dc67ba284ab2beeccc21ce198626")
             .setTenant(Tenant.builder()
-                .setDesription(null)
+                .setDescription(null)
                 .setEnabled(true)
                 .setId("f3a250db7c374654854f56ad60caea66")
                 .setName("admin")
@@ -94,7 +94,7 @@ public class TokenTest {
 
         // check Tenant data
         Assert.assertTrue(jsonFileToken.getTenant().getId().equals(token.getTenant().getId()));
-        Assert.assertTrue(jsonFileToken.getTenant().getDesription() == null);
+        Assert.assertTrue(jsonFileToken.getTenant().getDescription() == null);
         Assert.assertTrue(jsonFileToken.getTenant().getName().equals(token.getTenant().getName()));
         Assert.assertTrue(jsonFileToken.getTenant().isEnabled() == token.getTenant().isEnabled());
 

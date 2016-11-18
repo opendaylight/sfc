@@ -323,7 +323,7 @@ public class TackerManagerTest extends JerseyTest {
                     .setIssued_at(now)
                     .setExpires(expire)
                     .setId("7a17dc67ba284ab2beeccc21ce198626")
-                    .setTenant(Tenant.builder().setDesription(null).setEnabled(true).setId("").setName("admin").build())
+                    .setTenant(Tenant.builder().setDescription(null).setEnabled(true).setId("").setName("admin").build())
                     .setAudit_ids(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
                     .build();
 

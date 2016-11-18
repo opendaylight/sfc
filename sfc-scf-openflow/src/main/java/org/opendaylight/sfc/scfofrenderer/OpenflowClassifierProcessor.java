@@ -111,6 +111,20 @@ public class OpenflowClassifierProcessor {
         }
 
         Optional<String> nodeName = classifierInterface.getNodeName(itfName.get());
+
+        // bind/unbind the interface in genius, if the classifier is attached to a logical interface
+        // (according to the scenario)
+        if (usesLogicalInterfaces(sff)) {
+            if (addClassifierScenario) {
+                ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
+                LOG.debug("Bound interface {}", itfName.get());
+            }
+            else {
+                ClassifierGeniusIntegration.performGeniusServiceUnbinding(tx, itfName.get());
+                LOG.debug("Unbound interface {}", itfName.get());
+            }
+        }
+
         if(!nodeName.isPresent()) {
             LOG.error("createdServiceFunctionClassifier: Could not extract the node name from the OVS interface");
             return Collections.emptyList();

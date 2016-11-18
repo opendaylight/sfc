@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_f4f78657",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 371,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-18T12:24:40Z",
+      "side": 1,
+      "message": "This should be changed in order to return different values depending on input, not on the call ordinal. As it is it very difficult to understand, and it will break with minimal implementation changes (e.g. because another getDpidFromInterface call being made for whatever reason)",
+      "range": {
+        "startLine": 359,
+        "startChar": 8,
+        "endLine": 371,
+        "endChar": 35
+      },
+      "revId": "6eedcab7911da7852febaa344ad69b1f48fbbf05",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d489aacb",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/test/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfLogicalSffRspProcessorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-11-18T12:24:40Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this have been changed in order to verify the error you detected regarding redundant flow writes? (together with the discussed renderer correction)",
+      "range": {
+        "startLine": 426,
+        "startChar": 8,
+        "endLine": 428,
+        "endChar": 110
+      },
+      "revId": "6eedcab7911da7852febaa344ad69b1f48fbbf05",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_b484eeb1",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcScfOfDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-18T12:23:53Z",
+      "side": 1,
+      "message": "Nobody is calling close().\nCan you also modify SfcScfOfRenderer.close() to call close on this object.",
+      "revId": "d1f165f101936162d4d89b8cb03d6141ed223d95",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

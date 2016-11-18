@@ -10,7 +10,7 @@ package org.opendaylight.sfc.tacker.dto;
 
 public class Tenant {
 
-    private String desription;
+    private String description;
     private boolean enabled;
     private String id;
     private String name;
@@ -19,7 +19,7 @@ public class Tenant {
     private Tenant() {}
 
     private Tenant(TenantBuilder builder) {
-        this.desription = builder.getDesription();
+        this.description = builder.getDescription();
         this.enabled = builder.isEnabled();
         this.id = builder.getId();
         this.name = builder.getName();
@@ -29,8 +29,8 @@ public class Tenant {
         return new TenantBuilder();
     }
 
-    public String getDesription() {
-        return desription;
+    public String getDescription() {
+        return description;
     }
 
     public boolean isEnabled() {
@@ -47,17 +47,17 @@ public class Tenant {
 
     public static class TenantBuilder {
 
-        private String desription;
+        private String description;
         private boolean enabled;
         private String id;
         private String name;
 
-        public String getDesription() {
-            return desription;
+        public String getDescription() {
+            return description;
         }
 
-        public TenantBuilder setDesription(String desription) {
-            this.desription = desription;
+        public TenantBuilder setDescription(String description) {
+            this.description = description;
             return this;
         }
 

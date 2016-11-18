@@ -109,7 +109,14 @@ public class OpenflowClassifierProcessor {
         // bind/unbind the interface in genius, if the classifier is attached to a logical interface
         // (according to the scenario)
         if (logicalClassifier.usesLogicalInterfaces()) {
-            // TODO - code to be uploaded in the 3rd commit
+            if (addClassifierScenario) {
+                ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
+                LOG.debug("Bound interface {}", itfName.get());
+            }
+            else {
+                ClassifierGeniusIntegration.performGeniusServiceUnbinding(tx, itfName.get());
+                LOG.debug("Unbound interface {}", itfName.get());
+            }
         }
 
         Optional<String> nodeName = logicalClassifier.getNodeName(itfName.get());

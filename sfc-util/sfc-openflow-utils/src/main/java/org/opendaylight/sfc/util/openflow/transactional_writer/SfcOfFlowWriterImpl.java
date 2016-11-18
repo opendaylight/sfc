@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -148,6 +149,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     }
 
     @Override
+    public boolean writeFlows(Collection<FlowDetails> theFlows) {
+        return setOfFlowsToAdd.addAll(theFlows);
+    }
+
+    @Override
     public void removeFlow(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
 
@@ -164,6 +170,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
                 theFlowData.getTableKey().getId(),
                 theFlowData.getSffNodeName());
         setOfFlowsToDelete.add(theFlowData);
+    }
+
+    @Override
+    public boolean removeFlows(Collection<FlowDetails> theFlows) {
+        return setOfFlowsToDelete.addAll(theFlows);
     }
 
     /**

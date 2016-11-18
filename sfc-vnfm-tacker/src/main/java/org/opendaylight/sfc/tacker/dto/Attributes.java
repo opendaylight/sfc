@@ -18,15 +18,15 @@ public class Attributes {
     // used by GSON
     private Attributes() {}
 
-    private Attributes(AtributesBuilder atributesBuilder) {
-        this.service_type = atributesBuilder.getServiceType();
-        this.heat_template = atributesBuilder.getHeatTemplate();
-        this.monitoring_policy = atributesBuilder.getMonitoringPolicy();
-        this.failure_policy = atributesBuilder.getFailurePolicy();
+    private Attributes(AttributesBuilder attributesBuilder) {
+        this.service_type = attributesBuilder.getServiceType();
+        this.heat_template = attributesBuilder.getHeatTemplate();
+        this.monitoring_policy = attributesBuilder.getMonitoringPolicy();
+        this.failure_policy = attributesBuilder.getFailurePolicy();
     }
 
-    public static AtributesBuilder builder() {
-        return new AtributesBuilder();
+    public static AttributesBuilder builder() {
+        return new AttributesBuilder();
     }
 
     public String getServiceType() {
@@ -45,7 +45,7 @@ public class Attributes {
         return failure_policy;
     }
 
-    public static class AtributesBuilder {
+    public static class AttributesBuilder {
 
         private String service_type;
         private String heat_template;
@@ -56,7 +56,7 @@ public class Attributes {
             return service_type;
         }
 
-        public AtributesBuilder setServiceType(String service_type) {
+        public AttributesBuilder setServiceType(String service_type) {
             this.service_type = service_type;
             return this;
         }
@@ -65,7 +65,7 @@ public class Attributes {
             return heat_template;
         }
 
-        public AtributesBuilder setHeatTemplate(String heat_template) {
+        public AttributesBuilder setHeatTemplate(String heat_template) {
             this.heat_template = heat_template;
             return this;
         }
@@ -74,7 +74,7 @@ public class Attributes {
             return monitoring_policy;
         }
 
-        public AtributesBuilder setMonitoringPolicy(String monitoring_policy) {
+        public AttributesBuilder setMonitoringPolicy(String monitoring_policy) {
             this.monitoring_policy = monitoring_policy;
             return this;
         }
@@ -83,7 +83,7 @@ public class Attributes {
             return failure_policy;
         }
 
-        public AtributesBuilder setFailurePolicy(String failure_policy) {
+        public AttributesBuilder setFailurePolicy(String failure_policy) {
             this.failure_policy = failure_policy;
             return this;
         }

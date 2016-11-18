@@ -41,6 +41,7 @@ public class SfcScfOfRenderer implements AutoCloseable {
     public void close() throws ExecutionException, InterruptedException {
         LOG.info("SfcScfOfRenderer auto-closed");
         try {
+            sfcScfDataListener.close();
         } catch(Exception e) {
             LOG.error("SfcScfOfRenderer auto-closed exception {}", e.getMessage());
         }

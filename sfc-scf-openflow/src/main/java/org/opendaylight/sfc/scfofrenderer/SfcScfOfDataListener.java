@@ -38,6 +38,7 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
     public SfcScfOfDataListener(final DataBroker dataBroker, SfcScfOfProcessor sfcScfProcessor) {
         this.dataBroker = dataBroker;
         this.sfcScfProcessor = sfcScfProcessor;
+        init();
     }
 
     public void init() {

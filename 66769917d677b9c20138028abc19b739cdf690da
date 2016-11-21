@@ -1,0 +1,671 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_d890b850",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/AbstractDataStoreManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "Null is redundant here.",
+      "range": {
+        "startLine": 52,
+        "startChar": 47,
+        "endLine": 52,
+        "endChar": 51
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_38a0cc9e",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 127,
+        "startChar": 57,
+        "endLine": 127,
+        "endChar": 64
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_189b5073",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 139,
+        "startChar": 58,
+        "endLine": 139,
+        "endChar": 65
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7889a425",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 153,
+        "startChar": 48,
+        "endLine": 153,
+        "endChar": 54
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f87c9422",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderAclAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 65,
+        "startChar": 61,
+        "endLine": 65,
+        "endChar": 67
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d877183a",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderAclAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 74,
+        "startChar": 57,
+        "endLine": 74,
+        "endChar": 63
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_38772c3c",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderAclAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 84,
+        "startChar": 61,
+        "endLine": 84,
+        "endChar": 67
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f8a3f49b",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleIPv6Test.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 163,
+        "startChar": 64,
+        "endLine": 163,
+        "endChar": 71
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_38ae0c86",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleIPv6Test.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 173,
+        "startChar": 62,
+        "endLine": 173,
+        "endChar": 68
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_58bae8c0",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "Access modifier.",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 71,
+        "endChar": 11
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_78b7e4d8",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPISimpleTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "Not needed.",
+      "range": {
+        "startLine": 71,
+        "startChar": 22,
+        "endLine": 71,
+        "endChar": 26
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b8b17ce3",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 57,
+        "startChar": 73,
+        "endLine": 57,
+        "endChar": 79
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_98b480d2",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 67,
+        "startChar": 70,
+        "endLine": 67,
+        "endChar": 76
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f8cad44d",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 130,
+        "startChar": 50,
+        "endLine": 130,
+        "endChar": 56
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d8c5583e",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderServiceTypeAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "Access modifier.",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 29
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_18c07029",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 85,
+        "startChar": 62,
+        "endLine": 85,
+        "endChar": 68
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_78dec412",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 104,
+        "startChar": 59,
+        "endLine": 104,
+        "endChar": 65
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b8e85cb5",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 123,
+        "startChar": 52,
+        "endLine": 123,
+        "endChar": 58
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_98ebe0af",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 140,
+        "startChar": 57,
+        "endLine": 140,
+        "endChar": 68
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f8d134fc",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 201,
+        "startChar": 53,
+        "endLine": 201,
+        "endChar": 64
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d8cc3864",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 235,
+        "startChar": 48,
+        "endLine": 235,
+        "endChar": 55
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_38dc4c12",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 246,
+        "startChar": 52,
+        "endLine": 246,
+        "endChar": 58
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_9802c06d",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 84,
+        "startChar": 62,
+        "endLine": 84,
+        "endChar": 68
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_f8f8147e",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 100,
+        "startChar": 59,
+        "endLine": 100,
+        "endChar": 65
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_d8f3989d",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 118,
+        "startChar": 52,
+        "endLine": 118,
+        "endChar": 58
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_38f3ac9f",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 134,
+        "startChar": 57,
+        "endLine": 134,
+        "endChar": 68
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_18eeb0b4",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 228,
+        "startChar": 48,
+        "endLine": 228,
+        "endChar": 55
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_782c0403",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 238,
+        "startChar": 52,
+        "endLine": 238,
+        "endChar": 58
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_98392044",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-11-21T16:47:42Z",
+      "side": 1,
+      "message": "This can be removed because the compiler infers the type since J 1.7.",
+      "range": {
+        "startLine": 43,
+        "startChar": 58,
+        "endLine": 43,
+        "endChar": 64
+      },
+      "revId": "66769917d677b9c20138028abc19b739cdf690da",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

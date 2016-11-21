@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_c3256ec3",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/LogicallyAttachedClassifier.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-21T14:00:50Z",
+      "side": 1,
+      "message": "very reasonable.\n\nthat way the client\u0027s code gets more readable (for instance, getting the inPort in the OpenflowClassifierProcessor)",
+      "parentUuid": "3a65312a_e3e06a98",
+      "range": {
+        "startLine": 18,
+        "startChar": 13,
+        "endLine": 18,
+        "endChar": 40
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_88a0b544",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/LogicallyAttachedClassifier.java",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_633f3ad7",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/LogicallyAttachedClassifier.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-21T14:00:50Z",
+      "side": 1,
+      "message": "Ok, will do.",
+      "parentUuid": "3a65312a_88a0b544",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 7
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_c3028e3d",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2016-11-21T13:33:25Z",
       "side": 1,
       "message": "Woudl it make sense to encapsulate this in the LogicallyAttachedClassifier?",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 9
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_950d693a",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-21T14:00:50Z",
+      "side": 1,
+      "message": "Not sure if that is the correct place, but I definitely agree that this belongs somewhere else.\n\nI\u0027ll look into it, then propose a better location.",
+      "parentUuid": "3a65312a_c3028e3d",
       "range": {
         "startLine": 165,
         "startChar": 0,

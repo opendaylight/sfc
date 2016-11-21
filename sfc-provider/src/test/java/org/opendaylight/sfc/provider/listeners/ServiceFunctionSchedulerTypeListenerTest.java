@@ -39,9 +39,10 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     private DataTreeModification<ServiceFunctionSchedulerType> dataTreeModification;
     DataObjectModification<ServiceFunctionSchedulerType> dataObjectModification;
 
-    private final String SFST_NAME2 = "listerner2SFST";
     private final String SFST_NAME = "listernerSFST";
     private final List<String> SFST_NAMES = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
+
         {
             add("listernerSFST1");
             add("listernerSFST2");
@@ -49,6 +50,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         }
     };
     private final Class<? extends ServiceFunctionSchedulerTypeIdentity> SFST_TYPE = Random.class;
+    @SuppressWarnings("rawtypes")
     private final Class[] SFST_TYPES = {ShortestPath.class, RoundRobin.class, LoadBalance.class};
 
 
@@ -58,7 +60,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     @SuppressWarnings("unchecked")
     @Before
     public void before() throws Exception {
-        setOdlSfc();
+        setupSfc();
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionSchedulerTypeListener = new ServiceFunctionSchedulerTypeListener(getDataBroker());
@@ -202,6 +204,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     /**
      * Builds a complete service Function Scheduler Types Object
      */
+    @SuppressWarnings("unchecked")
     public void buildServiceFunctionSchedulerTypes() throws Exception {
 
         Boolean enabledStatus = true;
@@ -218,18 +221,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     }
 
 
-    /**
-     * Verify the number of enabled algorithm type,
-     * cleans up
-     */
-    private void testNumOfEnabledAlgorithmType() throws Exception {
-        int count = 0;
-        int numOfTrue = 1;
-        //buildServiceFunctionSchedulerTypes();
-        count = countNumOfEnabledAlgorithmType();
-        assertEquals("Must be equal", numOfTrue, count);
-
-    }
     private int countNumOfEnabledAlgorithmType() throws Exception {
         int count = 0;
         ServiceFunctionSchedulerTypes sfsts = SfcProviderScheduleTypeAPI.readAllServiceFunctionScheduleTypes();
@@ -237,7 +228,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         for (ServiceFunctionSchedulerType sfst : sfstList) {
             boolean enabled = sfst.isEnabled();
-            if ( enabled ) count++;
+            if ( enabled ) {
+                count++;
+            }
             // Clean-up
             assertTrue(SfcProviderScheduleTypeAPI.deleteServiceFunctionScheduleType(sfst.getType()));
             Thread.sleep(500);

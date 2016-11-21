@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.provider.api;
 
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -63,7 +63,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataSt
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     /*
@@ -224,10 +224,11 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataSt
         InstanceIdentifier<ServiceFunctionTypes> sftIID =
                 InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
+        }
     }
 }

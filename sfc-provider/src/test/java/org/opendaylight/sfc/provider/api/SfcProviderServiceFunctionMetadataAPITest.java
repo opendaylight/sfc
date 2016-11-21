@@ -40,7 +40,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test

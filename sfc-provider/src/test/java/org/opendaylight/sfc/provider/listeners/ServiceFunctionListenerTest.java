@@ -98,7 +98,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     @SuppressWarnings("unchecked")
     @Before
     public void before() throws Exception {
-        setOdlSfc();
+        setupSfc();
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionListener = new ServiceFunctionListener(getDataBroker());

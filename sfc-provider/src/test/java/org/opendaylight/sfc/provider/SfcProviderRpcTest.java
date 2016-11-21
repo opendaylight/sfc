@@ -124,8 +124,8 @@ import org.slf4j.LoggerFactory;
 
 public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
-    @SuppressWarnings("serial")
     private final List<SffName> sffNames = new ArrayList<SffName>() {
+        private static final long serialVersionUID = 1L;
 
         {
             add(new SffName("sff1"));
@@ -136,8 +136,8 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     };
 
     // XXX TODO Why can't we consolidate these two SFF lists ?
-    @SuppressWarnings("serial")
     private final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+        private static final long serialVersionUID = 1L;
 
         {
             add(new SffName("SFF1"));
@@ -151,6 +151,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
             {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
 
     List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
 
         {
             add("196.168.66.101");
@@ -318,7 +319,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
     @Before
     public void setUp() {
         sfcProviderRpc = new SfcProviderRpc();
-        setOdlSfc();
+        setupSfc();
     }
 
     @After
@@ -824,7 +825,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         List<SfName> chainSf1 = new ArrayList<>(); // list of Sf-s in chain 1
         List<SfName> chainSf2 = new ArrayList<>(); // list of Sf-s in chain 2
         List<SfName> chainSf3 = new ArrayList<>(); // list of Sf-s in chain 3
-        Future futureTask1, futureTask2, futureTask3;
+        Future<RpcResult<CreateRenderedPathOutput>> futureTask1, futureTask2, futureTask3;
         RpcResult<CreateRenderedPathOutput> rpcResult1 = null, rpcResult2 = null, rpcResult3 = null;
         RenderedServicePath createdRsp1 = null, createdRsp2 = null, createdRsp3 = null;
 
@@ -908,28 +909,31 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         // test
         try {
             // noinspection unchecked
-            rpcResult1 = (RpcResult<CreateRenderedPathOutput>) futureTask1.get();
+            rpcResult1 = futureTask1.get();
             assertTrue("Must be true", rpcResult1.isSuccessful());
             // noinspection unchecked
-            rpcResult2 = (RpcResult<CreateRenderedPathOutput>) futureTask2.get();
+            rpcResult2 = futureTask2.get();
             assertTrue("Must be true", rpcResult2.isSuccessful());
             // noinspection unchecked
-            rpcResult3 = (RpcResult<CreateRenderedPathOutput>) futureTask3.get();
+            rpcResult3 = futureTask3.get();
             assertTrue("Must be true", rpcResult3.isSuccessful());
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("failed to ....", e);
         }
 
         // get created rendered service paths
-        if (rpcResult1 != null)
+        if (rpcResult1 != null) {
             createdRsp1 =
                     SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult1.getResult().getName()));
-        if (rpcResult2 != null)
+        }
+        if (rpcResult2 != null) {
             createdRsp2 =
                     SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult2.getResult().getName()));
-        if (rpcResult3 != null)
+        }
+        if (rpcResult3 != null) {
             createdRsp3 =
                     SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(rpcResult3.getResult().getName()));
+        }
 
         assertNotNull("Must not be null", createdRsp1);
         assertNotNull("Must not be null", createdRsp2);
@@ -965,11 +969,11 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function type
      * put type, and list of all service functions with that type
      */
-    private boolean createServiceFunctionType(SftTypeName serviceType, List<SfName> sfNames) {
+    private boolean createServiceFunctionType(SftTypeName serviceType, List<SfName> theSfNames) {
         List<SftServiceFunctionName> sftServiceFunctionNames = new ArrayList<>();
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder;
 
-        for (SfName sfName : sfNames) {
+        for (SfName sfName : theSfNames) {
             sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
             sftServiceFunctionNameBuilder.setName(sfName)
                 .setKey(new SftServiceFunctionNameKey(sfName));
@@ -1028,7 +1032,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * create service function group containing service functions of specific type
      * specify group name, list of service functions and type (should match with sf type) of group
      */
-    private boolean createServiceFunctionGroup(String groupName, List<SfName> sfNames, SftTypeName groupType) {
+    private boolean createServiceFunctionGroup(String groupName, List<SfName> theSfNames, SftTypeName groupType) {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
 
         /*
@@ -1041,7 +1045,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder sfcServiceFunctionBuilder =
                 new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionBuilder();
 
-        for (SfName sfName : sfNames) {
+        for (SfName sfName : theSfNames) {
             sfcServiceFunctionBuilder.setName(sfName)
                 .setKey(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionKey(
                         sfName));
@@ -1062,7 +1066,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
      * store and contain info
      * about type) and whether the chain si symmetric or not
      */
-    private boolean createServiceFunctionChain(SfcName chainName, List<SfName> sfNames) {
+    private boolean createServiceFunctionChain(SfcName chainName, List<SfName> theSfNames) {
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
 
         /*
@@ -1075,7 +1079,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
         SfcServiceFunctionBuilder sfcSfgServiceFunctionBuilder = new SfcServiceFunctionBuilder();
 
-        for (SfName sfName : sfNames) {
+        for (SfName sfName : theSfNames) {
             sfcSfgServiceFunctionBuilder.setName(sfName.getValue())
                 .setKey(new SfcServiceFunctionKey(sfName.getValue()))
                 .setType(SfcProviderServiceFunctionAPI.readServiceFunction(sfName).getType());

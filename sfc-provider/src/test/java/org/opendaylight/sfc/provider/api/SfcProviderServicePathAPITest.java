@@ -48,7 +48,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     // add and read service function path state

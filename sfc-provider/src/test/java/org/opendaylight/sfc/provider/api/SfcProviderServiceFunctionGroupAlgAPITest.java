@@ -25,7 +25,7 @@ public class SfcProviderServiceFunctionGroupAlgAPITest extends AbstractDataStore
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test

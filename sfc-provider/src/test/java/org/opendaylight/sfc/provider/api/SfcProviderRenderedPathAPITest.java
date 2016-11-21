@@ -225,7 +225,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method using partial mock
      */
     public void testCreateRenderedServicePathEntryUnsuccessful() throws Exception {
-        setOdlSfc();
+        setupSfc();
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
@@ -255,7 +255,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method
      */
     public void testCreateRenderedServicePathEntryUnsuccessful1() throws Exception {
-        setOdlSfc();
+        setupSfc();
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
@@ -276,18 +276,16 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      * there are null test cases of this method
      */
     public void testCreateRenderedServicePathEntryUnsuccessful2() throws Exception {
-        setOdlSfc();
+        setupSfc();
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
-        RenderedServicePath testRenderedServicePath;
 
         createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setTransportType(Mpls.class);
 
-        testRenderedServicePath = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(
+        RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
                 serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
 
         assertNull("Must be null", testRenderedServicePath);
@@ -302,9 +300,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
-        RenderedServicePath testRenderedServicePath;
 
         createRenderedPathInputBuilder.setName(null);
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
@@ -315,7 +311,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         serviceFunctionPathBuilder.setName(SFP_NAME);
 
-        testRenderedServicePath = sfcProviderRenderedPathAPI.createRenderedServicePathEntry(
+        RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
                 serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
 
         assertNotNull("Must not be null", testRenderedServicePath);

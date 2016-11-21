@@ -186,7 +186,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6GTest extends AbstractDataS
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         // Create Service Functions
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];

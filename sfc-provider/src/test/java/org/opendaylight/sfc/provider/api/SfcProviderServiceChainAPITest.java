@@ -45,7 +45,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test

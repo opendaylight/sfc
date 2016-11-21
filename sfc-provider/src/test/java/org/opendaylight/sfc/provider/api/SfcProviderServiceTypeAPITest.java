@@ -37,7 +37,7 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
         sfcProviderServiceTypeAPILocal = new SfcProviderServiceTypeAPI();
     }
 

@@ -58,7 +58,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
     @Before
     public void before() throws Exception {
-        setOdlSfc();
+        setupSfc();
 
         int maxTries = 10;
         boolean emptyFlag = true;

@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_e3e06a98",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/LogicallyAttachedClassifier.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-21T13:33:25Z",
+      "side": 1,
+      "message": "Would it be reasonable to have a Classifier interface, with two implementations (i.e. BareClassifier \u0026 LogicalClassifier)?\nWe can avoid many if/else constructs.",
+      "range": {
+        "startLine": 18,
+        "startChar": 13,
+        "endLine": 18,
+        "endChar": 40
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_88a0b544",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/LogicallyAttachedClassifier.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-21T13:33:25Z",
+      "side": 1,
+      "message": "javadoc is limited to 80 character columns: https://wiki.opendaylight.org/view/BestPractices/Coding_Guidelines#General_Code_Style",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 7
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_c3028e3d",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-21T13:33:25Z",
+      "side": 1,
+      "message": "Woudl it make sense to encapsulate this in the LogicallyAttachedClassifier?",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 172,
+        "endChar": 9
+      },
+      "revId": "7869281b0a4c32dc4a2b82e9536c1b4bf886d6af",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

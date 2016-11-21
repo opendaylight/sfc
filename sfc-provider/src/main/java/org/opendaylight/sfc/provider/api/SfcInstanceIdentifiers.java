@@ -69,7 +69,7 @@ public class SfcInstanceIdentifiers implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
 
-    private static final InstanceIdentifier<ServiceFunctionPath> SFP_ENTRY_IID =
+    public static final InstanceIdentifier<ServiceFunctionPath> SFP_ENTRY_IID =
             InstanceIdentifier.builder(ServiceFunctionPaths.class).child(ServiceFunctionPath.class).build();
 
     public static final InstanceIdentifier<RenderedServicePath> RSP_ENTRY_IID =
@@ -81,7 +81,7 @@ public class SfcInstanceIdentifiers implements AutoCloseable {
     public static final InstanceIdentifier<ServiceFunctionChains> SFC_IID =
             InstanceIdentifier.builder(ServiceFunctionChains.class).build();
 
-    private static final InstanceIdentifier<ServiceFunctionTypes> SFT_IID =
+    public static final InstanceIdentifier<ServiceFunctionTypes> SFT_IID =
             InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
 
     public static final InstanceIdentifier<Acl> ACL_ENTRY_IID =
@@ -109,10 +109,10 @@ public class SfcInstanceIdentifiers implements AutoCloseable {
      */
     @Override
     public void close() throws ExecutionException, InterruptedException {
-            final InstanceIdentifier<ServiceFunctionClassifiers> SCF_IID =
+            final InstanceIdentifier<ServiceFunctionClassifiers> scfIid =
                     InstanceIdentifier.builder(ServiceFunctionClassifiers.class).build();
 
-            final InstanceIdentifier<ServiceFunctionGroups> SFG_IID =
+            final InstanceIdentifier<ServiceFunctionGroups> sfcIid =
                     InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
 
             final InstanceIdentifier<RenderedServicePaths> rspIid =
@@ -127,10 +127,10 @@ public class SfcInstanceIdentifiers implements AutoCloseable {
                     InstanceIdentifier.builder(ServiceFunctionsState.class).build();
 
             SfcDataStoreAPI.deleteTransactionAPI(SFC_IID, LogicalDatastoreType.CONFIGURATION);
-            SfcDataStoreAPI.deleteTransactionAPI(SCF_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(scfIid, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFT_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SF_IID, LogicalDatastoreType.CONFIGURATION);
-            SfcDataStoreAPI.deleteTransactionAPI(SFG_IID, LogicalDatastoreType.CONFIGURATION);
+            SfcDataStoreAPI.deleteTransactionAPI(sfcIid, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFF_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(SFP_IID, LogicalDatastoreType.CONFIGURATION);
             SfcDataStoreAPI.deleteTransactionAPI(rspIid, LogicalDatastoreType.OPERATIONAL);

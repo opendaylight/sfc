@@ -76,12 +76,13 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
         // build SFs
 
         final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.55.1");
@@ -97,6 +98,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         };
 
         final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.55.101");
@@ -114,6 +116,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         final int PORT = 555;
 
         final List<SfName> SF_NAMES = new ArrayList<SfName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SfName("simple_firewall_100"));
@@ -129,6 +132,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         };
 
         final List<SftTypeName> SF_TYPES = new ArrayList<SftTypeName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SftTypeName("firewall"));
@@ -179,6 +183,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         SfcName sfcName = new SfcName("ShortestPath-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         List<String> sftNames = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("firewall");
@@ -187,6 +192,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
         List<SftTypeName> sftClasses = new ArrayList<SftTypeName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SftTypeName("firewall"));
@@ -220,6 +226,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         String[][] TO_SFF_NAMES = {{"SFF2", "SFF3"}, {"SFF3", "SFF1"}, {"SFF1", "SFF2"}};
 
         List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SffName("SFF1"));
@@ -229,6 +236,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         };
 
         List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.66.101");
@@ -302,7 +310,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
                 }
             }
             LOG.debug("SfcServiceFunctionShortestPathSchedulerAPITest: getRead ServiceFunction {} {} times: {}",
-                    serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
+                    serviceFunction.getName(), 10 - maxTries, sf2 != null ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
             assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());

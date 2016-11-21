@@ -55,6 +55,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager {
 
     private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
 
         {
             add("196.168.55.1");
@@ -64,6 +65,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     };
 
     private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
 
         {
             add("196.168.55.101");
@@ -82,7 +84,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test
@@ -126,6 +128,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     public void testCreateReadServiceFunctions() throws ExecutionException, InterruptedException {
 
         final List<SfName> sfName = new ArrayList<SfName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SfName("unittest-fw-1"));
@@ -325,11 +328,12 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             .child(ServiceFunction.class, new ServiceFunctionKey(SF_NAME))
             .build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
+        }
     }
 
     // write or remove service functions
@@ -348,11 +352,12 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         InstanceIdentifier<ServiceFunctions> sfsIID = InstanceIdentifier.builder(ServiceFunctions.class).build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sfsIID, serviceFunctionsBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sfsIID, LogicalDatastoreType.CONFIGURATION);
+        }
     }
 
     // write or remove service function state
@@ -388,11 +393,12 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
             .child(ServiceFunctionState.class, new ServiceFunctionStateKey(SF_STATE_NAME))
             .build();
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, serviceFunctionStateBuilder.build(),
                     LogicalDatastoreType.OPERATIONAL);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
+        }
     }
 
     // write path or write path and return path object
@@ -413,10 +419,10 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             .child(RenderedServicePath.class, new RenderedServicePathKey(pathName))
             .build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
                     LogicalDatastoreType.OPERATIONAL);
-        else {
+        } else {
             SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
                     LogicalDatastoreType.OPERATIONAL);
             return renderedServicePathBuilder.build();

@@ -68,17 +68,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreManager {
 
-    SffName sffName = new SffName("SFF1");
+    private SffName sffName;
     private final RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
     private final RenderedServicePathHop renderedServicePathHop = renderedServicePathHopBuilder
         .setKey(new RenderedServicePathHopKey((short) 3)).setServiceFunctionForwarder(sffName).build();
-    ServiceFunctionForwarder sff;
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
         RspName rspName = new RspName("RSP1");
-        SffName sffName = new SffName("SFF1");
+        sffName = new SffName("SFF1");
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
 
@@ -277,7 +276,6 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
     @Test
     public void testPutServiceFunctionForwarderExecutor() {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        SffName sffName = new SffName("SFF1");
         sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
         ServiceFunctionForwarder sff = sffBuilder.build();
         assertTrue(SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff));
@@ -285,17 +283,15 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
 
     @Test
     public void testDeleteServiceFunctionForwarder() {
-        SffName sffName = new SffName("SFF1");
         assertTrue(SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(sffName));
     }
 
-    private RenderedServicePath createRenderedServicePath(RspName rspName, SffName sffName, short pathKey) {
+    private RenderedServicePath createRenderedServicePath(RspName rspName, SffName sffName1, short pathKey) {
 
         // create rendered service path and write to data store
         List<RenderedServicePathHop> renderedServicePathHops = new ArrayList<>();
-        RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
         renderedServicePathHopBuilder.setKey(new RenderedServicePathHopKey(pathKey))
-            .setServiceFunctionForwarder(sffName);
+            .setServiceFunctionForwarder(sffName1);
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
         long pathId = SfcServicePathId.check_and_allocate_pathid();

@@ -33,12 +33,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
 
-    SfcProviderServiceTypeAPI sfcProviderServiceTypeAPILocal;
-
     @Before
     public void before() {
-        setOdlSfc();
-        sfcProviderServiceTypeAPILocal = new SfcProviderServiceTypeAPI();
+        setupSfc();
     }
 
     @Test

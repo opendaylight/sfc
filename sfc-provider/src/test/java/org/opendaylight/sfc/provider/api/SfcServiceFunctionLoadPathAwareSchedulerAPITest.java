@@ -77,12 +77,13 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         scheduler = new SfcServiceFunctionLoadPathAwareSchedulerAPI();
         // build SFs
 
         final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.55.1");
@@ -101,6 +102,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         };
 
         final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.55.101");
@@ -119,6 +121,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         final int PORT = 555;
 
         final List<SfName> SF_NAMES = new ArrayList<SfName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SfName("fw_1"));
@@ -135,6 +138,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         };
 
         final List<SftTypeName> SF_TYPES = new ArrayList<SftTypeName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SftTypeName("firewall"));
@@ -186,6 +190,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         SfcName sfcName = new SfcName("LoadPathAware-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         List<String> sftNames = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("firewall");
@@ -194,6 +199,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             }
         };
         List<SftTypeName> sftClasses = new ArrayList<SftTypeName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SftTypeName("firewall"));
@@ -227,6 +233,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         String[][] TO_SFF_NAMES = {{"SFF2"}, {"SFF1","SFF3"}, {"SFF2","SFF4"},{"SFF3"}};
 
         List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add(new SffName("SFF1"));
@@ -237,6 +244,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         };
 
         List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+            private static final long serialVersionUID = 1L;
 
             {
                 add("196.168.66.101");
@@ -394,7 +402,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
                 }
             }
             LOG.debug("SfcServiceFunctionLoadPathAwareSchedulerAPITest: getRead ServiceFunction {} {} times: {}",
-                    serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
+                    serviceFunction.getName(), 10 - maxTries, sf2 != null ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
             assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());

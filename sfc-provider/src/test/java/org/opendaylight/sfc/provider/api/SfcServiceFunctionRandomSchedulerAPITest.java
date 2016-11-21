@@ -72,7 +72,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
         scheduler = new SfcServiceFunctionRandomSchedulerAPI();
     }
 

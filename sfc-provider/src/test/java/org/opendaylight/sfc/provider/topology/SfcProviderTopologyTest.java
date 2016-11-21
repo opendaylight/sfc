@@ -88,7 +88,7 @@ public class SfcProviderTopologyTest {
         assertFalse("Must be false", hasEdge);
 
         //try to find neighbor of non-existing node, should return empty tree set
-        TreeSet<?> treeSet = (TreeSet) sfcProviderGraph.getNeighborNodes(NODE_NAME + 5);
+        TreeSet<?> treeSet = (TreeSet<?>) sfcProviderGraph.getNeighborNodes(NODE_NAME + 5);
         assertTrue("Must be true", treeSet.isEmpty());
 
         //four nodes are created now, there is also edge like 1-2-3-4

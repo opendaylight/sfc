@@ -68,7 +68,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
         int maxTries;

@@ -160,7 +160,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
             {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
 
     @SuppressWarnings("serial")
-    private static final List<SffName> sffName = new ArrayList<SffName>() {
+    private static final List<SffName> sffNames = new ArrayList<SffName>() {
 
         {
             add(new SffName("unittest-forwarder-1"));
@@ -187,7 +187,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         // Create Service Functions
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
@@ -313,7 +313,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
     @Test
     public void testCreateReadUpdateServiceFunctionForwarder() {
 
-        SffName name = new SffName(sffName.get(0));
+        SffName name = new SffName(sffNames.get(0));
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
 

@@ -182,7 +182,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
     // auxiliary method
 
     protected void init() {
-        setOdlSfc();
+        setupSfc();
         // Create Service Functions
         final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
         final IpAddress[] locatorIpAddress = new IpAddress[sfNames.size()];

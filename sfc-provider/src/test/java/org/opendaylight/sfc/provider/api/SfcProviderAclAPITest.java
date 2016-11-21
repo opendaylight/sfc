@@ -63,6 +63,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     private final String CLASSIFIER_NAME = "classifier";
 
     private final List<String> IP_V4_ADDRESS = new ArrayList<String>(){
+        private static final long serialVersionUID = 1L;
 
         {
             add("192.168.1.");
@@ -71,6 +72,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     };
 
     private final List<String> IP_PREFIX = new ArrayList<String>(){
+        private static final long serialVersionUID = 1L;
 
         {
             add("/16");
@@ -80,6 +82,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     };
 
     private final List<String> IP_V6_ADDRESS = new ArrayList<String>(){
+        private static final long serialVersionUID = 1L;
 
         {
             add("12:34:56:78:90:AB:AD:E");
@@ -89,7 +92,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
     @Before
     public void init() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test

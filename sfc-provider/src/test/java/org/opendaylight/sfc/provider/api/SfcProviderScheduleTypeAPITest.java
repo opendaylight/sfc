@@ -27,7 +27,7 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
     }
 
     @Test

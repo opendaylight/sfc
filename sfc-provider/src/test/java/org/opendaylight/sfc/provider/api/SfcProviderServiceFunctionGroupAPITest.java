@@ -55,7 +55,7 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
 
     @Before
     public void before() {
-        setOdlSfc();
+        setupSfc();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
         SfDataPlaneLocator dummyLocator =

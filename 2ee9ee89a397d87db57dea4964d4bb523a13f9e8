@@ -16,6 +16,24 @@
       "revId": "2ee9ee89a397d87db57dea4964d4bb523a13f9e8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_a90db092",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/ClassifierInterface.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-22T14:00:14Z",
+      "side": 1,
+      "message": "I understand your point; if this interface\u0027s responsability is generating flows that will be written afterwards, that flow building operation belongs here. \n\nThe thing is that the genius integrated classifer we\u0027re trying to add (where genius provides the dataplane IDs of the SFFs), that particular flow is not required (nor is the \u0027relay flow\u0027). Thus I didn\u0027t want to \u0027pollute\u0027 the interface w/ functions that not all implementing classes have. \n\nI can see the argument / reasoning for both options, so would like more inputs.",
+      "parentUuid": "3a65312a_ee7cce22",
+      "revId": "2ee9ee89a397d87db57dea4964d4bb523a13f9e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

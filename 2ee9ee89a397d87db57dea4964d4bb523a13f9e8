@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_ee7cce22",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/ClassifierInterface.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-22T11:56:31Z",
+      "side": 1,
+      "message": "Why not to include this one here?\n\npublic static boolean createClassifierInFlow(String nodeName, String flowKey, SfcNshHeader sfcNshHeader, Long outPort)",
+      "revId": "2ee9ee89a397d87db57dea4964d4bb523a13f9e8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_2b307800",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-22T00:35:11Z",
+      "side": 1,
+      "message": "I don\u0027t think these two lines have any help :-)",
+      "revId": "d162382570e69f45794838730f4343662f5ae9f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_6b19d087",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2016-11-22T00:35:11Z",
+      "side": 1,
+      "message": "The instance class of this argument is NodeId, InstanceIdentifier\u003cNodeId\u003e  is better.",
+      "revId": "d162382570e69f45794838730f4343662f5ae9f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

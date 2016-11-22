@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_aeac96a1",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-22T10:06:27Z",
+      "side": 1,
+      "message": "These lines avoid a compiler warning.",
+      "parentUuid": "3a65312a_2b307800",
+      "revId": "d162382570e69f45794838730f4343662f5ae9f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_6b19d087",
         "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2016-11-22T00:35:11Z",
       "side": 1,
       "message": "The instance class of this argument is NodeId, InstanceIdentifier\u003cNodeId\u003e  is better.",
+      "revId": "d162382570e69f45794838730f4343662f5ae9f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_8eaf1a94",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-11-22T10:06:27Z",
+      "side": 1,
+      "message": "Actually, it should be InstanceIdentifier\u003cNode\u003e. I changed it as so.",
+      "parentUuid": "3a65312a_6b19d087",
       "revId": "d162382570e69f45794838730f4343662f5ae9f9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

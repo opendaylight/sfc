@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
@@ -27,6 +29,7 @@ import org.opendaylight.sfc.sfc_vpp_renderer.listener.VppNodeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -91,6 +94,8 @@ public class VppNodeManager implements BindingAwareProvider {
             } else {
                 LOG.debug("Cannot obtain data broker for netconf node {}", netconfNodeId.getValue());
             }
+        } else {
+            LOG.debug("Node {} isn't connected", node.getNodeId().getValue());
         }
     }
 
@@ -142,14 +147,21 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     public boolean isCapableNetconfDevice(Node node) {
+        boolean ret = false;
         NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
         if (netconfAugmentation == null) {
             LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
-            return false;
+            return ret;
         }
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
-        return capabilities != null && capabilities.getAvailableCapability()
-                .containsAll(requiredCapabilities);
+        if (capabilities != null) {
+            List<String> availCapabilities = capabilities.getAvailableCapability().stream().map(AvailableCapability::getCapability).collect(Collectors.toList());
+            ret = availCapabilities.containsAll(requiredCapabilities);
+        }
+        if (ret == false) {
+            LOG.debug("Node {} hasn't capabilities vpp node requires", node.getNodeId().getValue());
+        }
+        return ret;
     }
 
     private DataBroker getNetconfNodeDataBroker(InstanceIdentifier mountPointIid) {

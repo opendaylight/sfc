@@ -72,38 +72,35 @@ public class SfcProviderBootstrapRestAPI extends SfcProviderAbstractRestAPI {
             Client client = Client.create(clientConfig);
             client.addFilter(basicAuthFilter);
 
-            if (files.length() > 0) {
-                for (int i = 0; i < files.length(); i++) {
-                    JSONObject o = files.getJSONObject(i);
-                    String json;
-                    String filename = o.getString("name");
-                    String urlpath = o.getString("urlpath");
-                    try {
-                        byte[] encoded = Files.readAllBytes(Paths.get(CONFIG_FILES_DIR + filename));
-                        json = new String(encoded, StandardCharsets.UTF_8);
-                    } catch (FileNotFoundException e) {
-                        LOG.error("\n***** Configuration file {} not found, passing *****\n", filename);
-                        continue;
-                    } catch (IOException e) {
-                        LOG.error("\n***** Configuration file {} could not be" +
-                                " read: {}", filename, e.getMessage());
-                        break;
+            for (int i = 0; i < files.length(); i++) {
+                JSONObject o = files.getJSONObject(i);
+                String json;
+                String filename = o.getString("name");
+                String urlpath = o.getString("urlpath");
+                try {
+                    byte[] encoded = Files.readAllBytes(Paths.get(CONFIG_FILES_DIR + filename));
+                    json = new String(encoded, StandardCharsets.UTF_8);
+                } catch (FileNotFoundException e) {
+                    LOG.error("\n***** Configuration file {} not found, passing *****\n", filename);
+                    continue;
+                } catch (IOException e) {
+                    LOG.error("\n***** Configuration file {} could not be"
+                            + " read: {}", filename, e.getMessage());
+                    break;
+                }
+                try {
+                    new JSONObject(json);
+                    ClientResponse putClientResponse = client
+                            .resource(CONFIG_DATA_URL + urlpath)
+                            .type(CONFIG_DATA_MIME_TYPE)
+                            .put(ClientResponse.class, json);
+                    putClientResponse.close();
+                    if (putClientResponse.getStatus() != 200) {
+                        LOG.error("\n***** Unsuccessful PUT for file {}, HTTP response code {} *****\n", filename,
+                                putClientResponse.getStatus());
                     }
-                    try {
-                        new JSONObject(json);
-                        ClientResponse putClientResponse = client
-                                .resource(CONFIG_DATA_URL + urlpath)
-                                .type(CONFIG_DATA_MIME_TYPE)
-                                .put(ClientResponse.class, json);
-                        putClientResponse.close();
-                        if (putClientResponse.getStatus() != 200){
-                            LOG.error("\n***** Unsuccessful PUT for file {}, HTTP response code {} *****\n", filename,
-                                    putClientResponse.getStatus());
-                        }
-                    } catch (JSONException e) {
-                        LOG.error("\n***** Invalid JSON in file {}, passing *****\n", filename);
-                    }
-
+                } catch (JSONException e) {
+                    LOG.error("\n***** Invalid JSON in file {}, passing *****\n", filename);
                 }
             }
         } catch (JSONException e) {

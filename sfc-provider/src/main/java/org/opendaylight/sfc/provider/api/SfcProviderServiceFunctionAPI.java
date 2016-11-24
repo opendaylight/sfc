@@ -8,6 +8,9 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -31,8 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev14120
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
  * This class has the APIs to operate on the ServiceFunction
@@ -367,6 +368,19 @@ public class SfcProviderServiceFunctionAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+    /**
+     * Delete the given list of RSP from the SFF operational state.
+     *
+     * @param rspNames list of RSP names.
+     * @return True if everything went ok, false otherwise.
+     */
+    public static boolean deleteServicePathFromServiceFunctionState(List<RspName> rspNames) {
+       return rspNames.stream()
+               .map(rspName -> new SfpName(rspName.getValue()))
+               .map(SfcProviderServiceFunctionAPI::deleteServicePathFromServiceFunctionState)
+               .reduce(true, (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
     }
 
 }

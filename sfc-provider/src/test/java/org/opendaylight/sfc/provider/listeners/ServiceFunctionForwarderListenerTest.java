@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -302,10 +303,12 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * stored in the
      * original data
      * - Call listener explicitly.
+     * - Update the SfDictionary by removing the new SF. The RSP should NOT be deleted.
+     * - Call listener explicitly.
      * - Cleans up
      */
     @Test
-    public void testOnServiceFunctionForwarderUpdated_UpdateSfDict() throws Exception {
+    public void testOnServiceFunctionForwarderUpdated_UpdateAddAndRemoveSfDict() throws Exception {
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
         assertNotNull(renderedServicePath);
 
@@ -336,11 +339,72 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // Verify that State was NOT removed
         List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
         assertNotNull(sffServicePathList);
-        /*
-         * for (SffServicePath sffServicePath : sffServicePathList) {
-         * assertNotEquals(sffServicePath.getName(), renderedServicePath.getName());
-         * }
-         */
+
+        // Now we remove the added an unused dictionary
+        updatedServiceFunctionForwarder = originalServiceFunctionForwarder;
+        originalServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will NOT remove the RSP
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was NOT removed
+        sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNotNull(sffServicePathList);
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+    }
+
+    /**
+     * In this test we create a RSP and update a SFF used by it. This will trigger a more complete
+     * code coverage within the listener.
+     * In order to simulate a removal from the data store this test does the following:
+     * - Create RSP
+     * - Update the SfDictionary by adding a removing a used SF dictionary. The RSP should  be deleted.
+     * - creates a IID and add to removedPaths data structure. This IID points to the SFF objects
+     * stored in the
+     * original data
+     * - Call listener explicitly.
+     * - Cleans up
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdated_UpdateRemoveUsedSfDict() throws Exception {
+        RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
+        assertNotNull(renderedServicePath);
+
+        // Prepare to remove the first SF used by the RSP.
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder =
+                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the SffSfDictionary
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder =
+                new ServiceFunctionForwarderBuilder(originalServiceFunctionForwarder);
+        updatedServiceFunctionForwarderBuilder.setServiceFunctionDictionary(Collections.emptyList());
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will remove the RSP
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNull(sffServicePathList);
 
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));

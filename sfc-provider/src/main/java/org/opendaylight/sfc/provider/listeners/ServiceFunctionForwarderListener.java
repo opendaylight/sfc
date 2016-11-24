@@ -9,21 +9,25 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -68,187 +72,103 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
 
     @Override
     protected void add(ServiceFunctionForwarder serviceFunctionForwarder) {
-        LOG.debug("Adding Service Function Forwarder: {}", serviceFunctionForwarder.getName());
+        LOG.info("Adding Service Function Forwarder: {}", serviceFunctionForwarder.getName());
     }
 
     @Override
     protected void remove(ServiceFunctionForwarder serviceFunctionForwarder) {
-        LOG.debug("Deleting Service Function Forwarder: {}", serviceFunctionForwarder.getName());
-        removeRSPs(serviceFunctionForwarder);
+        SffName sffName = serviceFunctionForwarder.getName();
+        // Get RSPs of SFF
+        LOG.debug("Deleting Service Function Forwarder {}", sffName);
+        List<RspName> rspNames = SfcProviderServiceForwarderAPI.readRspNamesFromSffState(sffName);
+        LOG.debug("Deleting Rendered Service Paths {}", rspNames);
+        SfcProviderRenderedPathAPI.deleteRenderedServicePathsAndStates(rspNames);
     }
 
     @Override
     protected void update(ServiceFunctionForwarder originalServiceFunctionForwarder,
             ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
-        if (!compareSFFs(originalServiceFunctionForwarder, updatedServiceFunctionForwarder)) {
-            // Only delete the SFF RSPs for changes the require it
-            removeRSPs(updatedServiceFunctionForwarder);
-        }
+        List<RspName> rspNames = findAffectedRsp(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
+        LOG.debug("Deleting Rendered Service Paths {}", rspNames);
+        SfcProviderRenderedPathAPI.deleteRenderedServicePathsAndStates(rspNames);
     }
 
     /**
-     * Removes all the RSP in which the Service Function Forwarder is
-     * referenced.
-     *
-     * @param serviceFunctionForwarder
+     * Obtains the list of RSP affected by a change on the SFF.
+     * @param originalSff the original SFF.
+     * @param updatedSff the updated SFF.
+     * @return a list of {@link RspName} of the affected RSP.
      */
-    private void removeRSPs(ServiceFunctionForwarder serviceFunctionForwarder) {
-        // TODO: this method is almost literally copied from the previous
-        // version of the listener and should be reviewed.
+    private List<RspName> findAffectedRsp(
+            ServiceFunctionForwarder originalSff,
+            ServiceFunctionForwarder updatedSff) {
 
-        /*
-         * Before removing RSPs used by this Service Function, we need to remove
-         * all references in the SFF/SF operational trees
-         */
-        SffName serviceFunctionForwarderName = serviceFunctionForwarder.getName();
-        List<RspName> rspList = new ArrayList<>();
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI
-                .readSffState(serviceFunctionForwarderName);
-        if (sffServicePathList != null && !sffServicePathList.isEmpty()) {
-            if (!SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarderState(serviceFunctionForwarderName)) {
-                LOG.error("Failed to delete Service Function Forwarder {} operational state.",
-                        serviceFunctionForwarder);
-            }
-            for (SffServicePath sffServicePath : sffServicePathList) {
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings -
-                // alagalah
+        SffName sffName = originalSff.getName();
+        List<RspName> rspNames = SfcProviderServiceForwarderAPI.readRspNamesFromSffState(sffName);
 
-                RspName rspName = new RspName(sffServicePath.getName().getValue());
-                // XXX Another example of Method Overloading confusion brought
-                // about
-                // by Strings
-                SfcProviderServiceFunctionAPI
-                        .deleteServicePathFromServiceFunctionState(new SfpName(rspName.getValue()));
-                rspList.add(rspName);
-                LOG.info("Deleting RSP [{}] on SFF [{}]", rspName, serviceFunctionForwarderName);
-            }
-            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
+        // If service node changed, all RSPs are affected
+        SnName originalSnName = originalSff.getServiceNode();
+        SnName updatedSnName = updatedSff.getServiceNode();
+        if (!Objects.equals(originalSnName, updatedSnName)) {
+            LOG.debug("SFF service node updated: original {} updated {}", originalSnName, updatedSnName);
+            return rspNames;
         }
 
-        /*
-         * We do not update the SFF dictionary. Since the user configured it in
-         * the first place, (s)he is also responsible for updating it.
-         */
+        // If ip address changed, all RSPs are affected
+        IpAddress originalIpAddress = originalSff.getIpMgmtAddress();
+        IpAddress updatedIpAddress = updatedSff.getIpMgmtAddress();
+        if (!Objects.equals(originalIpAddress, updatedIpAddress)) {
+            LOG.debug("SFF IpAddress updated: original {} updated {}", originalIpAddress, updatedIpAddress);
+            return rspNames;
+        }
+
+        // If any data plane locator changed, all RSPs are affected
+        // TODO Current data model does not allow to know which data plane is used on a RSP
+        Collection<SffDataPlaneLocator> originalLocators = originalSff.getSffDataPlaneLocator();
+        Collection<SffDataPlaneLocator> updatedLocators = updatedSff.getSffDataPlaneLocator();
+        Collection<SffDataPlaneLocator> removedLocators = new ArrayList<>(originalLocators);
+        removedLocators.removeAll(updatedLocators);
+        if (!removedLocators.isEmpty()) {
+            LOG.debug("SFF locators removed {}", removedLocators);
+            return rspNames;
+        }
+
+        // If a dictionary changed, any RSP making use of it is affected
+        List<ServiceFunctionDictionary> originalDictionaries = originalSff.getServiceFunctionDictionary();
+        List<ServiceFunctionDictionary> updatedDictionaries = updatedSff.getServiceFunctionDictionary();
+        List<ServiceFunctionDictionary> removedDictionaries = new ArrayList<>(originalDictionaries);
+        removedDictionaries.removeAll(updatedDictionaries);
+        if (!removedDictionaries.isEmpty()) {
+            LOG.debug("SFF dictionaries removed {}", removedDictionaries);
+            return rspNames.stream()
+                    .map(SfcProviderRenderedPathAPI::readRenderedServicePath)
+                    .filter(rsp -> isAnyDictionaryUsedInRsp(sffName, rsp, removedDictionaries))
+                    .map(RenderedServicePath::getName)
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
     /**
-     * Compare 2 Service Function Forwarders for basic equality. That is only
-     * compare the ServiceNode, DataPlaneLocator, and SfDictionary
-     *
-     * @param originalSff
-     *            the SFF before the change
-     * @param sff
-     *            the changed SFF
-     * @return true on basic equality, false otherwise
+     * Whether any hop of a RSP makes use of any SF dictionary of a given list for the given SFF.
+     * @param sffName the SFF name.
+     * @param renderedServicePath the RSP.
+     * @param dictionaries the list of SF dictionaries.
+     * @return true if the RSP makes use of the dictionary.
      */
-    private boolean compareSFFs(ServiceFunctionForwarder originalSff, ServiceFunctionForwarder sff) {
-        //
-        // Compare SFF Service Nodes
-        //
-        if (sff.getServiceNode() != null && originalSff.getServiceNode() != null) {
-            if (!sff.getServiceNode().getValue().equals(originalSff.getServiceNode().getValue())) {
-                LOG.info("compareSFFs: service nodes changed orig [{}] new [{}]",
-                        originalSff.getServiceNode().getValue(), sff.getServiceNode().getValue());
-                return false;
-            }
-        } else if (originalSff.getServiceNode() != null && sff.getServiceNode() == null) {
-            LOG.info("compareSFFs: the service node has been removed");
-            return false;
-        }
-
-        //
-        // Compare SFF IP Mgmt Addresses
-        //
-        if (sff.getIpMgmtAddress() != null && originalSff.getIpMgmtAddress() != null) {
-            if (!sff.getIpMgmtAddress().toString().equals(originalSff.getIpMgmtAddress().toString())) {
-                LOG.info("compareSFFs: IP mgmt addresses changed orig [{}] new [{}]",
-                        originalSff.getIpMgmtAddress().toString(), sff.getIpMgmtAddress().toString());
-                return false;
-            }
-        } else if (originalSff.getIpMgmtAddress() != null && sff.getIpMgmtAddress() == null) {
-            LOG.info("compareSFFs: the IP mgmt address has been removed");
-            return false;
-        }
-
-        //
-        // Compare SFF ServiceFunction Dictionaries
-        //
-        if (!compareSffSfDictionaries(originalSff.getServiceFunctionDictionary(), sff.getServiceFunctionDictionary())) {
-            return false;
-        }
-
-        //
-        // Compare SFF Data Plane Locators
-        //
-        if (!compareSffDpls(originalSff.getSffDataPlaneLocator(), sff.getSffDataPlaneLocator())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Compare 2 lists of SffSfDictionaries for equality
-     *
-     * @param origSffSfDict
-     *            a list of the original SffSfDict entries before the change
-     * @param sffSfDict
-     *            a list of the SffSfDict entries after the change was made
-     * @return true if the lists are equal, false otherwise
-     */
-    private boolean compareSffSfDictionaries(List<ServiceFunctionDictionary> origSffSfDict,
-            List<ServiceFunctionDictionary> sffSfDict) {
-        if (origSffSfDict.size() > sffSfDict.size()) {
-            LOG.info("compareSffSfDictionaries An SF has been removed");
-            // TODO should we check if the removed SF is used??
-            return false;
-        }
-
-        Collection<ServiceFunctionDictionary> differentSffSfs = new ArrayList<>(sffSfDict);
-        // This will remove everything in common, thus leaving only the
-        // different values
-        differentSffSfs.removeAll(origSffSfDict);
-
-        // If the different SffSfDict entries are all contained in the
-        // sffSfDict,
-        // then this was a simple case of adding a new SffSfDict entry, else one
-        // of the entries was modified, and the RSPs should be deleted
-        if (!sffSfDict.containsAll(differentSffSfs)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Compare 2 lists of SffDataPlaneLocators for equality
-     *
-     * @param origSffDplList
-     *            a list of the original SffDpl entries before the change
-     * @param sffDplList
-     *            a list of the SffDpl entries after the change was made
-     * @return true if the lists are equal, false otherwise
-     */
-    private boolean compareSffDpls(List<SffDataPlaneLocator> origSffDplList, List<SffDataPlaneLocator> sffDplList) {
-        if (origSffDplList.size() > sffDplList.size()) {
-            LOG.info("compareSffDpls An SFF DPL has been removed");
-            // TODO should we check if the removed SFF DPL is used??
-            return false;
-        }
-
-        Collection<SffDataPlaneLocator> differentSffDpls = new ArrayList<>(sffDplList);
-        // This will remove everything in common, thus leaving only the
-        // different values
-        differentSffDpls.removeAll(origSffDplList);
-
-        // If the different SffDpl entries are all contained in the sffDplList,
-        // then this was a simple case of adding a new SffDpl entry, else one
-        // of the entries was modified, and the RSPs should be deleted
-        if (!sffDplList.containsAll(differentSffDpls)) {
-            return false;
-        }
-
-        return true;
+    private boolean isAnyDictionaryUsedInRsp(
+            final SffName sffName,
+            final RenderedServicePath renderedServicePath,
+            final List<ServiceFunctionDictionary> dictionaries) {
+        List<SfName> dictionarySfNames = dictionaries.stream()
+                .map(ServiceFunctionDictionary::getName)
+                .collect(Collectors.toList());
+        return renderedServicePath.getRenderedServicePathHop().stream()
+                .filter(rspHop -> sffName.equals(rspHop.getServiceFunctionForwarder()))
+                .filter(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName()))
+                .findFirst()
+                .isPresent();
     }
 }

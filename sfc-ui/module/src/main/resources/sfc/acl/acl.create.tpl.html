@@ -19,6 +19,20 @@
                     </div>
                 </div>
             </div>
+            <div class="formElement">
+              <div class="form-group" show-validation-error>
+                <label for="acl-type" class="col-lg-6 control-label small-label">{{'SFC_ACL_TYPE' | translate}}
+                </label>
+                <div class="col-lg-6">
+                  <select class="form-control input-sm" id="acl-type" ui-select2="{allowClear: true}" 
+                  ng-model="data['acl-type']" ng-required="true" data-placeholder="{{'SFC_ACL_CREATE_ACE_TYPE' | translate}}" 
+                  ng-change="$broadcast('acl_type_change', data['acl-type'])">
+                    <option value=""></option>
+                    <option ng-repeat="t in aclConstants['acl-type']" value="{{t}}">{{t}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
         </div>
 
         <div class="col-md-6"></div>
@@ -34,7 +48,7 @@
 
             <div class="col-md-12"
                  sfc-watch-for-reinit="ace"
-                 ng-init="ace['matches']= (ace['matches'] || {}); ace['matches']['absolute-time']= (ace['matches']['absolute-time'] || {});
+                 ng-init="ace['matches']= (ace['matches'] || {});
                     ace['actions']= (ace['actions'] || {}); ace_type = valueOfAceType(ace['matches']); ">
                 <div style="text-align: right; margin-bottom: 10px">
                     <span class="spanTip">{{ 'SFC_ACL_ACE_REMOVE' | translate }}</span>
@@ -114,7 +128,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" show-validation-error>
+                <!--<div class="form-group" show-validation-error>
                     <label for="metadata-absolute-start_{{$index}}" class="col-lg-6 control-label small-label">{{'SFC_ACL_METADATA_ABSOLUTE_START'
                         | translate}}</label>
 
@@ -125,9 +139,9 @@
                                placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_START' | translate}}"
                                date-and-time>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="form-group" show-validation-error>
+                <!-- <div class="form-group" show-validation-error>
                     <label for="metadata-absolute-end_{{$index}}" class="col-lg-6 control-label small-label">{{'SFC_ACL_METADATA_ABSOLUTE_END'
                         | translate}}</label>
 
@@ -138,9 +152,9 @@
                                placeholder="{{'SFC_ACL_CREATE_METADATA_ABSOLUTE_END' | translate}}"
                                date-and-time>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="col-lg-6 control-label small-label"
                            ui-select2-label="metadata-absolute-active_{{$index}}">
                         {{'SFC_ACL_METADATA_ABSOLUTE_ACTIVE' | translate}}
@@ -156,7 +170,7 @@
                             <option value="false">{{'SFC_FALSE' | translate}}</option>
                         </select>
                     </div>
-                </div>
+                </div> -->
 
             </div>
 
@@ -172,7 +186,6 @@
                                 ng-model="ace_type" ng-required="false"
                                 data-placeholder="{{'SFC_ACL_CREATE_ACE_TYPE' | translate}}"
                                 ng-change="$broadcast('ace_type_change', ace_type)">
-
                             <option value=""></option>
                             <option ng-repeat="t in aclConstants['ace-type']" value="{{t}}">{{t}}</option>
                         </select>

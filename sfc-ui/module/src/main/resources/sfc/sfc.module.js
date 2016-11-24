@@ -454,7 +454,7 @@ define([
     });
 
     $stateProvider.state('main.sfc.acl-edit', {
-      url: '/acl-edit-:itemKey',
+      url: '/acl-edit-:itemKeyType-:itemKey',
       access: access.public,
       views: {
         'sfc': {

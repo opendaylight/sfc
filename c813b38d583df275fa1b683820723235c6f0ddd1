@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_6f70b1a5",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-24T15:00:18Z",
+      "side": 1,
+      "message": "why not use originalIp.equals(updatedIp) ? \n\n(I really just want to know if there\u0027s a reason)",
+      "range": {
+        "startLine": 121,
+        "startChar": 13,
+        "endLine": 121,
+        "endChar": 63
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_6fa7110d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-24T15:00:18Z",
+      "side": 1,
+      "message": "took me a while (not that long though...) to understand what you meant to do here.\n\nI think I was mislead by the fact that the locator containers are Collections. If they were Sets, I think I\u0027d have gotten there faster.\n\nI\u0027m assuming you want to delete something like:\n\ndplsToDelete \u003d oldDplSet - newDplSet",
+      "range": {
+        "startLine": 128,
+        "startChar": 8,
+        "endLine": 135,
+        "endChar": 9
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_efba0122",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-24T15:00:18Z",
+      "side": 1,
+      "message": "well, now I understand why the above one\u0027s are collections...",
+      "range": {
+        "startLine": 138,
+        "startChar": 8,
+        "endLine": 141,
+        "endChar": 59
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_8f3d4dbe",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-11-24T15:00:18Z",
+      "side": 1,
+      "message": "I do not understand this comment.",
+      "range": {
+        "startLine": 343,
+        "startChar": 11,
+        "endLine": 343,
+        "endChar": 55
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

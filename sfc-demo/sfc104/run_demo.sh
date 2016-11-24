@@ -96,8 +96,8 @@ if [ $installed -ne 1 ] ; then
     exit -1
 fi
 
-# For VPP use case, must make sure netconf connector is intialized successfully
 if [ "${1}" == "vpp" ] ; then
+# For VPP use case, must make sure netconf connector is intialized successfully
 retries=10
 while [ $retries -gt 0 ]
 do
@@ -109,6 +109,29 @@ do
     sleep 3
     retries=$((retries-1))
 done
+else
+# For OVS and OVS_DPDK use case, must make sure renderer and classifier are intialized successfully
+retries=10
+while [ $retries -gt 0 ]
+do
+    OK=0
+    result=$(curl -H "Content-Type: application/json" -H "Cache-Control: no-cache" -X GET --user admin:admin http://${LOCALHOST}:8181/restconf/operational/network-topology:network-topology/)
+    OK=$((OK+$?))
+    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} display | grep "successfully started the SfcOfRenderer")
+    OK=$((OK+$?))
+    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} display | grep "successfully started the SfcScfOfRenderer")
+    OK=$((OK+$?))
+    if [ $OK -eq 0 ] ; then
+        break
+    fi
+    echo "Waiting Openflow renderer and classifier initialized..."
+    sleep 3
+    retries=$((retries-1))
+done
+fi
+if [ $retries -eq 0 ] ; then
+    echo "features are not started correctly: ${features}"
+    exit -1
 fi
 
 ./cleanup_demo.sh

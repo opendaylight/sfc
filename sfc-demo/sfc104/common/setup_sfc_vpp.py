@@ -256,6 +256,8 @@ if __name__ == "__main__":
     put(controller, DEFAULT_PORT, get_service_functions_uri(), get_service_functions_data(), True)
     print "sending service function forwarders"
     put(controller, DEFAULT_PORT, get_service_function_forwarders_uri(), get_service_function_forwarders_data(), True)
+    print "waiting till SFFs are connected successfully..."
+    time.sleep(60)
     print "sending service function chains"
     put(controller, DEFAULT_PORT, get_service_function_chains_uri(), get_service_function_chains_data(), True)
     print "sending service function paths"

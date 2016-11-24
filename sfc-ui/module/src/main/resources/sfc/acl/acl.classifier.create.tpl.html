@@ -28,8 +28,9 @@
                     <div class="col-lg-6">
                         <select class="form-control input-sm" id="access-list" name="access-list"
                                 ui-select2="{allowClear: true}"
-                                ng-model="data['access-list']"
+                                ng-model="data['acl']['name']"
                                 ng-required="false"
+                                ng-change="setAclType(data['acl']['name'])"
                                 data-placeholder="{{'SFC_CLASSIFIER_CREATE_ACCESS_LIST' | translate}}">
 
                             <option value=""></option>

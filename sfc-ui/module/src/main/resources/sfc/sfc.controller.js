@@ -100,7 +100,8 @@ define([].concat(modules).concat(services).concat(directives).concat(controllers
     $rootScope.aclConstants =
     {
       "ace-type": ["ip", "eth", "ipfix"],
-      "ace-ip": ["IPv4", "IPv6"]
+      "ace-ip": ["IPv4", "IPv6"],
+      "acl-type": ["IPv4", "IPv6", "eth"]  
     };
 
     $rootScope.classifierConstants =
@@ -149,10 +150,6 @@ define([].concat(modules).concat(services).concat(directives).concat(controllers
             {
               "rule-name": "ACE1",
               "matches": {
-                "absolute-time": {
-                  "active": true
-                },
-                "protocol": 7,
                 "source-ipv4-network": "11.11.11.0/24",
                 "destination-ipv4-network": "22.22.22.0/24"
               }

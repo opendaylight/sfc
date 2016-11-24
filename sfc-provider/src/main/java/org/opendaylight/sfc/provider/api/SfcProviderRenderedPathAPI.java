@@ -51,11 +51,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadPathAware;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadPathAware;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -663,6 +663,18 @@ public class SfcProviderRenderedPathAPI {
             }
         }
         return ret;
+    }
+
+    /**
+     * Delete a list of RSPs and associated states.
+     * @param rspNames the list of RSP names.
+     * @return true if everything was deleted ok, false otherwise.
+     */
+    public static boolean deleteRenderedServicePathsAndStates(List<RspName> rspNames) {
+        boolean sfStateOk = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(rspNames);
+        boolean sffStateOk = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspNames);
+        boolean rspOk = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspNames);
+        return sfStateOk && sffStateOk && rspOk;
     }
 
     /**

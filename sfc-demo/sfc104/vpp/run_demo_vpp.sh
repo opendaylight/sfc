@@ -7,7 +7,7 @@ source ./env.sh
 
 vagrant up
 
-./common/install_ovs_to_all.sh ${HTTPPROXY} ${HTTPSPROXY}
+./common/install_vpp_to_all.sh ${HTTPPROXY} ${HTTPSPROXY}
 if [ $? -ne 0 ] ; then
     exit -1
 fi

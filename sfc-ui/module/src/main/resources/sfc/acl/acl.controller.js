@@ -44,6 +44,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (!_.isEmpty(acl['access-list-entries']['ace'])) {
             _.each(acl['access-list-entries']['ace'], function (entry) {
               entry['acl-name'] = acl['acl-name'];
+              entry['acl-type'] = acl['acl-type'];
               $scope.acls.push(entry);
               thisCtrl.stringifyComposedProperties(entry);
             });
@@ -84,7 +85,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
       ModalDeleteSvc.open(ace['acl-name'], function (result) {
         if (result == 'delete') {
           //delete the row
-          SfcAclSvc.deleteItemByKey(ace['acl-name'], function () {
+          SfcAclSvc.deleteItemByKey(ace['acl-type'], ace['acl-name'], function () {
             thisCtrl.fetchData();
           });
         }
@@ -102,7 +103,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editItem = function editItem(ace) {
-      $state.transitionTo('main.sfc.acl-edit', {itemKey: ace['acl-name']}, { location: true, inherit: true, relative: $state.$current, notify: true });
+      $state.transitionTo('main.sfc.acl-edit',{itemKeyType: ace['acl-type'], itemKey: ace['acl-name']}, 
+              { location: true, inherit: true, relative: $state.$current, notify: true });
     };
   });
 
@@ -126,8 +128,8 @@ define(['app/sfc/sfc.module'], function (sfc) {
       $scope.appid = data.sort(function(a, b) { return a['selector-id'] - b['selector-id']; }); // sort by id
     });
 
-    if ($stateParams.itemKey) {
-      SfcAclSvc.getItem($stateParams.itemKey, function (item) {
+    if ($stateParams.itemKey && $stateParams.itemKeyType) {
+      SfcAclSvc.getItem($stateParams.itemKeyType + '/' + $stateParams.itemKey, function (item) {
         $scope.data = item;
       });
     } else {
@@ -256,7 +258,16 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
   sfc.register.controller('sfcClassifierCreateCtrl', function ($scope, $rootScope, $state, $stateParams, SfcClassifierSvc, SfcClassifierHelper, SfcAclSvc, ServicePathSvc, ServiceForwarderSvc){
 
-    $scope.data = {'scl-service-function-forwarder': []};
+    $scope.data = {'scl-service-function-forwarder': [],'acl':{}};
+
+    $scope.setAclType = function(aclName){
+      var arr = $scope.acls.filter(function(acl) {
+        return acl['acl-name'] === aclName;
+      });
+      if(arr.length > 0) {
+        $scope.data['acl']['type'] = arr[0]['acl-type'];
+      }
+    }
 
     if ($stateParams.itemKey) {
       SfcClassifierSvc.getItem($stateParams.itemKey, function (item) {

@@ -1070,6 +1070,42 @@ define(['app/sfc/sfc.module'], function (sfc) {
       this['subListName'] = "access-list-entry";
       this['subListKeyName'] = "rule-name";
     }
+    //utility function
+    function getAclType(aclTypeKey) {
+      var acltype;
+
+      /* This function returns the aclType as per
+       * ietf-access-control-list(2016-02-18) yang model
+       * If the aclTypeKye is set by user input on create form,
+       * it would have value IPv4/Ipv6/eth.
+       * If its fetched from controller, it would have value,
+       * "ietf-access-control-list:xxx"
+       */
+      switch (aclTypeKey) {
+          case "IPv4":
+              acltype = "ietf-access-control-list:ipv4-acl";
+              break;
+          case "IPv6":
+              acltype = "ietf-access-control-list:ipv6-acl";
+              break;
+          case "eth":
+              acltype = "ietf-access-control-list:eth-acl";
+              break;
+          case "ietf-access-control-list:ipv4-acl":
+              acltype = aclTypeKey;
+              break;
+          case "ietf-access-control-list:ipv6-acl":
+              acltype = aclTypeKey;
+              break;
+          case "ietf-access-control-list:eth-acl":
+              acltype = aclTypeKey;
+              break;
+          default:
+              acltype = "unknown";
+              break;
+      }
+      return acltype;
+    }
 
     SfcAclSvc.prototype = new SfcRestBaseSvc(modelUrl, containerName, listName);
 
@@ -1094,18 +1130,62 @@ define(['app/sfc/sfc.module'], function (sfc) {
       return aclArray;
     };
 
+    //@override
+    SfcAclSvc.prototype.getItem = function (key, callback) {
+      var instance = this; // save 'this' to closure
+      var keycomp = key.split('/');
+      key = getAclType(keycomp[0]) + '/' + keycomp[1];
+
+      this.getOne(key).then(function (result) {
+        var stripped = instance.stripNamespacePrefixes(result[instance.listName]);
+        callback(stripped[0]); // return only nested object
+      }, /* on error*/ function (response) {
+
+        if (response.status = "404") {
+          console.log("No data, returning empty item");
+        } else {
+          console.error("Error with status code ", response.status);
+        }
+
+        callback({}); // return empty item
+      });
+    };
+
+    //@override
+    SfcAclSvc.prototype.getOne = function (key) {
+      var keycomp = key.split('/');
+      return this.baseRest().customGET(this.modelUrl + ":" + this.containerName + '/' + this.listName + '/' +
+              encodeURIComponent(keycomp[0]) + '/' + encodeURIComponent(keycomp[1]));
+    };
+    // @override
+    SfcAclSvc.prototype.put = function (elem, key) {
+      var elemcopy = {};
+      var keycomp = key.split('/');
+      angular.copy(elem, elemcopy);
+      elemcopy[this.listName]['acl-type'] = keycomp[0];
+      return this.baseRest().customPUT(elemcopy, this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' +
+              encodeURIComponent(keycomp[0]) + '/' + encodeURIComponent(keycomp[1]));
+    };
     // @override
     SfcAclSvc.prototype.getListKeyFromItem = function (itemData) {
-      return itemData['acl-name'];
+      var acltype = getAclType(itemData['acl-type']);
+      return acltype + '/' + itemData['acl-name'];
     };
 
 
-    SfcAclSvc.prototype.deleteItemByKey = function (itemKey, callback) {
+    SfcAclSvc.prototype.deleteItemByKey = function (itemKeyType, itemKey, callback) {
       var item = {};
       item['acl-name'] = itemKey;
+      item['acl-type'] = itemKeyType;
       this.deleteItem(item, callback);
     };
 
+    //@override
+    SfcAclSvc.prototype._delete = function (key) {
+      var keycomp = key.split('/');
+      return this.baseRest().customDELETE(this.modelUrl + ':' + this.containerName + '/' + this.listName + '/' +
+              encodeURIComponent(keycomp[0]) + '/' + encodeURIComponent(keycomp[1]));
+    };
 
     // sub item functions
 

@@ -69,6 +69,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             delete $scope['matches']['source-port-range'];
             delete $scope['matches']['destination-ipv4-network'];
             delete $scope['matches']['source-ipv4-network'];
+            delete $scope['matches']['protocol'];
             $scope.$broadcast('ace_ip_change', null);
           }
         });
@@ -93,6 +94,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
           if (arg != $scope.notResetCondition) {
             delete $scope['matches']['destination-ipv4-network'];
             delete $scope['matches']['source-ipv4-network'];
+            delete $scope['matches']['protocol'];
           }
         });
       }
@@ -117,6 +119,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             delete $scope['matches']['destination-ipv6-network'];
             delete $scope['matches']['source-ipv6-network'];
             delete $scope['matches']['flow-label'];
+            delete $scope['matches']['protocol'];
           }
         });
       }

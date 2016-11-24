@@ -5,10 +5,10 @@
         </label>
 
         <div class="col-lg-6">
-            <input type="text" class="form-control input-sm" ng-model="matches['source-ipv6-address']"
+            <input type="text" class="form-control input-sm" ng-model="matches['source-ipv6-network']"
                    id="acl_source_ipv6_add{{idSuffix}}" name="source-ipv6-address"
                    placeholder="{{'SFC_ACL_CREATE_SOURCE_IPV6_ADDRESS' | translate}}"
-                   ip-address="{version:6, prefix:false}">
+                   ip-address="{version:6, prefix:true}">
         </div>
     </div>
 
@@ -18,7 +18,7 @@
         </label>
 
         <div class="col-lg-6">
-            <input type="text" class="form-control input-sm" ng-model="matches['destination-ipv6-address']"
+            <input type="text" class="form-control input-sm" ng-model="matches['destination-ipv6-network']"
                    id="acl_dest_ipv6_add{{idSuffix}}" name="destination-ipv6-address"
                    placeholder="{{'SFC_ACL_CREATE_DESTINATION_IPV6_ADDRESS' | translate}}"
                    ip-address="{version:6, prefix:true}">

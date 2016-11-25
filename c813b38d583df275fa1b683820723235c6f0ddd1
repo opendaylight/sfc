@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3a65312a_d516b2f0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-25T09:48:34Z",
+      "side": 1,
+      "message": "Objects::equals supports null for any of the operands.",
+      "parentUuid": "3a65312a_6f70b1a5",
+      "range": {
+        "startLine": 121,
+        "startChar": 13,
+        "endLine": 121,
+        "endChar": 63
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a65312a_6fa7110d",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-11-24T15:00:18Z",
       "side": 1,
       "message": "took me a while (not that long though...) to understand what you meant to do here.\n\nI think I was mislead by the fact that the locator containers are Collections. If they were Sets, I think I\u0027d have gotten there faster.\n\nI\u0027m assuming you want to delete something like:\n\ndplsToDelete \u003d oldDplSet - newDplSet",
+      "range": {
+        "startLine": 128,
+        "startChar": 8,
+        "endLine": 135,
+        "endChar": 9
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_55e2a203",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-25T09:48:34Z",
+      "side": 1,
+      "message": "Yes. We can use Sets, I did not think of it because I would not expect these lists to be too big??",
+      "parentUuid": "3a65312a_6fa7110d",
       "range": {
         "startLine": 128,
         "startChar": 8,
@@ -82,6 +130,30 @@
       "writtenOn": "2016-11-24T15:00:18Z",
       "side": 1,
       "message": "I do not understand this comment.",
+      "range": {
+        "startLine": 343,
+        "startChar": 11,
+        "endLine": 343,
+        "endChar": 55
+      },
+      "revId": "c813b38d583df275fa1b683820723235c6f0ddd1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_b5e856e3",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-11-25T09:48:34Z",
+      "side": 1,
+      "message": "Not surprised. I will fix it.",
+      "parentUuid": "3a65312a_8f3d4dbe",
       "range": {
         "startLine": 343,
         "startChar": 11,

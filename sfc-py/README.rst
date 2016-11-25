@@ -52,13 +52,14 @@ unzip it, locate setup.py file and use the python installer as
 
    python3 setup.py install
 
- 
+
 Usage
 =====
 
 .. code-block:: console
- 
-   python3.4 sfc_agent --rest --nfq-class ---odl-ip-port=<ODL REST IP:port> --auto-sff-name
+
+   cd sfc/
+   sudo python3.4 sfc_agent.py --rest --nfq-class ---odl-ip-port=<ODL REST IP:port> --auto-sff-name
 
 .. note::
 

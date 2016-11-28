@@ -110,9 +110,21 @@ public class OpenflowClassifierProcessor {
                     new LogicallyAttachedClassifier(sff, dataGetter) : new BareClassifier(sff);
         }
 
-        // TODO - genius interface binding here
-
         Optional<String> nodeName = classifierInterface.getNodeName(itfName.get());
+
+        // bind/unbind the interface in genius, if the classifier is attached to a logical interface
+        // (according to the scenario)
+        if (usesLogicalInterfaces(sff)) {
+            if (addClassifierScenario) {
+                ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
+                LOG.debug("Bound interface {}", itfName.get());
+            }
+            else {
+                ClassifierGeniusIntegration.performGeniusServiceUnbinding(tx, itfName.get());
+                LOG.debug("Unbound interface {}", itfName.get());
+            }
+        }
+
         if(!nodeName.isPresent()) {
             LOG.error("createdServiceFunctionClassifier: Could not extract the node name from the OVS interface");
             return Collections.emptyList();
@@ -231,6 +243,11 @@ public class OpenflowClassifierProcessor {
         {
             LOG.info("processAce - About to delete the *out* flows");
             theFlows.add(buildFlowEncapsulation(nodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable()));
+        }
+
+        // when the classifier is attached to a logical SFF, there's no need to process the reverse RSP, so we bail
+        if (usesLogicalInterfaces(theSff)) {
+            return theFlows;
         }
 
         List<FlowDetails> theReverseRspFlows =

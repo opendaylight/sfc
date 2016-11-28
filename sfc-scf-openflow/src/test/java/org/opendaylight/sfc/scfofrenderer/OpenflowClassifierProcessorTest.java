@@ -54,6 +54,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fiel
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +106,8 @@ public class OpenflowClassifierProcessorTest {
     private String interfaceToClassify;
 
     private static final String FIRST_SF_NODE_NAME = "openflow:1234567890";
+
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowClassifierProcessorTest.class);
 
     public OpenflowClassifierProcessorTest() {
         initMocks(this);
@@ -159,7 +163,19 @@ public class OpenflowClassifierProcessorTest {
 
     @Test
     public void addClassifierOK() {
-        // TODO - logical SFF scenario
+        when(dataGetter.getFirstHopNodeName(any(SfcNshHeader.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
+        classifierInterface = Mockito.spy(new LogicallyAttachedClassifier(sff, dataGetter));
+        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
+        OpenflowClassifierProcessor classifierManager =
+                new OpenflowClassifierProcessor(readWriteTransaction, rpcProvider, classifierInterface);
+
+        // disable DPDK flows
+        PowerMockito.when(SfcOvsUtil.getDpdkOfPort(anyString(), anyString())).thenReturn(null);
+
+        List<FlowDetails> theFlows = classifierManager.processClassifier(sffClassifier, acl, true);
+        theFlows.forEach(flow -> LOG.info("The flow: {}", flow.getFlow()));
+        Assert.assertFalse(theFlows.isEmpty());
+        Assert.assertEquals(2, theFlows.size());
     }
 
     @Test
@@ -182,7 +198,7 @@ public class OpenflowClassifierProcessorTest {
 
         // install table miss, install classifier "out" flow, and install classifier 'in' flow for the reverse RSP
         Assert.assertEquals(2 + 1, theFlows.size());
-        }
+    }
 
     @Test
     public void addClassifierDpdkScenario() {
@@ -203,7 +219,7 @@ public class OpenflowClassifierProcessorTest {
 
         // since we have DPDK extensions enabled, 2 extra flows are written
         Assert.assertEquals(2 + 2 + 1, theFlows.size());
-        }
+    }
 
     @Test
     public void addClassifierEmptyAcl() {
@@ -232,7 +248,19 @@ public class OpenflowClassifierProcessorTest {
 
     @Test
     public void removeClassifierOK() {
-        // TODO - logical SFF scenario
+        when(dataGetter.getFirstHopNodeName(any(SfcNshHeader.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
+        classifierInterface = Mockito.spy(new LogicallyAttachedClassifier(sff, dataGetter));
+        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
+
+         OpenflowClassifierProcessor classifierManager =
+                new OpenflowClassifierProcessor(readWriteTransaction, rpcProvider, classifierInterface);
+
+        List<FlowDetails> theFlows = classifierManager.processClassifier(sffClassifier, acl, false);
+
+        Assert.assertFalse(theFlows.isEmpty());
+        // TODO - should we remove the "MatchAny" from the classifier?... (new behaviour)
+        theFlows.forEach(flow -> LOG.info("The flow: {}", flow.getFlow()));
+        Assert.assertEquals(1, theFlows.size());
     }
 
     @Test
@@ -253,7 +281,7 @@ public class OpenflowClassifierProcessorTest {
 
         // remove classifier "out" flow, and classifier 'in' flow for the reverse RSP
         Assert.assertEquals(1 + 1, theFlows.size());
-        }
+    }
 
     @Test
     public void removeClassifierDpdkScenario() {
@@ -276,7 +304,6 @@ public class OpenflowClassifierProcessorTest {
         // remove classifier "out" flow, and classifier 'in' flow for the reverse RSP
         Assert.assertEquals(1 + 1, theFlows.size());
     }
-
 
     @Test
     public void removeClassifierEmptyAcl() {
@@ -301,7 +328,7 @@ public class OpenflowClassifierProcessorTest {
         Assert.assertTrue(theFlows.isEmpty());
     }
 
-    public List<Ace> mockAces(final int nMatches) {
+    private List<Ace> mockAces(final int nMatches) {
         String srcNetwork = "192.168.2.0/24";
         String dstNetwork = "192.168.2.0/24";
         String rspPrefix = "RSP_";

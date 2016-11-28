@@ -186,6 +186,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         LOG.info("flushFlows: creating flowWriter task, writing [{}] flows.",
                 setOfFlowsToAdd.size());
 
+        if (setOfFlowsToAdd.isEmpty()) {
+            return;
+        }
+
         FlowSetWriterTask writerThread =
                 tx == null ?
                     new FlowSetWriterTask(dataProvider, setOfFlowsToAdd) : new FlowSetWriterTask(setOfFlowsToAdd, tx);
@@ -302,6 +306,10 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     @Override
     public void deleteFlowSet() {
         LOG.info("deleteFlowSet: deleting {} flows", setOfFlowsToDelete.size());
+
+        if (setOfFlowsToDelete.isEmpty()) {
+            return;
+        }
 
         FlowSetRemoverTask fsrt = tx == null ?
                 new FlowSetRemoverTask(dataProvider, setOfFlowsToDelete) : new FlowSetRemoverTask(setOfFlowsToDelete, tx);

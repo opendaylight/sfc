@@ -3,17 +3,4 @@
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
   odl:use-default-for-reference-types="true">
 
-  <reference id="dataBroker"
-    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
-    odl:type="default" />
-  <reference id="bindingRegistry"
-    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker" />
-
-  <bean id="sfcpot"
-    class="org.opendaylight.sfc.pot.provider.SfcPot"
-    destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="bindingRegistry"/>
-  </bean>
-
 </blueprint>

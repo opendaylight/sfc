@@ -19,17 +19,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev1510
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.Actions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.slf4j.Logger;
@@ -42,7 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class OpenflowClassifierProcessor {
+public class OpenflowClassifierProcessor implements ClassifierHandler{
 
     private WriteTransaction tx = null;
 
@@ -97,7 +93,7 @@ public class OpenflowClassifierProcessor {
             return Collections.emptyList();
         }
 
-        // set the classifier interface to one of the correct handler
+        // choose which handler to use
         classifierInterface = usesLogicalInterfaces(sff) ?
                 logicallyAttachedClassifier : bareClassifier.setSff(sff);
 
@@ -335,61 +331,6 @@ public class OpenflowClassifierProcessor {
             }
         }
         return theFlows;
-    }
-
-    /**
-     * Build the name of the FlowKey given the names of the classifier, ACL, ACE, and the type of flow.
-     *
-     * @param scfName   the name of the classifier
-     * @param aclName   the name of the ACL
-     * @param aceName   the name of the ACE
-     * @param type      the type of flow. The possible types are: 'in', 'out', and 'relay'
-     * @return          the name which will be given to the flow object
-     */
-    protected static String buildFlowKeyName(String scfName, String aclName, String aceName, String type) {
-        return new StringBuffer()
-                .append(scfName)
-                .append(aclName)
-                .append(aceName)
-                .append(type)
-                .toString();
-    }
-
-    /**
-     * Given the name of an RSP, return its reverse RSP name.
-     *
-     * @param rspName       the RSP name
-     * @return              the reverse RSP name
-     */
-    protected static RspName getReverseRspName(RspName rspName) {
-        return rspName.getValue().endsWith("-Reverse") ?
-                new RspName(rspName.getValue().replaceFirst("-Reverse", "")) :
-                new RspName(rspName.getValue() + "-Reverse");
-    }
-
-    /**
-     * Get the name of the interface we want to classify.
-     *
-     * @param theClassifier the classifier from which we want the InterfaceName
-     * @return              the InterfaceName as a String, if present
-     */
-    private static Optional<String> getInterfaceNameFromClassifier(SclServiceFunctionForwarder theClassifier) {
-        return Optional.ofNullable(theClassifier)
-                .filter(classifier -> classifier.getAttachmentPointType() instanceof Interface)
-                .map(classifier -> (Interface) classifier.getAttachmentPointType())
-                .map(Interface::getInterface);
-    }
-
-    protected static FlowDetails deleteFlowFromTable(String nodeName, String flowKey, short tableID) {
-        return new FlowDetails(nodeName, new FlowKey(new FlowId(flowKey)), new TableKey(tableID));
-    }
-
-    protected static FlowDetails addRspRelatedFlowIntoNode(String nodeName, FlowBuilder flow, long rspId) {
-        return new FlowDetails(nodeName, flow.getKey(), new TableKey(flow.getTableId()), flow.build(), rspId);
-    }
-
-    private boolean usesLogicalInterfaces(ServiceFunctionForwarder theSff) {
-        return theSff.getSffDataPlaneLocator() == null;
     }
 
     /**

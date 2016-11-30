@@ -17,6 +17,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
+import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateProcessor;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspsUpdateListener;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
@@ -44,8 +45,10 @@ public class SfcScfOfRenderer implements AutoCloseable {
         LogicalClassifierDataGetter dataGetter =
                 new LogicalClassifierDataGetter(new SfcGeniusRpcClient(theRpcProvider));
 
+        LogicallyAttachedClassifier logicalClassifier = new LogicallyAttachedClassifier(dataGetter);
+
         OpenflowClassifierProcessor logicalClassifierHandler =
-                new OpenflowClassifierProcessor(theTx, new LogicallyAttachedClassifier(dataGetter), new BareClassifier());
+                new OpenflowClassifierProcessor(theTx, logicalClassifier, new BareClassifier());
 
         // register the classifierProcessor as a listener of the transaction within the OF writer
         openflowWriter.registerTransactionListener(logicalClassifierHandler);
@@ -55,7 +58,7 @@ public class SfcScfOfRenderer implements AutoCloseable {
         openflowWriter.injectTransaction(theTx);
 
         classifierRspsUpdateListener = new ClassifierRspsUpdateListener(dataBroker,
-                logicalClassifierHandler,
+                new ClassifierRspUpdateProcessor(logicalClassifier),
                 openflowWriter,
                 new ClassifierRspUpdateDataGetter(),
                 dataGetter);

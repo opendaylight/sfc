@@ -21,17 +21,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev1510
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.Actions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.slf4j.Logger;
@@ -57,6 +53,8 @@ public class OpenflowClassifierProcessor {
 
     private LogicallyAttachedClassifier logicallyAttachedClassifier;
 
+    private ClassifierHandler classifierHandler;
+
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowClassifierProcessor.class);
 
     // hide the default constructor
@@ -69,6 +67,7 @@ public class OpenflowClassifierProcessor {
         classifierInterface = theBareClassifier;
         logicallyAttachedClassifier = theLogicClassifier;
         bareClassifier = theBareClassifier;
+        classifierHandler = new ClassifierHandler();
     }
 
     /**
@@ -87,7 +86,7 @@ public class OpenflowClassifierProcessor {
 
         SffName sffName = new SffName(theClassifier.getName());
 
-        Optional<String> itfName = getInterfaceNameFromClassifier(theClassifier);
+        Optional<String> itfName = classifierHandler.getInterfaceNameFromClassifier(theClassifier);
 
         ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
 
@@ -99,8 +98,8 @@ public class OpenflowClassifierProcessor {
             return Collections.emptyList();
         }
 
-        // set the classifier interface to one of the correct handler
-        classifierInterface = usesLogicalInterfaces(sff) ?
+        // choose which handler to use
+        classifierInterface = classifierHandler.usesLogicalInterfaces(sff) ?
                 logicallyAttachedClassifier : bareClassifier.setSff(sff);
 
         Optional<String> nodeName = classifierInterface.getNodeName(itfName.get());
@@ -112,7 +111,7 @@ public class OpenflowClassifierProcessor {
 
         // bind/unbind the interface in genius, if the classifier is attached to a logical interface
         // (according to the scenario)
-        if (usesLogicalInterfaces(sff)) {
+        if (classifierHandler.usesLogicalInterfaces(sff)) {
             if (addClassifierScenario) {
                 ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
                 LOG.info("processClassifier - Bound interface {}", itfName.get());
@@ -171,14 +170,12 @@ public class OpenflowClassifierProcessor {
 
         NodeConnectorId port = new NodeConnectorId(String.format("%s:%s", nodeName, inPort.get()));
 
-        LOG.debug("processAce: in port: {}", inPort.get());
         // Match
         Match match = new SfcScfMatch()
                 .setPortMatch(port)
                 .setAclMatch(theAce.getMatches())
                 .build();
 
-        LOG.debug("processAce: Match object created: {}", match);
         // Action
         Optional<Actions> actions = Optional.ofNullable(theAce.getActions());
         if (!actions.isPresent()) {
@@ -195,7 +192,6 @@ public class OpenflowClassifierProcessor {
             LOG.error("processAce - Could not retrieve the RSP name from the given Actions object: {}", actions.get());
         }
 
-        LOG.debug("processAce - The RSP name: {}", rspName.get());
         SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName.get());
 
         if (nsh == null) {
@@ -203,7 +199,7 @@ public class OpenflowClassifierProcessor {
             return Collections.emptyList();
         }
 
-        String flowKey = buildFlowKeyName(theScfName, aclName, ruleName, ".out");
+        String flowKey = classifierHandler.buildFlowKeyName(theScfName, aclName, ruleName, ".out");
 
         // add a classifier
         if (addClassifier) {
@@ -213,17 +209,17 @@ public class OpenflowClassifierProcessor {
             initFlow = classifierInterface.initClassifierTable();
             theOutFlow  = classifierInterface.createClassifierOutFlow(flowKey, match, nsh, nodeName);
 
-            theFlows.add(addRspRelatedFlowIntoNode(nodeName, initFlow, nsh.getNshNsp()));
-            theFlows.add(addRspRelatedFlowIntoNode(nodeName, theOutFlow, nsh.getNshNsp()));
+            theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, initFlow, nsh.getNshNsp()));
+            theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, theOutFlow, nsh.getNshNsp()));
 
             // add DPDK flows
             Long dpdkPort = SfcOvsUtil.getDpdkOfPort(nodeName, null);
-            LOG.debug("processAce - The DPDK port: {}", dpdkPort);
             if (dpdkPort != null) {
-                theFlows.add(addRspRelatedFlowIntoNode(
+                LOG.info("processAce - Adding DPDK flows");
+                theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
                         nodeName,
                         SfcScfOfUtils.initClassifierDpdkOutputFlow(dpdkPort), nsh.getNshNsp()));
-                theFlows.add(addRspRelatedFlowIntoNode(
+                theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
                         nodeName,
                         SfcScfOfUtils.initClassifierDpdkInputFlow(nodeName, dpdkPort), nsh.getNshNsp()));
             }
@@ -231,11 +227,11 @@ public class OpenflowClassifierProcessor {
         else
         {
             LOG.info("processAce - About to delete the *out* flows");
-            theFlows.add(deleteFlowFromTable(nodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable()));
+            theFlows.add(classifierHandler.deleteFlowFromTable(nodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable()));
         }
 
         // when the classifier is attached to a logical SFF, there's no need to process the reverse RSP, so we bail
-        if (usesLogicalInterfaces(theSff)) {
+        if (classifierHandler.usesLogicalInterfaces(theSff)) {
             return theFlows;
         }
 
@@ -284,12 +280,12 @@ public class OpenflowClassifierProcessor {
             LOG.warn("processReverseRsp: reverseNsh is null");
             return Collections.emptyList();
         } else {
-            String flowKey = buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
+            String flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
 
             if (addClassifier) {
                 Optional<FlowDetails> theInFlow =
                         Optional.ofNullable(classifierInterface.createClassifierInFlow(flowKey, reverseNsh, port))
-                        .map(flowBuilder -> addRspRelatedFlowIntoNode(theNodeName, flowBuilder, reverseNsh.getNshNsp()));
+                        .map(flowBuilder -> classifierHandler.addRspRelatedFlowIntoNode(theNodeName, flowBuilder, reverseNsh.getNshNsp()));
                 if (theInFlow.isPresent()) {
                     LOG.info("processReverseRsp: Adding in flow to node {}", theNodeName);
                     theFlows.add(theInFlow.get());
@@ -297,7 +293,7 @@ public class OpenflowClassifierProcessor {
             }
             else {
                 FlowDetails deleteRelayFlow =
-                        deleteFlowFromTable(theNodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable());
+                        classifierHandler.deleteFlowFromTable(theNodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable());
                 theFlows.add(deleteRelayFlow);
             }
 
@@ -312,14 +308,14 @@ public class OpenflowClassifierProcessor {
                     // keep old behaviour, and return the flows up 'till now
                     return theFlows;
                 } else {
-                    flowKey = buildFlowKeyName(theScfName, theAclName, theRuleName, ".relay");
+                    flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".relay");
                     if (addClassifier) {
                         Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
                         reverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address());
                         reverseNsh.setVxlanUdpPort(ip.getPort());
                         Optional<FlowDetails> theRelayFlow =
                                 Optional.ofNullable(classifierInterface.createClassifierRelayFlow(flowKey, reverseNsh))
-                                        .map(flowBuilder -> addRspRelatedFlowIntoNode(lastNodeName,
+                                        .map(flowBuilder -> classifierHandler.addRspRelatedFlowIntoNode(lastNodeName,
                                                 flowBuilder,
                                                 reverseNsh.getNshNsp()));
                         if (theRelayFlow.isPresent()) {
@@ -328,7 +324,7 @@ public class OpenflowClassifierProcessor {
                         }
                     }
                     else {
-                        FlowDetails deleteRelayFlow = deleteFlowFromTable(lastNodeName,
+                        FlowDetails deleteRelayFlow = classifierHandler.deleteFlowFromTable(lastNodeName,
                                 flowKey,
                                 ClassifierGeniusIntegration.getClassifierTable());
                         theFlows.add(deleteRelayFlow);
@@ -337,49 +333,6 @@ public class OpenflowClassifierProcessor {
             }
         }
         return theFlows;
-    }
-
-    /**
-     * Build the name of the FlowKey given the names of the classifier, ACL, ACE, and the type of flow.
-     *
-     * @param scfName   the name of the classifier
-     * @param aclName   the name of the ACL
-     * @param aceName   the name of the ACE
-     * @param type      the type of flow. The possible types are: 'in', 'out', and 'relay'
-     * @return          the name which will be given to the flow object
-     */
-    protected static String buildFlowKeyName(String scfName, String aclName, String aceName, String type) {
-        return new StringBuffer()
-                .append(scfName)
-                .append(aclName)
-                .append(aceName)
-                .append(type)
-                .toString();
-    }
-
-    /**
-     * Get the name of the interface we want to classify.
-     *
-     * @param theClassifier the classifier from which we want the InterfaceName
-     * @return              the InterfaceName as a String, if present
-     */
-    private static Optional<String> getInterfaceNameFromClassifier(SclServiceFunctionForwarder theClassifier) {
-        return Optional.ofNullable(theClassifier)
-                .filter(classifier -> classifier.getAttachmentPointType() instanceof Interface)
-                .map(classifier -> (Interface) classifier.getAttachmentPointType())
-                .map(Interface::getInterface);
-    }
-
-    protected static FlowDetails deleteFlowFromTable(String nodeName, String flowKey, short tableID) {
-        return new FlowDetails(nodeName, new FlowKey(new FlowId(flowKey)), new TableKey(tableID));
-    }
-
-    protected static FlowDetails addRspRelatedFlowIntoNode(String nodeName, FlowBuilder flow, long rspId) {
-        return new FlowDetails(nodeName, flow.getKey(), new TableKey(flow.getTableId()), flow.build(), rspId);
-    }
-
-    private boolean usesLogicalInterfaces(ServiceFunctionForwarder theSff) {
-        return theSff.getSffDataPlaneLocator() == null;
     }
 
     /**

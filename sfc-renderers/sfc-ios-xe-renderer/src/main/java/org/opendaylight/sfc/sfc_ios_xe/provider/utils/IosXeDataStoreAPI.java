@@ -235,7 +235,7 @@ public class IosXeDataStoreAPI implements Callable {
             try {
                 transaction = mountpoint.newWriteOnlyTransaction();
             } catch (RuntimeException e) {
-                if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
+                if (e.getCause() != null && e.getCause().getClass().equals(NetconfDocumentedException.class)) {
                     LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
                     try {
                         Thread.sleep(timeout);

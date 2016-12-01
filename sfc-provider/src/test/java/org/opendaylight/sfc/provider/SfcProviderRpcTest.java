@@ -663,6 +663,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         init();
 
         final RspName pathName1 = new RspName("rspName1");
+        final RspName pathName1Reverse = new RspName("rspName1-Reverse");
         final RspName pathName2 = new RspName("rspName2");
 
         // create and delete one rendered service path
@@ -671,6 +672,15 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
         assertRenderedServicePathExists(pathName1);
         deleteRenderedServicePath(pathName1);
         assertRenderedServicePathDoesNotExist(pathName1);
+
+        // create and delete one rendered service path associated with a symmetric SFP
+        assertRenderedServicePathDoesNotExist(pathName1);
+        createRenderedServicePath(pathName1);
+        assertRenderedServicePathExists(pathName1);
+        assertRenderedServicePathExists(pathName1Reverse);
+        deleteRenderedServicePath(pathName1);
+        assertRenderedServicePathDoesNotExist(pathName1);
+        assertRenderedServicePathDoesNotExist(pathName1Reverse);
 
         // create and delete two rendered service paths
         assertRenderedServicePathDoesNotExist(pathName2);
@@ -694,7 +704,7 @@ public class SfcProviderRpcTest extends AbstractDataStoreManager {
 
     private void createRenderedServicePath(RspName pathName) throws Exception {
         CreateRenderedPathInputBuilder inputBuilder = new CreateRenderedPathInputBuilder();
-        inputBuilder.setName(pathName.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue());
+        inputBuilder.setName(pathName.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue()).setSymmetric(true);
         CreateRenderedPathInput input = inputBuilder.build();
         Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(input);
         assertTrue("Failed to create rendered service path.",

@@ -292,28 +292,44 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         return Futures.immediateFuture(rpcResult);
     }
 
+    /**
+     * When a RSP is deleted, it has to be removed from:
+     * SFF, SF and RSP operational state
+     * <p>
+     *
+     * @param rspName RspName object with the Rendered Service Path
+     * @return true if all path was deleted, false otherwise.
+     */
+    private boolean deleteRenderedPathWithRspName(RspName rspName) {
+
+        boolean ret = true;
+        ret = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
+        ret = (ret && SfcProviderServiceFunctionAPI.deleteRspFromServiceFunctionState(rspName));
+
+        ret = (ret && SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName));
+        return ret;
+    }
+
+    /**
+     * Remove RSP from all the operational state
+     * <p>
+     *
+     * @param input schema path <i>rendered-service-path/delete-rendered-path/input</i>
+     * @return RPC output
+     */
     @Override
     public Future<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(DeleteRenderedPathInput input) {
 
-        boolean ret;
+        boolean ret = true;
         RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
-        // If a RSP is deleted we delete both SF and SFF operational states.
-        // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        /*
-         * XXX TODO Another example of Method overloading signature type confusion brought about by
-         * Strings. Fixing typing in RPC input/output will be another patch.
-         * Suggest after changing RPC inputs to be typedefs, that method names be cleaned up too.
-         * For instance:
-         * deletePathFromServiceForwarderState
-         * has signatures (ServiceFunctionPath) and what used to be (String) which is now (RspName)
-         * and another for SfpName so I *assume* I'm supposed to use SfpName here
-         * and test and hope for the best but unintended consequences if people see things like
-         * rspName used in place of sfpName and re-use same pattern elsewhere.
-         */
-        SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(new RspName(input.getName()));
-        SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(new SfpName(input.getName()));
+        RspName rspName = new RspName(input.getName());
+        RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
+        if (reverseRspName != null) {
+            // The RSP has a symmetric ("Reverse") Path
+            ret = (ret && this.deleteRenderedPathWithRspName(reverseRspName));
+        }
+        ret = (ret && this.deleteRenderedPathWithRspName(rspName));
 
-        ret = SfcProviderRenderedPathAPI.deleteRenderedServicePath(new RspName(input.getName()));
         DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
         deleteRenderedPathOutputBuilder.setResult(ret);
         if (ret) {

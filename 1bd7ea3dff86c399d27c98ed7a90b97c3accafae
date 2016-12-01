@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_e176edd7",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-01T14:24:21Z",
+      "side": 1,
+      "message": "all 3 operations are done even if the first one fails. \n\nwhy not bail before?",
+      "range": {
+        "startLine": 306,
+        "startChar": 0,
+        "endLine": 306,
+        "endChar": 1
+      },
+      "revId": "1bd7ea3dff86c399d27c98ed7a90b97c3accafae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_e15d4d4a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-01T14:24:21Z",
+      "side": 1,
+      "message": "what is this object for?\n\nas far as I can see, you\u0027re not using it anywhere.",
+      "range": {
+        "startLine": 397,
+        "startChar": 0,
+        "endLine": 399,
+        "endChar": 65
+      },
+      "revId": "1bd7ea3dff86c399d27c98ed7a90b97c3accafae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_c15ad14f",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-01T14:24:21Z",
+      "side": 1,
+      "message": "is there a reason for not sticking to java style naming schemes (camel case)?",
+      "range": {
+        "startLine": 666,
+        "startChar": 22,
+        "endLine": 666,
+        "endChar": 39
+      },
+      "revId": "1bd7ea3dff86c399d27c98ed7a90b97c3accafae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

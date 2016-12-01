@@ -369,4 +369,51 @@ public class SfcProviderServiceFunctionAPI {
         return ret;
     }
 
+    /**
+     * This method removes the given Rendered Service Path from the all
+     * SF operational states that use it.
+     * It assumes that the associated Rendered Service Path has not been deleted
+     * yet since it reads it in order to have access to all SFs that are used
+     * by this RSP.
+     * <p>
+     *
+     * @param rspName Rendered Service Path name
+     * @return true if RSP was deleted, false otherwise
+     */
+    public static boolean deleteRspFromServiceFunctionState(RspName rspName) {
+
+        printTraceStart(LOG);
+        boolean ret = true;
+        RenderedServicePath renderedServicePath =
+            SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+
+        if (renderedServicePath != null) {
+            List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
+            for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
+                SfName sfName = renderedServicePathHop.getServiceFunctionName();
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                SfpName sfpNameFromRspName = new SfpName(rspName.getValue());
+                SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpNameFromRspName);
+
+                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
+                InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .child(SfServicePath.class, sfServicePathKey)
+                        .build();
+                if (SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL)) {
+                    ret = true;
+                } else {
+                    ret = false;
+                    LOG.error("{}: Could not delete Rendered Service Path {} from SF {} operational state",
+                            Thread.currentThread().getStackTrace()[1], rspName, sfName);
+                }
+            }
+        } else {
+            LOG.error("{}: Rendered Service Path {} does not exist", Thread.currentThread().getStackTrace()[1],
+                    rspName);
+        }
+        printTraceStop(LOG);
+        return ret;
+    }
+
 }

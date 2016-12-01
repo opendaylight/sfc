@@ -616,6 +616,24 @@ public class SfcProviderRenderedPathAPI {
     }
 
     /**
+     * It returns the Symmetric RSP Name from a RspName if both exist
+     * <p>
+     *
+     * @param rspName RspName object with the primary Rendered Service Path Name
+     * @return The Symmetric (Reversed) RSP; null in case the RSP does not exist or if it has not a symmetric Path Id
+     */
+    public static RspName getReversedRspName(RspName rspName) {
+        RspName returnRspName = null;
+        RenderedServicePath renderedServicePath =
+                SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+        if ((renderedServicePath != null) && (renderedServicePath.getSymmetricPathId() != null) ) {
+            // The RSP has a symmetric ("Reverse") Path
+            returnRspName = SfcProviderRenderedPathAPI.generateReversedPathName(renderedServicePath.getName());
+        }
+        return returnRspName;
+    }
+
+    /**
      * This function reads a RSP from the datastore
      * <p>
      *

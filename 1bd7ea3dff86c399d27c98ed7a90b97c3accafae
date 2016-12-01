@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_252c70ab",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2016-12-01T16:34:57Z",
+      "side": 1,
+      "message": "In that case I don\u0027t think it will work. In java, logical AND is short-circuited (meaning that when the first operand is false, then the second operand does not need to be evaluated, so those deletions won\u0027t be executed). Three independent booleans shall be used and then return logical and for them three later.",
+      "parentUuid": "1a622d24_a5cfe0af",
+      "range": {
+        "startLine": 306,
+        "startChar": 0,
+        "endLine": 306,
+        "endChar": 1
+      },
+      "revId": "1bd7ea3dff86c399d27c98ed7a90b97c3accafae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_e15d4d4a",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
         "patchSetId": 1

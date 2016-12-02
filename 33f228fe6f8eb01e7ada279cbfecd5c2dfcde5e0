@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_b926e566",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorLogicalSff.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-12-02T15:04:58Z",
+      "side": 1,
+      "message": "I dont understand why this is not needed. Its the case when a packet arrives from an SF, and needs to go to another SF. In which case, you still need to set the nextHop values for the SF.",
+      "range": {
+        "startLine": 158,
+        "startChar": 16,
+        "endLine": 158,
+        "endChar": 36
+      },
+      "revId": "33f228fe6f8eb01e7ada279cbfecd5c2dfcde5e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_997329b1",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_4b937bfa",
+      "range": {
+        "startLine": 64,
+        "startChar": 74,
+        "endLine": 64,
+        "endChar": 81
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_2b90bfeb",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2016-12-02T10:37:11Z",
       "side": 1,
       "message": "I would add null check also on ServiceFunctionPath (as you are doing it for ServiceFunctionChain). SfcProviderServicePathAPI.readServiceFunctionPath() does not contain any verification, you are able to pass null parameter and you will get exception in that case.\n\nCheck in disableSfcPot as well",
+      "range": {
+        "startLine": 77,
+        "startChar": 44,
+        "endLine": 77,
+        "endChar": 78
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f967bde8",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_2b90bfeb",
       "range": {
         "startLine": 77,
         "startChar": 44,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_d96481e7",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_cbb66b8a",
+      "range": {
+        "startLine": 120,
+        "startChar": 16,
+        "endLine": 120,
+        "endChar": 21
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_0bb0638a",
         "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
         "patchSetId": 2
@@ -82,6 +154,30 @@
       "writtenOn": "2016-12-02T10:37:11Z",
       "side": 1,
       "message": "Again, you are not using rspName here and you can read it from RenderedServicePath",
+      "range": {
+        "startLine": 163,
+        "startChar": 73,
+        "endLine": 163,
+        "endChar": 80
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_3962d5d8",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_0bb0638a",
       "range": {
         "startLine": 163,
         "startChar": 73,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_195f1910",
+        "filename": "sfc-pot/src/main/yang/sfc-ioam-nb-pot.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_6b1d9773",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 28,
+        "endChar": 9
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_8b63d319",
         "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
         "patchSetId": 2
@@ -128,6 +248,30 @@
       "writtenOn": "2016-12-02T10:37:11Z",
       "side": 1,
       "message": "It\u0027s good practice to access static members directly even if class instance is available.\n\nCheck also lines 306 and 323 for the same issue",
+      "range": {
+        "startLine": 284,
+        "startChar": 8,
+        "endLine": 284,
+        "endChar": 22
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_799badc9",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_8b63d319",
       "range": {
         "startLine": 284,
         "startChar": 8,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_59a071f4",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_6b68f7f5",
+      "range": {
+        "startLine": 291,
+        "startChar": 8,
+        "endLine": 291,
+        "endChar": 32
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_ab720fe3",
         "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
         "patchSetId": 2
@@ -174,6 +342,30 @@
       "writtenOn": "2016-12-02T10:37:11Z",
       "side": 1,
       "message": "double empty line",
+      "range": {
+        "startLine": 304,
+        "startChar": 0,
+        "endLine": 304,
+        "endChar": 0
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b9a54506",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_ab720fe3",
       "range": {
         "startLine": 304,
         "startChar": 0,
@@ -232,6 +424,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_99aa09d3",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_6b4f5793",
+      "range": {
+        "startLine": 339,
+        "startChar": 52,
+        "endLine": 339,
+        "endChar": 58
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_cb44ab76",
         "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
         "patchSetId": 2
@@ -243,6 +459,30 @@
       "writtenOn": "2016-12-02T10:37:11Z",
       "side": 1,
       "message": "Only cosmetic - you don\u0027t need to store the result of SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME) into RenderedServicePath variable if you don\u0027t want to log it, so you can return it directly",
+      "range": {
+        "startLine": 374,
+        "startChar": 8,
+        "endLine": 374,
+        "endChar": 49
+      },
+      "revId": "78943edb13800a99c338d571960b31a4fae776cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f9ae9de6",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-02T14:15:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_cb44ab76",
       "range": {
         "startLine": 374,
         "startChar": 8,

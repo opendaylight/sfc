@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_7d31d0a1",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-12-06T09:35:50Z",
+      "side": 1,
+      "message": "sfpName will be always null here, you should log something like \nLog.warn(\"Unable to get service function path from rsp {}\", rsp)\n\nAlso use warn instead of error",
+      "range": {
+        "startLine": 82,
+        "startChar": 76,
+        "endLine": 82,
+        "endChar": 83
+      },
+      "revId": "e666ccf41423b0cf6cf53d6184c9a5c0745b442b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_9dd30c38",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-12-06T09:35:50Z",
+      "side": 1,
+      "message": "This one is not used",
+      "range": {
+        "startLine": 291,
+        "startChar": 27,
+        "endLine": 291,
+        "endChar": 36
+      },
+      "revId": "e666ccf41423b0cf6cf53d6184c9a5c0745b442b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_fde32003",
+        "filename": "sfc-pot/src/test/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessorTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2016-12-06T09:35:50Z",
+      "side": 1,
+      "message": "you can optionally do RSP_NAME.getValue() and remove line 332",
+      "range": {
+        "startLine": 334,
+        "startChar": 29,
+        "endLine": 334,
+        "endChar": 37
+      },
+      "revId": "e666ccf41423b0cf6cf53d6184c9a5c0745b442b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

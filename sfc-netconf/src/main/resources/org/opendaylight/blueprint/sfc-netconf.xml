@@ -16,7 +16,7 @@
 
   <bean id="sfcnetconfservicefunctionapi"
         class="org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI">
-     <property name="dataProvider" ref="dataBroker"/>
+     <property name="dataProviderNonStatic" ref="dataBroker"/>
      <property name="sfcProviderSfDescriptionMonitorAPI" ref="sfcprovidersfdescriptionmonitorapi"/>
   </bean>
 

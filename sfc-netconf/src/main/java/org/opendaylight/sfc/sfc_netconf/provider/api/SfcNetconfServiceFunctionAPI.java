@@ -263,8 +263,14 @@ public class SfcNetconfServiceFunctionAPI {
         return ret;
     }
 
-    //blueprint setter
+    //blueprint setters
     public void setSfcProviderSfDescriptionMonitorAPI( SfcProviderSfDescriptionMonitorAPI r){
         getSfDescMon = r;
     }
+
+    public void setDataProviderNonStatic(DataBroker r) {
+        dataBroker = r;
+    }
+
+
 }

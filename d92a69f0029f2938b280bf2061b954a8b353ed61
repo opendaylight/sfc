@@ -22,6 +22,30 @@
       "revId": "d92a69f0029f2938b280bf2061b954a8b353ed61",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_d2771701",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRpc.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2016-12-12T21:49:48Z",
+      "side": 1,
+      "message": "Brady, Thanks for your time.\nThe getSfcPotRpc ties to the blueprint in sfc-pot.xml for RPC implementation, as here (\u003codl:rpc-implementation ref\u003d\"sfcPotRpc\" /\u003e).  This is similar to getSfcProviderRpc for RenderedServicePathService.  If there are better or alternate ways to do the same, pl. let me know.",
+      "parentUuid": "1a622d24_dd93adf8",
+      "range": {
+        "startLine": 42,
+        "startChar": 28,
+        "endLine": 42,
+        "endChar": 40
+      },
+      "revId": "d92a69f0029f2938b280bf2061b954a8b353ed61",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

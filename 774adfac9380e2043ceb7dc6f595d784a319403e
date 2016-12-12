@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_03d6684f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2016-12-12T15:13:11Z",
+      "side": 1,
+      "message": "in https://git.opendaylight.org/gerrit/42661",
+      "range": {
+        "startLine": 9,
+        "startChar": 27,
+        "endLine": 9,
+        "endChar": 35
+      },
+      "revId": "774adfac9380e2043ceb7dc6f595d784a319403e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

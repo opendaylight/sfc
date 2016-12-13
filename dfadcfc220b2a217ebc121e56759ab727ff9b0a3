@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_a15207db",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/SfcGeniusImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-13T17:31:27Z",
+      "side": 1,
+      "message": "why not call these methods directly in the destroy method?\n\nnot sure I understand the purpose of this indirection.",
+      "range": {
+        "startLine": 60,
+        "startChar": 12,
+        "endLine": 61,
+        "endChar": 43
+      },
+      "revId": "dfadcfc220b2a217ebc121e56759ab727ff9b0a3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

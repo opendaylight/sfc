@@ -265,15 +265,6 @@
       Put dependencies for configfiles directly referenced in your features.xml file.
       For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
     -->
-    <!-- odl-sfc-genius config files -->
-    <dependency>
-       <groupId>${project.groupId}</groupId>
-       <artifactId>sfc-genius</artifactId>
-       <version>${project.version}</version>
-       <type>xml</type>
-       <classifier>config</classifier>
-    </dependency>
-    <!-- odl-sfc-pot config files -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-jsonconfig</artifactId>

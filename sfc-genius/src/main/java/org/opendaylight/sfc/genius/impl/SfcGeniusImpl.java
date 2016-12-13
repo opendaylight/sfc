@@ -6,12 +6,11 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.controller.config.yang.config.sfc_genius.impl;
+package org.opendaylight.sfc.genius.impl;
 
+import com.google.common.base.Preconditions;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.opendaylight.controller.config.api.DependencyResolver;
-import org.opendaylight.controller.config.api.ModuleIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
@@ -22,35 +21,20 @@ import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcGeniusModule
-        extends AbstractSfcGeniusModule {
+public class SfcGeniusImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusImpl.class);
+    private final DataBroker dataBroker;
+    private final RpcProviderRegistry rpcProviderRegistry;
+    private AutoCloseable onDestroy;
 
-    public SfcGeniusModule(ModuleIdentifier identifier,
-                           DependencyResolver dependencyResolver) {
-        super(identifier, dependencyResolver);
+    public SfcGeniusImpl(DataBroker dataBroker, RpcProviderRegistry rpcProviderRegistry) {
+        this.dataBroker = Preconditions.checkNotNull(dataBroker);
+        this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
     }
 
-    public SfcGeniusModule(ModuleIdentifier identifier,
-                           DependencyResolver dependencyResolver,
-                           SfcGeniusModule oldModule,
-                           AutoCloseable oldInstance) {
-        super(identifier, dependencyResolver, oldModule, oldInstance);
-    }
-
-    @Override
-    public void customValidation() {
-        // add custom validation form module attributes here.
-    }
-
-    @Override
-    public AutoCloseable createInstance() {
-
+    public void init() {
         LOG.info("Initializing SFC Genius module {}", this);
-
-        DataBroker dataBroker = getDataBrokerDependency();
-        RpcProviderRegistry rpcProviderRegistry = getRpcRegistryDependency();
 
         // Listeners will submit jobs to this executor, data store events will be
         // handled synchronously, one at a time and in order.
@@ -72,19 +56,17 @@ public class SfcGeniusModule
         sfStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
         interfaceStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
 
-        LOG.info("SFC Genius module {} initialized", this);
-
-        return new AutoCloseable() {
-            @Override
-            public void close() throws Exception {
-                LOG.info("Closing SFC Genius module {}", this);
-
-                sfStateListener.close();
-                interfaceStateListener.close();
-
-                LOG.info("SFC Genius module instance {} closed", this);
-            }
+        onDestroy = () -> {
+            sfStateListener.close();
+            interfaceStateListener.close();
         };
+
+        LOG.info("SFC Genius module {} initialized", this);
     }
 
+    public void destroy() throws Exception {
+        LOG.info("Closing SFC Genius module {}", this);
+        onDestroy.close();
+        LOG.info("SFC Genius module instance {} closed", this);
+    }
 }

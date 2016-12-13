@@ -153,7 +153,6 @@
         <feature version="${project.version}">odl-sfc-provider</feature>
         <feature version='${genius.version}'>odl-genius</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/sfc-genius-initial.xml">mvn:org.opendaylight.sfc/sfc-genius/{{VERSION}}/xml/config</configfile>
     </feature>
 
 </features>

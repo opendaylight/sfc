@@ -662,6 +662,7 @@ public class SfcOvsUtil {
             public PortNameCompare(String portName) {
                 this.portName = portName;
             }
+            @Override
             public boolean compare(OvsdbTerminationPointAugmentation otp) {
                 if (otp == null)
                     return false;
@@ -681,6 +682,7 @@ public class SfcOvsUtil {
      */
     public static Long getVxlanOfPort(String nodeName) {
         class VxlanPortCompare implements OvsdbTPComp {
+            @Override
             public boolean compare(OvsdbTerminationPointAugmentation otp) {
                 if (otp == null) {
                     return false;
@@ -702,6 +704,7 @@ public class SfcOvsUtil {
      */
     public static Long getVxlanGpeOfPort(String nodeName) {
         class VxlanGpePortCompare implements OvsdbTPComp {
+            @Override
             public boolean compare(OvsdbTerminationPointAugmentation otp) {
                 if (otp == null) {
                     return false;
@@ -763,6 +766,11 @@ public class SfcOvsUtil {
         }
 
         List<Node> nodes = topo.getNode();
+
+        if (nodes == null) {
+            return null;
+        }
+
         for (Node node : nodes) {
             OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
             if (ovsdbBridgeAugmentation == null) {

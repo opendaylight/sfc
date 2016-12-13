@@ -22,6 +22,30 @@
       "revId": "dfadcfc220b2a217ebc121e56759ab727ff9b0a3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_a174c7fd",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/SfcGeniusImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2016-12-13T18:38:19Z",
+      "side": 1,
+      "message": "No particular reason other than not to fill up the class with multiple properties only for the sake of closing them afterwards. It holds parallelism to what was done before this change: returning a new AutoCloseable instead of self.",
+      "parentUuid": "1a622d24_a15207db",
+      "range": {
+        "startLine": 60,
+        "startChar": 12,
+        "endLine": 61,
+        "endChar": 43
+      },
+      "revId": "dfadcfc220b2a217ebc121e56759ab727ff9b0a3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

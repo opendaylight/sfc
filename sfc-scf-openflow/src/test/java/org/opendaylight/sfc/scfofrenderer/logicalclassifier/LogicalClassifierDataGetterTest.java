@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,8 +15,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.RspLogicalSffAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.powermock.api.mockito.PowerMockito;
@@ -30,6 +32,7 @@ import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -40,12 +43,25 @@ public class LogicalClassifierDataGetterTest {
     @Mock
     SfcGeniusRpcClient geniusRpc;
 
+    @Mock
+    RenderedServicePath rsp;
+
+    @Mock
+    List<RenderedServicePathHop> theHops;
+
+    @Mock
+    RenderedServicePathHop hop;
+
+    @Mock
+    RspLogicalSffAugmentation logicalSffAugmentation;
+
     private LogicalClassifierDataGetter dataGetter;
 
     private static final String FIRST_SF_NEUTRON_PORT = "eba7a40e-a8f7-4b25-b1a2-4128f0da988e";
     private static final String FIRST_SF_DPN_ID = "1234567890";
     private static final String FIRST_SF_NODE_NAME = "openflow:" + FIRST_SF_DPN_ID;
     private static final String FIRST_SF_TUNNEL_IF = "tunaa-1234";
+    private static final DpnIdType DATAPLANE_ID = new DpnIdType(new BigInteger(FIRST_SF_DPN_ID));
 
     public LogicalClassifierDataGetterTest() {
         initMocks(this);
@@ -54,6 +70,14 @@ public class LogicalClassifierDataGetterTest {
 
     @Before
     public void setUp() {
+        when(rsp.getRenderedServicePathHop()).thenReturn(theHops);
+
+        when(theHops.get(any(Integer.class))).thenReturn(hop);
+
+        when(hop.getAugmentation(eq(RspLogicalSffAugmentation.class))).thenReturn(logicalSffAugmentation);
+
+        when(logicalSffAugmentation.getDpnId()).thenReturn(DATAPLANE_ID);
+
         PowerMockito.mockStatic(SfcGeniusDataUtils.class);
         List<String> theInterfaces = new ArrayList<String>() {{
             add("openflow:1234567890:2");
@@ -68,6 +92,19 @@ public class LogicalClassifierDataGetterTest {
 
         when(geniusRpc.getTargetInterfaceFromGeniusRPC(any(DpnIdType.class), any(DpnIdType.class)))
                 .thenReturn(Optional.of(FIRST_SF_NEUTRON_PORT));
+    }
+
+    @Test
+    public void testFetchingFirstHopDataplaneId() {
+        Assert.assertEquals(
+                FIRST_SF_DPN_ID,
+                dataGetter.getFirstHopDataplaneId(rsp).get().getValue().toString());
+    }
+
+    @Test
+    public void testFetchingFirstHopDataplaneIdInvalidAugmentation() {
+        when(hop.getAugmentation(any())).thenReturn(null);
+        Assert.assertFalse(dataGetter.getFirstHopDataplaneId(rsp).isPresent());
     }
 
     @Test

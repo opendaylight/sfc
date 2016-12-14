@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collection;
@@ -24,10 +23,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import com.google.common.eventbus.EventBus;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -73,12 +75,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     // flushFlows() is called
     private Set<FlowDetails> setOfFlowsToAdd;
 
-    private DataBroker dataProvider = null;
-
-    // TODO - define this in a single place... (both here and in the SfcOfRspProcessor)
-    public static final long SFC_FLOWS = 0xdeadbeef;
+    private DataBroker dataProvider;
 
     private WriteTransaction tx;
+
+    private EventBus eventBus;
 
     public SfcOfFlowWriterImpl() {
         this.threadPoolExecutorService = Executors.newSingleThreadExecutor();
@@ -86,15 +87,23 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         this.flowBuilder = null;
         this.setOfFlowsToDelete = new HashSet<>();
         this.setOfFlowsToAdd = new HashSet<>();
+        eventBus = new EventBus();
     }
 
-    public SfcOfFlowWriterImpl(WriteTransaction theTx) {
+    public SfcOfFlowWriterImpl(DataBroker theDataBroker) {
         this();
-        tx = theTx;
+        dataProvider = theDataBroker;
+        tx = dataProvider.newWriteOnlyTransaction();
     }
 
     public void setDataProvider(DataBroker r){
         dataProvider = r;
+    }
+
+    @Override
+    public void injectTransaction(WriteTransaction theTx) {
+        tx = theTx;
+        eventBus.post(tx);
     }
 
     /**
@@ -115,6 +124,12 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         }
     }
 
+    @Override
+    public void registerTransactionListener(Object interestedParty) { eventBus.register(interestedParty); }
+
+    @Override
+    public void deregisterTransactionListener(Object interestedParty) { eventBus.unregister(interestedParty); }
+
     /**
      * Store a flow to be written later. The flows will be stored per
      * SFF and table. Later, when flushFlows() is called, all the flows
@@ -130,7 +145,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         LOG.debug("writeFlow storing flow to Node {}, table {}", sffNodeName, flow.getTableId());
 
         // Add the flow to the set of flows to be added in a single transaction
-        setOfFlowsToAdd.add(new FlowDetails(sffNodeName, flow.getKey(), new TableKey(flow.getTableId()), flowBuilder.build()));
+        setOfFlowsToAdd.add(new FlowDetails(sffNodeName, flow.getKey(), new TableKey(flow.getTableId()), flowBuilder.build(), rspId));
 
         // This will store the flow info and rspId for removal later
         storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
@@ -145,22 +160,29 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         // Add the flow to the set of flows to be added in a single transaction
         setOfFlowsToAdd.add(theFlowData);
 
-        // No use for caching when using this...
+        storeFlowDetails(theFlowData.getRspId(),
+                theFlowData.getSffNodeName(),
+                theFlowData.getFlowKey(),
+                theFlowData.getTableKey().getId());
     }
 
     @Override
     public boolean writeFlows(Collection<FlowDetails> theFlows) {
+        theFlows.forEach(flow -> storeFlowDetails(flow.getRspId(),
+                flow.getSffNodeName(),
+                flow.getFlowKey(),
+                flow.getTableKey().getId()));
         return setOfFlowsToAdd.addAll(theFlows);
     }
 
     @Override
     public void removeFlow(String sffNodeName, FlowKey flowKey,
             TableKey tableKey) {
+        LOG.debug("removeFlow: removing flow with key {} from table {} in sff {}", flowKey, tableKey, sffNodeName);
 
-      LOG.debug("removeFlow: removing flow with key {} from table {} in sff {}", flowKey, tableKey, sffNodeName);
+        FlowDetails flowDetail = new FlowDetails(sffNodeName, flowKey, tableKey);
 
-      FlowDetails flowDetail = new FlowDetails(sffNodeName, flowKey, tableKey);
-      setOfFlowsToDelete.add(flowDetail);
+        setOfFlowsToDelete.add(flowDetail);
     }
 
     @Override
@@ -199,7 +221,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
         }
-
+        finally {
+            updateTransactionObject();
+        }
         // Clear the entries
         setOfFlowsToAdd.clear();
     }
@@ -223,20 +247,17 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
      * @param tableId - the table the flow was written to
      */
     private void storeFlowDetails(final Long rspId, final String sffNodeName, FlowKey flowKey, short tableId) {
-        Optional<Map<String, List<FlowDetails>>> theFlowsPerSffMap =
-                Optional.ofNullable(rspNameToFlowsMap.get(rspId));
-        if (!theFlowsPerSffMap.isPresent()) {
+        LOG.debug("storeFlowDetails - gonna store rspId: {}, sffName: {}",  rspId, sffNodeName);
+        if (!rspNameToFlowsMap.containsKey(rspId)) {
             rspNameToFlowsMap.put(rspId, new HashMap<> ());
         }
 
-        Optional<List<FlowDetails>> theFlowsPerSff =
-                Optional.ofNullable(rspNameToFlowsMap.get(rspId).get(sffNodeName));
-        if (!theFlowsPerSff.isPresent()) {
+        if (!rspNameToFlowsMap.get(rspId).containsKey(sffNodeName)) {
             rspNameToFlowsMap.get(rspId).put(sffNodeName, new ArrayList<>());
         }
 
-        List<FlowDetails> flowDetails = rspNameToFlowsMap.get(rspId).get(sffNodeName);
-        flowDetails.add(new FlowDetails(sffNodeName, flowKey, new TableKey(tableId)));
+        rspNameToFlowsMap.get(rspId).get(sffNodeName)
+                .add(new FlowDetails(sffNodeName, flowKey, new TableKey(tableId), rspId));
     }
 
     @Override
@@ -275,7 +296,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
 
     /**
      * Delete all flows created for the given rspId (flows are stored in a deletion buffer;
-     * actual transactional deletion is performed upon deleteFlowSet() invokation
+     * actual transactional deletion is performed when deleteFlowSet() is called
      *
      * @param rspId - the rspId to delete flows for
      */
@@ -294,13 +315,14 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
                 }
             );
 
-        if (flowDetailsList.size() == 0) {
+        if (flowDetailsList.isEmpty()) {
             LOG.warn("deleteRspFlows() no flows exist for RSP [{}]", rspId);
             return;
         }
 
         rspNameToFlowsMap.remove(rspId);
         setOfFlowsToDelete.addAll(flowDetailsList);
+        LOG.debug("deleteRspFlows() added {} flows to the delete list", setOfFlowsToDelete.size());
     }
 
     @Override
@@ -319,6 +341,9 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         } catch (Exception ex) {
             LOG.error(LOGSTR_THREAD_EXCEPTION, ex.toString(), ex);
         }
+        finally {
+            updateTransactionObject();
+        }
 
         // Clear the entries
         setOfFlowsToDelete.clear();
@@ -333,13 +358,13 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
     public Set<NodeId> clearSffsIfNoRspExists() {
         Set<NodeId> sffNodeIDs = new HashSet<>();
 
-        if (!rspNameToFlowsMap.containsKey(SFC_FLOWS)) {
+        if (!rspNameToFlowsMap.containsKey(OpenflowConstants.SFC_FLOWS)) {
             LOG.warn("clearSffsIfNoRspExists() - Attempting to delete initialization flows, and they do not exist");
             return sffNodeIDs;
         }
 
         Map<String, List<FlowDetails>> theInitializationFlows =
-                rspNameToFlowsMap.get(SFC_FLOWS);
+                rspNameToFlowsMap.get(OpenflowConstants.SFC_FLOWS);
 
         // an orphan SFF is a forwarder not featured in any RSP
         Predicate <String> isOrphanSff =
@@ -374,5 +399,15 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         Predicate<Entry<Long, Map<String, List<FlowDetails>>>> isSffFeatured =
                 theInputEntry -> theInputEntry.getValue().containsKey(sffName);
         return rspNameToFlowsMap.entrySet().stream().filter(isSffFeatured).count();
+    }
+
+    /**
+     * Update the inner transaction object, and notify all transaction listeners through the {@link EventBus}
+     */
+    @Override
+    public void updateTransactionObject() {
+        LOG.debug("Updating the transaction object...");
+        tx = dataProvider.newWriteOnlyTransaction();
+        eventBus.post(tx);
     }
 }

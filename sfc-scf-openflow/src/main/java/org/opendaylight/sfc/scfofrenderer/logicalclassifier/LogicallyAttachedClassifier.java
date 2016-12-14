@@ -8,13 +8,13 @@
 
 package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
 
+import com.google.common.base.Strings;
 import org.opendaylight.sfc.scfofrenderer.ClassifierInterface;
 import org.opendaylight.sfc.scfofrenderer.SfcNshHeader;
 import java.util.List;
 import java.util.ArrayList;
 import org.opendaylight.sfc.scfofrenderer.SfcScfOfUtils;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
@@ -29,22 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LogicallyAttachedClassifier implements ClassifierInterface {
-    private final ServiceFunctionForwarder sff;
-
     private final LogicalClassifierDataGetter logicalSffDataGetter;
 
     private static final Logger LOG = LoggerFactory.getLogger(LogicallyAttachedClassifier.class);
 
-    // genius dispatcher table -> 17
     private static final short GENIUS_DISPATCHER_TABLE = 0x11;
 
     private static final short TUN_GPE_NP_NSH = 0x4;
 
-    public LogicallyAttachedClassifier(ServiceFunctionForwarder theSff, LogicalClassifierDataGetter theDataGetter) {
-        sff = theSff;
+    public LogicallyAttachedClassifier(LogicalClassifierDataGetter theDataGetter) {
         logicalSffDataGetter = theDataGetter;
     }
 
+    @Override
     public FlowBuilder initClassifierTable() {
         MatchBuilder match = new MatchBuilder();
 
@@ -56,7 +53,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
                 ClassifierGeniusIntegration.getClassifierTable(),
                 SfcScfOfUtils.FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
 
-        LOG.debug("initClassifierTable - jump to table: {}", ClassifierGeniusIntegration.getClassifierTable());
+        LOG.info("initClassifierTable - jump to table: {}", ClassifierGeniusIntegration.getClassifierTable());
         return fb;
     }
 
@@ -69,23 +66,27 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
      * @return                      a FlowBuilder object containing the desired flow
      */
     @Override
-    public FlowBuilder createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
+    public FlowBuilder createClassifierOutFlow(String flowKey,
+                                               Match match,
+                                               SfcNshHeader sfcNshHeader,
                                                String classifierNodeName) {
-        LOG.debug("createClassifierOutFlow - Enter");
-        if ((flowKey == null) || (sfcNshHeader == null)) {
+
+        if ( Strings.isNullOrEmpty(flowKey) || sfcNshHeader == null || Strings.isNullOrEmpty(classifierNodeName) ) {
             LOG.error("createClassifierOutFlow - Wrong inputs; either the flow key of the NSH header are not correct");
             return null;
         }
 
-        LOG.debug("createClassifierOutFlow - Validated inputs");
+        LOG.info("createClassifierOutFlow - Validated inputs");
         List<Action> theActions = buildNshActions(sfcNshHeader);
 
         InstructionsBuilder isb;
         // if the classifier is co-located w/ the first SFF, we simply jump to the SFC ingress table
         // otherwise, we forward the packet through the respective tunnel to the intended SFF
-        Optional<String> firstHopNeutronPort = logicalSffDataGetter.getFirstHopNodeName(sfcNshHeader);
-        if(firstHopNeutronPort.isPresent() && classifierNodeName.equals(firstHopNeutronPort.get())) {
-            LOG.debug("createClassifierOutFlow - Classifier co-located w/ first SFF; jump to transport ingress: {}",
+        DpnIdType classifierNodeDpnId = LogicalClassifierDataGetter.getDpnIdFromNodeName(classifierNodeName);
+        DpnIdType firstHopDataplaneId = logicalSffDataGetter.getFirstHopDataplaneId(sfcNshHeader.getRsp())
+                .orElseThrow(IllegalArgumentException::new);
+        if(classifierNodeDpnId.equals(firstHopDataplaneId)) {
+            LOG.info("createClassifierOutFlow - Classifier co-located w/ first SFF; jump to transport ingress: {}",
                     ClassifierGeniusIntegration.getTransportIngressTable());
             // generate the flows
             isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
@@ -94,16 +95,13 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
         }
         else
         {
-            DpnIdType srcDpnId = LogicalClassifierDataGetter.getDpnIdFromNodeName(classifierNodeName);
-            DpnIdType dstDpnId = LogicalClassifierDataGetter.getDpnIdFromNodeName(firstHopNeutronPort.get());
-            LOG.debug("createClassifierOutFlow - Must go through tunnel; src dpnID: {}; dst dpnID: {}",
-                    srcDpnId.getValue().toString(),
-                    dstDpnId.getValue().toString());
-
-            String theTunnelIf = logicalSffDataGetter.getInterfaceBetweenDpnIds(srcDpnId, dstDpnId)
+            String theTunnelIf = logicalSffDataGetter.getInterfaceBetweenDpnIds(classifierNodeDpnId, firstHopDataplaneId)
                     .orElseThrow(RuntimeException::new);
 
-            LOG.debug("createClassifierOutFlow - The tunnel: {}", theTunnelIf);
+            LOG.info("createClassifierOutFlow - Must go through tunnel: {}. src: {}; dst: {}",
+                    theTunnelIf,
+                    classifierNodeDpnId.getValue().toString(),
+                    firstHopDataplaneId.getValue().toString());
 
             // since these actions from genius *have to* be appended to other actions, we must pass
             // the size of the current actions as an offset, so that genius generates the actions in

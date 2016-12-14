@@ -11,9 +11,10 @@ package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
 
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.scfofrenderer.SfcNshHeader;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.RspLogicalSffAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 
 import java.math.BigInteger;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 public class LogicalClassifierDataGetter {
 
-    SfcGeniusRpcClient theGeniusRpcClient;
+    private SfcGeniusRpcClient theGeniusRpcClient;
 
     private LogicalClassifierDataGetter() {}
 
@@ -66,17 +67,22 @@ public class LogicalClassifierDataGetter {
     }
 
     /**
-     * Get the node name of the first SF in the RSP featured in the given NSH header
-     * @param theHeader     the NSH header from which we want to compute the dpnID of the first SF
-     * @return              the node name (ex: "openflow:dpnID") of the first SF in the chain specified
-     *                      within the NSH header
+     * @param theRsp    the {@link RenderedServicePath} for which we want the first SF dataplane ID
+     * @return          the dataplane ID of the first SF in the RSP
      */
-    public Optional<String> getFirstHopNodeName(SfcNshHeader theHeader) {
-        return Optional.ofNullable(SfcProviderServiceFunctionAPI.readServiceFunction(theHeader.getFirstSfName()))
-                .map(SfcGeniusDataUtils::getSfLogicalInterface)
-                .map(this::getNodeName)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+    public Optional<DpnIdType> getFirstHopDataplaneId(RenderedServicePath theRsp) {
+        return Optional.ofNullable(theRsp.getRenderedServicePathHop().get(0))
+                .map(this::getHopDataplaneId)
+                .orElse(Optional.empty());
+    }
+
+    /**
+     * @param hopData   the {@link RenderedServicePathHop} for which we want to extract the data-plane ID
+     * @return          the data-plane ID of the given RenderedServicePathHop
+     */
+    public Optional<DpnIdType> getHopDataplaneId(RenderedServicePathHop hopData) {
+        return Optional.ofNullable(hopData.getAugmentation(RspLogicalSffAugmentation.class))
+                .map(RspLogicalSffAugmentation::getDpnId);
     }
 
     /**

@@ -611,8 +611,16 @@ public class SfcProviderRenderedPathAPI {
 
     }
 
-    public static RspName generateReversedPathName(RspName directRspName) {
-        return new RspName(directRspName.getValue() + REVERSED_PATH_SUFFIX);
+    /**
+     * Given the name of an RSP, return its reverse RSP name.
+     *
+     * @param rspName       the RSP name
+     * @return              the reverse RSP name
+     */
+    public static RspName generateReversedPathName(RspName rspName) {
+        return rspName.getValue().endsWith(REVERSED_PATH_SUFFIX) ?
+                new RspName(rspName.getValue().replaceFirst(REVERSED_PATH_SUFFIX, "")) :
+                new RspName(rspName.getValue() + REVERSED_PATH_SUFFIX);
     }
 
     /**

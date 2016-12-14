@@ -19,10 +19,15 @@ import java.util.Optional;
 public class BareClassifier implements ClassifierInterface {
     private ServiceFunctionForwarder sff;
 
-    private BareClassifier() {}
+    public BareClassifier() {}
 
     public BareClassifier(ServiceFunctionForwarder theSff) {
         sff = theSff;
+    }
+
+    public BareClassifier setSff(ServiceFunctionForwarder theSff) {
+        sff = theSff;
+        return this;
     }
 
     public FlowBuilder initClassifierTable() {

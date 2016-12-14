@@ -37,6 +37,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
@@ -138,7 +139,7 @@ public class SfcOfRspTransactionalProcessorTest {
     areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<FlowDetails>>> theMap) {
         Predicate<Map.Entry<String, List<FlowDetails>>> emptySff =
                 theInputEntry -> theInputEntry.getValue().size() == 0;
-        return theMap.get(SfcOfRspProcessor.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
+        return theMap.get(OpenflowConstants.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
     }
 
     /**

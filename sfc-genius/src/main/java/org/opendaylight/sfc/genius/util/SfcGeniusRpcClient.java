@@ -203,12 +203,12 @@ public class SfcGeniusRpcClient {
                             input, output);
                     successful = true;
                 } else {
-                    LOG.error("getTargetInterfaceFromGeniusRPC({}) failed: {}",
+                    LOG.error("getDpnIdFromInterfaceNameFromGeniusRPC({}) failed: {}",
                             input, output);
                 }
             } else {
                 LOG.error(
-                        "getTargetInterfaceFromGeniusRPC({}) failed (service couldn't be retrieved)",
+                        "getDpnIdFromInterfaceNameFromGeniusRPC({}) failed (service couldn't be retrieved)",
                         input);
             }
         } catch (Exception e) {

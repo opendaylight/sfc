@@ -24,6 +24,7 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -47,8 +48,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class SfcOfRspProcessor {
-
-    public static final long SFC_FLOWS = 0xdeadbeef;
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
     private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private SfcOfBaseProviderUtils sfcOfProviderUtils;
@@ -141,7 +140,7 @@ public class SfcOfRspProcessor {
                 entry = sffGraphIter.next();
                 LOG.debug("build flows of entry: {}", entry);
                 // The flows created by initializeSff dont belong to any particular RSP
-                sfcOfFlowProgrammer.setFlowRspId(SFC_FLOWS);
+                sfcOfFlowProgrammer.setFlowRspId(OpenflowConstants.SFC_FLOWS);
                 initializeSff(entry, transportProcessor);
                 sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
                 configureTransportIngressFlows(entry, sffGraph, transportProcessor);

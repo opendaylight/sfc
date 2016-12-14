@@ -14,11 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
@@ -33,43 +30,16 @@ import org.slf4j.LoggerFactory;
 class SfcScfOfProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfProcessor.class);
-    private static SfcOfFlowWriterInterface openflowWriter;
+    private SfcOfFlowWriterInterface openflowWriter;
     private OpenflowClassifierProcessor classifierProcessor;
-    private WriteTransaction tx;
     private DataBroker dataBroker;
-    private RpcProviderRegistry rpcProvider;
-
-    public SfcScfOfProcessor(DataBroker theDataBroker, RpcProviderRegistry theRpcProvider) {
-        tx = theDataBroker.newReadWriteTransaction();
-        initProcessor(tx, theDataBroker, theRpcProvider);
-    }
 
     public SfcScfOfProcessor(DataBroker theDataBroker,
-                             RpcProviderRegistry theRpcProvider,
-                             SfcOfFlowWriterInterface theOpenflowWriter) {
-        dataBroker = theDataBroker;
-        rpcProvider = theRpcProvider;
-        tx = dataBroker.newReadWriteTransaction();
-        openflowWriter = theOpenflowWriter;
-        classifierProcessor = new OpenflowClassifierProcessor(tx, theRpcProvider);
-    }
-
-    public SfcScfOfProcessor(DataBroker theDataBroker,
-                             RpcProviderRegistry theRpcProvider,
                              SfcOfFlowWriterInterface theOpenflowWriter,
                              OpenflowClassifierProcessor theClassifierProcessor) {
         dataBroker = theDataBroker;
-        rpcProvider = theRpcProvider;
-        tx = dataBroker.newReadWriteTransaction();
         openflowWriter = theOpenflowWriter;
         classifierProcessor = theClassifierProcessor;
-    }
-
-    private void initProcessor(WriteTransaction theTx, DataBroker theDataBroker, RpcProviderRegistry theRpcProvider) {
-        openflowWriter = new SfcOfFlowWriterImpl(theTx);
-        classifierProcessor = new OpenflowClassifierProcessor(theTx, theRpcProvider);
-        dataBroker = theDataBroker;
-        rpcProvider = theRpcProvider;
     }
 
    /**
@@ -107,15 +77,14 @@ class SfcScfOfProcessor {
             // if no flows were built to be written, we refresh the transaction,
             // thus discarding the genius interface binding
             if(allFlows.isEmpty()) {
-                LOG.info("createdServiceFunctionClassifier - Could not successfully process classifier.");
-                refreshTransaction();
+                LOG.info("createdServiceFunctionClassifier - Could not successfully process classifier; will regen the transaction");
+                openflowWriter.updateTransactionObject();
                 continue;
             }
             openflowWriter.writeFlows(allFlows);
         }
 
         openflowWriter.flushFlows();
-        refreshTransaction();
         return true;
     }
 
@@ -153,25 +122,14 @@ class SfcScfOfProcessor {
             // if no flows were built to be written, we refresh the transaction,
             // thus discarding the genius interface binding
             if(allFlows.isEmpty()) {
-                LOG.info("deletedServiceFunctionClassifier - Could not successfully delete classifier.");
-                refreshTransaction();
+                LOG.info("deletedServiceFunctionClassifier - Could not successfully delete classifier; will regen the transaction");
+                openflowWriter.updateTransactionObject();
                 continue;
             }
             openflowWriter.removeFlows(allFlows);
         }
         openflowWriter.deleteFlowSet();
-        refreshTransaction();
         return true;
-    }
-
-    /**
-     * Refresh the current datastore transaction, and use the same transaction object within the openflow writer.
-     */
-    private void refreshTransaction() {
-        if (tx != null) {
-            tx = dataBroker.newReadWriteTransaction();
-            initProcessor(tx, dataBroker, rpcProvider);
-        }
     }
 
     /**

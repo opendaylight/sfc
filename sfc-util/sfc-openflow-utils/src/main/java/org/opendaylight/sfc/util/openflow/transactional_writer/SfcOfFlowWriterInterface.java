@@ -11,6 +11,8 @@ package org.opendaylight.sfc.util.openflow.transactional_writer;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
@@ -26,6 +28,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  */
 
 public interface SfcOfFlowWriterInterface {
+
+    void injectTransaction(WriteTransaction theTx);
+
+    void updateTransactionObject();
+
+    void registerTransactionListener(Object interestedParty);
+
+    void deregisterTransactionListener(Object interestedParty);
 
     //Write flows to MD-SAL datastore
     void writeFlow(final Long rspId, final String sffNodeName, FlowBuilder flow);

@@ -69,8 +69,9 @@ public class SfcScfOfProcessorTest {
 
         dataBroker = mock(DataBroker.class);
         when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
+        when(dataBroker.newWriteOnlyTransaction()).thenReturn(readWriteTransaction);
 
-        SfcOfFlowWriterInterface openflowWriter = spy(new SfcOfFlowWriterImpl());
+        SfcOfFlowWriterInterface openflowWriter = spy(new SfcOfFlowWriterImpl(dataBroker));
         Mockito.doNothing().when(openflowWriter).flushFlows();
 
         OpenflowClassifierProcessor classifierProcessor = mock(OpenflowClassifierProcessor.class);
@@ -78,7 +79,7 @@ public class SfcScfOfProcessorTest {
                 .thenReturn(Collections.emptyList());
 
         RpcProviderRegistry rpcProvider = mock(RpcProviderRegistry.class);
-        sfcScfProcessor = new SfcScfOfProcessor(dataBroker, rpcProvider, openflowWriter, classifierProcessor);
+        sfcScfProcessor = new SfcScfOfProcessor(dataBroker, openflowWriter, classifierProcessor);
 
         scf = mock(ServiceFunctionClassifier.class);
         acl = mock(Acl.class);

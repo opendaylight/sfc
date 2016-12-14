@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -20,12 +20,12 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.SfcNshHeader;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -95,11 +95,17 @@ public class LogicallyAttachedClassifierTest {
 
     private LogicallyAttachedClassifier logicalScf;
 
-    private static final String FIRST_SF_DPNID = "1234567890";
+    private static final String FIRST_SF_DPNID_STRING = "1234567890";
 
-    private static final String FIRST_SF_NODE_NAME = String.format("openflow:%s", FIRST_SF_DPNID);
+    private static final DpnIdType FIRST_SF_DPNID = new DpnIdType(new BigInteger("1234567890"));
 
-    private static final String CLASSIFIER_NODE_NAME = "openflow:9876543210";
+    private static final String FIRST_SF_NODE_NAME = String.format("openflow:%s", FIRST_SF_DPNID_STRING);
+
+    private static final String CLASSIFIER_DPNID_STRING = "9876543210";
+
+    private static final String CLASSIFIER_NODE_NAME = "openflow:" + CLASSIFIER_DPNID_STRING;
+
+    private static final DpnIdType CLASSIFIER_DPNID  = new DpnIdType(new BigInteger(CLASSIFIER_DPNID_STRING));
 
     public LogicallyAttachedClassifierTest() {
         initMocks(this);
@@ -125,15 +131,16 @@ public class LogicallyAttachedClassifierTest {
         when(dataGetter.getNodeName(anyString())).thenReturn(Optional.of(CLASSIFIER_NODE_NAME));
         when(dataGetter.getEgressActionsForTunnelInterface(anyString(), any(Integer.class)))
                 .thenReturn(Collections.emptyList());
-        when(dataGetter.getFirstHopNodeName(any(SfcNshHeader.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
+        when(dataGetter.getFirstHopDataplaneId(any(RenderedServicePath.class))).thenReturn(Optional.of(FIRST_SF_DPNID));
+//        when(dataGetter.getFirstHopNodeName(any(SfcNshHeader.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
         when(dataGetter.getInterfaceBetweenDpnIds(any(DpnIdType.class), any(DpnIdType.class)))
                 .thenReturn(Optional.of("tun-1234"));
 
-        logicalScf = new LogicallyAttachedClassifier(sff, dataGetter);
+        logicalScf = new LogicallyAttachedClassifier(dataGetter);
 
         PowerMockito.mockStatic(LogicalClassifierDataGetter.class);
         PowerMockito.when(LogicalClassifierDataGetter.getDpnIdFromNodeName(anyString()))
-                .thenReturn(new DpnIdType(new BigInteger(FIRST_SF_DPNID)));
+                .thenReturn(FIRST_SF_DPNID);
         PowerMockito.when(LogicalClassifierDataGetter.getOpenflowPort(anyString())).thenReturn(Optional.of(2L));
 
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
@@ -143,19 +150,21 @@ public class LogicallyAttachedClassifierTest {
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsPort"))
                 .toReturn(2L);
 
-        PowerMockito.stub(PowerMockito.method(SfcNshHeader.class, "getSfcNshHeader"))
-                .toReturn(new SfcNshHeader()
-                        .setFirstSfName(new SfName(sfName))
-                        .setNshEndNsi((short) 254)
-                        .setNshMetaC1(123L)
-                        .setNshMetaC2(321L)
-                        .setNshMetaC3(2323L)
-                        .setNshMetaC4(3232L)
-                        .setNshNsp(666L)
-                        .setNshStartNsi((short) 255)
-                        .setSffName(new SffName("sff#1"))
-                        .setVxlanIpDst(new Ipv4Address("192.168.1.1"))
-                        .setVxlanUdpPort(new PortNumber(8080)));
+        PowerMockito.mockStatic(SfcNshHeader.class);
+        SfcNshHeader nshHeader = new SfcNshHeader()
+                .setFirstSfName(new SfName("sf#1"))
+                .setNshEndNsi((short) 254)
+                .setNshMetaC1(123L)
+                .setNshMetaC2(321L)
+                .setNshMetaC3(2323L)
+                .setNshMetaC4(3232L)
+                .setNshNsp(666L)
+                .setNshStartNsi((short) 255)
+                .setSffName(new SffName("sff#1"))
+                .setVxlanIpDst(new Ipv4Address("192.168.1.1"))
+                .setVxlanUdpPort(new PortNumber(8080));
+        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RspName.class))).thenReturn(nshHeader);
+        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RenderedServicePath.class))).thenReturn(nshHeader);
 
         PowerMockito.stub(PowerMockito.method(SfcGeniusDataUtils.class, "getInterfaceLowerLayerIf"))
                 .toReturn(new ArrayList<String>(){{add(String.format("%s:%s", FIRST_SF_NODE_NAME,"2"));}});
@@ -197,6 +206,12 @@ public class LogicallyAttachedClassifierTest {
 
     @Test
     public void outFlowPositiveUseTunnel() {
+        PowerMockito.when(LogicalClassifierDataGetter.getDpnIdFromNodeName(FIRST_SF_NODE_NAME))
+                .thenReturn(FIRST_SF_DPNID);
+
+        PowerMockito.when(LogicalClassifierDataGetter.getDpnIdFromNodeName(CLASSIFIER_NODE_NAME))
+                .thenReturn(CLASSIFIER_DPNID);
+
         FlowBuilder flow = logicalScf.createClassifierOutFlow("the-key",
                 aclMatch,
                 SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")),

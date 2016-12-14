@@ -21,6 +21,7 @@ public class FlowDetails {
     private final FlowKey flowKey;
     private final TableKey tableKey;
     private final Flow flow;
+    private final Long rspId;
 
     /**
      * This constructor is used for storing flows to be added
@@ -30,11 +31,12 @@ public class FlowDetails {
      * @param tableKey - the table identifier
      * @param flow - The flow to be written
      */
-    public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow) {
+    public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Flow flow, Long theRspId) {
         this.sffNodeName = sffNodeName;
         this.flowKey = flowKey;
         this.tableKey = tableKey;
         this.flow = flow;
+        rspId = theRspId;
     }
 
     /**
@@ -44,16 +46,22 @@ public class FlowDetails {
      * @param flowKey - the flow identifier
      * @param tableKey - the table identifier
      */
-    public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
-        this(sffNodeName, flowKey, tableKey, null);
+    public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey, Long theRspId) {
+        this(sffNodeName, flowKey, tableKey, null, theRspId);
     }
 
-    public String getSffNodeName() { return sffNodeName; }
+    public FlowDetails(final String sffNodeName, FlowKey flowKey, TableKey tableKey) {
+        this(sffNodeName, flowKey, tableKey, null, null);
+    }
 
-    public FlowKey getFlowKey() { return flowKey; }
+    public final String getSffNodeName() { return sffNodeName; }
 
-    public TableKey getTableKey() { return tableKey; }
+    public final FlowKey getFlowKey() { return flowKey; }
+
+    public final TableKey getTableKey() { return tableKey; }
 
     public final Flow getFlow() { return flow; }
+
+    public final long getRspId() { return rspId; }
 }
 

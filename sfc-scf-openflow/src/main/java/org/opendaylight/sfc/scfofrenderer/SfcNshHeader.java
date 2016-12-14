@@ -42,6 +42,7 @@ public class SfcNshHeader {
     private Long nshMetaC4 = null;
     private SffName sffName = null;
     private SfName sfName = null;
+    private RenderedServicePath rsp = null;
 
     public SfcNshHeader() {
     }
@@ -150,6 +151,61 @@ public class SfcNshHeader {
         return this;
     }
 
+    public RenderedServicePath getRsp() {
+        return rsp;
+    }
+
+    public SfcNshHeader setRsp(RenderedServicePath theRsp) {
+        rsp = theRsp;
+        return this;
+    }
+
+    public static SfcNshHeader getSfcNshHeader(RenderedServicePath theRsp) {
+
+        RenderedServicePathHop theFirstHop = theRsp.getRenderedServicePathHop().get(0);
+        RenderedServicePathHop lastRspHop = Iterables.getLast(theRsp.getRenderedServicePathHop());
+
+        if (lastRspHop == null) {
+            LOG.error("getSfcNshHeader: last rsp hop is null\n");
+            return null;
+        }
+
+        RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(theRsp.getName());
+        if (rspFirstHop == null) {
+            LOG.error("getSfcNshHeader: rsp first hop is null\n");
+            return null;
+        }
+
+        SfcNshHeader sfcNshHeader = new SfcNshHeader()
+                .setRsp(theRsp)
+                .setNshNsp(theRsp.getPathId())
+                .setNshStartNsi(theRsp.getStartingIndex())
+                .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
+                .setSffName(lastRspHop.getServiceFunctionForwarder())
+                .setFirstSfName(theFirstHop.getServiceFunctionName());
+
+        if (rspFirstHop.getIp() != null) {
+            sfcNshHeader.setVxlanIpDst(rspFirstHop.getIp().getIpv4Address()).setVxlanUdpPort(rspFirstHop.getPort());
+        }
+
+        String context = theRsp.getContextMetadata();
+        if (context == null) {
+            LOG.error("getSfcNshHeader: context is null\n");
+        }
+
+        ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
+        if (md == null) {
+            LOG.error("getSfcNshHeader: metadata is null\n");
+        } else {
+            sfcNshHeader.setNshMetaC1(md.getContextHeader1())
+                    .setNshMetaC2(md.getContextHeader2())
+                    .setNshMetaC3(md.getContextHeader3())
+                    .setNshMetaC4(md.getContextHeader4());
+        }
+
+        return sfcNshHeader;
+    }
+
     public static SfcNshHeader getSfcNshHeader(RspName rspName) {
 
         if (rspName == null) {
@@ -169,12 +225,6 @@ public class SfcNshHeader {
             return null;
         }
 
-        // in logical SFF scenarios, the RSP hops don't have IP locators. In fact, they don't have locators at all.
-//        if (rspFirstHop.getIp() == null) {
-//            LOG.error("getSfcNshHeader: ip address of rsp first hop is null\n");
-//            return null;
-//        }
-
         if (renderedServicePath.getRenderedServicePathHop() == null) {
             LOG.error("getSfcNshHeader: getRenderedServicePathHop is null\n");
             return null;
@@ -190,6 +240,7 @@ public class SfcNshHeader {
         RenderedServicePathHop theFirstHop = renderedServicePath.getRenderedServicePathHop().get(0);
 
         SfcNshHeader sfcNshHeader = new SfcNshHeader()
+                .setRsp(renderedServicePath)
                 .setNshNsp(renderedServicePath.getPathId())
                 .setNshStartNsi(rspFirstHop.getStartingIndex())
                 .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))

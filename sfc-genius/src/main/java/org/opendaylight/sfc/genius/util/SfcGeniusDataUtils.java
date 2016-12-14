@@ -14,11 +14,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.meta.rev160406.bridge.ref.info.BridgeRefEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeRef;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +40,10 @@ public class SfcGeniusDataUtils {
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the CONFIG DS"));
         Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
+        BigInteger theDataplaneId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf());
 
-        return Optional.ofNullable(SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf()))
-                    .map(SfcGeniusUtilsDataGetter::getBridgeFromDpnId)
-                    .map(bridgeRef -> bridgeRef.get().getBridgeReference())
+        return SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDataplaneId)
+                    .map(BridgeRefEntry::getBridgeReference)
                     .map(OvsdbBridgeRef::getValue)
                     .map(iid -> iid.firstKeyOf(Node.class))
                     .map(NodeKey::getNodeId)
@@ -65,7 +67,6 @@ public class SfcGeniusDataUtils {
      *      the SF is connected, when available
      */
     public static Optional<MacAddress> getServiceFunctionForwarderPortMacAddress(String ifName) {
-
         Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
                         .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
         if (theIf.getPhysAddress() == null) {

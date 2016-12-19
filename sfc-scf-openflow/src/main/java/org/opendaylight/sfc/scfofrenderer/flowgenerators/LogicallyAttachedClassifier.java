@@ -6,14 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
+package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import com.google.common.base.Strings;
-import org.opendaylight.sfc.scfofrenderer.ClassifierInterface;
-import org.opendaylight.sfc.scfofrenderer.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import java.util.List;
 import java.util.ArrayList;
-import org.opendaylight.sfc.scfofrenderer.SfcScfOfUtils;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
+import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
+import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;

@@ -6,8 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;

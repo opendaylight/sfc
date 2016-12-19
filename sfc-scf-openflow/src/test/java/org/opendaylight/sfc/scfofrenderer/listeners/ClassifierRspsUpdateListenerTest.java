@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer.rspupdatelistener;
+package org.opendaylight.sfc.scfofrenderer.listeners;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
+import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
+import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;

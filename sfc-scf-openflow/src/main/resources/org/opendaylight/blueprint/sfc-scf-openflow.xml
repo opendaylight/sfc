@@ -12,7 +12,7 @@
     interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
 
   <bean id="sfcScfOfRenderer"
-    class="org.opendaylight.sfc.scfofrenderer.SfcScfOfRenderer"
+    class="org.opendaylight.sfc.scfofrenderer.renderers.SfcScfOfRenderer"
     destroy-method="close">
     <argument ref="dataBroker"/>
     <argument ref="notificationService"/>

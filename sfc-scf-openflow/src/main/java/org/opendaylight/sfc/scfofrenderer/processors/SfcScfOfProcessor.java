@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.processors;
 
 
 import java.util.Collections;
@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class SfcScfOfProcessor {
+public class SfcScfOfProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfProcessor.class);
     private SfcOfFlowWriterInterface openflowWriter;
@@ -50,7 +50,7 @@ class SfcScfOfProcessor {
     * @param  scf service function classifier
     * @return          create result
     */
-    protected boolean createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+    public boolean createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
         Optional<Acl> theAcl = Optional.ofNullable(scf)
                 .map(ServiceFunctionClassifier::getAcl)
                 .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
@@ -96,7 +96,7 @@ class SfcScfOfProcessor {
     * @param  scf service function classifier
     * @return     delete result
     */
-    protected boolean deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
+    public boolean deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
         Optional<Acl> theAcl = Optional.ofNullable(scf)
                 .map(ServiceFunctionClassifier::getAcl)
                 .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));

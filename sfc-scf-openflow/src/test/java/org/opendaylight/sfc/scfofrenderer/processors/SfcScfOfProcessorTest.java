@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.processors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +29,8 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;

@@ -6,14 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer.rspupdatelistener;
+package org.opendaylight.sfc.scfofrenderer.processors;
 
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.scfofrenderer.ClassifierHandler;
-import org.opendaylight.sfc.scfofrenderer.ClassifierInterface;
-import org.opendaylight.sfc.scfofrenderer.SfcNshHeader;
-import org.opendaylight.sfc.scfofrenderer.SfcScfMatch;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.ClassifierInterface;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;

@@ -1,12 +1,12 @@
-/**
- * Copyright (c) 2015 Intel Ltd. and others.  All rights reserved.
+/*
+ * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.renderers;
 
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -14,11 +14,15 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
+import org.opendaylight.sfc.scfofrenderer.listeners.SfcScfOfDataListener;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.processors.OpenflowClassifierProcessor;
+import org.opendaylight.sfc.scfofrenderer.processors.SfcScfOfProcessor;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
-import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateProcessor;
-import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspsUpdateListener;
+import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
+import org.opendaylight.sfc.scfofrenderer.listeners.ClassifierRspsUpdateListener;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.slf4j.Logger;

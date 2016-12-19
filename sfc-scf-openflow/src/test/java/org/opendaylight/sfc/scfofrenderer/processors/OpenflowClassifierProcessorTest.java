@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.processors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,8 +20,11 @@ import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.scfofrenderer.ClassifierAclDataBuilder;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -33,10 +36,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.RspLogicalSffAugmentation;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.powermock.api.mockito.PowerMockito;
@@ -167,6 +172,11 @@ public class OpenflowClassifierProcessorTest {
 
         PowerMockito.mockStatic(SfcOvsUtil.class);
         PowerMockito.when(SfcOvsUtil.getVxlanOfPort(anyString())).thenReturn(4L);
+        PowerMockito.when(SfcOvsUtil.getSffVxlanDataLocator(any(ServiceFunctionForwarder.class)))
+                .thenReturn(new IpBuilder()
+                        .setIp(new IpAddress(new Ipv4Address("192.168.2.2")))
+                        .setPort(new PortNumber(80))
+                        .build());
     }
 
     @Test

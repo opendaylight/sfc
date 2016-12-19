@@ -6,15 +6,21 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.scfofrenderer;
+package org.opendaylight.sfc.scfofrenderer.processors;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.ClassifierInterface;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
@@ -26,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.Actions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -84,25 +89,25 @@ public class OpenflowClassifierProcessor {
             final boolean addClassifierScenario) {
         addClassifier = addClassifierScenario;
 
-        SffName sffName = new SffName(theClassifier.getName());
+        Optional<ServiceFunctionForwarder> sff = Optional.of(new SffName(theClassifier.getName()))
+                .map(SfcProviderServiceForwarderAPI::readServiceFunctionForwarder);
 
         Optional<String> itfName = classifierHandler.getInterfaceNameFromClassifier(theClassifier);
 
-        ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
-
-        if (sff == null || !itfName.isPresent()) {
+        if (!sff.isPresent() || !itfName.isPresent()) {
             LOG.error("createdServiceFunctionClassifier: " +
                             "Cannot install ACL rules in classifier. SFF exists? {}; Interface exists? {}",
-                    sff != null,
+                    sff.isPresent(),
                     itfName.isPresent());
             return Collections.emptyList();
         }
 
         // choose which handler to use
-        classifierInterface = classifierHandler.usesLogicalInterfaces(sff) ?
-                logicallyAttachedClassifier : bareClassifier.setSff(sff);
+        classifierInterface = classifierHandler.usesLogicalInterfaces(sff.get()) ?
+                logicallyAttachedClassifier : bareClassifier.setSff(sff.get());
 
-        Optional<String> nodeName = classifierInterface.getNodeName(itfName.get());
+        Optional<String> nodeName = itfName.map(ifName -> classifierInterface.getNodeName(ifName))
+                .orElse(Optional.empty());
 
         if(!nodeName.isPresent()) {
             LOG.error("createdServiceFunctionClassifier: Could not extract the node name from the OVS interface");
@@ -111,7 +116,7 @@ public class OpenflowClassifierProcessor {
 
         // bind/unbind the interface in genius, if the classifier is attached to a logical interface
         // (according to the scenario)
-        if (classifierHandler.usesLogicalInterfaces(sff)) {
+        if (classifierHandler.usesLogicalInterfaces(sff.get())) {
             if (addClassifierScenario) {
                 ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
                 LOG.info("processClassifier - Bound interface {}", itfName.get());
@@ -127,7 +132,7 @@ public class OpenflowClassifierProcessor {
                 .getAce()
                 .stream()
                 .map(theAce -> processAce(nodeName.get(),
-                        sff,
+                        sff.get(),
                         theClassifier.getName(),
                         theAcl.getAclName(),
                         itfName.get(),
@@ -163,34 +168,18 @@ public class OpenflowClassifierProcessor {
         LOG.info("processAce - NodeName: {}; IF name: {}", nodeName, theIfName);
 
         Optional<Long> inPort = classifierInterface.getInPort(theIfName, nodeName);
-        if (!inPort.isPresent()) {
-            LOG.error("processAce - port is null; returning empty list");
-            return Collections.emptyList();
-        }
-
-        NodeConnectorId port = new NodeConnectorId(String.format("%s:%s", nodeName, inPort.get()));
-
-        // Match
-        Match match = new SfcScfMatch()
-                .setPortMatch(port)
-                .setAclMatch(theAce.getMatches())
+        // Build the match object if possible; throw a RuntimeException if the ACE is not correctly provisioned
+        Match match = inPort.map(port -> String.format("%s:%s", nodeName, port))
+                .map(NodeConnectorId::new)
+                .map(connectorId -> new SfcScfMatch().setPortMatch(connectorId))
+                .map(scfMatch -> scfMatch.setAclMatch(theAce.getMatches()))
+                .orElseThrow(IllegalArgumentException::new)
                 .build();
 
-        // Action
-        Optional<Actions> actions = Optional.ofNullable(theAce.getActions());
-        if (!actions.isPresent()) {
-            LOG.error("processAce: action is null; returning empty list");
-            return Collections.emptyList();
-        }
-
-        Optional<RspName> rspName = actions
+        Optional<RspName> rspName = Optional.ofNullable(theAce.getActions())
                 .map(theActions -> theActions.getAugmentation(Actions1.class))
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                 .map(aclRsp -> new RspName(aclRsp.getRenderedServicePath()));
-
-        if (!rspName.isPresent()) {
-            LOG.error("processAce - Could not retrieve the RSP name from the given Actions object: {}", actions.get());
-        }
 
         SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName.get());
 
@@ -283,8 +272,7 @@ public class OpenflowClassifierProcessor {
             String flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
 
             if (addClassifier) {
-                Optional<FlowDetails> theInFlow =
-                        Optional.ofNullable(classifierInterface.createClassifierInFlow(flowKey, reverseNsh, port))
+                Optional<FlowDetails> theInFlow = Optional.ofNullable(classifierInterface.createClassifierInFlow(flowKey, reverseNsh, port))
                         .map(flowBuilder -> classifierHandler.addRspRelatedFlowIntoNode(theNodeName, flowBuilder, reverseNsh.getNshNsp()));
                 if (theInFlow.isPresent()) {
                     LOG.info("processReverseRsp: Adding in flow to node {}", theNodeName);
@@ -297,40 +285,37 @@ public class OpenflowClassifierProcessor {
                 theFlows.add(deleteRelayFlow);
             }
 
-            SffName lastSffName = reverseNsh.getSffName();
-            if (lastSffName != null &&
-                    !reverseNsh.getSffName().equals(theSff.getName())) {
-                ServiceFunctionForwarder lastSff =
-                        SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSffName);
-                String lastNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(lastSff);
-                if (lastNodeName == null) {
-                    LOG.error("processReverseRsp: lastNodeName is null");
-                    // keep old behaviour, and return the flows up 'till now
-                    return theFlows;
-                } else {
-                    flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".relay");
-                    if (addClassifier) {
-                        Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
-                        reverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address());
-                        reverseNsh.setVxlanUdpPort(ip.getPort());
-                        Optional<FlowDetails> theRelayFlow =
-                                Optional.ofNullable(classifierInterface.createClassifierRelayFlow(flowKey, reverseNsh))
-                                        .map(flowBuilder -> classifierHandler.addRspRelatedFlowIntoNode(lastNodeName,
-                                                flowBuilder,
-                                                reverseNsh.getNshNsp()));
-                        if (theRelayFlow.isPresent()) {
-                            LOG.info("processReverseRsp: Adding relay flow to node {}", lastNodeName);
-                            theFlows.add(theRelayFlow.get());
-                        }
-                    }
-                    else {
-                        FlowDetails deleteRelayFlow = classifierHandler.deleteFlowFromTable(lastNodeName,
+            Optional<String> lastNodeName = Optional.ofNullable(reverseNsh.getSffName())
+                    .filter(sffName -> !sffName.equals(theSff.getName()))
+                    .map(SfcProviderServiceForwarderAPI::readServiceFunctionForwarder)
+                    .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
+
+            if (!lastNodeName.isPresent()) {
+                return theFlows;
+            }
+
+            FlowDetails relayFlow;
+            if (addClassifier) {
+                Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
+                Optional<SfcNshHeader> theNshHeader = Optional.of(reverseNsh)
+                        .map(theReverseNsh -> theReverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address()))
+                        .map(theReverseNsh -> theReverseNsh.setVxlanUdpPort(ip.getPort()));
+
+                relayFlow = theNshHeader
+                        .map(theReverseNshHeader ->
+                                classifierInterface.createClassifierRelayFlow(flowKey, theReverseNshHeader))
+                        .map(flowBuilder ->
+                                classifierHandler.addRspRelatedFlowIntoNode(lastNodeName.get(),
+                                        flowBuilder,
+                                        theNshHeader.get().getNshNsp()))
+                        .orElseThrow(IllegalArgumentException::new);
+            }
+            else {
+                relayFlow = classifierHandler.deleteFlowFromTable(lastNodeName.get(),
                                 flowKey,
                                 ClassifierGeniusIntegration.getClassifierTable());
-                        theFlows.add(deleteRelayFlow);
-                    }
-                }
             }
+            theFlows.add(relayFlow);
         }
         return theFlows;
     }
@@ -338,7 +323,7 @@ public class OpenflowClassifierProcessor {
     /**
      * Handler method of the {@link com.google.common.eventbus.EventBus class}
      *
-     * @param theTx
+     * @param theTx the new transaction being used by the OpenflowWriter to which this class is subscribed
      */
     @Subscribe public void refreshTransaction(WriteTransaction theTx) {
         LOG.debug("refreshTransaction - refreshing the transaction.");

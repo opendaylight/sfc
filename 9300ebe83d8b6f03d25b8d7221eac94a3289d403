@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_d64febbc",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/BareClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "what do you mean redundant? the sff is not initialized (even the IDE complains if I don\u0027t add this)\n\nwhat I could do, is to initialize it outside the constructor, but, I see no point in it - I think this is more readable",
+      "parentUuid": "1a622d24_36ba9f23",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_b6106f02",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "Redundant.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_76c89722",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "the IDE complains if I don\u0027t add this...",
+      "parentUuid": "1a622d24_b6106f02",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_56cbdb1d",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "the IDE complains if I don\u0027t add this...",
+      "parentUuid": "1a622d24_9613b30c",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_f6f947c9",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
         "patchSetId": 2
@@ -64,6 +118,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "Strings.isNullOrEmpty(str);",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6d22fd0",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "ok, agreed.",
+      "parentUuid": "1a622d24_f6f947c9",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_f6db07eb",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "this is not new code; you could say that I should be a better boyscout and fix it along the way. \n\nI think it makes more sense in another commit, whose goal is to \u0027remove deprecated Inventory node connector IDs\u0027 or something like that.",
+      "parentUuid": "1a622d24_5630fb9d",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_56be3bd5",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
         "patchSetId": 2
@@ -98,6 +188,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "This method is too long/complex. Can you split it somehow?",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_76eff787",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "well, yes, I could. \n\nHaving said that, this method is not used by logical SFF, which means the use cases I\u0027m enabling with these contributions will not use this method. \n\nNever the less, I saw in sonar that the methods in this class have a cyclomatic complexity higher than 10, and I\u0027m planing to address those issues in a future commit",
+      "parentUuid": "1a622d24_56be3bd5",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -121,6 +229,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_96ec5391",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "OK, fair enough.",
+      "parentUuid": "1a622d24_b6b50ff0",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_b6834f03",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcNshHeader.java",
         "patchSetId": 2
@@ -132,6 +258,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "All objects are initialized to null by default.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_56991b1e",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcNshHeader.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "So, am I supposed to removed the \u0027 ... \u003d null;\u0027 of all the above variables?",
+      "parentUuid": "1a622d24_b6834f03",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -155,6 +299,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_b6a06f44",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicalClassifierDataGetter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Sure thing, it skipped my mind",
+      "parentUuid": "1a622d24_f6c4a793",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_d646cb20",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
         "patchSetId": 2
@@ -166,6 +328,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "Add override annotation.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_96ba936c",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Sure thing, will do",
+      "parentUuid": "1a622d24_d646cb20",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -189,6 +369,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_b6b7cf85",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Actually I cannot, because I\u0027m initializing the new arraylist w/ a double brace initializer (which creates an Anonymous Inner Class). Thus, type is needed so that it knows within the braces the data types.",
+      "parentUuid": "1a622d24_36561fd3",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_b6598f00",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
         "patchSetId": 2
@@ -200,6 +398,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "Strings.isNullOrEmpty(str) for the string;",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f6b0278d",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Ok, agreed",
+      "parentUuid": "1a622d24_b6598f00",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -223,6 +439,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_d6ab6b1c",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "You\u0027re right, lurking no such element exception here",
+      "parentUuid": "1a622d24_965c53ef",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_f6ddc771",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
         "patchSetId": 2
@@ -240,6 +474,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_16a68353",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Didn\u0027t know that. Will do.",
+      "parentUuid": "1a622d24_f6ddc771",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_d6d88b81",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
         "patchSetId": 2
@@ -251,6 +503,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "why do not you activate the listeners?\n    }\n\n    private void registerListe",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_d6724be2",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Because all the callbacks that these listeners would trigger are basically empty methods with TODO comments, whose implementation will be added in the next commit.\n\nSo, no point in listening to stuff if I\u0027m not planning on acting upon it.\n\nNext commit will add the missing pieces",
+      "parentUuid": "1a622d24_d6d88b81",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -291,6 +561,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_764b7787",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "1a622d24_76909743",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_969d735c",
         "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
         "patchSetId": 2
@@ -302,6 +590,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "If possible, we should not use deprecated entities for new code.\t\n\n        Ins",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6450f72",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Not new code; just not being the best boyscout there is. \n\nI think that change should be part of another commit, since it has nothing to do w/ preparing the API of the classifier dependencies enabling it to react to RSP updates.",
+      "parentUuid": "1a622d24_969d735c",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -325,6 +631,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_9648d388",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Sure.",
+      "parentUuid": "1a622d24_f6a3079c",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_d69ecb53",
         "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
         "patchSetId": 2
@@ -342,6 +666,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_f65e6744",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "Same as above.",
+      "parentUuid": "1a622d24_d69ecb53",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_56babbc0",
         "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
         "patchSetId": 2
@@ -353,6 +695,24 @@
       "writtenOn": "2016-12-20T10:47:38Z",
       "side": 1,
       "message": "missing.\t\n    public void updateTra",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_56359bf5",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T11:29:30Z",
+      "side": 1,
+      "message": "I simply could not understand what you meant here.\n\nRephrase? :)",
+      "parentUuid": "1a622d24_56babbc0",
       "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

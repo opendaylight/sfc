@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_4c2fccf6",
+        "filename": "sfc-scf-openflow/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T14:37:11Z",
+      "side": 1,
+      "message": "Didn\u0027t know that; sure, will do.",
+      "parentUuid": "1a622d24_ac278063",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 45
+      },
+      "revId": "9d290e8a30db817ff9cdf065c0072ad31869d745",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_0c1674f1",
         "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-12-20T14:18:50Z",
       "side": 1,
       "message": "Instead of duplicating this, we should instead use SfcProviderRenderedPathAPI.generateReversedPathName(rspName)\nThat way we wont have any surprises if the nomenclature ever changes.",
+      "range": {
+        "startLine": 367,
+        "startChar": 29,
+        "endLine": 367,
+        "endChar": 46
+      },
+      "revId": "9d290e8a30db817ff9cdf065c0072ad31869d745",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_ec3fb823",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2016-12-20T14:37:11Z",
+      "side": 1,
+      "message": "I agree that we should use only one; I didn\u0027t know about that method at all, and this method was already defined here.\n\nLooking at the method you suggest, I can see it does not do the exact same thing at this one:\n\nThe method you suggest receives a string and appends the suffix to it;\n\nThis method receives a string, and depending on the string either appends or removes the suffix (if the argument was a \u0027reverse\u0027 RSP, so that we don\u0027t end up with something called \u0027rsp1-Reverse-Reverse\u0027).\n\nFor SFC without logical SFF (and the logically attached classifier), this is required. \n\nSo, I could either add this functionality to the other method, or keep using this one. Your call.",
+      "parentUuid": "1a622d24_0c1674f1",
       "range": {
         "startLine": 367,
         "startChar": 29,

@@ -116,6 +116,13 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-pot/{{VERSION}}</bundle>
     </feature>
 
+    <feature name="odl-sfc-pot-netconf-renderer" version="${project.version}" description="OpenDaylight :: sfc-renderers :: SFC PoT Renderer ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
+        <feature version="${project.version}">odl-sfc-pot</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-pot-netconf-renderer/{{VERSION}}</bundle>
+    </feature>
+
     <feature name="odl-sfc-ui" version="${project.version}" description="OpenDaylight :: sfc :: UI">
         <feature version="${dlux.version}">odl-dlux-core</feature>
         <feature version="${restconf.version}">odl-restconf</feature>

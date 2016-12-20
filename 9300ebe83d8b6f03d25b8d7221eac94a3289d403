@@ -1,0 +1,361 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_36ba9f23",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/BareClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "This is redundant",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6106f02",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Redundant.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_9613b30c",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Redundant.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f6f947c9",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Strings.isNullOrEmpty(str);",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_5630fb9d",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "We should not use deprecated entities for new code.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_56be3bd5",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "This method is too long/complex. Can you split it somehow?",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6b50ff0",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 365,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "You might use a constant for -Reverse",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6834f03",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/SfcNshHeader.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "All objects are initialized to null by default.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f6c4a793",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicalClassifierDataGetter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Private here at least.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_d646cb20",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Add override annotation.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_36561fd3",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "ArrayList\u003cAction\u003e is derived, so you can just write ArrayList\u003c\u003e",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b6598f00",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Strings.isNullOrEmpty(str) for the string;",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_965c53ef",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/logicalclassifier/LogicallyAttachedClassifier.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "firstHopDataplaneId.isPresent() before get().",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f6ddc771",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "The ListenerRegistration should be parametrized.\n    private OpenflowClassifierProcessor classif",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_d6d88b81",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/rspupdatelistener/ClassifierRspsUpdateListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "why do not you activate the listeners?\n    }\n\n    private void registerListe",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_16720349",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Redundant init.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_76909743",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "Override annotation missing.",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_969d735c",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "If possible, we should not use deprecated entities for new code.\t\n\n        Ins",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f6a3079c",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "use isEmpty().",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_d69ecb53",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "ible, we should not use deprecated entities.\t\n        Set\u003cNodeId\u003e sffNo",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_56babbc0",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/transactional_writer/SfcOfFlowWriterImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2016-12-20T10:47:38Z",
+      "side": 1,
+      "message": "missing.\t\n    public void updateTra",
+      "revId": "9300ebe83d8b6f03d25b8d7221eac94a3289d403",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

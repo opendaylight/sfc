@@ -12,7 +12,7 @@
   <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.3-SNAPSHOT</version>
   </parent>
   <!--
     Necessary TODO: Hookup your parent pom here, else you will not get necessary versions,
@@ -27,7 +27,7 @@
   <artifactId>sfc-config</artifactId>
   <description>Configuration files for SFC</description>
   <!-- Optional TODO: Uncomment version if you are not using a parent pom.xml
-   <version>0.3.2-SNAPSHOT</version>
+   <version>0.3.3-SNAPSHOT</version>
    -->
   <packaging>jar</packaging>
   <properties>

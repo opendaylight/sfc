@@ -17,6 +17,7 @@
     <modules>
         <module>sfc-ios-xe-renderer</module>
         <module>sfc-openflow-renderer</module>
+        <module>sfc-pot-netconf-renderer</module>
         <module>sfc-vpp-renderer</module>
     </modules>
 

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_ac278063",
+        "filename": "sfc-scf-openflow/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-12-20T14:18:50Z",
+      "side": 1,
+      "message": "Do we really want to nail down the version here? If we dont specify it here, it will inherit the version from odl-parent.",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 45
+      },
+      "revId": "9d290e8a30db817ff9cdf065c0072ad31869d745",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_0c1674f1",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/OpenflowClassifierProcessor.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-12-20T14:18:50Z",
+      "side": 1,
+      "message": "Instead of duplicating this, we should instead use SfcProviderRenderedPathAPI.generateReversedPathName(rspName)\nThat way we wont have any surprises if the nomenclature ever changes.",
+      "range": {
+        "startLine": 367,
+        "startChar": 29,
+        "endLine": 367,
+        "endChar": 46
+      },
+      "revId": "9d290e8a30db817ff9cdf065c0072ad31869d745",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

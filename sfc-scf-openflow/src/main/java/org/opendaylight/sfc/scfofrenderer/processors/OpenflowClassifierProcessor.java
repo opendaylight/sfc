@@ -16,7 +16,6 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.ClassifierInterface;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
@@ -32,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.slf4j.Logger;
@@ -106,8 +104,7 @@ public class OpenflowClassifierProcessor {
         classifierInterface = classifierHandler.usesLogicalInterfaces(sff.get()) ?
                 logicallyAttachedClassifier : bareClassifier.setSff(sff.get());
 
-        Optional<String> nodeName = itfName.map(ifName -> classifierInterface.getNodeName(ifName))
-                .orElse(Optional.empty());
+        Optional<String> nodeName = itfName.flatMap(classifierInterface::getNodeName);
 
         if(!nodeName.isPresent()) {
             LOG.error("createdServiceFunctionClassifier: Could not extract the node name from the OVS interface");
@@ -181,9 +178,9 @@ public class OpenflowClassifierProcessor {
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                 .map(aclRsp -> new RspName(aclRsp.getRenderedServicePath()));
 
-        SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(rspName.get());
+        Optional<SfcNshHeader> nsh = rspName.map(SfcNshHeader::getSfcNshHeader);
 
-        if (nsh == null) {
+        if (!nsh.isPresent()) {
             LOG.error("processAce: nsh is null; returning empty list");
             return Collections.emptyList();
         }
@@ -194,29 +191,16 @@ public class OpenflowClassifierProcessor {
         if (addClassifier) {
             // write the flows into the classifier
             LOG.info("processAce - About to create flows");
-            FlowBuilder initFlow, theOutFlow;
-            initFlow = classifierInterface.initClassifierTable();
-            theOutFlow  = classifierInterface.createClassifierOutFlow(flowKey, match, nsh, nodeName);
-
-            theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, initFlow, nsh.getNshNsp()));
-            theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, theOutFlow, nsh.getNshNsp()));
-
-            // add DPDK flows
-            Long dpdkPort = SfcOvsUtil.getDpdkOfPort(nodeName, null);
-            if (dpdkPort != null) {
-                LOG.info("processAce - Adding DPDK flows");
-                theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
-                        nodeName,
-                        SfcScfOfUtils.initClassifierDpdkOutputFlow(dpdkPort), nsh.getNshNsp()));
-                theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
-                        nodeName,
-                        SfcScfOfUtils.initClassifierDpdkInputFlow(nodeName, dpdkPort), nsh.getNshNsp()));
-            }
+            theFlows.add(classifierInterface.initClassifierTable(nodeName));
+            theFlows.add(classifierInterface.createClassifierOutFlow(flowKey, match, nsh.get(), nodeName));
+            theFlows.addAll(classifierInterface.createDpdkFlows(nodeName, nsh.get().getNshNsp()));
         }
         else
         {
             LOG.info("processAce - About to delete the *out* flows");
-            theFlows.add(classifierHandler.deleteFlowFromTable(nodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable()));
+            theFlows.add(classifierHandler.deleteFlowFromTable(nodeName,
+                    flowKey,
+                    ClassifierGeniusIntegration.getClassifierTable()));
         }
 
         // when the classifier is attached to a logical SFF, there's no need to process the reverse RSP, so we bail
@@ -268,56 +252,71 @@ public class OpenflowClassifierProcessor {
         if (reverseNsh == null) {
             LOG.warn("processReverseRsp: reverseNsh is null");
             return Collections.emptyList();
-        } else {
-            String flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
-
-            if (addClassifier) {
-                Optional<FlowDetails> theInFlow = Optional.ofNullable(classifierInterface.createClassifierInFlow(flowKey, reverseNsh, port))
-                        .map(flowBuilder -> classifierHandler.addRspRelatedFlowIntoNode(theNodeName, flowBuilder, reverseNsh.getNshNsp()));
-                if (theInFlow.isPresent()) {
-                    LOG.info("processReverseRsp: Adding in flow to node {}", theNodeName);
-                    theFlows.add(theInFlow.get());
-                }
-            }
-            else {
-                FlowDetails deleteRelayFlow =
-                        classifierHandler.deleteFlowFromTable(theNodeName, flowKey, ClassifierGeniusIntegration.getClassifierTable());
-                theFlows.add(deleteRelayFlow);
-            }
-
-            Optional<String> lastNodeName = Optional.ofNullable(reverseNsh.getSffName())
-                    .filter(sffName -> !sffName.equals(theSff.getName()))
-                    .map(SfcProviderServiceForwarderAPI::readServiceFunctionForwarder)
-                    .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
-
-            if (!lastNodeName.isPresent()) {
-                return theFlows;
-            }
-
-            FlowDetails relayFlow;
-            if (addClassifier) {
-                Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
-                Optional<SfcNshHeader> theNshHeader = Optional.of(reverseNsh)
-                        .map(theReverseNsh -> theReverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address()))
-                        .map(theReverseNsh -> theReverseNsh.setVxlanUdpPort(ip.getPort()));
-
-                relayFlow = theNshHeader
-                        .map(theReverseNshHeader ->
-                                classifierInterface.createClassifierRelayFlow(flowKey, theReverseNshHeader))
-                        .map(flowBuilder ->
-                                classifierHandler.addRspRelatedFlowIntoNode(lastNodeName.get(),
-                                        flowBuilder,
-                                        theNshHeader.get().getNshNsp()))
-                        .orElseThrow(IllegalArgumentException::new);
-            }
-            else {
-                relayFlow = classifierHandler.deleteFlowFromTable(lastNodeName.get(),
-                                flowKey,
-                                ClassifierGeniusIntegration.getClassifierTable());
-            }
-            theFlows.add(relayFlow);
         }
+
+        String flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
+
+        if (addClassifier) {
+                Optional.ofNullable(classifierInterface.createClassifierInFlow(flowKey, reverseNsh, port, theNodeName))
+                        .ifPresent(theFlows::add);
+        }
+        else {
+            FlowDetails deleteRelayFlow =
+                    classifierHandler.deleteFlowFromTable(theNodeName,
+                            flowKey,
+                            ClassifierGeniusIntegration.getClassifierTable());
+            theFlows.add(deleteRelayFlow);
+        }
+
+        Optional<String> lastNodeName = Optional.ofNullable(reverseNsh.getSffName())
+                .filter(sffName -> !sffName.equals(theSff.getName()))
+                .map(SfcProviderServiceForwarderAPI::readServiceFunctionForwarder)
+                .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
+
+        if (!lastNodeName.isPresent()) {
+            return theFlows;
+        }
+
+        processReverseRspRelayFlow(lastNodeName.get(), theSff, reverseNsh, flowKey)
+                .ifPresent(theFlows::add);
+
         return theFlows;
+    }
+
+    /**
+     * Return a FlowDetails object that installs a 'relay' flow - i.e. how to exit the chain - in the last hop of
+     * a given RSP
+     *
+     * @param nodeName      the name of the node where the flow will be installed
+     * @param theSff        the {@link ServiceFunctionForwarder} object in which the relay flow will be installed
+     * @param reverseNsh    the {@link SfcNshHeader} where the RSP required metadata is stored
+     * @param theFlowKey    the name of 'in' flow - i.e. how to enter the chain - which will be used to build this
+     *                      flow's name
+     * @return              a {@link FlowDetails} object telling the classifier how to make packets leave the SFC
+     *                      domain
+     */
+    protected Optional<FlowDetails> processReverseRspRelayFlow(String nodeName,
+                                                          ServiceFunctionForwarder theSff,
+                                                          SfcNshHeader reverseNsh,
+                                                          String theFlowKey) {
+        Optional<FlowDetails> relayFlow;
+        String flowKey = theFlowKey.replaceFirst(".in", ".relay");
+        if (addClassifier) {
+            Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
+            Optional<SfcNshHeader> theNshHeader = Optional.of(reverseNsh)
+                    .map(theReverseNsh -> theReverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address()))
+                    .map(theReverseNsh -> theReverseNsh.setVxlanUdpPort(ip.getPort()));
+
+            relayFlow = theNshHeader
+                    .map(theReverseNshHeader ->
+                            classifierInterface.createClassifierRelayFlow(flowKey, theReverseNshHeader, nodeName));
+        }
+        else {
+            relayFlow = Optional.of(classifierHandler.deleteFlowFromTable(nodeName,
+                    flowKey,
+                    ClassifierGeniusIntegration.getClassifierTable()));
+        }
+        return relayFlow;
     }
 
     /**

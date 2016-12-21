@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.ClassifierAclDataBuilder;
+import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
@@ -32,9 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -75,6 +75,11 @@ public class ClassifierRspUpdateProcessorTest {
     @Mock
     private ServiceFunctionForwarder sff;
 
+    @Mock
+    private FlowBuilder theFlow;
+
+    private FlowDetails theFlowDetails;
+
     private ClassifierRspUpdateProcessor theUpdateProcessor;
 
     private static String FIRST_SF_DPN_ID_STRING = "1234567890";
@@ -88,16 +93,17 @@ public class ClassifierRspUpdateProcessorTest {
 
     @Before
     public void setUp() {
+        theFlowDetails = new ClassifierHandler().addRspRelatedFlowIntoNode(FIRST_SF_NODE_NAME, theFlow, 666L);
+
         Mockito.when(classifierInterface.getNodeName(any(String.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
         Mockito.when(classifierInterface.getInPort(any(String.class), any(String.class))).thenReturn(Optional.of(2L));
-        Mockito.when(classifierInterface.initClassifierTable()).thenCallRealMethod();
+
         Mockito.when(classifierInterface.createClassifierOutFlow(any(String.class),
                 any(Match.class),
                 any(SfcNshHeader.class),
-                any(String.class))).thenReturn(new FlowBuilder()
-                        .setKey(new FlowKey(new FlowId("theflowid")))
-                        .setTableId((short)2)
-                        .setFlowName("ze"));
+                any(String.class))).thenReturn(theFlowDetails);
+
+        Mockito.when(classifierInterface.initClassifierTable(any(String.class))).thenReturn(theFlowDetails);
 
         when(sffClassifier.getName()).thenReturn("sffName");
         when(sffClassifier.getAttachmentPointType())

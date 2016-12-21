@@ -9,24 +9,22 @@
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ClassifierInterface {
-    FlowBuilder initClassifierTable();
+    FlowDetails initClassifierTable(String classifierNodeName);
 
-    FlowBuilder createClassifierOutFlow(String flowKey,
-                                        Match match,
-                                        SfcNshHeader sfcNshHeader,
-                                        String classifierNodeName);
+    FlowDetails createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader, String classifierNodeName);
 
-    FlowBuilder createClassifierInFlow(String flowKey,
-                                       SfcNshHeader sfcNshHeader,
-                                       Long outPort);
+    FlowDetails createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort, String nodeName);
 
-    FlowBuilder createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader);
+    FlowDetails createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader, String nodeName);
+
+    List<FlowDetails> createDpdkFlows(String nodeName, long rspPathId);
 
     Optional<String> getNodeName(String theInterfaceName);
 

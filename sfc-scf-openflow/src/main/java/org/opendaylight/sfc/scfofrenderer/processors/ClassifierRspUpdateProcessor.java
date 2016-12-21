@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.slf4j.Logger;
@@ -160,12 +159,9 @@ public class ClassifierRspUpdateProcessor {
 
         // write the flows into the classifier
         LOG.info("processAce - About to create flows");
-        FlowBuilder initFlow, theOutFlow;
-        initFlow = classifierInterface.initClassifierTable();
-        theOutFlow  = classifierInterface.createClassifierOutFlow(flowKey, match, nsh, nodeName);
 
-        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, initFlow, nsh.getNshNsp()));
-        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName, theOutFlow, nsh.getNshNsp()));
+        theFlows.add(classifierInterface.initClassifierTable(nodeName));
+        theFlows.add(classifierInterface.createClassifierOutFlow(flowKey, match, nsh, nodeName));
 
         // DPDK is not supported for logical SFF, thus, its flows are not installed here
         return theFlows;

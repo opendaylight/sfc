@@ -9,13 +9,18 @@
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import com.google.common.base.Strings;
+import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
@@ -32,6 +37,8 @@ import org.slf4j.LoggerFactory;
 public class LogicallyAttachedClassifier implements ClassifierInterface {
     private final LogicalClassifierDataGetter logicalSffDataGetter;
 
+    private ClassifierHandler classifierHandler;
+
     private static final Logger LOG = LoggerFactory.getLogger(LogicallyAttachedClassifier.class);
 
     private static final short GENIUS_DISPATCHER_TABLE = 0x11;
@@ -40,10 +47,11 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
     public LogicallyAttachedClassifier(LogicalClassifierDataGetter theDataGetter) {
         logicalSffDataGetter = theDataGetter;
+        classifierHandler = new ClassifierHandler();
     }
 
     @Override
-    public FlowBuilder initClassifierTable() {
+    public FlowDetails initClassifierTable(String nodeName) {
         MatchBuilder match = new MatchBuilder();
 
         Action geniusDispatcher = SfcOpenflowUtils.createActionResubmitTable(GENIUS_DISPATCHER_TABLE, 0);
@@ -55,7 +63,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
                 SfcScfOfUtils.FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
 
         LOG.info("initClassifierTable - jump to table: {}", ClassifierGeniusIntegration.getClassifierTable());
-        return fb;
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeName, fb, OpenflowConstants.SFC_FLOWS);
     }
 
     /**
@@ -67,7 +75,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
      * @return                      a FlowBuilder object containing the desired flow
      */
     @Override
-    public FlowBuilder createClassifierOutFlow(String flowKey,
+    public FlowDetails createClassifierOutFlow(String flowKey,
                                                Match match,
                                                SfcNshHeader sfcNshHeader,
                                                String classifierNodeName) {
@@ -124,19 +132,25 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
                 .setPriority(SfcScfOfUtils.FLOW_PRIORITY_CLASSIFIER)
                 .setMatch(match)
                 .setInstructions(isb.build());
-        return flowb;
+        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName, flowb, sfcNshHeader.getNshNsp());
     }
 
     // this type of classifier does not require 'in' flows
     @Override
-    public FlowBuilder createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort) {
+    public FlowDetails createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort, String nodeName) {
         return null;
     }
 
     // this type of classifier does not require 'relay' flows
     @Override
-    public FlowBuilder createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader) {
+    public FlowDetails createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader, String nodeName) {
         return null;
+    }
+
+    @Override
+    public List<FlowDetails> createDpdkFlows(String nodeName, long rspPathId) {
+        // DPDK flows are not supported in logical SFF
+        return Collections.emptyList();
     }
 
     /**

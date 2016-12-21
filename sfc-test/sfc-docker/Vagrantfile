@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">=1.7.0"
+
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "vagrant-vbguest plugin must be installed " \
+        "(do: vagrant plugin install vagrant-vbguest)"
+end
+
+class FixGuestAdditions < VagrantVbguest::Installers::RedHat
+  def dependencies
+    packages = super
+
+    # If there's no "kernel-devel" package matching the running kernel in the
+    # default repositories, then the base box we're using doesn't match the
+    # latest CentOS release anymore and we have to look for it in the archives...
+    if communicate.test('test -f /etc/centos-release && ! yum -q info kernel-devel-`uname -r` &>/dev/null')
+      env.ui.warn("[#{vm.name}] Looking for the CentOS 'kernel-devel' package in the release archives...")
+      packages.sub!('kernel-devel-`uname -r`', 'http://mirror.centos.org/centos' \
+                                               '/`grep -Po \'\b\d+\.[\d.]+\b\' /etc/centos-release`' \
+                                               '/{os,updates}/`arch`/Packages/kernel-devel-`uname -r`.rpm')
+    end
+    packages
+  end
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "centos/7"
+  config.vm.box_version = "= 1611.01"
+  config.vbguest.installer = FixGuestAdditions
+  config.vm.network "private_network", type: "dhcp", auto_config: false
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ['modifyvm', :id, '--nictype1', 'virtio']
+    vb.customize ['modifyvm', :id, '--nictype2', 'virtio']
+    vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+  end
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.provision "setup_ovs", type: "shell",
+    inline: "cd /vagrant/provision && ./setup_ovs.sh"
+  config.vm.provision "docker"
+  config.vm.provision "setup_ovs_docker", type: "shell",
+    inline: "cd /vagrant/provision && ./setup_ovs_docker.sh"
+  config.vm.provision "setup_dovs_network", type: "shell",
+     inline: "cd /vagrant/provision && ./setup_dovs_network.sh"
+  config.vm.provision "setup_dovs_dhcp", type: "shell",
+     inline: "cd /vagrant/provision && ./setup_dovs_dhcp.sh"
+  config.vm.provision "setup_dovs", type: "shell",
+    inline: "cd /vagrant/provision && ./setup_dovs.sh"
+end

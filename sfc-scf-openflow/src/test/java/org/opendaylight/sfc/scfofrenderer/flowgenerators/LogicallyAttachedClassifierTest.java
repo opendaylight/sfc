@@ -23,6 +23,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -36,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
@@ -178,16 +179,18 @@ public class LogicallyAttachedClassifierTest {
 
     @Test
     public void initClassifierTest() {
-        Assert.assertFalse(logicalScf.initClassifierTable().getInstructions().getInstruction().isEmpty());
+        Assert.assertFalse(logicalScf.initClassifierTable(FIRST_SF_NODE_NAME).getFlow()
+                .getInstructions().getInstruction().isEmpty());
     }
 
     @Test
     public void outFlowPositiveCoLocated() {
-        FlowBuilder flow = logicalScf.createClassifierOutFlow("the-key",
+        FlowDetails flowDetails = logicalScf.createClassifierOutFlow("the-key",
                 aclMatch,
                 SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")),
                 FIRST_SF_NODE_NAME);
 
+        Flow flow = flowDetails.getFlow();
         Assert.assertEquals(2, flow.getInstructions().getInstruction().size());
 
         // push NSH...
@@ -213,11 +216,12 @@ public class LogicallyAttachedClassifierTest {
         PowerMockito.when(LogicalClassifierDataGetter.getDpnIdFromNodeName(CLASSIFIER_NODE_NAME))
                 .thenReturn(CLASSIFIER_DPNID);
 
-        FlowBuilder flow = logicalScf.createClassifierOutFlow("the-key",
+        FlowDetails flowDetails = logicalScf.createClassifierOutFlow("the-key",
                 aclMatch,
                 SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")),
                 CLASSIFIER_NODE_NAME);
 
+        Flow flow = flowDetails.getFlow();
         Assert.assertEquals(1, flow.getInstructions().getInstruction().size());
 
         // push NSH...

@@ -1,0 +1,45 @@
+Tests
+-----
+
+Test sf_hhe with vagrant (without X11)
+~~~~~~~~~~~~~~~~~~~~~~~~
+.Start VM and run the tests
+cd ..
+vagrant up --provider virtualbox
+
+.Once it is stated, run manually the scripts
+vagrant halt
+vagrant ssh
+cd /vagrant/test_sf_hhe
+# Test HTTP without NSH
+sudo ./test_sf_cli.sh
+# Test HTTP with NSH
+sudo ./test_sf_cli_nsh.sh
+
+
+Instruction for testing sf_hhe with X11 session in Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Download a pre-built VM image including Mininet and other useful software:
+https://github.com/mininet/mininet/wiki/Mininet-VM-Images
+
+- Download Enhanced terminal for Windows with X11 and SSH client
+http://mobaxterm.mobatek.net/
+
+- Configure the mininet-VM in VirtualBox:
+* VirtualBox Configuración/Red/Adaptador1 -> NAT   (It is used to connect to Internet)
+* VirtualBox Configuración/Red/Adaptador2 -> Host-Only  (It is used to be visible outside the VM )
+
+- Create a session in MobaXterm with:
+* the VM IP (obtain inside VM with `ifconfig -a`)
+* user: mininet, password: mininet
+
+- Use the provided scripts:
+It can be copied inside the VM using the SFTP drag and drop utility of MobaXterm
+
+- Without X11
+`./test_sf_cli.sh`
+`./test_sf_cli_nsh.sh`
+
+- With X11 (xterm & wireshark)
+`./test_sf_gui.sh`
+`./test_sf_gui_nsh.sh`

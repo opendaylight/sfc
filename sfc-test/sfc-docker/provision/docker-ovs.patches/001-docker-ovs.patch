@@ -1,0 +1,33 @@
+diff --git a/Dockerfile b/Dockerfile
+index f8dc0d5..e79e22e 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -1,6 +1,6 @@
+ FROM socketplane/busybox:latest
+ MAINTAINER The SocketPlane Team <support@socketplane.io>
+-ENV OVS_VERSION 2.4.0
++ENV OVS_VERSION 2.5.90
+ ENV SUPERVISOR_STDOUT_VERSION 0.1.1
+ # Configure supervisord
+ RUN mkdir -p /var/log/supervisor/
+@@ -17,13 +17,14 @@ RUN wget https://pypi.python.org/packages/source/s/supervisor-stdout/supervisor-
+ 	python setup.py install -q
+ # Get Open vSwitch
+ WORKDIR /
+-RUN wget https://s3-us-west-2.amazonaws.com/docker-ovs/openvswitch-$OVS_VERSION.tar.gz --no-check-certificate && \
+-	tar -xzvf openvswitch-$OVS_VERSION.tar.gz &&\
+-	mv openvswitch-$OVS_VERSION openvswitch &&\
+-	cp -r openvswitch/* / &&\
+-	rm -r openvswitch &&\
+-	rm openvswitch-$OVS_VERSION.tar.gz 
++COPY openvswitch-${OVS_VERSION}.tar.gz /
++RUN tar -xzvf openvswitch-${OVS_VERSION}.tar.gz &&\
++    mv openvswitch-${OVS_VERSION} openvswitch &&\
++    cp -r openvswitch/* / &&\
++    rm -r openvswitch &&\
++    rm openvswitch-${OVS_VERSION}.tar.gz
+ ADD configure-ovs.sh /usr/local/share/openvswitch/
++COPY host_libs/* /usr/lib/
+ # Create the database
+ RUN ovsdb-tool create /etc/openvswitch/conf.db /usr/local/share/openvswitch/vswitch.ovsschema
+ # Put the OVS Python modules on the Python Path

@@ -1,0 +1,32 @@
+Tests with dovs + sf_hhe
+------------------------
+
+Introduction
+~~~~~~~~~~~~
+- exec_logical_sfc.py
+Integrate with simulator of VMs and Network topology with Dockers (dovs)
+(more details sudo ./exec_logical_sfc.py --help)
+- push_nsh.sh
+Used by the previous script to insert in the client and server the NSH classifier rules
+- test_case_01.sh
+Test traffic in two Service Function Chains, each SFs in a different subnet
+- test_case_02.sh
+Test traffic in two Service Function Chains, all SFs in the same subnet
+- test_case_03.sh
+Test traffic after moving one VM to other compute node
+
+.Example usage
+ # Create the Network topology and the simulated Compute nodes (dockers) and VMs (namespaces). Example:
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --create-sfc
+ # Same as the previous command but running every SF in each own subnet
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --create-sfc --different-subnets
+ # Execute the Service Function (sf_hhe.py) in the chain; set the rules for the classifier in the client and server ; start the server application
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --exec-apps
+ # Same as the previous command but also run traffic
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --exec-traffic
+ # Remove the topology and infrastructure (in this case maybe the controller has to be restarted)
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --remove-sfc
+ # Example with everything in one line:
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" -rsnt
+ # Example with everything except traffic in one line:
+ sudo ./exec_logical_sfc.py --odl 172.28.128.3 -d ../sf_hhe --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" -rsna

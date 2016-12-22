@@ -92,8 +92,7 @@ public class SfcNetconfServiceFunctionAPI {
             .setKey(key)
             .setType(type)
             .setIpMgmtAddress(ipAddress)
-            .setSfDataPlaneLocator(dataPlaneLocatorList)
-            .setNshAware(true);
+            .setSfDataPlaneLocator(dataPlaneLocatorList);
         return serviceFunctionBuilder.build();
     }
 

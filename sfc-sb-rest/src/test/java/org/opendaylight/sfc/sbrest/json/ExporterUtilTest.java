@@ -30,9 +30,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -195,6 +195,7 @@ public class ExporterUtilTest {
     }
 
     // build data plane locator transport with locator type depending on transport type name
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private DataPlaneLocator buildDataPlaneLocatorTransport(String transportTypeName) {
         Class slTransportType = null;
 
@@ -210,12 +211,13 @@ public class ExporterUtilTest {
         }
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-        // noinspection unchecked
+        // no inspection unchecked
         dataPlaneLocatorBuilder.setTransport(slTransportType);
 
         return dataPlaneLocatorBuilder.build();
     }
 
+    @SuppressWarnings("rawtypes")
     public enum UtilTestValues {
         IP("10.0.0.1"), PORT("5000"), MAC("11:22:33:44:55:66"), VLAN_ID("1234"), EID("127.0.0.1"), FUNCTION_NAME(
                 "locatorFunction1"), VXLAN_GPE(ExporterUtil.SERVICE_LOCATOR_PREFIX + "vxlan-gpe", VxlanGpe.class), GRE(
@@ -223,10 +225,11 @@ public class ExporterUtilTest {
                         Gre.class), OTHER(ExporterUtil.SERVICE_LOCATOR_PREFIX + "other", Other.class);
 
         private final String value;
-        private Class identity;
+        private final Class identity;
 
         UtilTestValues(String value) {
             this.value = value;
+            this.identity = null;
         }
 
         UtilTestValues(String value, Class identity) {

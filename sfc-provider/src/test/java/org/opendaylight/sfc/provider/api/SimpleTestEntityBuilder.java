@@ -58,8 +58,7 @@ public class SimpleTestEntityBuilder {
             .setKey(new ServiceFunctionKey(name))
             .setType(type)
             .setIpMgmtAddress(ipMgmtAddress)
-            .setSfDataPlaneLocator(dsfDataPlaneLocatorList)
-            .setNshAware(nshAware);
+            .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
 
         return sfBuilder.build();
     }

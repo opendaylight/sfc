@@ -345,7 +345,6 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         serviceFunctionBuilder.setName(SF_NAME)
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
             .setKey(new ServiceFunctionKey(SF_NAME))
-            .setNshAware(true)
             .setType(type);
         serviceFunctions.add(serviceFunctionBuilder.build());
         serviceFunctionsBuilder.setServiceFunction(serviceFunctions);

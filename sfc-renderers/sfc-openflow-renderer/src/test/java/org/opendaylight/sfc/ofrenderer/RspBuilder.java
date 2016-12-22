@@ -278,7 +278,7 @@ public class RspBuilder {
         SfDataPlaneLocator sfDpl = buildSfDataPlaneLocator(new SfDataPlaneLocatorName(sfName.getValue() + "_sfDpl"),
                 buildSfLocatorType(sfTransportType), sffName, sfTransportType);
 
-        ServiceFunction sf = buildServiceFunction(sfName, sfType, getIpMgmt(), sfDpl, false);
+        ServiceFunction sf = buildServiceFunction(sfName, sfType, getIpMgmt(), sfDpl);
         sfcUtilsTestMock.addServiceFunction(sfName, sf);
 
         return sf;
@@ -452,24 +452,23 @@ public class RspBuilder {
     }
 
     private ServiceFunction buildServiceFunction(SfName name, SftTypeName type, IpAddress ipMgmtAddress,
-            SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {
+            SfDataPlaneLocator sfDataPlaneLocator) {
 
         List<SfDataPlaneLocator> dsfDataPlaneLocatorList = new ArrayList<>();
         dsfDataPlaneLocatorList.add(sfDataPlaneLocator);
 
-        return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList, nshAware);
+        return buildServiceFunction(name, type, ipMgmtAddress, dsfDataPlaneLocatorList);
     }
 
     private ServiceFunction buildServiceFunction(SfName name, SftTypeName type, IpAddress ipMgmtAddress,
-            List<SfDataPlaneLocator> dsfDataPlaneLocatorList, Boolean nshAware) {
+            List<SfDataPlaneLocator> dsfDataPlaneLocatorList) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         sfBuilder.setName(name)
             .setKey(new ServiceFunctionKey(name))
             .setType(type)
             .setIpMgmtAddress(ipMgmtAddress)
-            .setSfDataPlaneLocator(dsfDataPlaneLocatorList)
-            .setNshAware(nshAware);
+            .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
 
         return sfBuilder.build();
     }

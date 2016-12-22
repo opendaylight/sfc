@@ -5,8 +5,6 @@
       "type": "TYPE",
       "rest-uri": "REST_URI",
       "ip-mgmt-address": "IP_MGMT_ADDRESS",
-      "request_reclassification": REQUEST_RECLASSIFICATION,
-      "nsh-aware": NSH_AWARE,
       "sf-data-plane-locator": [
         {
           "ip": "IP_V4_ADDRESS",

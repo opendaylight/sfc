@@ -49,10 +49,8 @@ public class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils
                 .appendGotoTableInstruction(new InstructionsBuilder(), TABLE_INDEX_INGRESS_TRANSPORT);
 
-        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(
+        return SfcOpenflowUtils.createFlowBuilder(
                 TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
-
-        return fb;
     }
 
    /**
@@ -77,14 +75,12 @@ public class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
-        FlowBuilder classifierDpdkOutputFlow =
-                SfcOpenflowUtils.createFlowBuilder(
-                        TABLE_INDEX_CLASSIFIER,
-                        FLOW_PRIORITY_CLASSIFIER,
-                        "classifier_dpdk_output",
-                        match, isb);
-
-        return classifierDpdkOutputFlow;
+        return SfcOpenflowUtils.createFlowBuilder(
+                TABLE_INDEX_CLASSIFIER,
+                FLOW_PRIORITY_CLASSIFIER,
+                "classifier_dpdk_output",
+                match,
+                isb);
     }
 
    /**
@@ -109,14 +105,12 @@ public class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
-        FlowBuilder classifierDpdkInputFlow =
-                SfcOpenflowUtils.createFlowBuilder(
-                        TABLE_INDEX_CLASSIFIER,
-                        FLOW_PRIORITY_CLASSIFIER,
-                        "classifier_dpdk_input",
-                        match, isb);
-
-        return classifierDpdkInputFlow;
+        return SfcOpenflowUtils.createFlowBuilder(
+                TABLE_INDEX_CLASSIFIER,
+                FLOW_PRIORITY_CLASSIFIER,
+                "classifier_dpdk_input",
+                match,
+                isb);
     }
 
    /**

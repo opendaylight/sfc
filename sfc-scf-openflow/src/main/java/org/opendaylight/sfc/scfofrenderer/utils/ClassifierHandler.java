@@ -8,10 +8,13 @@
 
 package org.opendaylight.sfc.scfofrenderer.utils;
 
+import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -29,12 +32,7 @@ public class ClassifierHandler {
      * @return          the name which will be given to the flow object
      */
     public String buildFlowKeyName(String scfName, String aclName, String aceName, String type) {
-        return new StringBuffer()
-                .append(scfName)
-                .append(aclName)
-                .append(aceName)
-                .append(type)
-                .toString();
+        return scfName + aclName + aceName + type;
     }
 
     /**
@@ -75,5 +73,15 @@ public class ClassifierHandler {
      */
     public boolean usesLogicalInterfaces(ServiceFunctionForwarder theSff) {
         return theSff.getSffDataPlaneLocator() == null;
+    }
+
+    /**
+     * @param scf   the SCF classifier object
+     * @return      the ACL object, if found
+     */
+    public Optional<Acl> extractAcl(ServiceFunctionClassifier scf) {
+        return Optional.ofNullable(scf)
+                .map(ServiceFunctionClassifier::getAcl)
+                .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
     }
 }

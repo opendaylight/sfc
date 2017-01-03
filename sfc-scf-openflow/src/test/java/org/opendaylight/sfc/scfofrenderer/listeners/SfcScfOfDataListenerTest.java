@@ -38,7 +38,7 @@ public class SfcScfOfDataListenerTest {
 
     private final Collection<DataTreeModification<ServiceFunctionClassifier>> collection = new ArrayList<>();
     private DataTreeModification<ServiceFunctionClassifier> dataTreeModification;
-    DataObjectModification<ServiceFunctionClassifier> dataObjectModification;
+    private DataObjectModification<ServiceFunctionClassifier> dataObjectModification;
 
     private DataBroker dataProvider;
     private SfcScfOfProcessor sfcScfOfProcessor;
@@ -164,11 +164,7 @@ public class SfcScfOfDataListenerTest {
         sfcBuilder.setName(SFC_NAME);
         sfcBuilder.setAcl(acl_dummy);
 
-
-        ServiceFunctionClassifier serviceFunctionClassifier = sfcBuilder.build();
-
-
-        return serviceFunctionClassifier;
+        return sfcBuilder.build();
     }
 
 

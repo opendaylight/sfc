@@ -107,9 +107,9 @@ public class OpenflowClassifierProcessorTest {
     @Mock
     RspLogicalSffAugmentation logicalSffAugmentation;
 
-    LogicallyAttachedClassifier classifierInterface;
+    private LogicallyAttachedClassifier classifierInterface;
 
-    private String interfaceToClassify;
+    private final String interfaceToClassify;
 
     private static final String FIRST_SF_NODE_NAME = "openflow:1234567890";
 

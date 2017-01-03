@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
-import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
+import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
@@ -32,17 +30,16 @@ public class SfcScfOfProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfProcessor.class);
     private SfcOfFlowWriterInterface openflowWriter;
     private OpenflowClassifierProcessor classifierProcessor;
-    private DataBroker dataBroker;
+    private ClassifierHandler classifierHandler;
 
-    public SfcScfOfProcessor(DataBroker theDataBroker,
-                             SfcOfFlowWriterInterface theOpenflowWriter,
+    public SfcScfOfProcessor(SfcOfFlowWriterInterface theOpenflowWriter,
                              OpenflowClassifierProcessor theClassifierProcessor) {
-        dataBroker = theDataBroker;
         openflowWriter = theOpenflowWriter;
         classifierProcessor = theClassifierProcessor;
+        classifierHandler = new ClassifierHandler();
     }
 
-   /**
+    /**
     * create flows for service function classifier
     * The function returns true if successful.
     * The function returns false if unsuccessful.
@@ -51,39 +48,19 @@ public class SfcScfOfProcessor {
     * @return          create result
     */
     public boolean createdServiceFunctionClassifier(ServiceFunctionClassifier scf) {
-        Optional<Acl> theAcl = Optional.ofNullable(scf)
-                .map(ServiceFunctionClassifier::getAcl)
-                .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
-
+        Optional<Acl> theAcl = classifierHandler.extractAcl(scf);
         if ( !theAcl.isPresent() || !validateInputs(theAcl.get()) ) {
             LOG.error("createdServiceFunctionClassifier: Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
 
-        LOG.debug("createdServiceFunctionClassifier: ServiceFunctionClassifier name: {} ACL: {} SFF: {}",
-                scf.getName(),
-                scf.getAcl(),
-                scf.getSclServiceFunctionForwarder());
-
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
         if (sfflist == null) {
-            LOG.error("createdServiceFunctionClassifier: sfflist is null");
+            LOG.error("deletedServiceFunctionClassifier: sfflist is null");
             return false;
         }
 
-        for (SclServiceFunctionForwarder classifier : sfflist) {
-            List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, theAcl.get(), true);
-            LOG.debug("createdServiceFunctionClassifier - flow size: {}", allFlows.size());
-            // if no flows were built to be written, we refresh the transaction,
-            // thus discarding the genius interface binding
-            if(allFlows.isEmpty()) {
-                LOG.info("createdServiceFunctionClassifier - Could not successfully process classifier; will regen the transaction");
-                openflowWriter.updateTransactionObject();
-                continue;
-            }
-            openflowWriter.writeFlows(allFlows);
-        }
-
+        openflowWriter.writeFlows(classifierProcessor.processClassifierList(theAcl.get(), true, sfflist));
         openflowWriter.flushFlows();
         return true;
     }
@@ -97,19 +74,12 @@ public class SfcScfOfProcessor {
     * @return     delete result
     */
     public boolean deletedServiceFunctionClassifier(ServiceFunctionClassifier scf) {
-        Optional<Acl> theAcl = Optional.ofNullable(scf)
-                .map(ServiceFunctionClassifier::getAcl)
-                .map(acl -> SfcProviderAclAPI.readAccessList(acl.getName(), acl.getType()));
+        Optional<Acl> theAcl = classifierHandler.extractAcl(scf);
 
         if ( !theAcl.isPresent() || !validateInputs(theAcl.get()) ) {
-            LOG.error("deletedServiceFunctionClassifier: Could not retrieve the ACL from the classifier: {}", scf);
+            LOG.error("createdServiceFunctionClassifier: Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
-
-        LOG.debug("deletedServiceFunctionClassifier: delete ServiceFunctionClassifier name: {} ACL: {} SFF: {}",
-                scf.getName(),
-                scf.getAcl(),
-                scf.getSclServiceFunctionForwarder());
 
         List<SclServiceFunctionForwarder> sfflist = scf.getSclServiceFunctionForwarder();
         if (sfflist == null) {
@@ -117,17 +87,9 @@ public class SfcScfOfProcessor {
             return false;
         }
 
-        for (SclServiceFunctionForwarder classifier : sfflist) {
-            List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, theAcl.get(), false);
-            // if no flows were built to be written, we refresh the transaction,
-            // thus discarding the genius interface binding
-            if(allFlows.isEmpty()) {
-                LOG.info("deletedServiceFunctionClassifier - Could not successfully delete classifier; will regen the transaction");
-                openflowWriter.updateTransactionObject();
-                continue;
-            }
-            openflowWriter.removeFlows(allFlows);
-        }
+        openflowWriter.removeFlows(classifierProcessor.processClassifierList(theAcl.get(), false, sfflist));
+        // so that we delete the initialization flows from SFFs that do not belong to any RSPs
+        openflowWriter.clearSffsIfNoRspExists();
         openflowWriter.deleteFlowSet();
         return true;
     }

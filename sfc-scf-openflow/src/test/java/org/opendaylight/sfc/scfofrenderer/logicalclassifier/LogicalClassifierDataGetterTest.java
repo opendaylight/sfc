@@ -55,7 +55,7 @@ public class LogicalClassifierDataGetterTest {
     @Mock
     RspLogicalSffAugmentation logicalSffAugmentation;
 
-    private LogicalClassifierDataGetter dataGetter;
+    private final LogicalClassifierDataGetter dataGetter;
 
     private static final String FIRST_SF_NEUTRON_PORT = "eba7a40e-a8f7-4b25-b1a2-4128f0da988e";
     private static final String FIRST_SF_DPN_ID = "1234567890";

@@ -74,6 +74,26 @@ public class OpenflowClassifierProcessor {
     }
 
     /**
+     * Process a list of classifier switches objects, adding or removing flows for the entire impacted RSP.
+     * @param theAcl            the ACL object to install
+     * @param addClassifier     true when adding the classifier flows, false when deleting them
+     * @param classifierList    the list of {@link SclServiceFunctionForwarder} in which the classifier
+     *                          flows will be installed
+     * @return                  the list of all the relevant flows to be installed
+     */
+    public List<FlowDetails> processClassifierList(Acl theAcl,
+                                                   boolean addClassifier,
+                                                   List<SclServiceFunctionForwarder> classifierList) {
+        return classifierList
+                .stream()
+                .map(classifier -> processClassifier(classifier, theAcl, addClassifier))
+                .peek(theFlows -> LOG.info("createdServiceFunctionClassifier - flow size: {}", theFlows.size()))
+                .reduce(new ArrayList<>(),
+                        (dstList, theList) ->
+                                Stream.concat(dstList.stream(), theList.stream()).collect(Collectors.toList()));
+    }
+
+    /**
      * Process an Scf object, adding or removing the OF rules into the respective OVS
      * This method is called on result of classifier addition / removal.
      *
@@ -112,7 +132,6 @@ public class OpenflowClassifierProcessor {
         }
 
         // bind/unbind the interface in genius, if the classifier is attached to a logical interface
-        // (according to the scenario)
         if (classifierHandler.usesLogicalInterfaces(sff.get())) {
             if (addClassifierScenario) {
                 ClassifierGeniusIntegration.performGeniusServiceBinding(tx, itfName.get());
@@ -215,9 +234,8 @@ public class OpenflowClassifierProcessor {
                 theAce.getRuleName(),
                 inPort.get(),
                 theSff);
-        if (!theReverseRspFlows.isEmpty()) {
-            theFlows.addAll(theReverseRspFlows);
-        }
+
+        theFlows.addAll(theReverseRspFlows);
 
         LOG.debug("processAce - flow size: {}", theFlows.size());
         return theFlows;
@@ -284,16 +302,14 @@ public class OpenflowClassifierProcessor {
     }
 
     /**
-     * Return a FlowDetails object that installs a 'relay' flow - i.e. how to exit the chain - in the last hop of
-     * a given RSP
-     *
-     * @param nodeName      the name of the node where the flow will be installed
-     * @param theSff        the {@link ServiceFunctionForwarder} object in which the relay flow will be installed
-     * @param reverseNsh    the {@link SfcNshHeader} where the RSP required metadata is stored
-     * @param theFlowKey    the name of 'in' flow - i.e. how to enter the chain - which will be used to build this
-     *                      flow's name
-     * @return              a {@link FlowDetails} object telling the classifier how to make packets leave the SFC
-     *                      domain
+
+     * Return a FlowDetails object that represent the relay flow - i.e. how to exit the chain - if any.
+     * @param nodeName      the nodeName where the flow will be installed. Should be on the first SFF of the
+     *                      chain - last of the reverse chain.
+     * @param theSff        the SFF name where the flow will be installed
+     * @param reverseNsh    the {@link SfcNshHeader} object having the related data for the reverse chain
+     * @param theFlowKey    the name of the analogous 'in' flow
+     * @return              a {@link FlowDetails} object if possible, and empty Optional otherwise
      */
     protected Optional<FlowDetails> processReverseRspRelayFlow(String nodeName,
                                                           ServiceFunctionForwarder theSff,
@@ -303,11 +319,14 @@ public class OpenflowClassifierProcessor {
         String flowKey = theFlowKey.replaceFirst(".in", ".relay");
         if (addClassifier) {
             Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
-            Optional<SfcNshHeader> theNshHeader = Optional.of(reverseNsh)
-                    .map(theReverseNsh -> theReverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address()))
-                    .map(theReverseNsh -> theReverseNsh.setVxlanUdpPort(ip.getPort()));
+            if (ip == null || ip.getIp() == null || ip.getPort() == null) {
+                return Optional.empty();
+            }
 
-            relayFlow = theNshHeader
+            relayFlow = Optional.of(reverseNsh)
+                    .map(theReverseNsh -> theReverseNsh
+                                    .setVxlanIpDst(ip.getIp().getIpv4Address())
+                                    .setVxlanUdpPort(ip.getPort()))
                     .map(theReverseNshHeader ->
                             classifierInterface.createClassifierRelayFlow(flowKey, theReverseNshHeader, nodeName));
         }

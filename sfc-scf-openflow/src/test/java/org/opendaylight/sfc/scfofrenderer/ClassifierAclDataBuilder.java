@@ -68,11 +68,9 @@ public class ClassifierAclDataBuilder {
                         .build())
                 .build();
 
-        Matches matches = new MatchesBuilder()
+        return new MatchesBuilder()
                 .setAceType(ip)
                 .build();
-
-        return matches;
     }
 
     private Actions buildActions(String rspName) {
@@ -80,10 +78,8 @@ public class ClassifierAclDataBuilder {
                 .setSfcAction(new AclRenderedServicePathBuilder()
                         .setRenderedServicePath(rspName).build());
 
-        Actions actions = new ActionsBuilder()
+        return new ActionsBuilder()
                 .addAugmentation(Actions1.class, actions1Builder.build())
                 .build();
-
-        return actions;
     }
 }

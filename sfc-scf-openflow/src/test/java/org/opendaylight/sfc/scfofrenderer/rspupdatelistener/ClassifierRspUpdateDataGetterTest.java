@@ -77,13 +77,13 @@ public class ClassifierRspUpdateDataGetterTest {
     @Mock
     SclServiceFunctionForwarder sclForwarder;
 
-    List<Acl> aclList = new ArrayList<>();
+    private List<Acl> aclList = new ArrayList<>();
 
-    List<Ace> aceList = new ArrayList<>();
+    private List<Ace> aceList = new ArrayList<>();
 
-    List<ServiceFunctionClassifier> classifierList = new ArrayList<>();
+    private List<ServiceFunctionClassifier> classifierList = new ArrayList<>();
 
-    List<SclServiceFunctionForwarder> sclClassifierList = new ArrayList<>();
+    private List<SclServiceFunctionForwarder> sclClassifierList = new ArrayList<>();
 
     public ClassifierRspUpdateDataGetterTest() {
         initMocks(this);

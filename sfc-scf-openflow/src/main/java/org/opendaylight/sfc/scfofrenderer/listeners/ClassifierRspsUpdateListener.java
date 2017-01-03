@@ -34,10 +34,10 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspsUpdateListener.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<AbstractDataTreeChangeListener> listenerRegistration;
-    private ClassifierRspUpdateProcessor classifierProcessor;
-    private SfcOfFlowWriterInterface openflowWriter;
-    private ClassifierRspUpdateDataGetter updateDataGetter;
-    private LogicalClassifierDataGetter dataGetter;
+    private final ClassifierRspUpdateProcessor classifierProcessor;
+    private final SfcOfFlowWriterInterface openflowWriter;
+    private final ClassifierRspUpdateDataGetter updateDataGetter;
+    private final LogicalClassifierDataGetter dataGetter;
 
     public ClassifierRspsUpdateListener(DataBroker theDataBroker,
                                         ClassifierRspUpdateProcessor theClassifierProcessor,

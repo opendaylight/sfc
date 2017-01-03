@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -80,8 +79,7 @@ public class SfcScfOfProcessorTest {
         when(classifierProcessor.processClassifier(any(SclServiceFunctionForwarder.class), any(Acl.class), anyBoolean()))
                 .thenReturn(Collections.emptyList());
 
-        RpcProviderRegistry rpcProvider = mock(RpcProviderRegistry.class);
-        sfcScfProcessor = new SfcScfOfProcessor(dataBroker, openflowWriter, classifierProcessor);
+        sfcScfProcessor = new SfcScfOfProcessor(openflowWriter, classifierProcessor);
 
         scf = mock(ServiceFunctionClassifier.class);
         acl = mock(Acl.class);

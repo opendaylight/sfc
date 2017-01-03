@@ -74,6 +74,26 @@ public class OpenflowClassifierProcessor {
     }
 
     /**
+     * Process a list of classifier switches objects, adding or removing flows for the entire impacted RSP.
+     * @param theAcl            the ACL object to install
+     * @param addClassifier     true when adding the classifier flows, false when deleting them
+     * @param classifierList    the list of {@link SclServiceFunctionForwarder} in which the classifier
+     *                          flows will be installed
+     * @return                  the list of all the relevant flows to be installed
+     */
+    public List<FlowDetails> processClassifierList(Acl theAcl,
+                                                   boolean addClassifier,
+                                                   List<SclServiceFunctionForwarder> classifierList) {
+        return classifierList
+                .stream()
+                .map(classifier -> processClassifier(classifier, theAcl, addClassifier))
+                .peek(theFlows -> LOG.debug("createdServiceFunctionClassifier - flow size: {}", theFlows.size()))
+                .reduce(new ArrayList<>(),
+                        (dstList, theList) ->
+                                Stream.concat(dstList.stream(), theList.stream()).collect(Collectors.toList()));
+    }
+
+    /**
      * Process an Scf object, adding or removing the OF rules into the respective OVS
      * This method is called on result of classifier addition / removal.
      *
@@ -284,12 +304,13 @@ public class OpenflowClassifierProcessor {
     }
 
     /**
-     * Return a FlowBuilder
-     * @param nodeName
-     * @param theSff
-     * @param reverseNsh
-     * @param theFlowKey
-     * @return
+     * Return a FlowDetails object that represent the relay flow - i.e. the classifier to 'client' flow - if any.
+     * @param nodeName      the nodeName where the flow will be installed. Should be on the first SFF of the
+     *                      chain - last of the reverse chain.
+     * @param theSff        the SFF name where the flow will be installed
+     * @param reverseNsh    the {@link SfcNshHeader} object having the related data for the reverse chain
+     * @param theFlowKey    the name of the analogous 'in' flow
+     * @return              a {@link FlowDetails} object if possible, and empty Optional otherwise
      */
     protected Optional<FlowDetails> processReverseRspRelayFlow(String nodeName,
                                                           ServiceFunctionForwarder theSff,
@@ -299,6 +320,9 @@ public class OpenflowClassifierProcessor {
         String flowKey = theFlowKey.replaceFirst(".in", ".relay");
         if (addClassifier) {
             Ip ip = SfcOvsUtil.getSffVxlanDataLocator(theSff);
+            if (ip == null || ip.getIp() == null || ip.getPort() == null) {
+                return Optional.empty();
+            }
             Optional<SfcNshHeader> theNshHeader = Optional.of(reverseNsh)
                     .map(theReverseNsh -> theReverseNsh.setVxlanIpDst(ip.getIp().getIpv4Address()))
                     .map(theReverseNsh -> theReverseNsh.setVxlanUdpPort(ip.getPort()));

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class LogicallyAttachedClassifier implements ClassifierInterface {
     private final LogicalClassifierDataGetter logicalSffDataGetter;
 
-    private ClassifierHandler classifierHandler;
+    private final ClassifierHandler classifierHandler;
 
     private static final Logger LOG = LoggerFactory.getLogger(LogicallyAttachedClassifier.class);
 
@@ -186,7 +186,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
     /**
      * Build a list of actions which will be installed into the classifier
      * @param theHeader the {@link SfcNshHeader} object encapsulating all NSH related data
-     * @return          the List of {@Action} related to NSH which will be pushed into the classifier
+     * @return          the List of {@link Action} related to NSH which will be pushed into the classifier
      */
     private List<Action> buildNshActions(SfcNshHeader theHeader) {
         return new ArrayList<Action>(){{

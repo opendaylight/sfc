@@ -25,7 +25,7 @@ import java.util.Optional;
 public class BareClassifier implements ClassifierInterface {
     private ServiceFunctionForwarder sff;
 
-    private ClassifierHandler classifierHandler;
+    private final ClassifierHandler classifierHandler;
 
     public BareClassifier() {classifierHandler = new ClassifierHandler();}
 
@@ -91,7 +91,7 @@ public class BareClassifier implements ClassifierInterface {
     @Override
     public Optional<String> getNodeName(String theInterfaceName) {
         return Optional.ofNullable(sff)
-                .filter(sff -> sff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
+                .filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
                 .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }
 

@@ -16,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 
 import java.util.ArrayList;
@@ -35,9 +34,9 @@ public class ClassifierHandlerTest {
     @Mock
     private ServiceFunctionForwarder sff;
 
-    private ClassifierHandler handler;
+    private final ClassifierHandler handler;
 
-    private String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
+    private final String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
 
     public ClassifierHandlerTest() {
         initMocks(this);
@@ -88,7 +87,7 @@ public class ClassifierHandlerTest {
 
     @Test
     public void usesLogicalInterfacesLegacySff() {
-        when(sff.getSffDataPlaneLocator()).thenReturn(new ArrayList<SffDataPlaneLocator>());
+        when(sff.getSffDataPlaneLocator()).thenReturn(new ArrayList<>());
         Assert.assertFalse(handler.usesLogicalInterfaces(sff));
     }
 }

@@ -39,7 +39,7 @@ public class ClassifierRspUpdateProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspUpdateProcessor.class);
 
-    private ClassifierHandler classifierHandler;
+    private final ClassifierHandler classifierHandler;
 
     // hide the default constructor
     private ClassifierRspUpdateProcessor() {classifierHandler = new ClassifierHandler();}

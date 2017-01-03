@@ -80,11 +80,11 @@ public class ClassifierRspUpdateProcessorTest {
 
     private FlowDetails theFlowDetails;
 
-    private ClassifierRspUpdateProcessor theUpdateProcessor;
+    private final ClassifierRspUpdateProcessor theUpdateProcessor;
 
-    private static String FIRST_SF_DPN_ID_STRING = "1234567890";
-    private static String FIRST_SF_NODE_NAME = String.format("openflow:%s", FIRST_SF_DPN_ID_STRING);
-    private static String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
+    private static final String FIRST_SF_DPN_ID_STRING = "1234567890";
+    private static final String FIRST_SF_NODE_NAME = String.format("openflow:%s", FIRST_SF_DPN_ID_STRING);
+    private static final String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
 
     public ClassifierRspUpdateProcessorTest() {
         initMocks(this);

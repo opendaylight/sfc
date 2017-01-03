@@ -67,7 +67,7 @@ public class SfcScfOfRenderer implements AutoCloseable {
                 new ClassifierRspUpdateDataGetter(),
                 dataGetter);
         sfcScfDataListener = new SfcScfOfDataListener(dataBroker,
-                new SfcScfOfProcessor(dataBroker, openflowWriter, logicalClassifierHandler));
+                new SfcScfOfProcessor(openflowWriter, logicalClassifierHandler));
 
         LOG.info("SfcScfOfRenderer successfully started the SfcScfOfRenderer plugin");
     }

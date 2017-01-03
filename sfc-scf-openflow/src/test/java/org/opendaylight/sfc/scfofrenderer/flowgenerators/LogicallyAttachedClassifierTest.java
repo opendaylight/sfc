@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,7 +92,7 @@ public class LogicallyAttachedClassifierTest {
     @Mock
     LogicalClassifierDataGetter dataGetter;
 
-    private String firstSfNeutronPort = "eba7a40e-a8f7-4b25-b1a2-4128f0da988e";
+    private final String firstSfNeutronPort = "eba7a40e-a8f7-4b25-b1a2-4128f0da988e";
 
     private LogicallyAttachedClassifier logicalScf;
 
@@ -170,11 +169,6 @@ public class LogicallyAttachedClassifierTest {
 
         PowerMockito.stub(PowerMockito.method(SfcGeniusDataUtils.class, "getInterfaceLowerLayerIf"))
                 .toReturn(new ArrayList<String>(){{add(String.format("%s:%s", FIRST_SF_NODE_NAME,"2"));}});
-    }
-
-    @After
-    public void cleanStuff() {
-
     }
 
     @Test

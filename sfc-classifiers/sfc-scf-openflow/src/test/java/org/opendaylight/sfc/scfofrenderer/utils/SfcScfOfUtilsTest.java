@@ -78,7 +78,6 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testCreateClassifierRelayFlow() {
-        Match match = mock(Match.class);
         SfcNshHeader nsh = mock(SfcNshHeader.class);
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);

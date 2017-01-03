@@ -64,9 +64,9 @@ public class ClassifierRspsUpdateListenerTest {
     @InjectMocks
     ClassifierRspsUpdateListener theUpdateListener;
 
-    private DpnIdType oldDataplaneId;
+    private final DpnIdType oldDataplaneId;
 
-    private DpnIdType newDataplaneId;
+    private final DpnIdType newDataplaneId;
 
     public ClassifierRspsUpdateListenerTest() {
         initMocks(this);

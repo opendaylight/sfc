@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_636a7282",
+        "filename": "sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/listeners/ClassifierRspsUpdateListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-05T10:30:41Z",
+      "side": 1,
+      "message": "I\u0027m using submit (which returns a future) since it might come in handy to further process that future result, despite not doing anything at the moment.",
+      "range": {
+        "startLine": 105,
+        "startChar": 29,
+        "endLine": 105,
+        "endChar": 35
+      },
+      "revId": "5f2ed2d93faa2534483609efd29f4296d207939f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

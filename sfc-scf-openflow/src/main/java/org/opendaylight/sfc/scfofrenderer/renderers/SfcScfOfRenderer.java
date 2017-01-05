@@ -9,6 +9,8 @@
 package org.opendaylight.sfc.scfofrenderer.renderers;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -65,7 +67,10 @@ public class SfcScfOfRenderer implements AutoCloseable {
                 new ClassifierRspUpdateProcessor(logicalClassifier),
                 openflowWriter,
                 new ClassifierRspUpdateDataGetter(),
-                dataGetter);
+                dataGetter,
+                // by default, has # of cores - 1 workers, just like the ForkJoinPool.commonPool() used by streamed
+                // parallel operations - stream().parallel().map(...) or Iterable.forEach(...)
+                Executors.newWorkStealingPool());
         sfcScfDataListener = new SfcScfOfDataListener(dataBroker,
                 new SfcScfOfProcessor(openflowWriter, logicalClassifierHandler));
 

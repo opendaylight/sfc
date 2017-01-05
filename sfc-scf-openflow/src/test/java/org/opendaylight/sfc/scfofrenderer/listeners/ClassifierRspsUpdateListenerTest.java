@@ -29,7 +29,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ClassifierRspsUpdateListenerTest {
@@ -61,6 +64,9 @@ public class ClassifierRspsUpdateListenerTest {
     @Mock
     RenderedServicePathHop oldHop, newHop;
 
+    @Mock
+    ExecutorService theUpdateProcessor;
+
     @InjectMocks
     ClassifierRspsUpdateListener theUpdateListener;
 
@@ -78,6 +84,11 @@ public class ClassifierRspsUpdateListenerTest {
     public void setUp() {
         Mockito.doNothing().when(theOpenflowWriter).deleteFlowSet();
         Mockito.doNothing().when(theOpenflowWriter).flushFlows();
+
+        doAnswer(invocationOnMock -> {
+            invocationOnMock.getArgumentAt(0, Runnable.class).run();
+            return null;
+        }).when(theUpdateProcessor).submit(any(Runnable.class));
 
         List<Acl> aclList = new ArrayList<Acl>() {{ add(theAcl); }};
         Mockito.when(theUpdateDataGetter.filterAclsByRspName(Mockito.any(RspName.class))).thenReturn(aclList);
@@ -101,7 +112,6 @@ public class ClassifierRspsUpdateListenerTest {
     @Test
     public void testUpdateRsp() {
         theUpdateListener.update(oldRsp, newRsp);
-
         Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
         Mockito.verify(theOpenflowWriter).deleteFlowSet();
         Mockito.verify(theClassifierProcessor).processClassifier(theClassifier, theAcl, newRsp);
@@ -110,11 +120,7 @@ public class ClassifierRspsUpdateListenerTest {
     @Test
     public void testDeleteRsp() {
         theUpdateListener.remove(oldRsp);
-
-/*
-        Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
-        Mockito.verify(theOpenflowWriter).deleteFlowSet();
+        Mockito.verifyZeroInteractions(theOpenflowWriter);
         Mockito.verifyZeroInteractions(theClassifierProcessor);
-*/
     }
 }

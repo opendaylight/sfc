@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener<RenderedServicePath> {
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspsUpdateListener.class);
@@ -38,17 +40,20 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
     private final SfcOfFlowWriterInterface openflowWriter;
     private final ClassifierRspUpdateDataGetter updateDataGetter;
     private final LogicalClassifierDataGetter dataGetter;
+    private final ExecutorService updateProcessors;
 
     public ClassifierRspsUpdateListener(DataBroker theDataBroker,
                                         ClassifierRspUpdateProcessor theClassifierProcessor,
                                         SfcOfFlowWriterInterface theOpenflowWriter,
                                         ClassifierRspUpdateDataGetter theUpdateDataGetter,
-                                        LogicalClassifierDataGetter theDataGetter) {
+                                        LogicalClassifierDataGetter theDataGetter,
+                                        ExecutorService theExecutorService) {
         dataBroker = theDataBroker;
         classifierProcessor = theClassifierProcessor;
         openflowWriter = theOpenflowWriter;
         updateDataGetter = theUpdateDataGetter;
         dataGetter = theDataGetter;
+        updateProcessors = theExecutorService;
         registerListeners();
     }
 
@@ -94,21 +99,40 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
             openflowWriter.deleteFlowSet();
             List<Acl> theAcls = updateDataGetter.filterAclsByRspName(theRspName);
 
-            theAcls.forEach(acl -> {
+            // forEach statements run in a common thread pool (ForkJoinPool.commonPool()) having # of cores - 1 workers.
+            // so that we don't overload these workers, we're going to process the RSP updates in a dedicated thread
+            // pool, having the same number of workers.
+            updateProcessors.submit(() -> theAcls.forEach(acl -> {
                 List<SclServiceFunctionForwarder> theClassifierObjects =
                         updateDataGetter.filterClassifierNodesByAclName(acl.getAclName());
                 theClassifierObjects.forEach(classifier -> {
                     List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, acl, updatedRsp);
-                    if(!allFlows.isEmpty()) {
+                    if (!allFlows.isEmpty()) {
                         LOG.debug("update - Flows generated; gonna write them into the DS ");
                         openflowWriter.writeFlows(allFlows);
                         openflowWriter.flushFlows();
                     }
                 });
-            });
+            }));
         }
     }
 
     @Override
-    public void close() throws Exception { listenerRegistration.close(); }
+    public void close() throws Exception {
+        // attempt to gracefully shutdown the executor, giving it 3 seconds to finish processing its tasks
+        // if it cannot gracefully shutdown, the executor's resources are forcefully claimed, and the number
+        // of dropped requests is logged
+        try {
+            updateProcessors.shutdown();
+            updateProcessors.awaitTermination(3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOG.error("Could not gracefully shutdown executor. Taking him out to the woods...", e);
+        } finally {
+            if (!updateProcessors.isShutdown()) {
+                List<Runnable> cancelledTasks = updateProcessors.shutdownNow();
+                LOG.error("Canceled {} tasks", cancelledTasks.size());
+            }
+        }
+        listenerRegistration.close();
+    }
 }

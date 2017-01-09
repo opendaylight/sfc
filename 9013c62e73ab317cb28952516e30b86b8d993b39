@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_82185f1f",
+        "filename": "resources/configuration-examples/symmetricRSPs/json/02b-service_functions.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-01-09T09:15:05Z",
+      "side": 1,
+      "message": "The \"service-function-type:\" prefix is no longer used, and should be removed.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 52
+      },
+      "revId": "9013c62e73ab317cb28952516e30b86b8d993b39",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_e2e033fc",
+        "filename": "resources/configuration-examples/symmetricRSPs/json/04-service_function_chains.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-01-09T09:15:05Z",
+      "side": 1,
+      "message": "The \"service-function-type:\" prefix is no longer used, and should be removed.",
+      "range": {
+        "startLine": 9,
+        "startChar": 33,
+        "endLine": 9,
+        "endChar": 54
+      },
+      "revId": "9013c62e73ab317cb28952516e30b86b8d993b39",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_82efbfe8",
+        "filename": "resources/configuration-examples/symmetricRSPs/json/04-service_function_chains.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-01-09T09:15:05Z",
+      "side": 1,
+      "message": "Same comment as above about the prefix.",
+      "range": {
+        "startLine": 22,
+        "startChar": 33,
+        "endLine": 22,
+        "endChar": 54
+      },
+      "revId": "9013c62e73ab317cb28952516e30b86b8d993b39",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

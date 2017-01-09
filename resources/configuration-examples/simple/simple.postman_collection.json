@@ -30,7 +30,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service-functions\": {\n    \"service-function\": [\n      {\n        \"name\": \"sf1\",\n        \"type\": \"http-header-enrichment\",\n        \"nsh-aware\": true,\n        \"ip-mgmt-address\": \"10.0.0.10\",\n        \"sf-data-plane-locator\": [\n          {\n            \"name\": \"sff1\",\n            \"ip\": \"10.0.0.10\",\n            \"port\": 6633,\n            \"transport\": \"service-locator:vxlan-gpe\",\n            \"service-function-forwarder\": \"sff1\",\n            \"service-function-ovs:ovs-port\" : {\"port-id\" : \"veth1\"}\n          }\n        ]\n      }\n    ]\n  }\n}"
+							"raw": "{\n  \"service-functions\": {\n    \"service-function\": [\n      {\n        \"name\": \"sf1\",\n        \"type\": \"http-header-enrichment\",\n        \"ip-mgmt-address\": \"10.0.0.10\",\n        \"sf-data-plane-locator\": [\n          {\n            \"name\": \"sff1\",\n            \"ip\": \"10.0.0.10\",\n            \"port\": 6633,\n            \"transport\": \"service-locator:vxlan-gpe\",\n            \"service-function-forwarder\": \"sff1\",\n            \"service-function-ovs:ovs-port\" : {\"port-id\" : \"veth1\"}\n          }\n        ]\n      }\n    ]\n  }\n}"
 						},
 						"description": "Configurarion of Service Functions"
 					},
@@ -80,7 +80,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service-function-chains\": {\n    \"service-function-chain\": [\n      {\n        \"name\": \"sfc-chain-1sf1sff\",\n        \"symmetric\": true,\n        \"sfc-service-function\": [\n          {\n            \"name\": \"hdr-enrich-abstract1\",\n            \"type\": \"http-header-enrichment\"\n          }\n        ]\n      }\n \n    ]\n  }\n}"
+							"raw": "{\n  \"service-function-chains\": {\n    \"service-function-chain\": [\n      {\n        \"name\": \"sfc-chain-1sf1sff\",\n        \"sfc-service-function\": [\n          {\n            \"name\": \"hdr-enrich-abstract1\",\n            \"type\": \"http-header-enrichment\"\n          }\n        ]\n      }\n \n    ]\n  }\n}"
 						},
 						"description": "Configuration of Service Function Chains"
 					},
@@ -130,7 +130,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"input\": {\n      \"name\": \"sfc-path-1sf1sff\",\n      \"parent-service-function-path\": \"sfc-path-1sf1sff\",\n      \"symmetric\": true\n  }\n}"
+							"raw": "{\n  \"input\": {\n      \"name\": \"sfc-path-1sf1sff\",\n      \"parent-service-function-path\": \"sfc-path-1sf1sff\"\n  }\n}"
 						},
 						"description": "Emulation of RSP creation in Operational data model"
 					},
@@ -161,7 +161,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service-functions\": {\n        \"service-function\": [\n            {\n                \"name\": \"dpi-1\",\n                \"ip-mgmt-address\": \"192.168.1.30\",\n                \"rest-uri\": \"http://192.168.1.30:5000\",\n                \"type\": \"dpi\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"dpi-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.30\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"firewall-1\",\n                \"ip-mgmt-address\": \"192.168.1.40\",\n                \"rest-uri\": \"http://192.168.1.40:5000\",\n                \"type\": \"firewall\",\n                \"nsh-aware\": \"true\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"firewall-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.40\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF2\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+							"raw": "{\n    \"service-functions\": {\n        \"service-function\": [\n            {\n                \"name\": \"dpi-1\",\n                \"ip-mgmt-address\": \"192.168.1.30\",\n                \"rest-uri\": \"http://192.168.1.30:5000\",\n                \"type\": \"dpi\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"dpi-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.30\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF1\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"firewall-1\",\n                \"ip-mgmt-address\": \"192.168.1.40\",\n                \"rest-uri\": \"http://192.168.1.40:5000\",\n                \"type\": \"firewall\",\n                \"sf-data-plane-locator\": [\n                    {\n                        \"name\": \"firewall-1-dpl\",\n                        \"port\": 6633,\n                        \"ip\": \"192.168.1.40\",\n                        \"transport\": \"service-locator:vxlan-gpe\",\n                        \"service-function-forwarder\": \"SFF2\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
 						},
 						"description": "Shows the configured Service Functions"
 					},
@@ -186,7 +186,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service-function-chains\": {\n        \"service-function-chain\": [\n            {\n                \"name\": \"SFC1\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    },\n                    {\n                        \"name\": \"firewall-abstract1\",\n                        \"type\": \"firewall\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFC2\",\n                \"symmetric\": \"true\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+							"raw": "{\n    \"service-function-chains\": {\n        \"service-function-chain\": [\n            {\n                \"name\": \"SFC1\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    },\n                    {\n                        \"name\": \"firewall-abstract1\",\n                        \"type\": \"firewall\"\n                    }\n                ]\n            },\n            {\n                \"name\": \"SFC2\",\n                \"sfc-service-function\": [\n                    {\n                        \"name\": \"dpi-abstract1\",\n                        \"type\": \"dpi\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
 						},
 						"description": "Get the configured Service Function Chains"
 					},

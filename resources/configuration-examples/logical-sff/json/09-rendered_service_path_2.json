@@ -1,7 +1,6 @@
 {
     "input": {
         "name": "RSP2",
-        "parent-service-function-path": "SFP2",
-        "symmetric": "true"
+        "parent-service-function-path": "SFP2"
     }
 }

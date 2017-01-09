@@ -4,7 +4,6 @@
       {
         "name": "sf1",
         "type": "http-header-enrichment",
-        "nsh-aware": true,
         "ip-mgmt-address": "10.0.0.10",
         "sf-data-plane-locator": [
           {

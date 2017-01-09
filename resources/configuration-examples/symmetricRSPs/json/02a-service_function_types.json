@@ -1,0 +1,11 @@
+{
+  "service-function-types": {
+    "service-function-type": [
+      {
+        "type": "dpi",
+        "bidirectional": "true",
+        "nsh-aware": "true"
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "access-lists": {
+    "acl": [
+      {
+        "acl-name": "ACL1",
+        "acl-type": "ietf-access-control-list:ipv4-acl",
+        "access-list-entries": {
+          "ace": [
+            {
+              "rule-name": "ACE1",
+              "actions": {
+                "service-function-acl:rendered-service-path": "RSP1"
+              },
+              "matches": {
+                "destination-ipv4-network": "192.168.2.0/24",
+                "source-ipv4-network": "192.168.2.0/24",
+                "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 0
+                },
+                "destination-port-range": {
+                    "lower-port": 80
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "acl-name": "ACL2",
+        "acl-type": "ietf-access-control-list:ipv4-acl",
+        "access-list-entries": {
+          "ace": [
+            {
+              "rule-name": "ACE2",
+              "actions": {
+                "service-function-acl:rendered-service-path": "RSP1-Reverse"
+              },
+              "matches": {
+                "destination-ipv4-network": "192.168.2.0/24",
+                "source-ipv4-network": "192.168.2.0/24",
+                "protocol": "6",
+                "source-port-range": {
+                    "lower-port": 80
+                },
+                "destination-port-range": {
+                    "lower-port": 0
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

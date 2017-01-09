@@ -1,0 +1,136 @@
+{
+    "service-function-forwarders": {
+        "service-function-forwarder": [
+           {
+                "name": "Classifier1",
+                "service-node": "classifier1",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc"
+                },
+                "sff-data-plane-locator": [
+                    {
+                        "name": "sff0-dpl",
+                        "data-plane-locator": {
+                            "transport": "service-locator:vxlan-gpe",
+                            "port": 6633,
+                            "ip": "192.168.1.10"
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "6633",
+                            "key": "flow",
+                            "nsp": "flow",
+                            "nsi": "flow",
+                            "nshc1": "flow",
+                            "nshc2": "flow",
+                            "nshc3": "flow",
+                            "nshc4": "flow"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "SFF1",
+                "service-node": "sff1",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc"
+                },
+                "sff-data-plane-locator": [
+                    {
+                        "name": "sff1-dpl",
+                        "data-plane-locator": {
+                            "transport": "service-locator:vxlan-gpe",
+                            "port": 6633,
+                            "ip": "192.168.1.20"
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "6633",
+                            "key": "flow",
+                            "nsp": "flow",
+                            "nsi": "flow",
+                            "nshc1": "flow",
+                            "nshc2": "flow",
+                            "nshc3": "flow",
+                            "nshc4": "flow"
+                        }
+                    }
+                ],
+                "service-function-dictionary": [
+                    {
+                        "name": "dpi-1",
+                        "sff-sf-data-plane-locator": {
+                             "sf-dpl-name": "dpi-1-dpl",
+                             "sff-dpl-name": "sff1-dpl"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "SFF2",
+                "service-node": "sff2",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc"
+                },
+                "sff-data-plane-locator": [
+                    {
+                        "name": "sff2-dpl",
+                        "data-plane-locator": {
+                            "transport": "service-locator:vxlan-gpe",
+                            "port": 6633,
+                            "ip": "192.168.1.50"
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "6633",
+                            "key": "flow",
+                            "nsp": "flow",
+                            "nsi": "flow",
+                            "nshc1": "flow",
+                            "nshc2": "flow",
+                            "nshc3": "flow",
+                            "nshc4": "flow"
+                        }
+                    }
+                ],
+                "service-function-dictionary": [
+                    {
+                        "name": "firewall-1",
+                        "sff-sf-data-plane-locator": {
+                            "sf-dpl-name": "firewall-1-dpl",
+                            "sff-dpl-name": "sff2-dpl"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Classifier2",
+                "service-node": "classifier2",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc"
+                },
+                "sff-data-plane-locator": [
+                    {
+                        "name": "sff3-dpl",
+                        "data-plane-locator": {
+                            "transport": "service-locator:vxlan-gpe",
+                            "port": 6633,
+                            "ip": "192.168.1.60"
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "6633",
+                            "key": "flow",
+                            "nsp": "flow",
+                            "nsi": "flow",
+                            "nshc1": "flow",
+                            "nshc2": "flow",
+                            "nshc3": "flow",
+                            "nshc4": "flow"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

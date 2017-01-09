@@ -1,0 +1,32 @@
+{
+  "service-function-classifiers": {
+    "service-function-classifier": [
+      {
+        "name": "Classifier1",
+        "scl-service-function-forwarder": [
+          {
+            "name": "Classifier1",
+            "interface": "veth-br"
+          }
+        ],
+        "acl": {
+            "name": "ACL1",
+            "type": "ietf-access-control-list:ipv4-acl"
+         }
+      },
+      {
+        "name": "Classifier2",
+        "scl-service-function-forwarder": [
+          {
+            "name": "Classifier2",
+            "interface": "veth-br"
+          }
+        ],
+        "acl": {
+            "name": "ACL2",
+            "type": "ietf-access-control-list:ipv4-acl"
+         }
+      }
+    ]
+  }
+}

@@ -4,7 +4,6 @@
             {
                 "name": "firewall-1",
                 "type": "firewall",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "firewall-dpl",
@@ -17,7 +16,6 @@
                         {
                 "name": "dpi-1",
                 "type": "dpi",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "dpi-dpl",

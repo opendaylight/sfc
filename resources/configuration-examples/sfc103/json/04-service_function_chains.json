@@ -3,7 +3,6 @@
         "service-function-chain": [
             {
                 "name": "SFC1",
-                "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",
@@ -17,7 +16,6 @@
             },
             {
                 "name": "SFC2",
-                "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",

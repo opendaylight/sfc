@@ -5,7 +5,7 @@
                 "name": "dpi-1",
                 "ip-mgmt-address": "192.168.1.30",
                 "rest-uri": "http://192.168.1.30:5000",
-                "type": "dpi",
+                "type": "service-function-type:dpi",
                 "sf-data-plane-locator": [
                     {
                         "name": "dpi-1-dpl",

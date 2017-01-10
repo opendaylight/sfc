@@ -190,7 +190,9 @@ define([
     return svc;
   });
 
-  sfc.config(function ($stateProvider, $compileProvider, $controllerProvider, $provide, NavHelperProvider, $translateProvider, $translatePartialLoaderProvider) {
+  sfc.config(function ($stateProvider, $compileProvider, $controllerProvider, $provide,
+                       NavHelperProvider, $translateProvider, $translatePartialLoaderProvider,
+                       $urlRouterProvider) {
     sfc.register = {
       controller: $controllerProvider.register,
       directive: $compileProvider.directive,
@@ -199,6 +201,8 @@ define([
     };
 
     $translatePartialLoaderProvider.addPart('app/sfc/assets/data/locale');
+
+    $urlRouterProvider.otherwise('/sfc/serviceforwarder');
 
     NavHelperProvider.addControllerUrl('app/sfc/sfc.controller');
     NavHelperProvider.addToMenu('sfc', {
@@ -214,7 +218,7 @@ define([
 
     var access = routingConfig.accessLevels;
 
-    
+
 
     $stateProvider.state('main.sfc', {
       url: 'sfc',

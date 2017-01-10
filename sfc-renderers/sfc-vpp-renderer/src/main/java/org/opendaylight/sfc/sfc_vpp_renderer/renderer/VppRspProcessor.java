@@ -261,8 +261,8 @@ public class VppRspProcessor {
             }
 
             if (previousSffName != null && !previousSffName.equals(currentSffName)) {
-                removeVxlanGpePort(previousMountPoint, preLocalIp, localIp, Long.valueOf(0), previousSffName.getValue()); //previous SFF <-> current SFF
-                removeVxlanGpePort(currentMountpoint, localIp, preLocalIp, Long.valueOf(0), currentSffName.getValue());  //current SFF <-> previous SFF
+                removeVxlanGpePort(previousMountPoint, preLocalIp, localIp, 0L, previousSffName.getValue()); //previous SFF <-> current SFF
+                removeVxlanGpePort(currentMountpoint, localIp, preLocalIp, 0L, currentSffName.getValue());  //current SFF <-> previous SFF
             }
         }
     }
@@ -476,11 +476,11 @@ public class VppRspProcessor {
         vxlanGpeBuilder.setRemote(remote);
         vxlanGpeBuilder.setVni(new VxlanGpeVni(vni));
         vxlanGpeBuilder.setNextProtocol(VxlanGpeNextProtocol.Nsh);
-        vxlanGpeBuilder.setEncapVrfId(Long.valueOf(0));
-        vxlanGpeBuilder.setDecapVrfId(Long.valueOf(0));
+        vxlanGpeBuilder.setEncapVrfId(0L);
+        vxlanGpeBuilder.setDecapVrfId(0L);
 
         final RoutingBuilder routingBuilder = new RoutingBuilder();
-        routingBuilder.setVrfId(Long.valueOf(0));
+        routingBuilder.setVrfId(0L);
 
         final InterfaceBuilder interfaceBuilder = new InterfaceBuilder();
         interfaceBuilder.setName(buildVxlanGpePortKey(remote));
@@ -557,7 +557,7 @@ public class VppRspProcessor {
         vxlanBuilder.setSrc(srcIp);
         vxlanBuilder.setDst(dstIp);
         vxlanBuilder.setVni(new VxlanVni(vni));
-        vxlanBuilder.setEncapVrfId(Long.valueOf(0));
+        vxlanBuilder.setEncapVrfId(0L);
 
         final InterfaceBuilder interfaceBuilder = new InterfaceBuilder();
         interfaceBuilder.setName(buildVxlanPortKey(dstIp));
@@ -637,10 +637,10 @@ public class VppRspProcessor {
         nshEntryBuilder.setMdType(MdType1.class);
         nshEntryBuilder.setNextProtocol(Ethernet.class);
         NshMdType1AugmentBuilder nshMdType1AugmentBuilder = new NshMdType1AugmentBuilder();
-        Long c1 = Long.valueOf(0);
-        Long c2 = Long.valueOf(0);
-        Long c3 = Long.valueOf(0);
-        Long c4 = Long.valueOf(0);
+        Long c1 = 0L;
+        Long c2 = 0L;
+        Long c3 = 0L;
+        Long c4 = 0L;
         nshMdType1AugmentBuilder.setC1(c1);
         nshMdType1AugmentBuilder.setC2(c2);
         nshMdType1AugmentBuilder.setC3(c3);
@@ -752,7 +752,7 @@ public class VppRspProcessor {
     }
 
     private boolean configureVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
-        Long vni = Long.valueOf(0); // SFC classifier set it to 0, so always use 0
+        Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
         addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
         addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
@@ -764,7 +764,7 @@ public class VppRspProcessor {
     private boolean removeVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
         Short nextNsi = nsi;
         nextNsi--;
-        Long vni = Long.valueOf(0); // SFC classifier set it to 0, so always use 0
+        Long vni = 0L; // SFC classifier set it to 0, so always use 0
         removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
         removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF
@@ -773,7 +773,7 @@ public class VppRspProcessor {
     }
 
     private boolean configureVxlanNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress srcIp, final IpAddress dstIp, final Long nsp, final Short nsi) {
-        Long vni = Long.valueOf(0); // SFC classifier set it to 0, so always use 0
+        Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
         addVxlanPort(dataBroker, srcIp, dstIp, vni, sffName.getValue()); //SFF<->SF
         addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
@@ -785,7 +785,7 @@ public class VppRspProcessor {
     private boolean removeVxlanNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress srcIp, final IpAddress dstIp, final Long nsp, final Short nsi) {
         Short nextNsi = nsi;
         nextNsi--;
-        Long vni = Long.valueOf(0); // SFC classifier set it to 0, so always use 0
+        Long vni = 0L; // SFC classifier set it to 0, so always use 0
         removeVxlanPort(dataBroker, srcIp, dstIp, vni, sffName.getValue()); //SFF<->SF
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
         removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF

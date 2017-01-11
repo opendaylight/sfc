@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_f21f4f6a",
+        "filename": "sfc-test/sfc-docker/dovs/README.txt",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-11T11:36:27Z",
+      "side": 1,
+      "message": "dovs-tun, will fix.",
+      "parentUuid": "1a622d24_37eb79b1",
+      "range": {
+        "startLine": 47,
+        "startChar": 11,
+        "endLine": 47,
+        "endChar": 19
+      },
+      "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_04b8d2e3",
         "filename": "sfc-test/sfc-docker/dovs/README.txt",
         "patchSetId": 7
@@ -59,6 +83,30 @@
       "writtenOn": "2017-01-11T10:16:39Z",
       "side": 1,
       "message": "isolated? insulated?",
+      "range": {
+        "startLine": 79,
+        "startChar": 58,
+        "endLine": 79,
+        "endChar": 66
+      },
+      "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_3216e755",
+        "filename": "sfc-test/sfc-docker/dovs/README.txt",
+        "patchSetId": 7
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-11T11:36:27Z",
+      "side": 1,
+      "message": "isolated, will fix.",
+      "parentUuid": "1a622d24_04b8d2e3",
       "range": {
         "startLine": 79,
         "startChar": 58,
@@ -117,6 +165,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_720b3f2a",
+        "filename": "sfc-test/sfc-docker/provision/setup_dovs_network.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-11T11:36:27Z",
+      "side": 1,
+      "message": "dovs-tun, will fix.",
+      "parentUuid": "1a622d24_97d36d03",
+      "range": {
+        "startLine": 12,
+        "startChar": 23,
+        "endLine": 12,
+        "endChar": 31
+      },
+      "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_77d051f6",
         "filename": "sfc-test/sfc-docker/provision/setup_dovs_network.sh",
         "patchSetId": 7
@@ -151,6 +223,30 @@
       "writtenOn": "2017-01-11T10:16:39Z",
       "side": 1,
       "message": "If you\u0027re borrowing libraries from the host (instead of installing the corresponding packages in the Docker image), I think it may be more convenient to bind-mount the host\u0027s /usr/lib64 as host_libs in the container (-v /usr/lib64:/usr/lib). That way you shield this script from new library requirements when the Docker images are enhanced.",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 37
+      },
+      "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_2d24caad",
+        "filename": "sfc-test/sfc-docker/provision/setup_ovs_docker.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-11T11:36:27Z",
+      "side": 1,
+      "message": "I will test this idea. We are adding host libraries, not replacing guest libraries which could break something else? This is taken from the current CSIT setup. Maybe a future consideration would be to rebuild the busybox docker image that we are basing on.",
+      "parentUuid": "1a622d24_0402926e",
       "range": {
         "startLine": 29,
         "startChar": 0,

@@ -198,7 +198,7 @@
         <module>sfc-sb-rest</module>
         <module>sfclisp</module>
         <module>sfc-util</module>
-        <module>sfc-scf-openflow</module>
+        <module>sfc-classifiers</module>
         <module>sfc-ovs</module>
         <module>sfc-netconf</module>
         <module>sfc-jsonconfig</module>

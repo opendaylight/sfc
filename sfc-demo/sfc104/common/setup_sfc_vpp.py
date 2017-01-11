@@ -22,6 +22,10 @@ SFF1_DP_IP=Template("$SFF1_VPP_IP").substitute(os.environ)
 SF1_DP_IP=Template("$SF1_VPP_IP").substitute(os.environ)
 SF2_DP_IP=Template("$SF2_VPP_IP").substitute(os.environ)
 SFF2_DP_IP=Template("$SFF2_VPP_IP").substitute(os.environ)
+proxies = {
+    "http": None,
+    "https": None
+}
 
 def put(host, port, uri, data, debug=False):
     '''Perform a PUT rest operation, using the URL and data provided'''
@@ -33,7 +37,7 @@ def put(host, port, uri, data, debug=False):
     if debug == True:
         print "PUT %s" % url
         print json.dumps(data, indent=4, sort_keys=True)
-    r = requests.put(url, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+    r = requests.put(url, proxies=proxies, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
     if debug == True:
         print r.text
     r.raise_for_status()
@@ -48,7 +52,7 @@ def post(host, port, uri, data, debug=False):
     if debug == True:
         print "POST %s" % url
         print json.dumps(data, indent=4, sort_keys=True)
-    r = requests.post(url, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+    r = requests.post(url, proxies=proxies, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
     if debug == True:
         print r.text
     r.raise_for_status()
@@ -102,7 +106,6 @@ def get_service_functions_data():
                 "name": "dpi-1",
                 "ip-mgmt-address": SF1_CP_IP,
                 "type": "dpi",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "dpi-1-dpl",
@@ -117,7 +120,6 @@ def get_service_functions_data():
                 "name": "firewall-1",
                 "ip-mgmt-address": SF2_CP_IP,
                 "type": "firewall",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "firewall-1-dpl",
@@ -202,7 +204,6 @@ def get_service_function_chains_data():
         "service-function-chain": [
             {
                 "name": "SFC1",
-                "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",
@@ -244,7 +245,6 @@ def get_rendered_service_path_data():
     "input": {
         "name": "RSP1",
         "parent-service-function-path": "SFP1",
-        "symmetric": "true"
     }
 }
 

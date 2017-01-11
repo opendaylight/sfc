@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_235cdbec",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-11T15:21:10Z",
+      "side": 1,
+      "message": "According to section 7.8 :\n\nhttp://www.oracle.com/technetwork/java/javase/documentation/codeconventions-142311.html#468",
+      "parentUuid": "1a622d24_28d5d8b8",
+      "range": {
+        "startLine": 103,
+        "startChar": 8,
+        "endLine": 112,
+        "endChar": 9
+      },
+      "revId": "c206a6961e2ef8769c0335903c5dadd27da82038",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_28a31850",
         "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-01-11T14:23:41Z",
       "side": 1,
       "message": "since this is larger than the \u0027gerrit recommended length\u0027, I\u0027d go w/ 1 statement per line, instead of this",
+      "range": {
+        "startLine": 121,
+        "startChar": 16,
+        "endLine": 121,
+        "endChar": 118
+      },
+      "revId": "c206a6961e2ef8769c0335903c5dadd27da82038",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_a3674bb6",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/renderer/VppNodeManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-11T15:21:10Z",
+      "side": 1,
+      "message": "It is within the checkstyle length parameters, but as you say, there are lots of lines that go beyond that limit.",
+      "parentUuid": "1a622d24_28a31850",
       "range": {
         "startLine": 121,
         "startChar": 16,

@@ -14,10 +14,14 @@ DEFAULT_PORT='8181'
 
 USERNAME='admin'
 PASSWORD='admin'
+proxies = {
+    "http": None,
+    "https": None
+}
 
 def delete(host, port, uri):
     url='http://'+host+":"+port+uri
-    r = requests.delete(url, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+    r = requests.delete(url, proxies=proxies, auth=HTTPBasicAuth(USERNAME, PASSWORD))
     #r.raise_for_status()
 
 def get_service_nodes_uri():

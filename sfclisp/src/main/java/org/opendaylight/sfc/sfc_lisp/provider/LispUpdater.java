@@ -8,7 +8,7 @@
 package org.opendaylight.sfc.sfc_lisp.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,7 +65,7 @@ public class LispUpdater implements ILispUpdater {
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     private static LispUpdater lispUpdaterObj;
-    private OdlMappingserviceService lfmService;
+    private final OdlMappingserviceService lfmService;
 
     public LispUpdater(OdlMappingserviceService lfmService) {
         this.lfmService = lfmService;
@@ -83,14 +83,7 @@ public class LispUpdater implements ILispUpdater {
     public static void setFlowMapping(IFlowMapping fm) {
         // flowMapping = fm;
     }
-/*
-    private Rloc buildDistinguishedNameAddress(String rloc) {
-        RlocBuilder dnb = new RlocBuilder();
-        dnb.setAddressType(DistinguishedNameAfi.class);
-        dnb.setAddress(new DistinguishedNameBuilder().setDistinguishedName(new DistinguishedNameType(rloc)).build());
-        return dnb.build();
-    }
-*/
+
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
         Lisp lispLocation = getLispLocationFromSff(locations);
@@ -180,11 +173,6 @@ public class LispUpdater implements ILispUpdater {
 
     private ServiceFunctionForwarder updateLispData(Lisp lispLocation,
             ServiceFunctionForwarder serviceFunctionForwarder) {
-        // MapRequest mr = LispUtil.createMapRequest(lispLocation.getEid());
-        // MapReply reply = flowMapping.handleMapRequest(mr);
-        // if (reply.getEidToLocatorRecord() == null || reply.getEidToLocatorRecord().isEmpty()) {
-        // return serviceFunctionForwarder;
-        // }
         Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
@@ -258,7 +246,7 @@ public class LispUpdater implements ILispUpdater {
 
     private void buildAndRegisterTeMapping(Eid eid, List<IpAddress> hopList) {
         Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
-        List<Rloc> locators = Arrays.asList(locatorPath);
+        List<Rloc> locators = Collections.singletonList(locatorPath);
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
@@ -293,7 +281,7 @@ public class LispUpdater implements ILispUpdater {
     public void registerPathOld(RenderedServicePath rsp) {
         // build locator paths from rsp hops and the locators of each src/dst pair of the associated
         // acl's aces
-        List<IpAddress> hopIpList = new ArrayList<IpAddress>();
+        List<IpAddress> hopIpList = new ArrayList<>();
         List<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop();
         for (RenderedServicePathHop hop : hops) {
             SffDataPlaneLocatorName locatorName = hop.getServiceFunctionForwarderLocator();
@@ -386,7 +374,7 @@ public class LispUpdater implements ILispUpdater {
     }
 
     private void registerMapping(Eid eid, Rloc rloc) {
-        List<Rloc> locators = Arrays.asList(rloc);
+        List<Rloc> locators = Collections.singletonList(rloc);
         Object[] methodParameters = {eid, locators};
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
@@ -401,7 +389,7 @@ public class LispUpdater implements ILispUpdater {
     public void registerPath(RenderedServicePath rsp) {
         // build locator paths from rsp hops and the locators of each src/dst pair of the associated
         // acl's aces
-        List<IpAddress> hopIpList = new ArrayList<IpAddress>();
+        List<IpAddress> hopIpList = new ArrayList<>();
         List<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop();
         for (RenderedServicePathHop hop : hops) {
             SffDataPlaneLocatorName locatorName = hop.getServiceFunctionForwarderLocator();
@@ -439,7 +427,7 @@ public class LispUpdater implements ILispUpdater {
         }
 
         // TODO fix VNI. The RSP's tenant ID is a string (UUID?) we need a long
-        Eid spEid = LispAddressUtil.asServicePathEid((long) 0, rsp.getPathId().longValue(),
+        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId().longValue(),
                 LispAddressUtil.STARTING_SERVICE_INDEX);
         registerElpMapping(spEid, hopIpList);
 
@@ -477,7 +465,7 @@ public class LispUpdater implements ILispUpdater {
 
     public void deletePath(RenderedServicePath rsp) {
         // remove ServicePath mapping
-        Eid spEid = LispAddressUtil.asServicePathEid((long) 0, rsp.getPathId().longValue(),
+        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId().longValue(),
                 LispAddressUtil.STARTING_SERVICE_INDEX);
         removeMapping(spEid);
     }

@@ -301,7 +301,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         assertTrue(ret);
 
         ret = SfcPotRspProcessor.enableSfcPot(renderedServicePath,
-                                     null, Long.valueOf(1000), null, numprofiles);
+                                     null, 1000L, null, numprofiles);
         assertTrue(ret);
         LOG.info("enableSfcPot returned success for :{}", RSP_NAME);
 
@@ -366,7 +366,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(createRenderedPathInput);
         assertNotNull(result);
 
-        return (SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME));
+        return SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME);
     }
 
     /* From SfcProviderRpcTest */

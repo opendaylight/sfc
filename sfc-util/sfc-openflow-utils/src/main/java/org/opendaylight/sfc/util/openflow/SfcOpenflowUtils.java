@@ -883,8 +883,8 @@ public class SfcOpenflowUtils {
         NxRegLoad regLoad = new NxRegLoadBuilder()
             .setDst(new DstBuilder()
             .setDstChoice(dstChoice)
-            .setStart(Integer.valueOf(0))
-            .setEnd(Integer.valueOf(endOffset))
+            .setStart(0)
+            .setEnd(endOffset)
             .build())
         .setValue(value)
         .build();
@@ -904,13 +904,13 @@ public class SfcOpenflowUtils {
         NxRegMove r = new NxRegMoveBuilder()
             .setSrc(new SrcBuilder()
                 .setSrcChoice(srcChoice)
-                .setStart(Integer.valueOf(0))
-                .setEnd(Integer.valueOf(endOffset))
+                .setStart(0)
+                .setEnd(endOffset)
                 .build())
             .setDst(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.DstBuilder()
                 .setDstChoice(dstChoice)
-                .setStart(Integer.valueOf(0))
-                .setEnd(Integer.valueOf(endOffset))
+                .setStart(0)
+                .setEnd(endOffset)
                 .build())
             .build();
 
@@ -1427,7 +1427,7 @@ public class SfcOpenflowUtils {
         NxAugMatchNodesNodeTableFlow am =
             new NxAugMatchNodesNodeTableFlowBuilder()
                 .setNxmNxEncapEthType(new NxmNxEncapEthTypeBuilder()
-                    .setValue(Integer.valueOf(ethType))
+                    .setValue(ethType)
                     .build())
                 .build();
         addExtension(match, NxmNxEncapEthTypeKey.class, am);
@@ -1854,8 +1854,9 @@ public class SfcOpenflowUtils {
         StringBuilder sb = new StringBuilder(18);
         for (int i = 0; i <= 5; i++) {
             byte b = macAddressComplete[i];
-            if (sb.length() > 0)
+            if (sb.length() > 0) {
                 sb.append(':');
+            }
             sb.append(String.format("%02x", b));
         }
         return sb.toString();

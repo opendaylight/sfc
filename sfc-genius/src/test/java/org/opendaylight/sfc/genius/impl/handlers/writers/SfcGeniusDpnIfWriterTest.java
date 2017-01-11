@@ -34,7 +34,7 @@ public class SfcGeniusDpnIfWriterTest {
     @Before
     public void setup() {
         dpnInterfaces = new HashMap<>();
-        dpnInterfaces.put(dpnIdWithOneInterface, new HashSet<>(Arrays.asList(existingInterface)));
+        dpnInterfaces.put(dpnIdWithOneInterface, new HashSet<>(Collections.singletonList(existingInterface)));
         dpnInterfaces.put(dpnIdWithTwoInterfaces, new HashSet<>(Arrays.asList(existingInterface, "IF2")));
         sfcGeniusDpnIfWriter = new SfcGeniusDpnIfWriter(dpnInterfaces);
     }

@@ -57,7 +57,7 @@ public class SfcGeniusSfStatesReaderTest {
         );
         doReturn(sfcGeniusSfStateReader).when(sfcGeniusSfStatesReader).getSfStateReader();
         List<SfpName> sfpNames =
-                sfcGeniusSfStatesReader.readSfpNames(Arrays.asList(new SfName("SF1"))).get();
+                sfcGeniusSfStatesReader.readSfpNames(Collections.singletonList(new SfName("SF1"))).get();
         assertThat(sfpNames.size(), is(0));
     }
 }

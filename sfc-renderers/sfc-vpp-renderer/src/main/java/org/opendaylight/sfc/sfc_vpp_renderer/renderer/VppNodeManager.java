@@ -49,7 +49,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class VppNodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppNodeManager.class);
@@ -57,9 +56,9 @@ public class VppNodeManager implements BindingAwareProvider {
     private MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
-    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier.builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
-            .build();
+    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
+            .builder(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName()))).build();
 
     // Data
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
@@ -97,69 +96,62 @@ public class VppNodeManager implements BindingAwareProvider {
 
     public void removeNode(Node node) {
         NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
-        Preconditions.checkNotNull(netconfNode);
-        ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
+        Preconditions.checkNotNull(netconfNode, "Netconf is null");
         NodeId netconfNodeId = node.getNodeId();
+        ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
         switch (connectionStatus) {
-            case Connected: {
-                connectedNodes.remove(netconfNodeId);
-                activeMountPoints.remove(netconfNodeId);
-                LOG.info("Netconf node {} removed", netconfNodeId.getValue());
-            }
-            default:
-                break;
+        case Connected:
+            connectedNodes.remove(netconfNodeId);
+            activeMountPoints.remove(netconfNodeId);
+            LOG.info("Netconf node {} removed", netconfNodeId.getValue());
+            break;
+        case Connecting:
+        case UnableToConnect:
+        default:
+            break;
         }
     }
 
-    public boolean mountNode(final String deviceId, final String deviceIp, final String devicePort, final String username, final String password, final boolean isTcpOnly) {
-        boolean ret = false;
+    public boolean mountNode(final String deviceId, final String deviceIp, final String devicePort,
+            final String username, final String password, final boolean isTcpOnly) {
         final Credentials credentials = new LoginPasswordBuilder().setPassword(password).setUsername(username).build();
 
         final NetconfNode netconfNode = new NetconfNodeBuilder()
-                                        .setHost(new Host(new IpAddress(new Ipv4Address(deviceIp))))
-                                        .setPort(new PortNumber(Integer.decode(devicePort)))
-                                        .setTcpOnly(isTcpOnly)
-                                        .setCredentials(credentials)
-                                        .build();
+                .setHost(new Host(new IpAddress(new Ipv4Address(deviceIp))))
+                .setPort(new PortNumber(Integer.decode(devicePort))).setTcpOnly(isTcpOnly).setCredentials(credentials)
+                .build();
 
         final NodeId nodeId = new NodeId(deviceId);
-        final Node node = new NodeBuilder()
-                                  .setKey(new NodeKey(nodeId))
-                                  .setNodeId(nodeId)
-                                  .addAugmentation(NetconfNode.class, netconfNode)
-                                  .build();
-        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
+        final Node node = new NodeBuilder().setKey(new NodeKey(nodeId)).setNodeId(nodeId)
+                .addAugmentation(NetconfNode.class, netconfNode).build();
+        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class,
+                new NodeKey(new NodeId(nodeId)));
 
-        ret = SfcDataStoreAPI.writeMergeTransactionAPI(netconfNodeIid, node, LogicalDatastoreType.CONFIGURATION);
-
-        return ret;
+        return SfcDataStoreAPI.writeMergeTransactionAPI(netconfNodeIid, node, LogicalDatastoreType.CONFIGURATION);
     }
 
     public boolean unmountNode(final String deviceId) {
-        boolean ret = false;
         final NodeId nodeId = new NodeId(deviceId);
-        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
-        ret = SfcDataStoreAPI.deleteTransactionAPI(netconfNodeIid, LogicalDatastoreType.CONFIGURATION);
+        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class,
+                new NodeKey(new NodeId(nodeId)));
 
-        return ret;
+        return SfcDataStoreAPI.deleteTransactionAPI(netconfNodeIid, LogicalDatastoreType.CONFIGURATION);
     }
 
     public boolean isCapableNetconfDevice(Node node) {
-        boolean ret = false;
         NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
         if (netconfAugmentation == null) {
             LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
-            return ret;
+            return false;
         }
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
         if (capabilities != null) {
-            List<String> availCapabilities = capabilities.getAvailableCapability().stream().map(AvailableCapability::getCapability).collect(Collectors.toList());
-            ret = availCapabilities.containsAll(requiredCapabilities);
+            List<String> availCapabilities = capabilities.getAvailableCapability().stream()
+                    .map(AvailableCapability::getCapability).collect(Collectors.toList());
+            return availCapabilities.containsAll(requiredCapabilities);
         }
-        if (ret == false) {
-            LOG.debug("Node {} hasn't capabilities vpp node requires", node.getNodeId().getValue());
-        }
-        return ret;
+        LOG.debug("Node {} hasn't capabilities vpp node requires", node.getNodeId().getValue());
+        return false;
     }
 
     private DataBroker getNetconfNodeDataBroker(InstanceIdentifier<Node> mountPointIid) {
@@ -182,8 +174,7 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     private InstanceIdentifier<Node> getMountPointIid(NodeId nodeId) {
-        return InstanceIdentifier.builder(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(topologyId))
+        return InstanceIdentifier.builder(NetworkTopology.class).child(Topology.class, new TopologyKey(topologyId))
                 .child(Node.class, new NodeKey(nodeId)).build();
     }
 
@@ -192,7 +183,7 @@ public class VppNodeManager implements BindingAwareProvider {
         final String vppNsh = "(urn:opendaylight:params:xml:ns:yang:vpp:nsh?revision=2016-06-24)vpp-nsh";
         final String v3po = "(urn:opendaylight:params:xml:ns:yang:v3po?revision=2015-01-05)v3po";
         final String ietfInterfaces = "(urn:ietf:params:xml:ns:yang:ietf-interfaces?revision=2014-05-08)ietf-interfaces";
-        String capabilityEntries[] = {netconfTcp, vppNsh, v3po, ietfInterfaces};
+        String capabilityEntries[] = { netconfTcp, vppNsh, v3po, ietfInterfaces };
         return Arrays.asList(capabilityEntries);
     }
 

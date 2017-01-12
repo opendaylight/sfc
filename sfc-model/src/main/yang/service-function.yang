@@ -57,6 +57,11 @@ module service-function {
       description
         "The IP and port used to configure this service-function";
     }
+    leaf one-chain-only {
+      type boolean;
+      description
+        "This SF can only be used in one service chain";
+    }
     list sf-data-plane-locator {
       key "name";
       description

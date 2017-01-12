@@ -256,6 +256,30 @@
       "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_bb492b33",
+        "filename": "sfc-test/sfc-docker/provision/setup_ovs_docker.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-12T10:47:24Z",
+      "side": 1,
+      "message": "I am undecided about this. I would like to be able to specify this mount point in the Dockerfile, but it is not possible. I am not comfortable with the dependency between how its built and how it is run. At least in the original setup the image can can run by itself.",
+      "parentUuid": "1a622d24_2d24caad",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 37
+      },
+      "revId": "650921ac59cb6039ab36c4932041a56a9a1194c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

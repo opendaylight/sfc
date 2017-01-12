@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_c13fdab2",
+        "filename": "sfc-test/sfc-docker/provision/setup_dovs.sh",
+        "patchSetId": 8
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 6280
+      },
+      "writtenOn": "2017-01-12T14:54:39Z",
+      "side": 1,
+      "message": "http://epel.mirror.net.in/epel/7/x86_64/e/epel-release-7-8.noarch.rpm not available anymore. Instead http://epel.mirror.net.in/epel/7/x86_64/e/epel-release-7-9.noarch.rpm can be used.",
+      "range": {
+        "startLine": 2,
+        "startChar": 66,
+        "endLine": 2,
+        "endChar": 67
+      },
+      "revId": "ff017d7a00c145c0c0d10be2b8a89248c0023693",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

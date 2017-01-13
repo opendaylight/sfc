@@ -67,6 +67,11 @@ module service-locator {
 
   identity vxlan-gpe {
     base "sl-transport-type";
+    description "Programmable vxlan GPE transport type";
+  }
+
+  identity vxlan {
+    base "sl-transport-type";
     description "Programmable vxlan transport type";
   }
 

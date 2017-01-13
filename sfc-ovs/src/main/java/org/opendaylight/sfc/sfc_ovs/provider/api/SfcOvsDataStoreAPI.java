@@ -41,7 +41,7 @@ public class SfcOvsDataStoreAPI implements Callable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
 
-    private Method methodToCall;
+    private final Method methodToCall;
     private Object[] methodParameters;
 
     public SfcOvsDataStoreAPI(Method methodToCall, Object[] newMethodParameters) {
@@ -174,27 +174,36 @@ public class SfcOvsDataStoreAPI implements Callable {
 
         Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(),
                 LogicalDatastoreType.OPERATIONAL);
-        if (topology.getNode() != null) {
-            for (Node node : topology.getNode()) {
-                OvsdbNodeAugmentation ovsdbNodeAug = node.getAugmentation(OvsdbNodeAugmentation.class);
-                if (ovsdbNodeAug != null && ovsdbNodeAug.getConnectionInfo() != null) {
-                    IpAddress connectionIp = ovsdbNodeAug.getConnectionInfo().getRemoteIp();
-                    if (connectionIp == null) {
-                        return null;
-                    }
-                    if (connectionIp.getIpv4Address() != null
-                            && connectionIp.getIpv4Address().getValue().equals(ipAddress)) {
-                        return node;
-                    } else if (connectionIp.getIpv6Address() != null
-                            && connectionIp.getIpv6Address().getValue().equals(ipAddress)) {
-                        return node;
-                    }
+
+        if(topology == null) {
+            LOG.warn("Cannot READ the Topology from the operational store");
+            return null;
+        }
+
+        if (topology.getNode() == null) {
+            LOG.warn("Cannot READ Node for ipAddress [{}] from OVS operational store," +
+                     "Topology does not contain any Node.",
+                     ipAddress);
+            return null;
+        }
+
+        for (Node node : topology.getNode()) {
+            OvsdbNodeAugmentation ovsdbNodeAug = node.getAugmentation(OvsdbNodeAugmentation.class);
+            if (ovsdbNodeAug != null && ovsdbNodeAug.getConnectionInfo() != null) {
+                IpAddress connectionIp = ovsdbNodeAug.getConnectionInfo().getRemoteIp();
+                if (connectionIp == null) {
+                    return null;
+                }
+                if (connectionIp.getIpv4Address() != null
+                        && connectionIp.getIpv4Address().getValue().equals(ipAddress)) {
+                    return node;
+                } else if (connectionIp.getIpv6Address() != null
+                        && connectionIp.getIpv6Address().getValue().equals(ipAddress)) {
+                    return node;
                 }
             }
-        } else {
-            LOG.warn(
-                    "Cannot READ Node for given ipAddress from OVS operational store, Topology does not contain any Node.");
         }
+
         return null;
     }
 

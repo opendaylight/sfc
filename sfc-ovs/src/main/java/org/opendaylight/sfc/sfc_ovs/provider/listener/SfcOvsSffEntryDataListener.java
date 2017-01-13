@@ -16,123 +16,103 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
+public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsSffEntryDataListener.class);
+    private final DataBroker dataBroker;
+    private ListenerRegistration<SfcOvsSffEntryDataListener> listenerRegistration;
+
+    // TODO is this necessary????
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public static final InstanceIdentifier<ServiceFunctionForwarder> SFF_ENTRY_IID =
-            InstanceIdentifier.builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class).build();
 
-    public SfcOvsSffEntryDataListener() {
-        setInstanceIdentifier(SFF_ENTRY_IID);
-        setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+    public SfcOvsSffEntryDataListener(final DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
     }
 
-    public void setDataProvider( DataBroker r ){
-        setDataBroker(r);
-        registerAsDataChangeListener(DataBroker.DataChangeScope.ONE);
+    public void init() {
+        LOG.debug("Initializing...");
+        registerListeners();
+    }
+
+    private void registerListeners() {
+        final DataTreeIdentifier<ServiceFunctionForwarder> treeId = new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class));
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-
-        printTraceStart(LOG);
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
-
-        // SFF CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-
-            if (entry.getValue() instanceof ServiceFunctionForwarder) {
-                ServiceFunctionForwarder serviceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
-                // add augmentations for serviceFunctionForwarder
-                addOvsdbAugmentations(serviceFunctionForwarder, executor);
-            }
+    public void close() throws Exception {
+        LOG.debug("Closing listener...");
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
         }
-
-        // SFF UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionForwarder)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
-                ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
-                // rewrite augmentations for serviceFunctionForwarder
-                addOvsdbAugmentations(updatedServiceFunctionForwarder, executor);
-            }
-        }
-
-        // SFF DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if (dataObject instanceof ServiceFunctionForwarder) {
-                ServiceFunctionForwarder deletedServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
-                LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
-
-                KeyedInstanceIdentifier keyedInstanceIdentifier =
-                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
-                if (keyedInstanceIdentifier != null) {
-                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-                    SffName sffName = sffKey.getName();
-
-                    // delete OvsdbNode
-                    SfcOvsUtil.deleteOvsdbNode(SfcOvsUtil.buildOvsdbNodeIID(sffName.getValue()),
-                                                    executor);
-                }
-
-            } else if (dataObject instanceof SffDataPlaneLocator) {
-                SffDataPlaneLocator sffDataPlaneLocator = (SffDataPlaneLocator) dataObject;
-                LOG.debug("Deleted SffDataPlaneLocator: {}", sffDataPlaneLocator.getName());
-
-                KeyedInstanceIdentifier keyedInstanceIdentifier =
-                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
-                if (keyedInstanceIdentifier != null) {
-                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-                    String sffNameAsString = sffKey.getName().getValue();
-                    String sffDataPlaneLocatorNameAsString = sffDataPlaneLocator.getName().getValue();
-
-                    // delete OvsdbTerminationPoint
-                    SfcOvsUtil.deleteOvsdbTerminationPoint(
-                            SfcOvsUtil.buildOvsdbTerminationPointIID(sffNameAsString, sffDataPlaneLocatorNameAsString),
-                                    executor);
-                }
-            }
-        }
-        printTraceStop(LOG);
     }
+    @Override
+    protected void add(ServiceFunctionForwarder serviceFunctionForwarder) {
+        LOG.info("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
+        // add augmentations for serviceFunctionForwarder
+        addOvsdbAugmentations(serviceFunctionForwarder);
+    }
+
+    @Override
+    protected void remove(ServiceFunctionForwarder deletedServiceFunctionForwarder) {
+        LOG.info("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
+
+        // Since in most cases, the OvsdbNode was not created by SFC, lets not delete it
+
+        // Delete the VXGPE port
+
+        // Iterate the SFF DPLs
+        NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(deletedServiceFunctionForwarder);
+        for(SffDataPlaneLocator sffDpl : deletedServiceFunctionForwarder.getSffDataPlaneLocator()) {
+
+            // Only delete the port if this SFF is OVS augmented and the transport is VxGpe
+            SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+            if(sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
+                // delete OvsdbTerminationPoint
+                SfcOvsUtil.deleteOvsdbTerminationPoint(
+                        SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()),
+                        executor);
+            }
+        }
+    }
+
+    @Override
+    protected void update(ServiceFunctionForwarder originalServiceFunctionForwarder,
+            ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+        LOG.info("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
+        // rewrite augmentations for serviceFunctionForwarder
+        addOvsdbAugmentations(updatedServiceFunctionForwarder);
+    }
+
 
     /**
      * @param sff ServiceFunctionForwarder Object
      * @param executor ExecutorService Object
      */
-    static void addOvsdbAugmentations(ServiceFunctionForwarder sff, ExecutorService executor) {
+    static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
 
         OvsdbBridgeAugmentation ovsdbBridge = SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(sff, executor);
 

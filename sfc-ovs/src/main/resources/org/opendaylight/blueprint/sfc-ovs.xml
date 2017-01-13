@@ -13,14 +13,14 @@
 
   <bean id="sfcOvsNodeDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsNodeDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    init-method="init" destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcOvsSffEntryDataListener"
     class="org.opendaylight.sfc.sfc_ovs.provider.listener.SfcOvsSffEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    init-method="init" destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
 </blueprint>

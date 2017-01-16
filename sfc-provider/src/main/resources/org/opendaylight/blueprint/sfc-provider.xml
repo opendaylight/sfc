@@ -7,6 +7,10 @@
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
+  <reference id="domDataBroker"
+    interface="org.opendaylight.controller.md.sal.dom.api.DOMDataBroker"
+    odl:type="default" />
+
   <bean id="sfcProviderRpc"
     class="org.opendaylight.sfc.provider.SfcProviderRpc">
     <property name="dataProvider" ref="dataBroker"/>
@@ -18,6 +22,18 @@
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionListener"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
+  </bean>
+
+  <bean id="serviceFunctionChainListener"
+    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionChainListener"
+    init-method="init" destroy-method="close">
+    <argument ref="dataBroker" />
+  </bean>
+
+  <bean id="serviceFunctionPathValidator"
+    class="org.opendaylight.sfc.provider.validators.ServiceFunctionPathValidator"
+    init-method="init" destroy-method="close">
+    <argument ref="domDataBroker" />
   </bean>
 
   <bean id="serviceFunctionForwarderListener"

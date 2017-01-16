@@ -17,6 +17,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.sfc.provider.validators.util.SfcDatastoreCache;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -36,9 +37,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ServiceFunctionListener extends AbstractDataTreeChangeListener<ServiceFunction> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionListener.class);
 
     private final DataBroker dataBroker;
+
     private ListenerRegistration<ServiceFunctionListener> listenerRegistration;
 
     public ServiceFunctionListener(final DataBroker dataBroker) {
@@ -52,6 +55,7 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
 
     @Override
     public void close() throws Exception {
+
         LOG.debug("Closing listener...");
         if (listenerRegistration != null) {
             listenerRegistration.close();
@@ -61,16 +65,18 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
     private void registerListeners() {
         final DataTreeIdentifier<ServiceFunction> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class));
+
         listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
     public void add(ServiceFunction serviceFunction) {
         if (serviceFunction != null) {
-            LOG.debug("Adding Service Function: {}", serviceFunction.getName());
-
+            LOG.debug("add: storing name [{}] type [{}]", serviceFunction.getName().getValue().toString(),
+                    serviceFunction.getType().getValue().toString());
+            SfcDatastoreCache.sfToSfTypeCache.put(serviceFunction.getName(), serviceFunction.getType().getValue());
             if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction)) {
-                LOG.error("Failed to create Service Function: ", serviceFunction.getName());
+                LOG.error("add:Failed to create Service Function: ", serviceFunction.getName());
             }
         }
     }
@@ -78,10 +84,14 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
     @Override
     public void remove(ServiceFunction serviceFunction) {
         if (serviceFunction != null) {
-            LOG.debug("Deleting Service Function: {}", serviceFunction.getName());
+            LOG.debug("remove: Deleting Service Function: {}", serviceFunction.getName());
+
+            // delete cache
+            SfcDatastoreCache.sfToSfTypeCache.invalidate(serviceFunction.getName());
+
             deleteSfRsps(serviceFunction);
             if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(serviceFunction)) {
-                LOG.error("Failed to delete Service Function: ", serviceFunction.getName());
+                LOG.error("remove: Failed to delete Service Function: ", serviceFunction.getName());
             }
         }
     }
@@ -89,13 +99,15 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
     @Override
     protected void update(ServiceFunction originalServiceFunction, ServiceFunction updatedServiceFunction) {
         if (originalServiceFunction != null) {
-            LOG.debug("Updating Service Function: {}", originalServiceFunction.getName());
+            LOG.debug("update:Updating Service Function: {}", originalServiceFunction.getName());
 
             if (!compareSfs(originalServiceFunction, updatedServiceFunction)) {
                 // We only update SF type entry if type has changed
                 if (!updatedServiceFunction.getType().equals(originalServiceFunction.getType())) {
                     // We remove the original SF from SF type list
+                    SfcDatastoreCache.sfToSfTypeCache.invalidate(originalServiceFunction.getName());
                     SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction);
+                    SfcDatastoreCache.sfToSfTypeCache.put(updatedServiceFunction.getName(), updatedServiceFunction.getType().getValue());
                     // We create a independent entry
                     SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(updatedServiceFunction);
                 }

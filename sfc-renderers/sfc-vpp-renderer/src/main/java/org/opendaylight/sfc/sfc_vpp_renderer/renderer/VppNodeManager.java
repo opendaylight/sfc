@@ -53,7 +53,7 @@ public class VppNodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppNodeManager.class);
 
-    private MountPointService mountService;
+    private MountPointService mountService = null;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
     private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
@@ -70,6 +70,10 @@ public class VppNodeManager implements BindingAwareProvider {
         onSessionInitiated(providerContext);
         // Capabilities
         requiredCapabilities = initializeRequiredCapabilities();
+    }
+
+    public MountPointService getMountPointService() {
+        return this.mountService;
     }
 
     public void updateNode(Node node) {

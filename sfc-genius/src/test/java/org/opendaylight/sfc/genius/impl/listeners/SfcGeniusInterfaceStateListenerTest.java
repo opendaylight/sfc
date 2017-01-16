@@ -22,14 +22,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
+import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusInterfaceStateListenerTest {
 
     @Mock
-    ISfcGeniusInterfaceServiceHandler handler;
+    SfcGeniusServiceManager handler;
 
     @Mock
     Executor executor;
@@ -47,22 +47,6 @@ public class SfcGeniusInterfaceStateListenerTest {
         when(anInterface.getName()).thenReturn("IF1");
         when(anInterface.getLowerLayerIf()).thenReturn(Collections.singletonList("openflow:123456789:3"));
         sfcGeniusInterfaceStateListener = new SfcGeniusInterfaceStateListener(handler, executor);
-    }
-
-    @Test
-    public void remove() throws Exception {
-        sfcGeniusInterfaceStateListener.remove(null, anInterface);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
-        verify(handler).interfaceStateDown("IF1", BigInteger.valueOf(123456789));
-    }
-
-    @Test
-    public void removeNoLowerLayerIf() throws Exception {
-        when(anInterface.getLowerLayerIf()).thenReturn(Collections.emptyList());
-        sfcGeniusInterfaceStateListener.remove(null, anInterface);
-        verifyZeroInteractions(executor);
-        verifyZeroInteractions(handler);
     }
 
     @Test

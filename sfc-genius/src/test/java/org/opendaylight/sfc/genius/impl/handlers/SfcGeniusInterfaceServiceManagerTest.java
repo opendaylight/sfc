@@ -9,8 +9,6 @@
 package org.opendaylight.sfc.genius.impl.handlers;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -19,10 +17,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -71,7 +67,7 @@ public class SfcGeniusInterfaceServiceManagerTest {
     @Mock
     RpcProviderRegistry rpcProviderRegistry;
 
-    SfcGeniusInterfaceServiceManager sfcGeniusInterfaceServiceManager;
+    SfcGeniusServiceManagerImpl sfcGeniusInterfaceServiceManager;
 
     @Before
     public void setup() {
@@ -83,17 +79,13 @@ public class SfcGeniusInterfaceServiceManagerTest {
         }).when(executor).execute(any());
         when(readWriteTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
         when(sfcGeniusRspHandler.interfaceStateUp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
-        when(sfcGeniusServiceHandler.interfaceStateUp(any(), any()))
-                .thenReturn(CompletableFuture.completedFuture(null));
-        when(sfcGeniusServiceHandler.interfaceStateDown(any(), any()))
-                .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.bindToInterface(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.unbindFromInterface(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
 
         sfcGeniusInterfaceServiceManager = spy(
-                new SfcGeniusInterfaceServiceManager(dataBroker, rpcProviderRegistry, executor));
+                new SfcGeniusServiceManagerImpl(dataBroker, rpcProviderRegistry, executor));
 
         doReturn(sfcGeniusRspHandler).when(sfcGeniusInterfaceServiceManager)
                 .getSfcGeniusRspHandler(readWriteTransaction);
@@ -185,24 +177,4 @@ public class SfcGeniusInterfaceServiceManagerTest {
 
         sfcGeniusInterfaceServiceManager.unbindInterfacesOfServiceFunction("SF1");
     }
-
-    @Test
-    public void interfaceStateUp() throws Exception {
-        List<SfName> sfNameList = Collections.singletonList(new SfName("SF1"));
-        when(sfcGeniusSfReader.readSfOnInterface("IF1")).thenReturn(CompletableFuture.completedFuture(sfNameList));
-        sfcGeniusInterfaceServiceManager.interfaceStateUp("IF1", BigInteger.valueOf(7));
-
-        verify(sfcGeniusRspHandler).interfaceStateUp(eq("IF1"), same(sfNameList));
-        verify(sfcGeniusServiceHandler).interfaceStateUp("IF1", BigInteger.valueOf(7));
-        verify(readWriteTransaction).submit();
-    }
-
-    @Test
-    public void interfaceStateDown() throws Exception {
-        sfcGeniusInterfaceServiceManager.interfaceStateDown("IF1", BigInteger.valueOf(7));
-
-        verify(sfcGeniusServiceHandler).interfaceStateDown("IF1", BigInteger.valueOf(7));
-        verify(readWriteTransaction).submit();
-    }
-
 }

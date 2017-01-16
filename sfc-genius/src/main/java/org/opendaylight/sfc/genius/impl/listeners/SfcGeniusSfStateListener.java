@@ -10,7 +10,7 @@ package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.util.concurrent.Executor;
 import org.opendaylight.genius.datastoreutils.AsyncDataTreeChangeListenerBase;
-import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
+import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -26,10 +26,10 @@ public class SfcGeniusSfStateListener extends AsyncDataTreeChangeListenerBase<Se
         SfcGeniusSfStateListener> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfStateListener.class);
-    private final ISfcGeniusInterfaceServiceHandler interfaceManager;
+    private final SfcGeniusServiceManager interfaceManager;
     private final Executor executor;
 
-    public SfcGeniusSfStateListener(ISfcGeniusInterfaceServiceHandler interfaceManager, Executor executor) {
+    public SfcGeniusSfStateListener(SfcGeniusServiceManager interfaceManager, Executor executor) {
         super(ServiceFunctionState.class, SfcGeniusSfStateListener.class);
         this.interfaceManager = interfaceManager;
         this.executor = executor;

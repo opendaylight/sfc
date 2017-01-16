@@ -14,10 +14,10 @@ import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
-import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusInterfaceServiceManager;
+import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusServiceManagerImpl;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
+import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSffDpnStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,21 +44,25 @@ public class SfcGeniusImpl {
         ExecutorService handlerExecutor = Executors.newSingleThreadExecutor();
 
         // Main handler of data store events
-        ISfcGeniusInterfaceServiceHandler interfaceManager;
-        interfaceManager = new SfcGeniusInterfaceServiceManager(dataBroker, rpcProviderRegistry, handlerExecutor);
+        SfcGeniusServiceManager interfaceManager;
+        interfaceManager = new SfcGeniusServiceManagerImpl(dataBroker, rpcProviderRegistry, handlerExecutor);
 
         // Listeners to data store events
         SfcGeniusSfStateListener sfStateListener;
         sfStateListener = new SfcGeniusSfStateListener(interfaceManager, listenerExecutor);
         SfcGeniusInterfaceStateListener interfaceStateListener;
         interfaceStateListener = new SfcGeniusInterfaceStateListener(interfaceManager, listenerExecutor);
+        SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
+        sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(interfaceManager, listenerExecutor);
 
         sfStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
         interfaceStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
+        sfcGeniusSffDpnStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
 
         onDestroy = () -> {
             sfStateListener.close();
             interfaceStateListener.close();
+            sfcGeniusSffDpnStateListener.close();
         };
 
         LOG.info("SFC Genius module {} initialized", this);

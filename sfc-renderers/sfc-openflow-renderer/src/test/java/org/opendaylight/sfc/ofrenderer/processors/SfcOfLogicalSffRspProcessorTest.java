@@ -242,11 +242,14 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         checkOperationalDatastoreUpdateOnRSPCreation();
 
-        verify(interfaceManagerRpcService, times(nHops))
+        // two times when SFs are in the same compute node (only one invokation per SF). When SFs
+        // are in different compute nodes, there is a third invokation (for the interface used
+        // to go from SF1 to SF2)
+        verify(interfaceManagerRpcService, times(sfTypes.size()))
                 .getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class));
 
-        // 2 SFFs, meaning 1 hop between SFFs, must get the logical interface between them just once
-        verify(itmRpcService).getTunnelInterfaceName(any(GetTunnelInterfaceNameInput.class));
+        // just one compute node: there must be no tunnel interface requests to ITM
+        verify(itmRpcService, times(0)).getTunnelInterfaceName(any(GetTunnelInterfaceNameInput.class));
 
         // 2 SFs, must get their respective DpnId twice in total
         verify(interfaceManagerRpcService, times(sfTypes.size()))
@@ -274,9 +277,10 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals(1 + (nHops -1), addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
-        // transport egress: one (initialization in the only switch) + two per (hops -1), this is the
-        // number of "SF egresses" in the chain)
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 1 + 2*(nHops -1), addedFlows.stream().filter(
+        // transport egress: one (initialization in the only switch) + two per (number of SFs) -1 (in this case
+        // both SFs are in the same compute node: there is no a "set tunnel id = x ; then output to port y" egress
+        // flow from first SF to the second one
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 1 + 2*(sfTypes.size()) -1, addedFlows.stream().filter(
                 flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the only switch that it is used in this test
@@ -299,7 +303,9 @@ public class SfcOfLogicalSffRspProcessorTest {
                 flow -> flow.getFlowName().equals("ingress_Transport_Flow")).count());
         Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("nextHop")).count());
-        Assert.assertEquals(nHops, addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
+        // only one "default egress" for each SF (the flow from SFF -> SF. There would be a third one in
+        // case both SFs were on different compute nodes (tunnel egress from the first SF to the next one)
+        Assert.assertEquals(sfTypes.size(), addedFlows.stream().map(flowDetail -> flowDetail.getFlow()).filter(
                 flow -> flow.getFlowName().equals("default egress flow")).count());
 
         // we'll save in this set all the flows that are checked,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,9 +10,6 @@ package org.opendaylight.sfc.genius.impl.handlers;
 
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -30,11 +27,10 @@ import org.slf4j.LoggerFactory;
  * {@inheritDoc}
  *
  * SFC service binding to logical interface is done through Genius Interface
- * Manager.
+ * Manager via operation of the same name.
  *
- * On any given node, when one or more interfaces bound to SFC service are
- * present, a SFC service terminating action is configured through Genius ITM.
- * Otherwise, the service terminating action is removed.
+ * SFC service binding to a node is done through Genius ITM via "create/remove
+ * service terminating action".
  *
  * When an interface becomes available after being unavailable due to a
  * node/port transition, any RSPs on which associated service functions participate
@@ -43,13 +39,12 @@ import org.slf4j.LoggerFactory;
  * @see "org.opendaylight.genius.itm"
  * @see "org.opendaylight.genius.interfacemanager"
  */
-public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServiceHandler {
+public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager {
 
     private final DataBroker dataBroker;
     private final RpcProviderRegistry rpcProviderRegistry;
     private final Executor executor;
-    private final Map<BigInteger, Set<String>> dpnInterfaces;
-    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusInterfaceServiceManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusServiceManagerImpl.class);
 
     /**
      * Constructs a {@code SfcGeniusInterfaceServiceManager} using the provided
@@ -62,13 +57,12 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
      * @param rpcProviderRegistry the RPC provider registry of services.
      * @param executor the executor where asynchronous tasks are executed.
      */
-    public SfcGeniusInterfaceServiceManager(DataBroker dataBroker,
-                                            RpcProviderRegistry rpcProviderRegistry,
-                                            Executor executor) {
+    public SfcGeniusServiceManagerImpl(DataBroker dataBroker,
+                                       RpcProviderRegistry rpcProviderRegistry,
+                                       Executor executor) {
         this.dataBroker = dataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.executor = executor;
-        this.dpnInterfaces = new HashMap<>();
     }
 
     @Override
@@ -122,37 +116,37 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
     }
 
     @Override
-    public void interfaceStateUp(String interfaceName, BigInteger dpnId) {
+    public void bindNode(BigInteger dpnId) {
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
-        SfcGeniusRspHandler rspHandler = getSfcGeniusRspHandler(readWriteTransaction);
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
-        SfcGeniusSfReader sfReader = getSfcGeniusSfReader(readWriteTransaction);
-
-        sfReader.readSfOnInterface(interfaceName).thenCompose(serviceFunctions -> serviceFunctions.isEmpty()
-                ? CompletableFuture.completedFuture(null)
-                : CompletableFuture.allOf(
-                        rspHandler.interfaceStateUp(interfaceName, serviceFunctions),
-                        serviceHandler.interfaceStateUp(interfaceName, dpnId))
-                    .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor)
-                    ).handle((aVoid, exception) -> {
-                        if (exception != null) {
-                            LOG.error("Error handling interface {} state up on {}", interfaceName, dpnId, exception);
-                        }
-                        return null;
-                    }))
+        serviceHandler.bindToNode(dpnId)
+                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
                 .join();
     }
 
     @Override
-    public void interfaceStateDown(String interfaceName, BigInteger nodeId) {
+    public void unbindNode(BigInteger dpnId) {
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+        serviceHandler.unbindFromNode(dpnId)
+                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .join();
+    }
 
-        serviceHandler.interfaceStateDown(interfaceName, nodeId)
+    @Override
+    public void interfaceStateUp(String interfaceName, BigInteger dpnId) {
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusRspHandler rspHandler = getSfcGeniusRspHandler(readWriteTransaction);
+        SfcGeniusSfReader sfReader = getSfcGeniusSfReader(readWriteTransaction);
+
+        sfReader.readSfOnInterface(interfaceName)
+                .thenCompose(serviceFunctions -> serviceFunctions.isEmpty()
+                        ? CompletableFuture.completedFuture(null)
+                        : rspHandler.interfaceStateUp(interfaceName, serviceFunctions))
                 .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
                 .handle((aVoid, exception) -> {
                     if (exception != null) {
-                        LOG.error("Error handling interface {} state up on {}", interfaceName, nodeId, exception);
+                        LOG.error("Error handling interface {} state up on {}", interfaceName, dpnId, exception);
                     }
                     return null;
                 })
@@ -168,7 +162,7 @@ public class SfcGeniusInterfaceServiceManager implements ISfcGeniusInterfaceServ
     }
 
     protected SfcGeniusServiceHandler getSfcGeniusServiceHandler(ReadWriteTransaction readWriteTransaction) {
-        return new SfcGeniusServiceHandler(dpnInterfaces, readWriteTransaction, rpcProviderRegistry, executor);
+        return new SfcGeniusServiceHandler(readWriteTransaction, rpcProviderRegistry, executor);
     }
 
 }

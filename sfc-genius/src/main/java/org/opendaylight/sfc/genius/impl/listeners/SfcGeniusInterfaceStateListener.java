@@ -11,7 +11,7 @@ package org.opendaylight.sfc.genius.impl.listeners;
 import java.math.BigInteger;
 import java.util.concurrent.Executor;
 import org.opendaylight.genius.datastoreutils.AsyncDataTreeChangeListenerBase;
-import org.opendaylight.sfc.genius.impl.handlers.ISfcGeniusInterfaceServiceHandler;
+import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.InterfacesState;
@@ -34,10 +34,10 @@ public class SfcGeniusInterfaceStateListener extends AsyncDataTreeChangeListener
         SfcGeniusInterfaceStateListener> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfStateListener.class);
-    private final ISfcGeniusInterfaceServiceHandler handler;
+    private final SfcGeniusServiceManager handler;
     private Executor executor;
 
-    public SfcGeniusInterfaceStateListener(ISfcGeniusInterfaceServiceHandler handler, Executor executor) {
+    public SfcGeniusInterfaceStateListener(SfcGeniusServiceManager handler, Executor executor) {
         super(Interface.class, SfcGeniusInterfaceStateListener.class);
         this.handler = handler;
         this.executor = executor;
@@ -52,16 +52,7 @@ public class SfcGeniusInterfaceStateListener extends AsyncDataTreeChangeListener
     protected void remove(InstanceIdentifier<Interface> instanceIdentifier, Interface interfaceState) {
         // VM migration: logical interface state is removed while VM migrates to different node/port
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
-        LOG.debug("Received interface state remove event {} {}", instanceIdentifier, interfaceState);
-        String interfaceName = interfaceState.getName();
-        BigInteger dpnId;
-        try {
-            dpnId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(interfaceState.getLowerLayerIf());
-        } catch (SfcGeniusRuntimeException e) {
-            LOG.debug("Event ignored, could not get underlying dpn id", e);
-            return;
-        }
-        executor.execute(() -> handler.interfaceStateDown(interfaceName, dpnId));
+        // This is a NOP, we wait until until the VM has migrated once it's interface registers again
     }
 
     @Override

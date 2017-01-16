@@ -67,9 +67,7 @@ public class SfcGeniusSfReader extends SfcGeniusReaderAbstract {
                 .map(DataPlaneLocator::getLocatorType)
                 .filter(locatorType -> locatorType instanceof LogicalInterface)
                 .map(locatorType -> (LogicalInterface) locatorType)
-                .filter(logicalInterface -> interfaceName.equals(logicalInterface.getInterfaceName()))
-                .findFirst()
-                .isPresent();
+                .anyMatch(logicalInterface -> interfaceName.equals(logicalInterface.getInterfaceName()));
     }
 
     /**

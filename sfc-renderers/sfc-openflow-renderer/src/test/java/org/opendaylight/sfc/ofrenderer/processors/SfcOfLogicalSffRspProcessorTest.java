@@ -242,7 +242,10 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         checkOperationalDatastoreUpdateOnRSPCreation();
 
-        verify(interfaceManagerRpcService, times(nHops))
+        // two times when SFs are in the same compute node (only one invokation per SF). When SFs
+        // are in different compute nodes, there is a third invokation (for the interface used
+        // to go from SF1 to SF2)
+        verify(interfaceManagerRpcService, times(sfTypes.size()))
                 .getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class));
 
         // 2 SFFs, meaning 1 hop between SFFs, must get the logical interface between them just once

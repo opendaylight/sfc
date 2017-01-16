@@ -85,6 +85,7 @@
         <feature version="${netconf.parent.version}">odl-netconf-connector-all</feature>
         <feature version="${netconf.parent.version}">odl-netconf-topology</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-vpp-renderer/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vpp-utils/{{VERSION}}</bundle>
     </feature>
 
     <feature name="odl-sfclisp" version="${project.version}" description="OpenDaylight :: sfclisp :: all">

@@ -107,14 +107,15 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
-    private InstanceIdentifier<OvsdbBridgeAugmentation> testBridgeIID;
 
     @Before
     public void init() {
-        if (opendaylightSfc == null)
+        if (opendaylightSfc == null) {
             opendaylightSfc = new OpendaylightSfc();
-        if (executorService == null)
+        }
+        if (executorService == null) {
             executorService = opendaylightSfc.getExecutor();
+        }
         DataBroker dataBroker = getDataBroker();
         opendaylightSfc.setDataProvider(dataBroker);
 
@@ -297,7 +298,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // locator name are available
     public void testBuildOvsdbTerminationPointIIDFromStrings() {
         InstanceIdentifier<TerminationPoint> terminationPointIID =
-                SfcOvsUtil.buildOvsdbTerminationPointIID(testString, sffDataPlaneLocator.getValue());
+                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(testString), sffDataPlaneLocator.getValue());
 
         assertEquals(InstanceIdentifier.keyOf(terminationPointIID).getTpId().getValue(),
                 sffDataPlaneLocator.getValue());
@@ -348,7 +349,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // delete created ovsdb termination point
         result = SfcOvsUtil.deleteOvsdbTerminationPoint(
-                SfcOvsUtil.buildOvsdbTerminationPointIID(sffName.getValue(), "Dpl"), executorService);
+                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(sffName.getValue()), "Dpl"), executorService);
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
@@ -501,7 +502,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // create sff data plane locator
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(new IpAddress((new Ipv4Address(ipv4Address)))).setPort(new PortNumber(5000));
+        ipBuilder.setIp(new IpAddress(new Ipv4Address(ipv4Address))).setPort(new PortNumber(5000));
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
         dataPlaneLocatorBuilder.setTransport(VxlanGpe.class).setLocatorType(ipBuilder.build());
@@ -715,7 +716,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      */
     public void getOfPortByNameTest1() {
         final String ofNodeId = "openflow:95075992133360";
-        assertEquals("Must be equal", SfcOvsUtil.getOfPortByName(ofNodeId, testString), (Long) testPort);
+        assertEquals("Must be equal", SfcOvsUtil.getOfPortByName(ofNodeId, testString), testPort);
     }
 
     @Test
@@ -725,7 +726,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      */
     public void getVxlanOfPortTest1() {
         final String ofNodeId = "openflow:95075992133360";
-        assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), (Long) testPort);
+        assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), testPort);
     }
 
     /*
@@ -754,10 +755,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
             .setKey(new NodeKey(new NodeId(testIpAddress)));
         isCreated =
                 SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
-        if (isCreated)
+        if (isCreated) {
             LOG.debug("Node has been successfully created");
-        else
+        } else {
             LOG.debug("Node has not been created. Test can fail");
+        }
     }
 
     /*
@@ -768,10 +770,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         boolean isDeleted;
         isDeleted = SfcDataStoreAPI.deleteTransactionAPI(nodeIID, type);
 
-        if (isDeleted)
+        if (isDeleted) {
             LOG.debug("Node has been deleted");
-        else
+        } else {
             LOG.debug("Node has not been deleted");
+        }
     }
 
     /*

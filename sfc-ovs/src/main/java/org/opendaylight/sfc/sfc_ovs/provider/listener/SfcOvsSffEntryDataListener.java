@@ -26,11 +26,14 @@ import org.opendaylight.sfc.provider.OpendaylightSfc;
 import org.opendaylight.sfc.sfc_ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
@@ -76,8 +79,8 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
         // SFF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionForwarder)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
+            if (entry.getValue() instanceof ServiceFunctionForwarder
+                    && !dataCreatedObject.containsKey(entry.getKey())) {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
                 // rewrite augmentations for serviceFunctionForwarder
@@ -87,14 +90,14 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
 
         // SFF DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
+        for (InstanceIdentifier<?> removedInstanceIdentifier : dataRemovedConfigurationIID) {
+            DataObject dataObject = dataOriginalDataObject.get(removedInstanceIdentifier);
             if (dataObject instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder deletedServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
                 LOG.debug("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
 
-                KeyedInstanceIdentifier keyedInstanceIdentifier =
-                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
+                KeyedInstanceIdentifier<?,?> keyedInstanceIdentifier =
+                        (KeyedInstanceIdentifier<?,?>) removedInstanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
                 if (keyedInstanceIdentifier != null) {
                     ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
                     SffName sffName = sffKey.getName();
@@ -104,21 +107,21 @@ public class SfcOvsSffEntryDataListener extends SfcOvsAbstractDataListener {
                             opendaylightSfc.getExecutor());
                 }
 
-            } else if (dataObject instanceof SffDataPlaneLocator) {
-                SffDataPlaneLocator sffDataPlaneLocator = (SffDataPlaneLocator) dataObject;
-                LOG.debug("Deleted SffDataPlaneLocator: {}", sffDataPlaneLocator.getName());
+                NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(deletedServiceFunctionForwarder);
 
-                KeyedInstanceIdentifier keyedInstanceIdentifier =
-                        (KeyedInstanceIdentifier) instanceIdentifier.firstIdentifierOf(ServiceFunctionForwarder.class);
-                if (keyedInstanceIdentifier != null) {
-                    ServiceFunctionForwarderKey sffKey = (ServiceFunctionForwarderKey) keyedInstanceIdentifier.getKey();
-                    String sffNameAsString = sffKey.getName().getValue();
-                    String sffDataPlaneLocatorNameAsString = sffDataPlaneLocator.getName().getValue();
+                // Delete the VXGPE port
 
-                    // delete OvsdbTerminationPoint
-                    SfcOvsUtil.deleteOvsdbTerminationPoint(
-                            SfcOvsUtil.buildOvsdbTerminationPointIID(sffNameAsString, sffDataPlaneLocatorNameAsString),
-                            opendaylightSfc.getExecutor());
+                for(SffDataPlaneLocator sffDpl : deletedServiceFunctionForwarder.getSffDataPlaneLocator()) {
+                    // Only delete the port if this SFF is OVS augmented and the transport is VxGpe
+                    SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+                    if(sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
+                        LOG.debug("Deleting SffDataPlaneLocator: {}", sffDpl.getName());
+
+                        // delete OvsdbTerminationPoint
+                        SfcOvsUtil.deleteOvsdbTerminationPoint(
+                                SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()),
+                                opendaylightSfc.getExecutor());
+                    }
                 }
             }
         }

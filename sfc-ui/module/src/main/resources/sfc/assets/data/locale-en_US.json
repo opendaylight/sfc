@@ -187,7 +187,7 @@
     "SFC_PATH_MODAL_OK": "OK",
     "SFC_PATH_MODAL_CANCEL": "Cancel",
     "SFC_PATH_PARENT_CHAIN": "Parent Chain",
-    "SFC_PATH_SYMMETRIC": "Symmetric path",
+    "SFC_PATH_SYMMETRIC": "Force symmetric path",
     "SFC_RENDERED_PATH": "Rendered Service Path",
     "SFC_RENDERED_PATH_PARENT_SFP": "Parent Path",
     "SFC_RENDERED_PATH_CREATE_RPC": "Create Rendered Service Path",

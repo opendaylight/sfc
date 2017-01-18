@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_b6e64bae",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "I think it\u0027s better if this is taken to a new class that extends the DOMDataTreeCommitCohort instead of creating an anonymous class in-place. More readable.",
+      "range": {
+        "startLine": 78,
+        "startChar": 73,
+        "endLine": 130,
+        "endChar": 15
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_769793ec",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "isn\u0027t this the same as \n\nList\u003cSfName\u003e serviceFunctionNamesForPath \u003d new ArrayList\u003c\u003e(serviceFunctionPath.getServicePathHop());\n\n?",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 13
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_561ff76b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "I think this is really screaming \u0027java streams\u0027 :) \n\notherwise, looks OK",
+      "range": {
+        "startLine": 176,
+        "startChar": 12,
+        "endLine": 208,
+        "endChar": 13
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_119aa96d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/DataValidationFailedWithMessageException.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "cool",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 46,
+        "endChar": 63
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_5196e13f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "eternal trade-off of static classes vs dependency injection...\n\nIt is easier to test using dependency injection, but, we\u0027re already making heavy usage of PowerMock, so I guess the motivation to inject the dependency does not apply.\n\nFurthermore, I guess creating the loading caches through blueprint will be way more complex.",
+      "range": {
+        "startLine": 31,
+        "startChar": 13,
+        "endLine": 31,
+        "endChar": 30
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_31740535",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "don\u0027t mean to be picky, but looking at the caller, it looks weird.\n\nI think making it private \u0026 providing getter methods makes it more java-like",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 10
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_11710944",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-01-18T11:38:59Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 52,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 10
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

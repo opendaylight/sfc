@@ -471,9 +471,8 @@ public class SfcOfRspProcessor {
 
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
         if ((! entry.getSrcSff().getValue().equals(entry.getDstSff().getValue()))
-            || ((entry.isIntraLogicalSFFEntry())
-                 && ( ! entry.getSrcDpnId().getValue().equals(entry.getDstDpnId().getValue())) )) {
-
+                || ((entry.isIntraLogicalSFFEntry())
+                    && ( ! entry.getSrcDpnId().getValue().equals(entry.getDstDpnId().getValue())) )) {
             SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst,
                     sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
             SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffSrc,

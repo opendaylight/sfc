@@ -22,6 +22,30 @@
       "revId": "54169a2f1504d913610c20e441e676734ef5c540",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_9afd29b4",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T14:54:48Z",
+      "side": 1,
+      "message": "Because it was not catching the exception :D. I just saw that it was failing anyway, but not throwing the fancy exception I created, but just propagating the cache loading exception \n(\ninfo\u003dnull, cause\u003dcom.google.common.cache.CacheLoader$InvalidCacheLoadException: CacheLoader returned null for key SfName [_value\u003ddpi-27].])\nNow it is working as intended",
+      "parentUuid": "1a622d24_1a12b908",
+      "range": {
+        "startLine": 83,
+        "startChar": 14,
+        "endLine": 83,
+        "endChar": 33
+      },
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

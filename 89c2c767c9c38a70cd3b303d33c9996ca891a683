@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_5f1ee30c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_b6e64bae",
+      "range": {
+        "startLine": 78,
+        "startChar": 73,
+        "endLine": 130,
+        "endChar": 15
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_769793ec",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
         "patchSetId": 3
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_9f14fbe9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "No; it is ServicePathHop.getServiceFunctionNames what is collected, not servicePathHops directly. Followed your advice from the next comment here and changed this to stream-style collection",
+      "parentUuid": "1a622d24_769793ec",
+      "range": {
+        "startLine": 156,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 13
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_561ff76b",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
         "patchSetId": 3
@@ -59,6 +107,30 @@
       "writtenOn": "2017-01-18T11:38:59Z",
       "side": 1,
       "message": "I think this is really screaming \u0027java streams\u0027 :) \n\notherwise, looks OK",
+      "range": {
+        "startLine": 176,
+        "startChar": 12,
+        "endLine": 208,
+        "endChar": 13
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_1fe0ebf8",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "As discussed: tried, but the combination of using checked exceptions inside that block and comparing elements of two streams at the same time make the result not as neat as desired (e.g): \n\nreturn IntStream.range(0, sfChainTypes.size()).parallel()\n                    .mapToObj(i -\u003e Pair.of(sfChainTypes.get(i), SfcDatastoreCache.sfToSfTypeCache.getUnchecked(serviceFunctionNamesForPath.get(i))))\n                    .filter(pair -\u003e !pair.getLeft().equals(pair.getRight()))\n                    .peek(pair -\u003e LOG.error(\n                            \"validateServiceFunctionPath: error on SFP validation! non-matching types:  [{}/{}]\"\n                           , pair.getLeft(), pair.getRight()))\n                    .count() \u003d\u003d 0; \n\nAll sum up, I don\u0027t think the change is worth",
+      "parentUuid": "1a622d24_561ff76b",
       "range": {
         "startLine": 176,
         "startChar": 12,
@@ -117,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_ff2fef3c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "Caches are only used locally, I don\u0027t think creating the caches, blueprint-exposing them via service registry and them inyecting them, all in the same module, really makes sense. It is a good comment if those caches had any use for any other module",
+      "parentUuid": "1a622d24_5196e13f",
+      "range": {
+        "startLine": 31,
+        "startChar": 13,
+        "endLine": 31,
+        "endChar": 30
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_31740535",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
         "patchSetId": 3
@@ -140,6 +236,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_1f290b37",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "Done. Picky indeed :)",
+      "parentUuid": "1a622d24_31740535",
+      "range": {
+        "startLine": 36,
+        "startChar": 4,
+        "endLine": 36,
+        "endChar": 10
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_11710944",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
         "patchSetId": 3
@@ -151,6 +271,30 @@
       "writtenOn": "2017-01-18T11:38:59Z",
       "side": 1,
       "message": "same as above",
+      "range": {
+        "startLine": 52,
+        "startChar": 4,
+        "endLine": 52,
+        "endChar": 10
+      },
+      "revId": "89c2c767c9c38a70cd3b303d33c9996ca891a683",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_3f268768",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/util/SfcDatastoreCache.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-19T11:50:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_11710944",
       "range": {
         "startLine": 52,
         "startChar": 4,

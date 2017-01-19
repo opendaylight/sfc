@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_747f8615",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2017-01-19T10:30:49Z",
+      "side": 1,
+      "message": "formatting, unnecessary space",
+      "range": {
+        "startLine": 153,
+        "startChar": 16,
+        "endLine": 153,
+        "endChar": 17
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_54a1aa92",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2017-01-19T10:30:49Z",
+      "side": 1,
+      "message": "I would add null check before reading forwarder, I see it is not handled in sfc api",
+      "range": {
+        "startLine": 382,
+        "startChar": 8,
+        "endLine": 383,
+        "endChar": 54
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b4dabe14",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2017-01-19T10:30:49Z",
+      "side": 1,
+      "message": "getMountPointFromNodeId() could return nothing, maybe you should ensure that broker (mountpoint in this case) was already obtained",
+      "range": {
+        "startLine": 535,
+        "startChar": 16,
+        "endLine": 536,
+        "endChar": 105
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_948d02d6",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/utils/SfcPotNetconfReaderWriterAPI.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2017-01-19T10:30:49Z",
+      "side": 1,
+      "message": "You can remove this if you don\u0027t need it anymore",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 37,
+        "endChar": 79
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f4bf165f",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 3910
+      },
+      "writtenOn": "2017-01-19T10:30:49Z",
+      "side": 1,
+      "message": "If this yang is added in this commit, keep \"Initial revision\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 7,
+        "endLine": 24,
+        "endChar": 51
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

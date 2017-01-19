@@ -2,6 +2,74 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a622d24_05937e50",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionChainListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-19T18:06:02Z",
+      "side": 1,
+      "message": "Type inference allow you to remove \u003cString\u003e",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_4599f66c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-19T18:06:02Z",
+      "side": 1,
+      "message": "getValue() already returns a string, so there is no need to convert to string.",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_259cba5c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathCohort.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-19T18:06:02Z",
+      "side": 1,
+      "message": "Is this cast really needed?",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_85a66eac",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathCohort.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-19T18:06:02Z",
+      "side": 1,
+      "message": "Is this cast really needed?",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_1a12b908",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
         "patchSetId": 5
@@ -43,6 +111,23 @@
         "endLine": 83,
         "endChar": 33
       },
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_65a19293",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-01-19T18:06:02Z",
+      "side": 1,
+      "message": "I think Miguel already pointed out this.",
       "revId": "54169a2f1504d913610c20e441e676734ef5c540",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

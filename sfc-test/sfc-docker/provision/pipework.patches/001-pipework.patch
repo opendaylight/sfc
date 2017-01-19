@@ -1,0 +1,19 @@
+diff --git a/pipework b/pipework
+index bd51fac..3d4eec5 100755
+--- a/pipework
++++ b/pipework
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # This code should (try to) follow Google's Shell Style Guide
+ # (https://google-styleguide.googlecode.com/svn/trunk/shell.xml)
+ set -e
+@@ -394,7 +394,7 @@ else
+ 	  dhclient)
+ 	    ip netns exec "$NSPID" "$DHCP_CLIENT" "$CONTAINER_IFNAME" \
+ 	                                          -pf "/var/run/dhclient.$GUESTNAME.pid" \
+-	                                          -lf "/etc/dhclient/dhclient.$GUESTNAME.leases" \
++	                                          -lf "/var/lib/dhclient/dhclient.$GUESTNAME.leases" \
+ 	                                          $DHCP_OPTIONS
+ 	    # kill dhclient after get ip address to prevent device be used after container close
+ 	    [ ! "$DHCP_FOREGROUND" ] && {

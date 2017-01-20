@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_7494a18a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionChainListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-20T08:33:09Z",
+      "side": 1,
+      "message": "You\u0027re probably right, but Eclipse at least marks it as a warning when removed",
+      "parentUuid": "1a622d24_05937e50",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_4599f66c",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListener.java",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2017-01-19T18:06:02Z",
       "side": 1,
       "message": "getValue() already returns a string, so there is no need to convert to string.",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b48ab961",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-20T08:33:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_4599f66c",
       "revId": "54169a2f1504d913610c20e441e676734ef5c540",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_14ed6d26",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathCohort.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-20T08:33:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_259cba5c",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_85a66eac",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathCohort.java",
         "patchSetId": 5
@@ -64,6 +118,24 @@
       "writtenOn": "2017-01-19T18:06:02Z",
       "side": 1,
       "message": "Is this cast really needed?",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_54f36509",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathCohort.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-20T08:33:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_85a66eac",
       "revId": "54169a2f1504d913610c20e441e676734ef5c540",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -128,6 +200,24 @@
       "writtenOn": "2017-01-19T18:06:02Z",
       "side": 1,
       "message": "I think Miguel already pointed out this.",
+      "revId": "54169a2f1504d913610c20e441e676734ef5c540",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_34f6a9f9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 5927
+      },
+      "writtenOn": "2017-01-20T08:33:09Z",
+      "side": 1,
+      "message": "Yep, same reason applies",
+      "parentUuid": "1a622d24_65a19293",
       "revId": "54169a2f1504d913610c20e441e676734ef5c540",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

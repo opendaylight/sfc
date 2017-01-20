@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_8d233055",
+        "filename": "sfc-renderers/sfc-netfloc-renderer/impl/src/main/java/ch/icclab/netfloc/iface/IBridgeIterator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2017-01-20T18:43:30Z",
+      "side": 1,
+      "message": "This looks a bit weird. Will ODL be the primary place where these interfaces are defined?",
+      "range": {
+        "startLine": 8,
+        "startChar": 8,
+        "endLine": 8,
+        "endChar": 31
+      },
+      "revId": "b79cdfe22e2b66a6685eef55b99b61864126fe9d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

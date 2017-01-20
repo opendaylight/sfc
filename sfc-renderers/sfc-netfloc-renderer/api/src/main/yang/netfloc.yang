@@ -1,0 +1,84 @@
+module netfloc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:netfloc";
+    prefix "netfloc";
+
+    revision "2015-01-05" {
+        description "Initial revision of netfloc model";
+    }
+
+    identity service-chain-type {
+        description "Base for all chains types supported by netfloc.";
+    }
+
+    identity vnf-chain {
+        base service-chain-type;
+        description "Chain composed of virtual network functions (VNFs).";
+    }
+
+    identity pnf-chain {
+        base service-chain-type;
+        description "Chain composed of physical network functions (PNFs).";
+    }
+
+    container chains {
+        description
+            "Top-level container for all service chains database objects";
+
+        list chain {
+            description
+            "The name of the chains creator and owner (network operator).";
+            key "id";
+
+            leaf owner-id {
+                type string;
+            }
+
+            leaf id {
+                type string;
+            }
+
+            leaf-list chain-connection-point {
+                type string;
+            }
+        }
+    }
+
+    rpc create-service-chain {
+    	description "Create a Service Chain";
+
+    	input {
+    		leaf neutron-ports {
+    			type string;
+    			description "Neutron Port IDs";
+    		}
+    	}
+
+    	output {
+    		leaf service-chain-id {
+    			type string;
+    		}
+    	}
+    }
+
+	rpc delete-service-chain {
+		description "Delete a Service Chain";
+
+		input {
+			leaf service-chain-id {
+				type string;
+			}
+		}
+	}
+
+    rpc list-service-chains {
+        description "ID List of existing Service Chains";
+
+        output {
+            leaf-list service-chains {
+                type string;
+            }
+        }
+
+    }
+}

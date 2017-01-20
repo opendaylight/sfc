@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+Copyright (c) ZHAW
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-netfloc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.feature.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.ovsdb/southbound-features/${ovsdb.southbound.api.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.neutron/features-neutron/${networkconfig.neutron.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.features.version}/xml/features</repository>
+  <!--<repository>mvn:org.opendaylight.ovsdb/ovsdb-features/1.1.0-SNAPSHOT/xml/features</repository>-->
+  <feature name='odl-netfloc-api' version='${project.version}' description='OpenDaylight :: netfloc :: api'>
+    <feature version='${yangtools.feature.version}'>odl-yangtools-models</feature>
+    <!--<feature version='${yangtools.feature.version}'>odl-yangtools-common</feature>
+    <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+    <feature version="${mdsal.version}">odl-restconf</feature>-->
+    <bundle>mvn:org.opendaylight.sfc/netfloc-api/${project.version}</bundle>
+  </feature>
+  <feature name='odl-netfloc' version='${project.version}' description='OpenDaylight :: netfloc'>
+    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${mdsal.version}'>odl-mdsal-clustering</feature>
+    <feature version='${project.version}'>odl-netfloc-api</feature>
+    <bundle>mvn:org.opendaylight.sfc/netfloc-impl/${project.version}</bundle>
+    <configfile finalname="${configfile.directory}/netfloc.xml">mvn:org.opendaylight.sfc/netfloc-impl/${project.version}/xml/config</configfile>
+    <feature version="${networkconfig.neutron.version}">odl-neutron-service</feature>
+    <feature version="${ovsdb.southbound.api.version}">odl-ovsdb-southbound-api</feature>
+    <feature version="${ovsdb.southbound.api.version}">odl-ovsdb-southbound-impl-ui</feature>
+    <feature version="${openflowplugin.features.version}">odl-openflowplugin-flow-services</feature>
+  </feature>
+  <feature name='odl-netfloc-rest' version='${project.version}' description='OpenDaylight :: netfloc :: REST'>
+    <feature version="${project.version}">odl-netfloc</feature>
+    <feature version="${mdsal.version}">odl-restconf</feature>
+  </feature>
+  <feature name='odl-netfloc-ui' version='${project.version}' description='OpenDaylight :: netfloc :: UI'>
+    <feature version="${project.version}">odl-netfloc-rest</feature>
+    <feature version="${mdsal.version}">odl-mdsal-apidocs</feature>
+    <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
+  </feature>
+
+</features>

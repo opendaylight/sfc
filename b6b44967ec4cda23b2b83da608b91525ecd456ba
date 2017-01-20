@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_5fcc2389",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2017-01-20T05:38:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_747f8615",
+      "range": {
+        "startLine": 153,
+        "startChar": 16,
+        "endLine": 153,
+        "endChar": 17
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_54a1aa92",
         "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
         "patchSetId": 10
@@ -36,6 +60,30 @@
       "writtenOn": "2017-01-19T10:30:49Z",
       "side": 1,
       "message": "I would add null check before reading forwarder, I see it is not handled in sfc api",
+      "range": {
+        "startLine": 382,
+        "startChar": 8,
+        "endLine": 383,
+        "endChar": 54
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_7fd11f22",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2017-01-20T05:38:20Z",
+      "side": 1,
+      "message": "Am assuming you are talking about sffName.  Added that.  If not, pl. clarify.",
+      "parentUuid": "1a622d24_54a1aa92",
       "range": {
         "startLine": 382,
         "startChar": 8,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_e5a122f9",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2017-01-20T05:38:20Z",
+      "side": 1,
+      "message": "Fixed by adding broker to Config itself.  Also using HashSet intstead of ArrayList to avoid duplicates in the array - when configSF gets called twice for the first node.",
+      "parentUuid": "1a622d24_b4dabe14",
+      "range": {
+        "startLine": 535,
+        "startChar": 16,
+        "endLine": 536,
+        "endChar": 105
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_948d02d6",
         "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/utils/SfcPotNetconfReaderWriterAPI.java",
         "patchSetId": 10
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "1a622d24_c075f432",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/utils/SfcPotNetconfReaderWriterAPI.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2017-01-20T05:38:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_948d02d6",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 37,
+        "endChar": 79
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a622d24_f4bf165f",
         "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/yang/sfc-ioam-sb-pot.yang",
         "patchSetId": 10
@@ -105,6 +201,30 @@
       "writtenOn": "2017-01-19T10:30:49Z",
       "side": 1,
       "message": "If this yang is added in this commit, keep \"Initial revision\"",
+      "range": {
+        "startLine": 24,
+        "startChar": 7,
+        "endLine": 24,
+        "endChar": 51
+      },
+      "revId": "b6b44967ec4cda23b2b83da608b91525ecd456ba",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_a070b840",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/yang/sfc-ioam-sb-pot.yang",
+        "patchSetId": 10
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6127
+      },
+      "writtenOn": "2017-01-20T05:38:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a622d24_f4bf165f",
       "range": {
         "startLine": 24,
         "startChar": 7,

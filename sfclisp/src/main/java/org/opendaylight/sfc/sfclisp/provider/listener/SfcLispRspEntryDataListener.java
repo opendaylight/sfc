@@ -12,7 +12,7 @@
  * @author Florin Coras (fcoras@cisco.com)
  */
 
-package org.opendaylight.sfc.sfc_lisp.provider.listener;
+package org.opendaylight.sfc.sfclisp.provider.listener;
 
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
-import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
+import org.opendaylight.sfc.sfclisp.provider.LispUpdater;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;

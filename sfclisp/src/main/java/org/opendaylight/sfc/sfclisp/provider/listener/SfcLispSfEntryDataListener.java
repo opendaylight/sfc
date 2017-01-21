@@ -5,27 +5,26 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+package org.opendaylight.sfc.sfclisp.provider.listener;
 
-package org.opendaylight.sfc.sfc_lisp.provider.listener;
 
-import java.util.List;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
-import org.opendaylight.sfc.sfc_lisp.provider.LispUpdater;
-import org.opendaylight.sfc.sfc_lisp.provider.api.SfcProviderServiceLispAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.sfc.sfclisp.provider.LispUpdater;
+import org.opendaylight.sfc.sfclisp.provider.api.SfcProviderServiceLispAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class is the DataListener for SFF changes.
+ * This class gets called whenever there is a change to
+ * a Service Function list entry, i.e.,
+ * added.
  *
  * <p>
  * @author David Goldberg (david.goldberg@contextream.com)
@@ -33,13 +32,12 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since       2014-06-30
  */
-public class SfcLispSffDataListener extends SfcLispAbstractDataListener {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SfcLispSffDataListener.class);
+public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
+    private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
     private LispUpdater lispUpdater;
 
-    public SfcLispSffDataListener(LispUpdater lispUpdater) {
-        setInstanceIdentifier(SfcInstanceIdentifiers.SFF_IID);
+    public SfcLispSfEntryDataListener(LispUpdater lispUpdater) {
+        setInstanceIdentifier(SfcInstanceIdentifiers.SF_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.CONFIGURATION);
         this.lispUpdater = lispUpdater;
     }
@@ -47,7 +45,7 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener {
     public void setDataProvider(DataBroker r){
         setDataBroker(r);
         registerAsDataChangeListener();
-        LOG.info("Initialized SFF listener");
+        LOG.info("Initialized SF listener");
     }
 
     @Override
@@ -58,20 +56,17 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener {
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet())
-        {
-            if( entry.getValue() instanceof ServiceFunctionForwarders) {
+        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
+            if( entry.getValue() instanceof  ServiceFunction) {
+                ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
 
-                ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry.getValue();
-                List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders.getServiceFunctionForwarder();
-                for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
-                    if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
-                        SfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
-                    }
+                if (lispUpdater.containsLispAddress(createdServiceFunction)) {
+                    SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
                 }
-            }
-        }
 
+            }
+
+        }
 
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }

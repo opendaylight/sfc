@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_lisp.provider;
+package org.opendaylight.sfc.sfclisp.provider;
 
 import com.google.common.net.InetAddresses;
 import java.util.List;

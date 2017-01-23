@@ -15,6 +15,10 @@
   <dependencies>
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
+      <artifactId>iana-if-type-2014-05-08</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.mdsal.model</groupId>
       <artifactId>ietf-inet-types-2013-07-15</artifactId>
     </dependency>
     <dependency>
@@ -49,7 +53,10 @@
             <Export-Package>
               org.opendaylight.yang.gen.v1.urn.cisco.*;
               org.opendaylight.yang.gen.v1.urn.ericsson.*;
+              org.opendaylight.yang.gen.v1.urn.ieee.*;
+              org.opendaylight.yang.gen.v1.urn.ietf.*;
               org.opendaylight.yang.gen.v1.urn.intel.*;
+              org.opendaylight.yang.gen.v1.urn.opendaylight.*;
             </Export-Package>
             <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
           </instructions>

@@ -156,6 +156,11 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-vpp-utils</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-openflow-renderer</artifactId>
         <version>${project.version}</version>
     </dependency>

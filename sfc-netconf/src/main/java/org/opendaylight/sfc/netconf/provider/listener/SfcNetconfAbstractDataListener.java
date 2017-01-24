@@ -15,7 +15,7 @@
  * @since       2015-02-13
  */
 
-package org.opendaylight.sfc.sfc_netconf.provider.listener;
+package org.opendaylight.sfc.netconf.provider.listener;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;

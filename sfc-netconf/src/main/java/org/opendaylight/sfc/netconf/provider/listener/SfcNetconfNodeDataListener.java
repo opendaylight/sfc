@@ -15,19 +15,19 @@
  * @since 2015-02-13
  */
 
-package org.opendaylight.sfc.sfc_netconf.provider.listener;
+package org.opendaylight.sfc.netconf.provider.listener;
 
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI;
+import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI;
+import org.opendaylight.sfc.netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
-import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceForwarderAPI;
-import org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI;
-import org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;

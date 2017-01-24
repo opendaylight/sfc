@@ -10,18 +10,18 @@
     interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
 
   <bean id="sfcprovidersfdescriptionmonitorapi"
-        class="org.opendaylight.sfc.sfc_netconf.provider.api.SfcProviderSfDescriptionMonitorAPI">
+        class="org.opendaylight.sfc.netconf.provider.api.SfcProviderSfDescriptionMonitorAPI">
      <property name="bindingRegistry" ref="bindingRegistry"/>
   </bean>
 
   <bean id="sfcnetconfservicefunctionapi"
-        class="org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI">
+        class="org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI">
      <property name="dataProviderNonStatic" ref="dataBroker"/>
      <property name="sfcProviderSfDescriptionMonitorAPI" ref="sfcprovidersfdescriptionmonitorapi"/>
   </bean>
 
   <bean id="sfcNetconfNodeDataListener"
-        class="org.opendaylight.sfc.sfc_netconf.provider.listener.SfcNetconfNodeDataListener"
+        class="org.opendaylight.sfc.netconf.provider.listener.SfcNetconfNodeDataListener"
             destroy-method="close">
     <argument ref="dataBroker"/>
     <property name="sfcProviderSfDescriptionMonitorAPI" ref="sfcprovidersfdescriptionmonitorapi"/>

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_netconf.provider.api;
+package org.opendaylight.sfc.netconf.provider.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
  *
  * @author Yi Yang (yi.y.yang@intel.com)
  * @version 0.1
- * @see org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceFunctionAPI
+ * @see org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI
  *      <p>
  * @since 2015-09-01
  */

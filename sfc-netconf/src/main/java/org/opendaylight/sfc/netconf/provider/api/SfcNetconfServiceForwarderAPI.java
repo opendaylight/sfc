@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_netconf.provider.api;
+package org.opendaylight.sfc.netconf.provider.api;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
- * @see org.opendaylight.sfc.sfc_netconf.provider.api.SfcNetconfServiceForwarderAPI
+ * @see org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI
  *      <p>
  * @since 2015-03-10
  */

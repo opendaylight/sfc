@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.netconf.provider.api;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,41 +46,39 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
- * This class has the APIs to map Netconf to SFC Service Function
+ * This class has the APIs to map Netconf to SFC Service Function.
  *
  * @author Yi Yang (yi.y.yang@intel.com)
  * @version 0.1
  * @see org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI
- *      <p>
  * @since 2015-09-01
  */
 public class SfcNetconfServiceFunctionAPI {
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceFunctionAPI.class);
     private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
-    private static DataBroker dataBroker=null;
+    private static DataBroker dataBroker = null;
 
-    public static void setDataProvider( DataBroker r ){
-        dataBroker = r;
+    public static void setDataProvider(DataBroker broker) {
+        dataBroker = broker;
     }
 
     /**
-     * Returns an Service Function object which can be stored
-     * in DataStore.
+     * Returns an Service Function object which can be stored in DataStore.
      *
-     * @param nodeName Service Function name
-     * @param ipAddress Service Function data plane IP
-     * @param portNumber Service Function data plane port
-     * @param type Service Function type
+     * @param nodeName
+     *            Service Function name
+     * @param ipAddress
+     *            Service Function data plane IP
+     * @param portNumber
+     *            Service Function data plane port
+     * @param type
+     *            Service Function type
      * @return ServiceFunction Object
      */
     public static ServiceFunction buildServiceFunctionFromNetconf(SfName nodeName, IpAddress ipAddress,
             PortNumber portNumber, SftTypeName type) {
-        ServiceFunctionKey key = new ServiceFunctionKey(nodeName);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
@@ -87,21 +88,18 @@ public class SfcNetconfServiceFunctionAPI {
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
 
+        ServiceFunctionKey key = new ServiceFunctionKey(nodeName);
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(nodeName)
-            .setKey(key)
-            .setType(type)
-            .setIpMgmtAddress(ipAddress)
-            .setSfDataPlaneLocator(dataPlaneLocatorList);
+        serviceFunctionBuilder.setName(nodeName).setKey(key).setType(type).setIpMgmtAddress(ipAddress)
+                .setSfDataPlaneLocator(dataPlaneLocatorList);
         return serviceFunctionBuilder.build();
     }
 
     /**
-     * Get the service function description information from netconf
-     * mountpoint.
-     * <p>
+     * Get the service function description information from netconf mountpoint.
      *
-     * @param sfName Service Function name
+     * @param sfName
+     *            Service Function name
      * @return DescriptionInfo SF description information
      */
     public static DescriptionInfo getServiceFunctionDescription(String sfName) {
@@ -123,13 +121,14 @@ public class SfcNetconfServiceFunctionAPI {
     }
 
     /**
-     * put the service function description information into
-     * the OPERATIONAL datastore.
-     * <p>
+     * put the service function description information into the OPERATIONAL
+     * datastore.
      *
-     * @param descInfo Service Function description information
-     * @param sfName Service Function name
-     * @return true if descInfo was successfully put, fasle otherwise
+     * @param descInfo
+     *            Service Function description information
+     * @param sfName
+     *            Service Function name
+     * @return true if descInfo was successfully put, false otherwise
      */
     public static boolean putServiceFunctionDescription(DescriptionInfo descInfo, SfName sfName) {
         boolean ret = false;
@@ -138,54 +137,48 @@ public class SfcNetconfServiceFunctionAPI {
         ServiceFunctionState dataSfcStateObject;
         printTraceStart(LOG);
 
-        try {
-            if (dataBroker != null) {
-                sfDescMonBuilder = new SfcSfDescMonBuilder().setDescriptionInfo(descInfo);
+        if (dataBroker != null) {
+            sfDescMonBuilder = new SfcSfDescMonBuilder().setDescriptionInfo(descInfo);
 
-                // get ServiceFunctionState
-                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
-                InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                        InstanceIdentifier.builder(ServiceFunctionsState.class)
-                            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                            .build();
+            // get ServiceFunctionState
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
+            InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
+                    .builder(ServiceFunctionsState.class).child(ServiceFunctionState.class, serviceFunctionStateKey)
+                    .build();
 
-                dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
+            dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
 
-                // build the service function capbility and utilization
-                if (dataSfcStateObject != null) {
-                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
-                    if (sf1Temp != null) {
-                        SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMonBuilder.setMonitoringInfo(sfDescMonTemp.getMonitoringInfo());
-                    }
+            // build the service function capability and utilization
+            if (dataSfcStateObject != null) {
+                ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                if (sf1Temp != null) {
+                    SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
+                    sfDescMonBuilder.setMonitoringInfo(sfDescMonTemp.getMonitoringInfo());
                 }
-                sfDescMon = sfDescMonBuilder.build();
+            }
+            sfDescMon = sfDescMonBuilder.build();
 
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-                ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
+            ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+            ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
-                if (dataSfcStateObject != null) {
-                    ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
-                } else {
-                    ret = SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
-                }
+            if (dataSfcStateObject != null) {
+                ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
             } else {
-                LOG.error("Data Provider is null.");
+                ret = SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
             }
-        } catch (Exception e) {
-            LOG.warn("failed to ....", e);
+        } else {
+            LOG.error("Data Provider is null.");
         }
         printTraceStop(LOG);
         return ret;
     }
 
     /**
-     * Get the service function monitor information from netconf
-     * mountpoint.
-     * <p>
+     * Get the service function monitor information from netconf mountpoint.
      *
-     * @param sfName Service Function name
+     * @param sfName
+     *            Service Function name
      * @return MonitoringInfo Service Function monitor information
      */
     public static MonitoringInfo getServiceFunctionMonitor(String sfName) {
@@ -206,12 +199,13 @@ public class SfcNetconfServiceFunctionAPI {
     }
 
     /**
-     * Put the service function monitor information into
-     * the OPERATIONAL datastore.
-     * <p>
+     * Put the service function monitor information into the OPERATIONAL
+     * datastore.
      *
-     * @param monInfo Service Function monitoring information
-     * @param sfName Service Function name
+     * @param monInfo
+     *            Service Function monitoring information
+     * @param sfName
+     *            Service Function name
      * @return true if monInfo was successfully put, fasle otherwise
      */
     public static boolean putServiceFunctionMonitor(MonitoringInfo monInfo, SfName sfName) {
@@ -220,56 +214,49 @@ public class SfcNetconfServiceFunctionAPI {
         SfcSfDescMon sfDescMon = null;
         ServiceFunctionState dataSfcStateObject;
         printTraceStart(LOG);
-        try {
-            if (dataBroker != null) {
-                sfDescMonBuilder = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo);
+        if (dataBroker != null) {
+            sfDescMonBuilder = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo);
 
-                // get ServiceFunctionState
-                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
-                InstanceIdentifier<ServiceFunctionState> sfStateIID =
-                        InstanceIdentifier.builder(ServiceFunctionsState.class)
-                            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                            .build();
+            // get ServiceFunctionState
+            ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
+            InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier
+                    .builder(ServiceFunctionsState.class).child(ServiceFunctionState.class, serviceFunctionStateKey)
+                    .build();
 
-                dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
+            dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
 
-                // build the service function capbility and utilization
-                if (dataSfcStateObject != null) {
-                    ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
-                    if (sf1Temp != null) {
-                        SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
-                        sfDescMonBuilder.setDescriptionInfo(sfDescMonTemp.getDescriptionInfo());
-                    }
+            // build the service function capability and utilization
+            if (dataSfcStateObject != null) {
+                ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+                if (sf1Temp != null) {
+                    SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
+                    sfDescMonBuilder.setDescriptionInfo(sfDescMonTemp.getDescriptionInfo());
                 }
-                sfDescMon = sfDescMonBuilder.build();
+            }
+            sfDescMon = sfDescMonBuilder.build();
 
-                ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-                ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
+            ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
+            ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
-                if (dataSfcStateObject != null) {
-                    ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
-                } else {
-                    ret = SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
-                }
+            if (dataSfcStateObject != null) {
+                ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
             } else {
-                LOG.error("Data Provider is null.");
+                ret = SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
             }
-        } catch (Exception e) {
-            LOG.warn("failed to ....", e);
+        } else {
+            LOG.error("Data Provider is null.");
         }
         printTraceStop(LOG);
         return ret;
     }
 
-    //blueprint setters
-    public void setSfcProviderSfDescriptionMonitorAPI( SfcProviderSfDescriptionMonitorAPI r){
-        getSfDescMon = r;
+    // blueprint setters
+    public void setSfcProviderSfDescriptionMonitorAPI(SfcProviderSfDescriptionMonitorAPI providerAPI) {
+        getSfDescMon = providerAPI;
     }
 
-    public void setDataProviderNonStatic(DataBroker r) {
-        dataBroker = r;
+    public void setDataProviderNonStatic(DataBroker broker) {
+        dataBroker = broker;
     }
-
-
 }

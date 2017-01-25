@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -21,28 +21,34 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
+/*
  * This class has the APIs to map Netconf to SFC Service Function Forwarder
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @see org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI
- *      <p>
  * @since 2015-03-10
  */
 public class SfcNetconfServiceForwarderAPI {
 
+    protected SfcNetconfServiceForwarderAPI() {
+        // prevents calls from subclass
+        throw new UnsupportedOperationException();
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceForwarderAPI.class);
 
     /**
-     * Returns an Service Function Forwarder object which can be stored
-     * in DataStore. The returned object is built on basis of OVS Bridge.
-     * The ovsdbBridgeAugmentation argument must be not null otherwise
+     * Returns an Service Function Forwarder object which can be stored in
+     * DataStore. The returned object is built on basis of OVS Bridge. The
+     * ovsdbBridgeAugmentation argument must be not null otherwise
      * NullPointerException will be raised.
      *
      * @param nodeName
-     * @param nnode Netconf node Object
+     *            SFF name
+     *
+     * @param nnode
+     *            Netconf node Object
      * @return ServiceFunctionForwarder Object
      */
     public static ServiceFunctionForwarder buildServiceForwarderFromNetconf(String nodeName, NetconfNode nnode) {
@@ -61,5 +67,4 @@ public class SfcNetconfServiceForwarderAPI {
         serviceFunctionForwarderBuilder.setIpMgmtAddress(ipAddress);
         return serviceFunctionForwarderBuilder.build();
     }
-
 }

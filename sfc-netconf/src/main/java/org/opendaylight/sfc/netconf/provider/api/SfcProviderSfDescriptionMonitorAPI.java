@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Intel Corp. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Intel Corp. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,15 +8,19 @@
 
 package org.opendaylight.sfc.netconf.provider.api;
 
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
-import org.opendaylight.sfc.netconf.provider.SfcNetconfDataProvider;
-import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
+import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.sfc.netconf.provider.SfcNetconfDataProvider;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionDescriptionMonitorReportService;
@@ -32,84 +36,78 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-public class SfcProviderSfDescriptionMonitorAPI{
+public class SfcProviderSfDescriptionMonitorAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
     private static BindingAwareBroker bindingAwareBroker = null;
     private static ConsumerContext sessionData;
-    private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID =
-            InstanceIdentifier
+    private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier
             .create(NetworkTopology.class)
-            .child(Topology.class,
-                   new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
     public SfcProviderSfDescriptionMonitorAPI() {
         setSessionHelper();
         LOG.info("SfcProviderSfDescriptionMonitorAPI bean initialized.");
     }
 
-    private void setSessionHelper()  {
+    private void setSessionHelper() {
         printTraceStart(LOG);
-        try {
-            if(bindingAwareBroker != null) {
-                if(sessionData==null) {
-                    sessionData = bindingAwareBroker.registerConsumer(SfcNetconfDataProvider.GetNetconfDataProvider());
-                    Preconditions.checkState(sessionData != null,"SfcNetconfDataProvider register is not available.");
-                }
+        if (bindingAwareBroker != null) {
+            if (sessionData == null) {
+                sessionData = bindingAwareBroker.registerConsumer(SfcNetconfDataProvider.getNetconfDataProvider());
+                Preconditions.checkState(sessionData != null, "SfcNetconfDataProvider register is not available.");
             }
-        } catch (Exception e) {
-            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
     }
 
-    protected void setSession()  {
+    protected void setSession() {
         setSessionHelper();
     }
 
-    public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String nodeName)  {
+    public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String nodeName) {
         GetSFDescriptionOutput ret = null;
         printTraceStart(LOG);
-        try {
-            ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
-            if (service != null) {
-                Future<RpcResult<GetSFDescriptionOutput>> result = service.getSFDescription();
-                RpcResult<GetSFDescriptionOutput> output = result.get();
+        ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
+        if (service != null) {
+            Future<RpcResult<GetSFDescriptionOutput>> result = service.getSFDescription();
+            RpcResult<GetSFDescriptionOutput> output;
+            try {
+                output = result.get();
                 if (output.isSuccessful()) {
                     ret = output.getResult();
                     LOG.info("getSFDescription() successfully.");
-                }
-                else {
+                } else {
                     LOG.error("getSFDescription() failed.");
                 }
+
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Cannot get the SF description information.");
             }
-        } catch (Exception e) {
-            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
     }
 
-    public GetSFMonitoringInfoOutput getSFMonitorInfoFromNetconf(String nodeName)  {
+    public GetSFMonitoringInfoOutput getSFMonitorInfoFromNetconf(String nodeName) {
         GetSFMonitoringInfoOutput ret = null;
         printTraceStart(LOG);
-        try {
-            ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
-            if (service != null) {
-                Future<RpcResult<GetSFMonitoringInfoOutput>> result = service.getSFMonitoringInfo();
-                RpcResult<GetSFMonitoringInfoOutput> output = result.get();
+
+        ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
+        if (service != null) {
+            Future<RpcResult<GetSFMonitoringInfoOutput>> result = service.getSFMonitoringInfo();
+            RpcResult<GetSFMonitoringInfoOutput> output;
+            try {
+                output = result.get();
                 if (output.isSuccessful()) {
                     ret = output.getResult();
                     LOG.info("getSFMonitoringInfo() succeeded.");
-                }
-                else {
+                } else {
                     LOG.error("getSFMonitoringInfo() failed.");
                 }
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("Cannot get the SF monitoring information.");
             }
-        } catch (Exception e) {
-            LOG.warn("failed to ...." , e);
         }
         printTraceStop(LOG);
         return ret;
@@ -117,7 +115,7 @@ public class SfcProviderSfDescriptionMonitorAPI{
 
     private ServiceFunctionDescriptionMonitorReportService getSfDescriptionMonitorService(String nodeName) {
         InstanceIdentifier<?> nodeIID = NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeName)));
-        MountPointService mountService = SfcNetconfDataProvider.GetNetconfDataProvider().getMountService();
+        MountPointService mountService = SfcNetconfDataProvider.getNetconfDataProvider().getMountService();
         if (mountService == null) {
             LOG.error("Mount service is null");
             return null;
@@ -135,8 +133,8 @@ public class SfcProviderSfDescriptionMonitorAPI{
         return service.get().getRpcService(ServiceFunctionDescriptionMonitorReportService.class);
     }
 
-    //blueprint setter
-    public void setBindingRegistry( BindingAwareBroker r ){
-        bindingAwareBroker = r;
+    // blueprint setter
+    public void setBindingRegistry(BindingAwareBroker broker) {
+        bindingAwareBroker = broker;
     }
 }

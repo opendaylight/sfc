@@ -1,0 +1,26 @@
+Service Function HTTP Header Enrichment
+=======================================
+
+Introduction
+------------
+The purpose of the scripts consist in providing a Simple Service Function HTTP Header Enrichment, to validate a packet goes to the correct nodes of a Service Function Chain.
+See `sf_hhe/README.asciidoc`
+
+For a full set of tools to tests traffic Logical SFF with dovs + SFC config + sf_hhe
+See `logical_sff/README.asciidoc`
+
+
+Constraints and limitations
+---------------------------
+- It is *NOT* a general purpose tool
+- Just for basic end-to-end demo and Simple e2e tests
+- Packet fragmentation is NOT supported
+- Only support symmetric chains: The packet has to go and return through the same nodes
+- It support only one HTTP message per connection
+
+
+Tests sf_hhe
+------------
+vagrant up --provider virtualbox
+
+See `test_sf_hhe/README.asciidoc`

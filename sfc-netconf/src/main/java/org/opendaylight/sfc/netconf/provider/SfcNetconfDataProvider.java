@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Intel Corp. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Intel Corp. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,7 +12,6 @@ import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareConsumer;
 
-
 public class SfcNetconfDataProvider implements BindingAwareConsumer {
 
     private MountPointService mountService;
@@ -21,10 +20,10 @@ public class SfcNetconfDataProvider implements BindingAwareConsumer {
     /*
      * Factory method
      */
-    public static SfcNetconfDataProvider GetNetconfDataProvider() {
-        if (sfcNetconfDataProvider != null)
+    public static SfcNetconfDataProvider getNetconfDataProvider() {
+        if (sfcNetconfDataProvider != null) {
             return sfcNetconfDataProvider;
-        else {
+        } else {
             sfcNetconfDataProvider = new SfcNetconfDataProvider();
             return sfcNetconfDataProvider;
         }
@@ -38,5 +37,4 @@ public class SfcNetconfDataProvider implements BindingAwareConsumer {
     public void onSessionInitialized(ConsumerContext session) {
         mountService = session.getSALService(MountPointService.class);
     }
-
 }

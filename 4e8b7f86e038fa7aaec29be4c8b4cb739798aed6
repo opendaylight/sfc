@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_09950f40",
+        "filename": "sfc-test/sfc-docker/Vagrantfile",
+        "patchSetId": 16
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5886
+      },
+      "writtenOn": "2017-01-25T13:32:40Z",
+      "side": 1,
+      "message": "Just in case what you want is using the latest version, if you omit this clause the latest box available shall be used.\n\nIf you want a fixed version please ignore this comment.",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 37
+      },
+      "revId": "4e8b7f86e038fa7aaec29be4c8b4cb739798aed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_c9ab0788",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 5886
+      },
+      "writtenOn": "2017-01-25T13:32:40Z",
+      "side": 1,
+      "message": "From https://github.com/analytically/docker-overlayfs-bug, it seems only Docker \u003c\u003d 1.8.2 and kernel \u003e\u003d 3.18.4 are affected; in box 1611.01 we have Docker 1.12.16 and kernel 3.10.0\n\nI guess you\u0027ve met this bug so you might want to tell analytically the bug exists in this config as well.",
+      "range": {
+        "startLine": 326,
+        "startChar": 4,
+        "endLine": 326,
+        "endChar": 62
+      },
+      "revId": "4e8b7f86e038fa7aaec29be4c8b4cb739798aed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

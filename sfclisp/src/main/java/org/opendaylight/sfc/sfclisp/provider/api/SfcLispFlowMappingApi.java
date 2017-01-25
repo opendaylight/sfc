@@ -13,14 +13,14 @@
  *
  */
 
-package org.opendaylight.sfc.sfc_lisp.provider.api;
+package org.opendaylight.sfc.sfclisp.provider.api;
 
 import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import org.opendaylight.sfc.sfc_lisp.provider.SfcLispUtil;
+import org.opendaylight.sfc.sfclisp.provider.SfcLispUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.eid.container.Eid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingOutput;

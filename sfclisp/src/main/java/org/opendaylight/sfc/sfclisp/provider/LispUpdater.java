@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.sfc_lisp.provider;
+package org.opendaylight.sfc.sfclisp.provider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,7 @@ import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.sfc_lisp.provider.api.SfcLispFlowMappingApi;
+import org.opendaylight.sfc.sfclisp.provider.api.SfcLispFlowMappingApi;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;

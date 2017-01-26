@@ -1,0 +1,1050 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_8fcf3fb0",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfAbstractDataListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "DataChangeListener is deprecated. I suggest to implement this as a DataTreeChangeListener.",
+      "range": {
+        "startLine": 18,
+        "startChar": 67,
+        "endLine": 18,
+        "endChar": 85
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6f5e5beb",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfAbstractDataListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This fields could be private.",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 49
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_4f3c3794",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfAbstractDataListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This method is never used, is it necessary?",
+      "range": {
+        "startLine": 30,
+        "startChar": 22,
+        "endLine": 30,
+        "endChar": 35
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_97d17f25",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfAbstractDataListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Should some or all of these methods be protected too?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 5
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b7ebdbda",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfNodeListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Out of order imports, should be on top",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 35
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6f377bb1",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfNodeListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This could be extending from SfcPotNetconfAbstractDataListener.",
+      "range": {
+        "startLine": 49,
+        "startChar": 50,
+        "endLine": 49,
+        "endChar": 72
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_f7c0b351",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfRSPListener.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "out-of-order import, should be on top",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 21
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_b7c2bb50",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "out-of-order import",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 21
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_cf1ca716",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This could be private?",
+      "range": {
+        "startLine": 92,
+        "startChar": 4,
+        "endLine": 92,
+        "endChar": 10
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6f8f7b24",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Use InstanceIdentidier\u003cPotProfiles\u003e to avoid unchecked assignment warnings.",
+      "range": {
+        "startLine": 97,
+        "startChar": 8,
+        "endLine": 97,
+        "endChar": 26
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2f1a9317",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This could be private?",
+      "range": {
+        "startLine": 107,
+        "startChar": 4,
+        "endLine": 107,
+        "endChar": 10
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0f17cfee",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization",
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_afdde344",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Unnecessary boxing",
+      "range": {
+        "startLine": 330,
+        "startChar": 51,
+        "endLine": 330,
+        "endChar": 69
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6fbadbe2",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 351,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Unnecessary boxing",
+      "range": {
+        "startLine": 351,
+        "startChar": 61,
+        "endLine": 351,
+        "endChar": 89
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2fc8d373",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 454,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization",
+      "range": {
+        "startLine": 454,
+        "startChar": 49,
+        "endLine": 454,
+        "endChar": 53
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_afab2388",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Not used?",
+      "range": {
+        "startLine": 539,
+        "startChar": 19,
+        "endLine": 539,
+        "endChar": 25
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_4f31d7a1",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfNodeManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Consider using JDK8 Optional",
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_af268366",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfNodeManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Imports out of order",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 21
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8f2bbf2f",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfNodeManager.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "not used?",
+      "range": {
+        "startLine": 59,
+        "startChar": 47,
+        "endLine": 59,
+        "endChar": 57
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_cff4a789",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Not used?",
+      "range": {
+        "startLine": 38,
+        "startChar": 30,
+        "endLine": 38,
+        "endChar": 37
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2ff2939a",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "return potRspInfoStore.get(rspName.getValue()) !\u003d null;",
+      "range": {
+        "startLine": 66,
+        "startChar": 8,
+        "endLine": 70,
+        "endChar": 21
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_874f2392",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "currActiveIndex is always called with value 0, does it make sense?",
+      "range": {
+        "startLine": 75,
+        "startChar": 12,
+        "endLine": 75,
+        "endChar": 27
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_c7492b8d",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization",
+      "range": {
+        "startLine": 100,
+        "startChar": 8,
+        "endLine": 100,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_67583f57",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization",
+      "range": {
+        "startLine": 115,
+        "startChar": 7,
+        "endLine": 115,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_47553b1c",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 130,
+        "startChar": 8,
+        "endLine": 130,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_e73b8fe9",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization",
+      "range": {
+        "startLine": 145,
+        "startChar": 8,
+        "endLine": 145,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_c7400b59",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 160,
+        "startChar": 8,
+        "endLine": 160,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_272597c2",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 177,
+        "startChar": 8,
+        "endLine": 177,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_072213b9",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 192,
+        "startChar": 8,
+        "endLine": 192,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_472c1bac",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 207,
+        "endChar": 40
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_47037b0f",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerQueue.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Unchecked assignment. Use ConcurrentLinkedQueue\u003cRspName\u003e",
+      "range": {
+        "startLine": 20,
+        "startChar": 34,
+        "endLine": 20,
+        "endChar": 55
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ca0e5234",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerQueue.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "return unnecessary",
+      "range": {
+        "startLine": 37,
+        "startChar": 8,
+        "endLine": 37,
+        "endChar": 14
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2a139e5d",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerTask.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This can be private.",
+      "range": {
+        "startLine": 17,
+        "startChar": 4,
+        "endLine": 17,
+        "endChar": 10
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0a105a4d",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerThread.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This can be private.",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 10
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6a1da666",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerWheel.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 30,
+        "startChar": 26,
+        "endLine": 30,
+        "endChar": 30
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8a2baa81",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "These should be private?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 45
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_aa266eb8",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "You can use System.arrayCopy or Arrays.copyOf",
+      "range": {
+        "startLine": 213,
+        "startChar": 6,
+        "endLine": 213,
+        "endChar": 74
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8a79ea95",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "imports out of order",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 22
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ca25b2ac",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This is not used?",
+      "range": {
+        "startLine": 56,
+        "startChar": 17,
+        "endLine": 56,
+        "endChar": 23
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2a3a7ecd",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "These could be private?",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 82
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0a37bae4",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 72,
+        "startChar": 8,
+        "endLine": 72,
+        "endChar": 25
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8a528a11",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This is is called always with a value of 0, does it make sense?",
+      "range": {
+        "startLine": 239,
+        "startChar": 51,
+        "endLine": 239,
+        "endChar": 66
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ea6eb6c8",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyClass.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "import out of order",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 22
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2a41de39",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyClassAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "This can be private",
+      "range": {
+        "startLine": 31,
+        "startChar": 4,
+        "endLine": 31,
+        "endChar": 10
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6f05bbc1",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/utils/SfcPotNetconfDataProvider.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Deprecated. Could org.opendaylight.controller.md.sal.binding.api.NotificationService be used instead?",
+      "range": {
+        "startLine": 14,
+        "startChar": 7,
+        "endLine": 14,
+        "endChar": 70
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_2f5573c6",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/test/java/org/opendaylight/sfc/sfc_pot_netconf/provider/SfcPotNetconfRspProcessorTest.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 318,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T11:30:17Z",
+      "side": 1,
+      "message": "Not used?",
+      "range": {
+        "startLine": 318,
+        "startChar": 26,
+        "endLine": 318,
+        "endChar": 33
+      },
+      "revId": "7a3d049ef66d355b7e98d2d48a27082873a37e35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

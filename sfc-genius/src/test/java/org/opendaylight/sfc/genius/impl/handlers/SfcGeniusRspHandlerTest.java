@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -57,7 +57,6 @@ public class SfcGeniusRspHandlerTest {
 
     @Test
     public void interfaceStateUp() throws Exception {
-        String testInterface = "TestInterface";
         List<SfName> sfNameList = Arrays.asList(new SfName("SF1"), new SfName("SF2"));
         List<SfpName> sfpNameList = Arrays.asList(new SfpName("RSP1"), new SfpName("RSP2"));
         List<RspName> rspNameList = Arrays.asList(new RspName("RSP1"), new RspName("RSP2"));
@@ -79,6 +78,7 @@ public class SfcGeniusRspHandlerTest {
         when(sfcGeniusRspWriter.createRsp(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
 
+        String testInterface = "TestInterface";
         sfcGeniusRspHandler.interfaceStateUp(testInterface, sfNameList);
 
         verify(sfcGeniusRspWriter).deleteRsp(rspList.get(0));
@@ -86,5 +86,4 @@ public class SfcGeniusRspHandlerTest {
         verify(sfcGeniusRspWriter).deleteRsp(rspList.get(1));
         verify(sfcGeniusRspWriter).createRsp(rspList.get(1));
     }
-
 }

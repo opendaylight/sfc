@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 
 /**
- * Helper class to the read information regarding the several service
- * functions from the SFC operational data store asynchronous API.
+ * Helper class to the read information regarding the several service functions
+ * from the SFC operational data store asynchronous API.
  */
 public class SfcGeniusSfStatesReader {
 
@@ -30,8 +30,10 @@ public class SfcGeniusSfStatesReader {
      * Constructs a {@code SfcGeniusSfStatesReader} using the provided
      * {@link ReadTransaction} and {@link Executor}.
      *
-     * @param readTransaction the read readTransaction.
-     * @param executor the callback executor.
+     * @param readTransaction
+     *            the read readTransaction.
+     * @param executor
+     *            the callback executor.
      */
     public SfcGeniusSfStatesReader(ReadTransaction readTransaction, Executor executor) {
         this.transaction = readTransaction;
@@ -42,17 +44,16 @@ public class SfcGeniusSfStatesReader {
      * Read the service function path names associated to several service
      * functions.
      *
-     * @param sfNames the name of the service functions.
+     * @param sfNames
+     *            the name of the service functions.
      * @return completable future that will hold the names of the service
      *         function paths upon completion.
      */
     public CompletableFuture<List<SfpName>> readSfpNames(List<SfName> sfNames) {
         SfcGeniusSfStateReader sfStateReader = getSfStateReader();
-        return sfNames.stream()
-                .map(sfStateReader::readSfpNames)
-                .map(futureList -> futureList.thenApply(List::stream))
+        return sfNames.stream().map(sfStateReader::readSfpNames).map(futureList -> futureList.thenApply(List::stream))
                 .reduce(CompletableFuture.completedFuture(Stream.empty()),
-                        (f1, f2) -> f1.thenCombine(f2, Stream::concat))
+                    (f1, f2) -> f1.thenCombine(f2, Stream::concat))
                 .thenApply(s -> s.distinct().collect(Collectors.toList()));
     }
 

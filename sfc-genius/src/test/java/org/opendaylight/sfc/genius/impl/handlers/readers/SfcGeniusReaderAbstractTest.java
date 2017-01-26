@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -64,6 +64,7 @@ public class SfcGeniusReaderAbstractTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void readNotFound() throws Exception {
         when(readTransaction.read(LogicalDatastoreType.CONFIGURATION, null))
                 .thenReturn(Futures.immediateCheckedFuture(Optional.absent()));

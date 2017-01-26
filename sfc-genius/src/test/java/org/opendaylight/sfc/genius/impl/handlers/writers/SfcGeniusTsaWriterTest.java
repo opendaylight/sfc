@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -65,6 +65,7 @@ public class SfcGeniusTsaWriterTest {
     ArgumentCaptor<RemoveTerminatingServiceActionsInput> removeInputCaptor;
 
     @Test
+    @SuppressWarnings("VariableDeclarationUsageDistance")
     public void createTerminatingServiceAction() throws Exception {
         BigInteger dpnid = BigInteger.valueOf(8);
 
@@ -148,6 +149,7 @@ public class SfcGeniusTsaWriterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
     public void removeTerminatingServiceAction() throws Exception {
         BigInteger dpnid = BigInteger.valueOf(37);
 
@@ -172,6 +174,8 @@ public class SfcGeniusTsaWriterTest {
     }
 
     @Test
+    //@Test(expected = org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException.class)
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionUnsuccessful() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
         Throwable throwable = new Throwable();
@@ -199,6 +203,7 @@ public class SfcGeniusTsaWriterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionException() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
         CompletableFuture<RpcResult<Void>> future = new CompletableFuture<>();

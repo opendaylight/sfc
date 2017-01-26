@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_4048815b",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-01-26T18:15:58Z",
+      "side": 0,
+      "message": "I\u0027m surprised that this can be removed, because I thought it\u0027s required to indicated exported packages .. but I can see other bundles don\u0027t have this either. How does this even work in ODL, in general?  Or do we have an export * all somewhere?  I couldn\u0027t find anything like it in odlparent.. If we do that, we\u0027re sort of abusing OSGi... ;-)",
+      "revId": "7623558551efc38f8838bdb31c5669d691ffd964",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

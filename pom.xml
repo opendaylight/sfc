@@ -103,6 +103,11 @@
             </dependency>
             <dependency>
                 <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-vpp-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
                 <artifactId>sfc-vnfm-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>

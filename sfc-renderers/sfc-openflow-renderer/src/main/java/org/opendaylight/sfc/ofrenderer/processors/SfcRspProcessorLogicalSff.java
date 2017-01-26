@@ -17,6 +17,8 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilde
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
+import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -266,6 +268,11 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                             + " egress actions for logical interface [" + targetInterfaceName.get()
                             + "] (src dpnid:" + srcDpid + "; dst dpnid:" + dstDpid + ")");
                 }
+
+                LOG.debug("configureSffTransportEgressFlow: adding NSH as NP to GPE encap");
+                actionList.get().add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(
+                        OpenflowConstants.TUN_GPE_NP_NSH, actionList.get().size()));
+
                 // 4, write those actions
                 this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(
                         sffNodeName, nsp, nsi, actionList.get());

@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.scfofrenderer.utils;
 
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -35,9 +36,7 @@ public class SfcScfOfUtils {
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
     public static final short NSH_MDTYPE_ONE = 0x1;
     public static final short NSH_NP_ETH = 0x3;
-    public static final short TUN_GPE_NP_NSH = 0x4;
-
-   /**
+    /**
     * Get a FlowBuilder object that install the table-miss in the classifier table.
     *
     * @return          the FlowBuilder object, with a MatchAny match,
@@ -145,7 +144,7 @@ public class SfcScfOfUtils {
             add(SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++));
             add(SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++));
             add(SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), order++));
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
             add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++));
             add( outPort == null ?
                     SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++) :
@@ -217,7 +216,7 @@ public class SfcScfOfUtils {
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
         List<Action> theActions = new ArrayList<Action>() {{
             int order = 0;
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
             add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++));
             add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
             add(SfcOpenflowUtils.createActionNxMoveNsi(order++));

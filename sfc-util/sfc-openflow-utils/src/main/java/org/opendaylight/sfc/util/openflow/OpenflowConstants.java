@@ -13,4 +13,7 @@ public class OpenflowConstants {
     // identifies initialization flows installed in the SFFs - since they don't belong
     // to a particular NSP / RSP path ID
     public static final long SFC_FLOWS = 0xdeadbeef;
+
+    // Constant for marking next protocol=NSH in GPE
+    public static final short TUN_GPE_NP_NSH = 0x4;
 }

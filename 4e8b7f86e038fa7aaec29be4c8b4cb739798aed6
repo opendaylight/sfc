@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_ca8812ea",
+        "filename": "sfc-test/sfc-docker/Vagrantfile",
+        "patchSetId": 16
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T14:14:36Z",
+      "side": 1,
+      "message": "Prefer to fix it to this version, seeing how easy it is that things break.",
+      "parentUuid": "fafc7978_09950f40",
+      "range": {
+        "startLine": 32,
+        "startChar": 2,
+        "endLine": 32,
+        "endChar": 37
+      },
+      "revId": "4e8b7f86e038fa7aaec29be4c8b4cb739798aed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_c9ab0788",
         "filename": "sfc-test/sfc-docker/dovs/dovs.py",
         "patchSetId": 16

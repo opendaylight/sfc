@@ -11,6 +11,7 @@ module vpp-vlan {
 
   import ietf-interfaces {
     prefix "if";
+    revision-date 2013-07-15;
   }
   import ietf-inet-types {
     prefix inet;
@@ -26,6 +27,7 @@ module vpp-vlan {
   }
   import v3po {
     prefix v3po;
+    revision-date 2015-01-05;
   }
 
   typedef sub-interface-status {

@@ -530,8 +530,29 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         // SFF-SFF
         if (!lastHop) {
-            // 1 empty action (just like the genius RPC mock is defined)
-            if (actionList.size() != 1 || Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
+            // If there is only one action, it must be empty (that is the genius RPC mock for
+            // hops in the same compute node
+            if (actionList.size() == 1 && Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
+                return false;
+            } else if (actionList.size() == 2) {
+                // if there are two actions: 1 empty action (just like the genius RPC mock
+                // is defined) + "set NP=4" (added to transport egress when the SFs are in different
+                // compute nodes in the hop
+                if (Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
+                    return false;
+                }
+                Optional<NxRegLoad> nxRegLoadAction = actionList.stream()
+                        .map(action -> filterActionType(action, NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .findFirst()
+                        .map(NxActionRegLoadNodesNodeTableFlowApplyActionsCase::getNxRegLoad);
+                // check actions - nx action reg load (NP=4)
+                if(!nxRegLoadAction.isPresent()) {
+                    return false;
+                }
+                // there are no other valid possibilities
+            } else if (actionList.size() <1 || actionList.size() > 2){
                 return false;
             }
         }

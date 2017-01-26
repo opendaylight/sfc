@@ -43,8 +43,6 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
     private static final short GENIUS_DISPATCHER_TABLE = 0x11;
 
-    private static final short TUN_GPE_NP_NSH = 0x4;
-
     public LogicallyAttachedClassifier(LogicalClassifierDataGetter theDataGetter) {
         logicalSffDataGetter = theDataGetter;
         classifierHandler = new ClassifierHandler();
@@ -200,7 +198,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
             add(SfcOpenflowUtils.createActionNxSetNshc2(theHeader.getNshMetaC2(), order++));
             add(SfcOpenflowUtils.createActionNxSetNshc3(theHeader.getNshMetaC3(), order++));
             add(SfcOpenflowUtils.createActionNxSetNshc4(theHeader.getNshMetaC4(), order++));
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
         }};
     }
 }

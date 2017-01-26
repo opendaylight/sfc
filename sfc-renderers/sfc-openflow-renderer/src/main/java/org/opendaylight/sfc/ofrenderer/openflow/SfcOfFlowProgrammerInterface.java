@@ -73,6 +73,8 @@ public interface SfcOfFlowProgrammerInterface {
 
     public void configureVlanTransportIngressFlow(final String sffNodeName);
 
+    public void configureMacChainingTransportIngressFlow(String sffNodeName);
+
     // These 2 are work-around flows until the OVS NSH patch is completed
     public void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
     public void configureNshVxgpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
@@ -97,6 +99,8 @@ public interface SfcOfFlowProgrammerInterface {
     //
     public void configureMacNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
             final String dstMac);
+
+    public void configureMacChainingNextHopFlow(final String sffNodeName, final String vMac, final String dstSfMac, final String nextVMac, final boolean L2Tranparent);
 
     public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
             final long groupId, final String groupName);
@@ -126,6 +130,8 @@ public interface SfcOfFlowProgrammerInterface {
     //
     // Table 10, Transport Egress
     //
+    public void configureMacChainingSfTransportEgressFlow(final String sffNodeName, final String dstMac, String port, final String vMac);
+
     public void configureVlanSfTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
             final int dstVlan, final String port, final long pathId, final boolean doPktin);
     public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,

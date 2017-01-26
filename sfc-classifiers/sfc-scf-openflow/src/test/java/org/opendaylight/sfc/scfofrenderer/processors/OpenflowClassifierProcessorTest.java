@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.scfofrenderer.ClassifierAclDataBuilder;
@@ -41,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.RspLogicalSffAugmentation;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
@@ -68,6 +70,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
         SfcNshHeader.class,
         SfcProviderServiceFunctionAPI.class,
         SfcProviderServiceForwarderAPI.class,
+        SfcProviderRenderedPathAPI.class,
         LogicalClassifierDataGetter.class,
         SfcOvsUtil.class})
 public class OpenflowClassifierProcessorTest {
@@ -134,9 +137,14 @@ public class OpenflowClassifierProcessorTest {
         when(scf.getAcl())
                 .thenReturn(mock(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf
                         .rev140701.service.function.classifiers.service.function.classifier.Acl.class));
+
+        PowerMockito.mockStatic(SfcProviderRenderedPathAPI.class);
+
+        List<Ace> aclBuilder = new ClassifierAclDataBuilder().mockAces(1);
         when(acl.getAclName()).thenReturn("aclName");
         when(acl.getAccessListEntries()).thenReturn(accessListEntries);
-        when(accessListEntries.getAce()).thenReturn(new ClassifierAclDataBuilder().mockAces(1));
+        when(SfcProviderRenderedPathAPI.readRenderedServicePath(any(RspName.class))).thenReturn(rsp);
+        when(accessListEntries.getAce()).thenReturn(aclBuilder);
 
         PowerMockito.mockStatic(LogicalClassifierDataGetter.class);
         PowerMockito.when(LogicalClassifierDataGetter.getOpenflowPort(anyString())).thenReturn(Optional.of(2L));

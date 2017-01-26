@@ -3,8 +3,14 @@ module vpp-nsh {
   namespace "urn:opendaylight:params:xml:ns:yang:vpp:nsh";
   prefix "vpp-nsh";
 
+  revision "2016-12-14" {
+    description
+    "This revision adds support for NSH-Proxy and NSH-Classifier features";
+  }
+
   revision "2016-06-24" {
-    description "Initial revision of vpp-nsh model";
+    description
+    "Initial revision of vpp-nsh model";
   }
 
   import iana-if-type {
@@ -60,6 +66,34 @@ module vpp-nsh {
   }
 
   /*
+   * Defines the supported nsh header action.
+   */
+  identity action-type {
+    description "nsh header action type";
+  }
+
+  identity swap {
+    base "action-type";
+    description "swap action type";
+  }
+
+  identity push {
+    base "action-type";
+    description "push action type";
+  }
+
+  identity pop {
+    base "action-type";
+    description "pop action type";
+  }
+
+  typedef nsh-action-type {
+    type identityref {
+      base "action-type";
+    }
+  }
+
+  /*
    * Defines the supported encap type.
    */
   identity encap-type {
@@ -71,9 +105,14 @@ module vpp-nsh {
     description "vxlan-gpe encap type";
   }
 
-  identity vxlan {
+  identity vxlan4 {
     base "encap-type";
-    description "vxlan encap type";
+    description "ipv4 vxlan encap type";
+  }
+
+  identity vxlan6 {
+    base "encap-type";
+    description "ipv6 vxlan encap type";
   }
 
   typedef nsh-encap-type {
@@ -179,6 +218,10 @@ module vpp-nsh {
       type uint8 {
         range "1..255";
       }
+    }
+    leaf nsh-action {
+      type nsh-action-type;
+      default "swap";
     }
     leaf encap-type {
       type nsh-encap-type;

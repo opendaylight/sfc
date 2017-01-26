@@ -184,8 +184,8 @@ public class VppNodeManager implements BindingAwareProvider {
 
     private List<String> initializeRequiredCapabilities() {
         final String netconfTcp = "(urn:opendaylight:params:xml:ns:yang:controller:netconf:northbound:tcp?revision=2015-04-23)netconf-northbound-tcp";
-        final String vppNsh = "(urn:opendaylight:params:xml:ns:yang:vpp:nsh?revision=2016-06-24)vpp-nsh";
-        final String v3po = "(urn:opendaylight:params:xml:ns:yang:v3po?revision=2015-01-05)v3po";
+        final String vppNsh = "(urn:opendaylight:params:xml:ns:yang:vpp:nsh?revision=2016-12-14)vpp-nsh";
+        final String v3po = "(urn:opendaylight:params:xml:ns:yang:v3po?revision=2016-12-14)v3po";
         final String ietfInterfaces = "(urn:ietf:params:xml:ns:yang:ietf-interfaces?revision=2014-05-08)ietf-interfaces";
         String capabilityEntries[] = { netconfTcp, vppNsh, v3po, ietfInterfaces };
         return Arrays.asList(capabilityEntries);

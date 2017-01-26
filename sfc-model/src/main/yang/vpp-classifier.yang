@@ -3,6 +3,12 @@ module vpp-classifier {
   namespace "urn:opendaylight:params:xml:ns:yang:vpp:classifier";
   prefix "vpp-classifier";
 
+  revision "2016-12-14" {
+    description
+      "This revision adds the following new features:
+        - updates order of union types for opaque-index";
+  }
+
   revision "2015-06-03" {
     description
       "Initial revision of model for VPP packet classifier.
@@ -38,20 +44,24 @@ module vpp-classifier {
     }
   }
 
+  typedef vpp-node-name {
+    type string;
+  }
+
   typedef vpp-node {
     type union {
-      // FIXME: enable after VPP-203 is fixed
-      // type string; // name of vpp-node neighbour, TODO: base node also needs to be defined
       type packet-handling-action;
+      type vpp-node-name;
     }
     description
-      "Defines VPP node reference using relative node name or packet handling action.";
+      "Defines VPP node reference using packet handling action or relative node name
+       (if definition in terms of packet handling action is not possible).";
   }
 
   typedef opaque-index {
     type union {
-      type vpp-node;
       type uint32;
+      type vpp-node;
     }
     description
       "Defines opaque-index type - metadata that can be attached to session-hit packets.
@@ -85,18 +95,17 @@ module vpp-classifier {
     description
       "Defines classify table attributes that are mapped to classify_add_del_table message parameters.";
 
+    leaf classifier-node {
+      type vpp-node-name;
+      description
+        "Name of VPP node the table is defined for.";
+    }
     leaf nbuckets {
       mandatory true;
       type uint32;
       description
         "Used by classifier hashing algorithm. It is not possible to resize the bucket array,
         therefore suggested value is approximate number of expected entries.";
-    }
-    leaf memory_size {
-      mandatory true;
-      type uint32;
-      description
-        "Memory size for classify table and its entries.";
     }
     leaf skip_n_vectors {
       type uint32;
@@ -143,6 +152,21 @@ module vpp-classifier {
     }
   }
 
+  grouping classify-table-config-attributes {
+    description
+      "Defines classify table config only attributes (present in classify_add_del_table message
+       but not in classify_table_info_reply).";
+
+    // TODO(HC2VPP-10): move to classify-table-base-attributes
+    // after https://jira.fd.io/browse/VPP-208 is fixed
+    leaf memory_size {
+      type uint32;
+      // mandatory true; // TODO(HC2VPP-10): uncomment
+      description
+        "Memory size for classify table and its entries.";
+    }
+  }
+
   grouping classify-table-operational-attributes {
     description
       "Defines classify table operational attributes (present in classify_table_info_reply message
@@ -167,6 +191,7 @@ module vpp-classifier {
       }
 
       uses classify-table-base-attributes;
+      uses classify-table-config-attributes;
     }
   }
 

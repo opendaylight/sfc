@@ -17,6 +17,8 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilde
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
+import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -260,6 +262,10 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 // 3, use genius for retrieving egress actions (Interface Manager RPC)
                 Optional<List<Action>> actionList =
                         sfcGeniusRpcClient.getEgressActionsFromGeniusRPC(targetInterfaceName.get(), true, 0);
+
+                LOG.debug("configureSffTransportEgressFlow: adding NSH as NP to GPE encap");
+                actionList.get().add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(
+                        OpenflowConstants.TUN_GPE_NP_NSH, actionList.get().size()));
 
                 if (!actionList.isPresent() || actionList.get().isEmpty()) {
                     throw new SfcRenderingException("Failure during transport egress config. Genius did not return"

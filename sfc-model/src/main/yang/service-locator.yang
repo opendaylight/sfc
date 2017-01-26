@@ -122,6 +122,11 @@ module service-locator {
     description "SFC information exchange is achieved by means of the transport";
   }
 
+  identity mac-chaining {
+      base "sfc-encapsulation-identity";
+      description "SFC information exchange is achieved by means of the transport";
+  }
+
   typedef sfc-encapsulation-type {
     type identityref {
         base "sfc-encapsulation-identity";

@@ -84,6 +84,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_MPLS_LASTHOP_COOKIE = "00000402";
     public static final String TRANSPORT_EGRESS_MAX_COOKIE          = "00000FFF";
 
+    // The 000005** cookies are for MAC Chaining Transport Egress flows
+    public static final String TRANSPORT_EGRESS_MAC_CHAINING_COOKIE         = "00000501";
+
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     public static final BigInteger METADATA_MASK_SFP_MATCH =
             new BigInteger("FFFFFFFFFFFFFFFF", COOKIE_BIGINT_HEX_RADIX);
@@ -481,6 +484,20 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
+     * Configure a Transport Ingress flow.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureMacChainingTransportIngressFlow(final String sffNodeName) {
+
+        MatchBuilder match = new MatchBuilder();
+
+        FlowBuilder transportIngressFlow = configureTransportIngressFlow(match);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
+    }
+
+    /**
      * Configure a NshVxgpe Transport Ingress flow, by matching on EtherType IPv4.
      *
      * @param sffNodeName - the SFF to write the flow to
@@ -848,6 +865,44 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
+     * Configure the Next Hop by matching on the virtual MAC address containing path and hop ID
+     * for MAC chaining encapsulation
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     * @param vMac - the virtual mac for this hop
+     * @param dstSfMac - destination mac of next SF
+     * @param nextVMac - next hop virtual mac
+     */
+    @Override
+    public void configureMacChainingNextHopFlow(final String sffNodeName, final String vMac, final String dstSfMac, final String nextVMac, final boolean L2Tranparent) {
+        int flowPriority = FLOW_PRIORITY_NEXT_HOP;
+        MatchBuilder match = new MatchBuilder();
+        // for L2 transparent, MAC addres are not touched so match in the src MAC
+        if (L2Tranparent) {
+            SfcOpenflowUtils.addMatchSrcMac(match, vMac);
+
+        // for non L2 transparent, MAC addres are reversed so match in the dest MAC
+        } else {
+            SfcOpenflowUtils.addMatchDstMac(match, vMac);
+        }
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<>();
+        // If the packet is going to other SFF we donto change vMAC because the hop is the same
+        if (nextVMac != null) {
+            actionList.add(SfcOpenflowUtils.createActionSetDlSrc(nextVMac, order++));
+        }
+
+        if (dstSfMac != null) {
+            actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstSfMac, order++));
+        }
+
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowPriority);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
+    }
+
+    /**
      * Configure the NshVxgpe NSH Next Hop by matching on the NSH pathId and
      * index stored in the NSH header.
      *
@@ -940,6 +995,34 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     //
     // Table 10, Transport Egress
     //
+
+    @Override
+    public void configureMacChainingSfTransportEgressFlow(final String sffNodeName, final String dstMac, String port, final String vMac) {
+
+        MatchBuilder match = new MatchBuilder();
+        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+        if (dstMac != null) {
+            SfcOpenflowUtils.addMatchDstMac(match, dstMac);
+        } else {
+            // If the dstMac is null, then the packet is entering SFC and we dont know
+            // from where. Make it a lower priority,
+            flowPriority -= 10;
+            SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
+        }
+
+        int order = 0;
+        List<Action> actionList = new ArrayList<>();
+
+        if (vMac != null) {
+            actionList.add(SfcOpenflowUtils.createActionSetDlDst(vMac, order++));
+        }
+
+        FlowBuilder transportEgressFlow = configureTransportEgressFlow(
+                match, actionList, port, order,
+                flowPriority,
+                TRANSPORT_EGRESS_MAC_CHAINING_COOKIE);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
+    }
 
     @Override
     public void configureVlanSfTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
@@ -1420,7 +1503,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     private FlowBuilder configureTransportEgressFlow(
             MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority, String cookieStr) {
-        LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
+        LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow <{}> PORT {}", match.build().toString(), port);
 
         if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > APP_COEXISTENCE_NOT_SET) {
             // Application Coexistence:

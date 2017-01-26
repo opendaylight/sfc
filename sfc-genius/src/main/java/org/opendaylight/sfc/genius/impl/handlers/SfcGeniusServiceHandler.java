@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,7 +7,6 @@
  */
 
 package org.opendaylight.sfc.genius.impl.handlers;
-
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -26,14 +25,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helper class that handles the SFC service binding of interfaces through
- * Genius APIs.
- * - All the data store reads & writes are done through a single
- *   {@link ReadWriteTransaction}
- * - {@link ItmRpcService} is used for Genius ITM RPC APIs.
- * - An {@link Executor} has to be provided to execute the synchronous RPC
- *   blocking calls and the asynchronous data store callbacks.
- * - Data plane node to interface information is to be stored in a {@link Map}.
- *   {@see SfcGeniusDpnIfWriter} for more information.
+ * Genius APIs. - All the data store reads & writes are done through a single
+ * {@link ReadWriteTransaction} - {@link ItmRpcService} is used for Genius ITM
+ * RPC APIs. - An {@link Executor} has to be provided to execute the synchronous
+ * RPC blocking calls and the asynchronous data store callbacks. - Data plane
+ * node to interface information is to be stored in a {@link Map}.
+ * {@see SfcGeniusDpnIfWriter} for more information.
  */
 class SfcGeniusServiceHandler {
 
@@ -46,18 +43,19 @@ class SfcGeniusServiceHandler {
     /**
      * Constructs a {@code SfcGeniusServiceHandler}.
      *
-     * @param dpnInterfaces the Map that stores current data plane node to
-     *                      to interfaces mapping information.
-     * @param transaction the transaction used for read & write operations
-     *                    to the data store.
-     * @param rpcProviderRegistry the provider registry to obtain the
-     *                            {@link ItmRpcService}.
-     * @param executor the executor used for callbacks & blocking calls.
+     * @param dpnInterfaces
+     *            the Map that stores current data plane node to to interfaces
+     *            mapping information.
+     * @param transaction
+     *            the transaction used for read & write operations to the data
+     *            store.
+     * @param rpcProviderRegistry
+     *            the provider registry to obtain the {@link ItmRpcService}.
+     * @param executor
+     *            the executor used for callbacks & blocking calls.
      */
-    SfcGeniusServiceHandler(Map<BigInteger, Set<String>> dpnInterfaces,
-                            ReadWriteTransaction transaction,
-                            RpcProviderRegistry rpcProviderRegistry,
-                            Executor executor) {
+    SfcGeniusServiceHandler(Map<BigInteger, Set<String>> dpnInterfaces, ReadWriteTransaction transaction,
+            RpcProviderRegistry rpcProviderRegistry, Executor executor) {
         this.transaction = transaction;
         this.itmRpcService = rpcProviderRegistry.getRpcService(ItmRpcService.class);
         this.dpnInterfaces = dpnInterfaces;
@@ -65,11 +63,11 @@ class SfcGeniusServiceHandler {
     }
 
     /**
-     * Bind SFC service to interface. Will also add the terminating
-     * service action if this is the first interface bound to SFC service on
-     * the node.
+     * Bind SFC service to interface. Will also add the terminating service
+     * action if this is the first interface bound to SFC service on the node.
      *
-     * @param interfaceName the interface name.
+     * @param interfaceName
+     *            the interface name.
      * @return future signaling completion of the operation.
      */
     CompletableFuture<Void> bindToInterface(String interfaceName) {
@@ -83,19 +81,18 @@ class SfcGeniusServiceHandler {
         return CompletableFuture.allOf(
                 ifStateReader.readDpnId(interfaceName)
                         .thenCompose(dpnId -> dpnIfWriter.addInterface(dpnId, interfaceName))
-                        .thenCompose(optionalOldDpn -> optionalOldDpn
-                                .map(tsaWriter::createTerminatingServiceAction)
+                        .thenCompose(optionalOldDpn -> optionalOldDpn.map(tsaWriter::createTerminatingServiceAction)
                                 .orElse(CompletableFuture.completedFuture(null))),
-                boundServiceWriter.bindService(interfaceName)
-        );
+                boundServiceWriter.bindService(interfaceName));
     }
 
     /**
      * Unbind SFC service from interface. Will also remove the terminating
-     * service action if this is the last interface bound to SFC service on
-     * the node.
+     * service action if this is the last interface bound to SFC service on the
+     * node.
      *
-     * @param interfaceName the interface name.
+     * @param interfaceName
+     *            the interface name.
      * @return future signaling completion of the operation.
      */
     CompletableFuture<Void> unbindFromInterface(String interfaceName) {
@@ -109,11 +106,9 @@ class SfcGeniusServiceHandler {
         return CompletableFuture.allOf(
                 ifStateReader.readDpnId(interfaceName)
                         .thenCompose(dpnId -> dpnIfWriter.removeInterfaceFromDpn(dpnId, interfaceName))
-                        .thenCompose(optionalOldDpn -> optionalOldDpn
-                                .map(tsaWriter::removeTerminatingServiceAction)
+                        .thenCompose(optionalOldDpn -> optionalOldDpn.map(tsaWriter::removeTerminatingServiceAction)
                                 .orElse(CompletableFuture.completedFuture(null))),
-                boundServiceWriter.unbindService(interfaceName)
-        );
+                boundServiceWriter.unbindService(interfaceName));
     }
 
     /**
@@ -121,39 +116,37 @@ class SfcGeniusServiceHandler {
      * terminating service action if this is the first interface bound to SFC
      * service on the node.
      *
-     * @param interfaceName the name of the interface.
-     * @param nodeId the data plane node Id where the interface is located.
+     * @param interfaceName
+     *            the name of the interface.
+     * @param nodeId
+     *            the data plane node Id where the interface is located.
      * @return future signaling completion of the operation.
      */
     CompletableFuture<Void> interfaceStateUp(String interfaceName, BigInteger nodeId) {
         SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
         SfcGeniusTsaWriter tsaWriter = getTsaWriter();
 
-        return dpnIfWriter.addInterface(nodeId, interfaceName)
-                .thenCompose(optionalNewDpn -> optionalNewDpn
-                        .map(tsaWriter::createTerminatingServiceAction)
-                        .orElse(CompletableFuture.completedFuture(null))
-                );
+        return dpnIfWriter.addInterface(nodeId, interfaceName).thenCompose(optionalNewDpn -> optionalNewDpn
+                .map(tsaWriter::createTerminatingServiceAction).orElse(CompletableFuture.completedFuture(null)));
     }
 
     /**
      * Handle SFC service for an interface that has become unavailable: remove
-     * the terminating service action if this is the last interface bound to
-     * SFC service on the node.
+     * the terminating service action if this is the last interface bound to SFC
+     * service on the node.
      *
-     * @param interfaceName the name of the interface.
-     * @param nodeId the data plane node Id where the interface was located.
+     * @param interfaceName
+     *            the name of the interface.
+     * @param nodeId
+     *            the data plane node Id where the interface was located.
      * @return future signaling completion of the operation.
      */
     CompletableFuture<Void> interfaceStateDown(String interfaceName, BigInteger nodeId) {
         SfcGeniusDpnIfWriter dpnIfWriter = getDpnIfWriter();
         SfcGeniusTsaWriter tsaWriter = getTsaWriter();
 
-        return dpnIfWriter.removeInterfaceFromDpn(nodeId, interfaceName).thenCompose(
-                optionalOldDpn -> optionalOldDpn
-                        .map(tsaWriter::removeTerminatingServiceAction)
-                        .orElse(CompletableFuture.completedFuture(null))
-        );
+        return dpnIfWriter.removeInterfaceFromDpn(nodeId, interfaceName).thenCompose(optionalOldDpn -> optionalOldDpn
+                .map(tsaWriter::removeTerminatingServiceAction).orElse(CompletableFuture.completedFuture(null)));
     }
 
     protected SfcGeniusIfStateReader getIfStateReader() {

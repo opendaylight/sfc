@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -17,29 +17,18 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
  */
 // TODO move appropriate constants to genius NwConstants
 public class SfcGeniusConstants {
-
-    /**
-     * Cookie used in the genius dispatcher flow for SFC
-     */
+    // Cookie used in the genius dispatcher flow for SFC.
     public static final BigInteger COOKIE_SFC_INGRESS_TABLE = new BigInteger("8030000", 16);
 
-    /**
-     * Priority used in the genius dispatcher flow for SFC
-     */
+    // Priority used in the genius dispatcher flow for SFC.
     public static final int SFC_SERVICE_PRIORITY = 6;
 
-    /**
-     * Virtual network identifier used for SFC service.
-     */
+    // Virtual network identifier used for SFC service.
     public static final int SFC_VNID = 0;
 
-    /**
-     * Root node for OVS DB entities in the topology
-     */
+    // Root node for OVS DB entities in the topology
     public static final TopologyId OVSDB_TOPOLOGY_ID = new TopologyId(new Uri("ovsdb:1"));
 
-    /**
-     * Key for the MAC address of the SF within the external interface info map
-     */
+    // Key for the MAC address of the SF within the external interface info map
     public static final String MAC_KEY = "attached-mac";
 }

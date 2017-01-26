@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,8 +8,8 @@
 package org.opendaylight.sfc.genius.util.appcoexistence;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-
 import org.opendaylight.genius.mdsalutil.NwConstants;
 
 /**
@@ -23,6 +23,7 @@ import org.opendaylight.genius.mdsalutil.NwConstants;
  * programmer will use this class in order to retrieve the correct table indexes
  * for each SFC table
  *
+ * <p>
  * In short, this class allows to perform Genius-based application coexistence
  * at table level, while keeping the previous application coexistence when
  * genius is not used
@@ -32,11 +33,11 @@ import org.opendaylight.genius.mdsalutil.NwConstants;
  */
 public class SfcTableIndexMapper {
 
-    private HashMap<Short, Short> mappingTable = new HashMap();
+    private final Map<Short, Short> mappingTable = new HashMap<>();
 
     protected SfcTableIndexMapper(short externalClassifierTable, short externalTransportIngressTable,
-            short externalPathMapperTable, short externalPathMapperAclTable,
-            short externalNextHopTable, short externalTransportEgressTable) {
+            short externalPathMapperTable, short externalPathMapperAclTable, short externalNextHopTable,
+            short externalTransportEgressTable) {
 
         addMapping(externalClassifierTable, NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE);
         addMapping(externalTransportIngressTable, NwConstants.SFC_TRANSPORT_INGRESS_TABLE);
@@ -46,15 +47,14 @@ public class SfcTableIndexMapper {
         addMapping(externalTransportEgressTable, NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
     }
 
-    private void addMapping(short externalTableIndex,
-            short geniusEquivalentTableIndex) {
+    private void addMapping(short externalTableIndex, short geniusEquivalentTableIndex) {
         if (externalTableIndex != SfcTableIndexMapperBuilder.EXTERNAL_TABLE_NOT_SET) {
             mappingTable.put(externalTableIndex, geniusEquivalentTableIndex);
         }
     }
 
     /**
-     * External - Genius SFC table index translation
+     * External - Genius SFC table index translation.
      *
      * @param externalSfcTableIndex
      *            the table index used by the external component

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -27,7 +27,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusUtilsTest {
@@ -57,8 +56,8 @@ public class SfcGeniusUtilsTest {
 
     @Test
     public void toCompletableFutureExceptionallyDone() throws Exception {
-        Throwable t = new Throwable();
-        ListenableFuture<DataObject> listenableFuture = Futures.immediateFailedFuture(t);
+        Throwable thowable = new Throwable();
+        ListenableFuture<DataObject> listenableFuture = Futures.immediateFailedFuture(thowable);
 
         CompletableFuture<DataObject> completableFuture;
         completableFuture = SfcGeniusUtils.toCompletableFuture(listenableFuture, executor);
@@ -70,7 +69,7 @@ public class SfcGeniusUtilsTest {
         try {
             completableFuture.join();
         } catch (CompletionException e) {
-            assertThat(e.getCause(), is(t));
+            assertThat(e.getCause(), is(thowable));
         }
     }
 
@@ -88,6 +87,7 @@ public class SfcGeniusUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void getDpnIdFromLowerLayerIfListTooManyItems() throws Exception {
         try {
             SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Arrays.asList("Item1", "Item2"));
@@ -98,6 +98,7 @@ public class SfcGeniusUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void getDpnIdFromLowerLayerIfListBadItem() throws Exception {
         try {
             SfcGeniusUtils.getDpnIdFromLowerLayerIfList(Collections.singletonList(""));
@@ -108,6 +109,7 @@ public class SfcGeniusUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void getDpnIdFromNullLowerLayerIfList() throws Exception {
         try {
             SfcGeniusUtils.getDpnIdFromLowerLayerIfList(null);
@@ -116,5 +118,4 @@ public class SfcGeniusUtilsTest {
             assertThat(e.getCause(), is(instanceOf(IllegalArgumentException.class)));
         }
     }
-
 }

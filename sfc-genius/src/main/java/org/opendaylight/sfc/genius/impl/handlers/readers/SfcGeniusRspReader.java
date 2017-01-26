@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,8 +30,10 @@ public class SfcGeniusRspReader extends SfcGeniusReaderAbstract {
      * Constructs a {@code SfcGeniusRspReader} using the provided
      * {@link ReadTransaction} and {@link Executor}.
      *
-     * @param readTransaction the read transaction.
-     * @param executor the callback executor.
+     * @param readTransaction
+     *            the read transaction.
+     * @param executor
+     *            the callback executor.
      */
     public SfcGeniusRspReader(ReadTransaction readTransaction, Executor executor) {
         super(readTransaction, executor);
@@ -40,14 +42,14 @@ public class SfcGeniusRspReader extends SfcGeniusReaderAbstract {
     /**
      * Read the rendered service path of the given name.
      *
-     * @param rspName the name of the rendered service path.
-     * @return completable future that will hold the rendered service path
-     * on completion.
+     * @param rspName
+     *            the name of the rendered service path.
+     * @return completable future that will hold the rendered service path on
+     *         completion.
      */
     public CompletableFuture<RenderedServicePath> readRsp(RspName rspName) {
         InstanceIdentifier<RenderedServicePath> rspID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, new RenderedServicePathKey(rspName))
-                .build();
+                .child(RenderedServicePath.class, new RenderedServicePathKey(rspName)).build();
         return doRead(LogicalDatastoreType.OPERATIONAL, rspID);
     }
 }

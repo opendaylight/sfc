@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Helper class to the read the state of interfaces from the
- * IETF-Interface data store asynchronous API.
+ * Helper class to the read the state of interfaces from the IETF-Interface data
+ * store asynchronous API.
  *
  * @see SfcGeniusReaderAbstract#doRead(LogicalDatastoreType, InstanceIdentifier)
  */
@@ -31,8 +31,10 @@ public class SfcGeniusIfStateReader extends SfcGeniusReaderAbstract {
      * Constructs a {@code SfcGeniusIfStateReader} using the provided
      * {@link ReadTransaction} and {@link Executor}.
      *
-     * @param readTransaction the read transaction.
-     * @param executor the callback executor.
+     * @param readTransaction
+     *            the read transaction.
+     * @param executor
+     *            the callback executor.
      */
     public SfcGeniusIfStateReader(ReadTransaction readTransaction, Executor executor) {
         super(readTransaction, executor);
@@ -41,17 +43,15 @@ public class SfcGeniusIfStateReader extends SfcGeniusReaderAbstract {
     /**
      * Read the data plane node identifier where an interface is located.
      *
-     * @param interfaceName the name of the interface.
+     * @param interfaceName
+     *            the name of the interface.
      * @return completable future that will hold the data plane node identifier
-     * on completion.
+     *         on completion.
      */
     public CompletableFuture<BigInteger> readDpnId(String interfaceName) {
         InstanceIdentifier<Interface> interfaceIID = InstanceIdentifier.builder(InterfacesState.class)
-                .child(Interface.class, new InterfaceKey(interfaceName))
-                .build();
-        return doRead(LogicalDatastoreType.OPERATIONAL, interfaceIID)
-                .thenApply(Interface::getLowerLayerIf)
+                .child(Interface.class, new InterfaceKey(interfaceName)).build();
+        return doRead(LogicalDatastoreType.OPERATIONAL, interfaceIID).thenApply(Interface::getLowerLayerIf)
                 .thenApply(SfcGeniusUtils::getDpnIdFromLowerLayerIfList);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,20 +14,20 @@ import org.opendaylight.genius.mdsalutil.NwConstants;
 /**
  * This test checks the correct behavior of the table index mapper (a class
  * which perform translation between the SFC table indexes used internally by a
- * renderer and the table indexes assigned by Genius for those tables)
+ * renderer and the table indexes assigned by Genius for those tables).
  *
  * @author Diego Granados
  */
 public class SfcGeniusTableIndexMapperTest {
 
-    private final short ORIGINAL_TRANSPORT_CLASSIFIER_TABLE_INDEX = 0;
-    private final short ORIGINAL_TRANSPORT_INGRESS_TABLE_INDEX = 1;
-    private final short ORIGINAL_PATH_MAPPER_TABLE_INDEX = 2;
-    private final short ORIGINAL_PATH_MAPPER_ACL_TABLE_INDEX = 3;
-    private final short ORIGINAL_NEXTHOP_TABLE_INDEX = 4;
-    private final short ORIGINAL_TRANSPORT_EGRESS_TABLE_INDEX = 10;
+    private static final short ORIGINAL_TRANSPORT_CLASSIFIER_TABLE_INDEX = 0;
+    private static final short ORIGINAL_TRANSPORT_INGRESS_TABLE_INDEX = 1;
+    private static final short ORIGINAL_PATH_MAPPER_TABLE_INDEX = 2;
+    private static final short ORIGINAL_PATH_MAPPER_ACL_TABLE_INDEX = 3;
+    private static final short ORIGINAL_NEXTHOP_TABLE_INDEX = 4;
+    private static final short ORIGINAL_TRANSPORT_EGRESS_TABLE_INDEX = 10;
 
-    private final short UNMAPPED_INDEX = 13;
+    private static final short UNMAPPED_INDEX = 13;
 
     @Test
     public void testMapping() {
@@ -41,35 +41,18 @@ public class SfcGeniusTableIndexMapperTest {
         SfcTableIndexMapper tableIndexMapper = builder.build();
 
         Assert.assertEquals(
-                tableIndexMapper
-                        .getTableIndex(ORIGINAL_TRANSPORT_CLASSIFIER_TABLE_INDEX)
-                        .get().shortValue(),
+                tableIndexMapper.getTableIndex(ORIGINAL_TRANSPORT_CLASSIFIER_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper
-                        .getTableIndex(ORIGINAL_TRANSPORT_INGRESS_TABLE_INDEX)
-                        .get().shortValue(),
+        Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_TRANSPORT_INGRESS_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_INGRESS_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper.getTableIndex(ORIGINAL_PATH_MAPPER_TABLE_INDEX)
-                        .get().shortValue(),
+        Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_PATH_MAPPER_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper
-                        .getTableIndex(ORIGINAL_PATH_MAPPER_ACL_TABLE_INDEX)
-                        .get().shortValue(),
+        Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_PATH_MAPPER_ACL_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper.getTableIndex(ORIGINAL_NEXTHOP_TABLE_INDEX)
-                        .get().shortValue(),
+        Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_NEXTHOP_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper
-                        .getTableIndex(ORIGINAL_TRANSPORT_EGRESS_TABLE_INDEX)
-                        .get().shortValue(),
+        Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_TRANSPORT_EGRESS_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
-        Assert.assertEquals(
-                tableIndexMapper.getTableIndex(UNMAPPED_INDEX).isPresent(),
-                false);
+        Assert.assertEquals(tableIndexMapper.getTableIndex(UNMAPPED_INDEX).isPresent(), false);
     }
 }

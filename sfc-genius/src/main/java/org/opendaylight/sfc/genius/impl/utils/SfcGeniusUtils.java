@@ -58,8 +58,8 @@ public class SfcGeniusUtils {
 
         Futures.addCallback(listenableFuture, new FutureCallback<T>() {
             @Override
-            public void onSuccess(@Nullable T t) {
-                completable.complete(t);
+            public void onSuccess(@Nullable T listenable) {
+                completable.complete(listenable);
             }
 
             @Override

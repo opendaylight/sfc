@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -42,40 +42,44 @@ class SfcGeniusReaderAbstract {
      * {@link SfcGeniusRuntimeException} wrapping a
      * {@link NoSuchElementException}.
      *
-     * @param logicalDatastoreType the data store type to read from..
-     * @param instanceIdentifier the instance identifier of the object to read.
-     * @param <T> the type of the object to read.
+     * @param logicalDatastoreType
+     *            the data store type to read from..
+     * @param instanceIdentifier
+     *            the instance identifier of the object to read.
+     * @param <T>
+     *            the type of the object to read.
      * @return completable future to the data object.
      */
     protected <T extends DataObject> CompletableFuture<T> doRead(LogicalDatastoreType logicalDatastoreType,
-                                                                 InstanceIdentifier<T> instanceIdentifier) {
-        return SfcGeniusUtils.toCompletableFuture(
-                readTransaction.read(logicalDatastoreType, instanceIdentifier),
-                executor
-        ).thenApply(optional -> {
-            if (optional.isPresent()) {
-                return optional.get();
-            } else {
-                throw new SfcGeniusRuntimeException(
-                        new NoSuchElementException("Data store object not found: " + instanceIdentifier));
-            }
-        });
+            InstanceIdentifier<T> instanceIdentifier) {
+        return SfcGeniusUtils
+                .toCompletableFuture(readTransaction.read(logicalDatastoreType, instanceIdentifier), executor)
+                .thenApply(optional -> {
+                    if (optional.isPresent()) {
+                        return optional.get();
+                    } else {
+                        throw new SfcGeniusRuntimeException(
+                                new NoSuchElementException("Data store object not found: " + instanceIdentifier));
+                    }
+                });
     }
 
     /**
      * Utility method to read a {#DataObject} from the data store.
      *
-     * @param logicalDatastoreType to read from.
-     * @param instanceIdentifier of the data object to read.
-     * @param <T> the type of the data object to read.
+     * @param logicalDatastoreType
+     *            to read from.
+     * @param instanceIdentifier
+     *            of the data object to read.
+     * @param <T>
+     *            the type of the data object to read.
      * @return future to an optional data object.
      */
     protected <T extends DataObject> CompletableFuture<Optional<T>> doReadOptional(
-            LogicalDatastoreType logicalDatastoreType,
-            InstanceIdentifier<T> instanceIdentifier) {
-        return SfcGeniusUtils.toCompletableFuture(
-                readTransaction.read(logicalDatastoreType, instanceIdentifier), executor).thenApply(
-                optional -> {
+            LogicalDatastoreType logicalDatastoreType, InstanceIdentifier<T> instanceIdentifier) {
+        return SfcGeniusUtils
+                .toCompletableFuture(readTransaction.read(logicalDatastoreType, instanceIdentifier), executor)
+                .thenApply(optional -> {
                     if (optional.isPresent()) {
                         return Optional.of(optional.get());
                     } else {

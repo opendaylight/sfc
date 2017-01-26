@@ -45,6 +45,30 @@
       "revId": "4e8b7f86e038fa7aaec29be4c8b4cb739798aed6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8a7e0ae3",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-26T14:13:20Z",
+      "side": 1,
+      "message": "Yes, we might as well tell them.\n\nIt is CentOS 1611, kernel 3.10-514, Docker 1.13 (it\u0027s been upgraded and package mantainer has decided to change the default storage driver from devicemapper to overlayfs)",
+      "parentUuid": "fafc7978_c9ab0788",
+      "range": {
+        "startLine": 326,
+        "startChar": 4,
+        "endLine": 326,
+        "endChar": 62
+      },
+      "revId": "4e8b7f86e038fa7aaec29be4c8b4cb739798aed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

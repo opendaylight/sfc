@@ -1,0 +1,20 @@
+diff --git a/supervisord.conf b/supervisord.conf
+index 4df730e..6a9df96 100644
+--- a/supervisord.conf
++++ b/supervisord.conf
+@@ -31,6 +31,9 @@ priority=20
+ startsec=10
+ stderr_events_enabled=true
+ stdout_events_enabled=true
++stdout_logfile_backups=1
++stderr_logfile_backups=1
++
+ 
+ [program:ovsdb-server-vtep]
+ command=/usr/local/sbin/ovsdb-server /etc/openvswitch/conf.db /etc/openvswitch/vtep.db --remote=punix:/var/run/openvswitch/db.sock --pidfile=ovsdb-server.pid
+@@ -62,3 +65,5 @@ command = supervisor_stdout
+ buffer_size = 100
+ events = PROCESS_LOG
+ result_handler = supervisor_stdout:event_handler
++stdout_logfile_backups=1
++stderr_logfile_backups=1

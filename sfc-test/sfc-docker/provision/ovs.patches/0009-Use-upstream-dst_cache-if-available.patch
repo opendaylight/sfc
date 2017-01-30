@@ -1,0 +1,55 @@
+From 95fc888068dd3db5b8a5837564c327cd6edfecdd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jaime=20Caama=C3=B1o=20Ruiz?=
+ <jaime.caamano.ruiz@ericsson.com>
+Date: Tue, 24 Jan 2017 17:09:37 +0100
+Subject: [PATCH] Use upstream dst_cache if available
+
+---
+ acinclude.m4                                  | 11 +++++------
+ datapath/linux/compat/include/net/dst_cache.h |  2 +-
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index b7ad0de..2a99889 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -466,18 +466,17 @@ AC_DEFUN([OVS_CHECK_LINUX_COMPAT], [
+   OVS_GREP_IFELSE([$KSRC/include/net/inetpeer.h], [vif],
+                   [OVS_DEFINE([HAVE_INETPEER_VIF_SUPPORT])])
+ 
+-  dnl Check for dst_cache and ipv6 lable to use backported tunnel infrastructure.
++  dnl Check for dst_cache, gpe and ipv6 label to use backported tunnel infrastructure.
+   dnl OVS does not really need ipv6 label field, but its presence signifies that
+   dnl the stack has all required ipv6 support.
+-  dnl OVS also does not need dst_cache But this dependency allows us to write
+-  dnl much cleaner code.
+-
++  OVS_GREP_IFELSE([$KSRC/include/net/dst_cache.h], [dst_cache])
+   OVS_FIND_FIELD_IFELSE([$KSRC/include/net/ip_tunnels.h], [ip_tunnel_key],
+                         [label],
+                         [OVS_GREP_IFELSE([$KSRC/include/net/ip_tunnels.h],
+                                          [iptunnel_pull_offloads],
+-			[OVS_GREP_IFELSE([$KSRC/include/net/dst_cache.h], [dst_cache],
+-                                         [OVS_DEFINE([USE_UPSTREAM_TUNNEL])])])])
++                       [OVS_FIND_FIELD_IFELSE([$KSRC/include/net/vxlan.h], [vxlan_metadata],
++                                               [gpe],
++                                               [OVS_DEFINE([USE_UPSTREAM_TUNNEL])])])])
+ 
+   OVS_GREP_IFELSE([$KSRC/include/linux/net.h], [sock_create_kern.*net],
+                   [OVS_DEFINE([HAVE_SOCK_CREATE_KERN_NET])])
+diff --git a/datapath/linux/compat/include/net/dst_cache.h b/datapath/linux/compat/include/net/dst_cache.h
+index ff4d83b..2959503 100644
+--- a/datapath/linux/compat/include/net/dst_cache.h
++++ b/datapath/linux/compat/include/net/dst_cache.h
+@@ -7,7 +7,7 @@
+ #include <net/ip6_fib.h>
+ #endif
+ 
+-#ifdef USE_UPSTREAM_TUNNEL
++#ifdef HAVE_DST_CACHE
+ #include_next <net/dst_cache.h>
+ 
+ #else
+-- 
+2.7.4
+

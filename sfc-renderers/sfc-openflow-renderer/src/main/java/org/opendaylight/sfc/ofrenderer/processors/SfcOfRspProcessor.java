@@ -197,7 +197,7 @@ public class SfcOfRspProcessor {
     *
     * @return an RSP Transport Processor for the RSP.
     */
-    private SfcRspTransportProcessorBase getReusableTransporProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
+    private SfcRspTransportProcessorBase getReusableTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
         String transportProcessorKey = sffGraph.isUsingLogicalSFF() ?
                 LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY :
                 getTransportEncapName(
@@ -225,7 +225,7 @@ public class SfcOfRspProcessor {
      * @return an RSP Transport Processor for the RSP.
      */
     public SfcRspTransportProcessorBase getTransportProcessor(SffGraph sffGraph, RenderedServicePath rsp) {
-        SfcRspTransportProcessorBase transportProcessor = getReusableTransporProcessor(sffGraph, rsp);
+        SfcRspTransportProcessorBase transportProcessor = getReusableTransportProcessor(sffGraph, rsp);
         transportProcessor.setRsp(rsp);
         transportProcessor.setSffGraph(sffGraph);
         return transportProcessor;
@@ -575,12 +575,10 @@ public class SfcOfRspProcessor {
     }
 
     private String getTransportEncapName(final String transportName, final String encapName) {
-        StringBuffer sb =
-                new StringBuffer(transportName).
-                append(TRANSPORT_ENCAP_SEPARATOR_STRING).
-                append(encapName);
-        LOG.info("getTransportEncapName :: transport [{}] encap [{}] result [{}]", transportName, encapName, sb.toString());
-        return sb.toString();
+        return new StringBuilder(transportName)
+                .append(TRANSPORT_ENCAP_SEPARATOR_STRING)
+                .append(encapName)
+                .toString();
     }
 
     /**

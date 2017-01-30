@@ -175,7 +175,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.mockStatic(SfcGeniusDataUtils.class);
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(Mockito.mock(WriteTransaction.class));
         PowerMockito.when(sfcOfRspProcessor, "getGeniusRpcClient").thenReturn(geniusClient);
-        PowerMockito.doReturn(logicalSffProcessor).when(sfcOfRspProcessor, "getReusableTransporProcessor", any(), any());
+        PowerMockito.doReturn(logicalSffProcessor).when(sfcOfRspProcessor, "getReusableTransportProcessor", any(), any());
         PowerMockito.when(geniusClient, "getInterfaceManagerRpcService").thenReturn(interfaceManagerRpcService);
         PowerMockito.when(geniusClient, "getItmRpcService").thenReturn(itmRpcService);
 

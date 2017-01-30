@@ -84,6 +84,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_MPLS_LASTHOP_COOKIE = "00000402";
     public static final String TRANSPORT_EGRESS_MAX_COOKIE          = "00000FFF";
 
+    private static final String INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL = "ingress_Transport_Arp_Flow";
+    private static final String NEXT_HOP_FLOW_NAME_LITERAL = "nextHop";
+
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     public static final BigInteger METADATA_MASK_SFP_MATCH =
             new BigInteger("FFFFFFFFFFFFFFFF", COOKIE_BIGINT_HEX_RADIX);
@@ -135,7 +138,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void setFlowWriter(SfcOfFlowWriterInterface sfcOfFlowWriter) {
         this.sfcOfFlowWriter = sfcOfFlowWriter;
-    };
+    }
 
     // This method should only be called by SfcOfRenderer.close()
     @Override
@@ -602,7 +605,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 SfcOpenflowUtils.createFlowBuilder(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
                         FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
-                        "ingress_Transport_Arp_Flow",
+                        INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL,
                         match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, arpTransportIngressFlow);
@@ -629,7 +632,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 SfcOpenflowUtils.createFlowBuilder(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
                         FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
-                        "ingress_Transport_Arp_Flow",
+                        INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL,
                         match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
@@ -654,7 +657,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 SfcOpenflowUtils.createFlowBuilder(
                         getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
                         FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
-                        "ingress_Transport_Arp_Flow",
+                        INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL,
                         match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
@@ -767,7 +770,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         return SfcOpenflowUtils.createFlowBuilder(
                 getTableId(TABLE_INDEX_PATH_MAPPER),
                 flowPriority,
-                "nextHop", match, isb);
+                NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
     }
 
     //
@@ -802,7 +805,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(
                 getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
                 FLOW_PRIORITY_PATH_MAPPER_ACL,
-                "nextHop",
+                NEXT_HOP_FLOW_NAME_LITERAL,
                 match, isb);
         // Set an idle timeout on this flow
         ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
@@ -840,7 +843,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         List<Action> actionList = new ArrayList<>();
         if (dstMac != null) {
             // Set the DL (Data Link) Dest Mac Address
-            actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, 0));
+            actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, actionList.size()));
         }
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowPriority);
@@ -861,10 +864,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             final short nshNsi) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
         if (dstIp != null) {
-            Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++);
+            Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, actionList.size());
             actionList.add(actionSetNwDst);
         }
 
@@ -890,12 +892,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureNshEthNextHopFlow(String sffNodeName, String srcMac, String dstMac, long nsp, short nsi) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nsp, nsi);
-        int order = 0;
+
         List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthSrc(srcMac,
-                order++));
+                actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthDst(dstMac,
-                order++));
+                actionList.size()));
 
         FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
@@ -933,7 +935,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(
                 getTableId(TABLE_INDEX_NEXT_HOP),
-                flowPriority, "nextHop", match, isb);
+                flowPriority, NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
     }
 
 
@@ -950,21 +952,20 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // In order to set the IP DSCP, we need to match IPv4
         SfcOpenflowUtils.addMatchEtherType(match, SfcOpenflowUtils.ETHERTYPE_IPV4);
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionWriteDscp((short) pathId, order++));
-        actionList.add(SfcOpenflowUtils.createActionPushVlan(order++));
-        actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, order++));
+        actionList.add(SfcOpenflowUtils.createActionWriteDscp((short) pathId, actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionPushVlan(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, actionList.size()));
 
         if(doPktin) {
             // Notice TCP SYN matching is only supported in OpenFlow 1.5
             SfcOpenflowUtils.addMatchTcpSyn(match);
-            actionList.add(SfcOpenflowUtils.createActionPktIn(SfcOpenflowUtils.PKT_LENGTH_IP_HEADER, order++));
+            actionList.add(SfcOpenflowUtils.createActionPktIn(SfcOpenflowUtils.PKT_LENGTH_IP_HEADER, actionList.size()));
         }
 
         FlowBuilder transportEgressFlow =
                 configureMacTransportEgressFlow(
-                        match, actionList, port, order, pathId, srcMac, dstMac,
+                        match, actionList, port, pathId, srcMac, dstMac,
                         TRANSPORT_EGRESS_VLAN_SF_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
@@ -1034,14 +1035,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionPushVlan(order++));
-        actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, order++));
+        actionList.add(SfcOpenflowUtils.createActionPushVlan(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionSetVlanId(dstVlan, actionList.size()));
 
         FlowBuilder transportEgressFlow =
                 configureMacTransportEgressFlow(
-                        match, actionList, port, order, pathId, srcMac, dstMac, cookieStr);
+                        match, actionList, port, pathId, srcMac, dstMac, cookieStr);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1109,14 +1109,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchMetada(match, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionPushMpls(order++));
-        actionList.add(SfcOpenflowUtils.createActionSetMplsLabel(mplsLabel, order++));
+        actionList.add(SfcOpenflowUtils.createActionPushMpls(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionSetMplsLabel(mplsLabel, actionList.size()));
 
         FlowBuilder transportEgressFlow =
                 configureMacTransportEgressFlow(
-                        match, actionList, port, order, pathId, srcMac, dstMac, cookieStr);
+                        match, actionList, port, pathId, srcMac, dstMac, cookieStr);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1135,20 +1134,19 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
 
         // On the last hop Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
-        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, actionList.size()));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, port, order,
+                configureTransportEgressFlow(match, actionList, port,
                         FLOW_PRIORITY_TRANSPORT_EGRESS,
                         TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
@@ -1173,20 +1171,19 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // 1. remove nsh header
         // 2. Change src mac to the mac of the last SF
         // 3. resubmit to the dispatcher table
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
 
         // Pop NSH
-        Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(order++);
+        Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(actionList.size());
         actionList.add(popNsh);
 
         // Change source address
         Action changeSourceMac = SfcOpenflowUtils
-                .createActionSetDlSrc(macAddress.getValue(), order++);
+                .createActionSetDlSrc(macAddress.getValue(), actionList.size());
         actionList.add(changeSourceMac);
 
         // Proceed with other services
-        actionList.add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, order++));
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
@@ -1239,29 +1236,29 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private void configureNshVxgpeTransportEgressFlowPorts(
             final String sffNodeName, final long nshNsp, final short nshNsi, String inport, String outport) {
         int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+        String theOutPortToSet = outport;
 
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
         if(!inport.startsWith(OutputPortValues.INPORT.toString())) {
             // if we output to a port that's the same as the inport, the pkt will be dropped
             SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(inport));
-            outport = OutputPortValues.INPORT.toString();
+            theOutPortToSet = OutputPortValues.INPORT.toString();
             flowPriority += 5;
         }
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
         // Copy/Move Nsc1/Nsc2 to the next hop
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(actionList.size()));
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
-        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH,actionList.size()));
 
         FlowBuilder transportEgressFlow =
-                configureTransportEgressFlow(match, actionList, outport, order,
+                configureTransportEgressFlow(match, actionList, theOutPortToSet,
                         flowPriority,
                         TRANSPORT_EGRESS_NSH_VXGPE_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
@@ -1288,14 +1285,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchNshNsc1(match, 0l);
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, actionList.size()));
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
-                        match, new ArrayList<>(), port,
-                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                        match, actionList, port,
+                        FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
                         TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
@@ -1319,22 +1315,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.addMatchNshNsc1(match, ipl);
 
         // Copy/Move Nsi, Nsp, Nsc1=>TunIpv4Dst, and Nsc2=>TunId(Vnid)
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshMdtype(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsi(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsp(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */
-        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, order++));
+        actionList.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(TUN_GPE_NP_NSH, actionList.size()));
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
                         match, actionList, EMPTY_SWITCH_PORT,
-                        order, FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
+                        FLOW_PRIORITY_TRANSPORT_EGRESS + 10,
                         TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
@@ -1352,18 +1347,17 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
 
-        int order = 0;
         List<Action> actionList = new ArrayList<>();
         // Copy/Move Nsc1/Nsc2 to the next hop
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
-        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(order++));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(actionList.size()));
 
         // TODO need to encap the Ethernet transport
 
         FlowBuilder transportEgressFlow =
                 configureTransportEgressFlow(
-                        match, actionList, port, order,
+                        match, actionList, port,
                         FLOW_PRIORITY_TRANSPORT_EGRESS,
                         TRANSPORT_EGRESS_NSH_ETH_COOKIE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
@@ -1375,7 +1369,6 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param match -already created matches
      * @param actionList - a list of actions already created
      * @param port - the switch port to send the packet out on
-     * @param order - order to use when writing to the actionList
      * @param pathId - the RSP path id to match on
      * @param srcMac - the source MAC to write to the packet
      * @param dstMac - the dest MAC to match against
@@ -1383,8 +1376,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @return a FlowBuilder with the created Path Mapper flow
      */
     private FlowBuilder configureMacTransportEgressFlow(MatchBuilder match, List<Action> actionList,
-            String port, int order, final long pathId, final String srcMac, final String dstMac,
-            String cookieStr) {
+                                                        String port, final long pathId, final String srcMac,
+                                                        final String dstMac, String cookieStr) {
 
         //Optionally match on the dstMac
         int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
@@ -1397,11 +1390,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Set the macSrc
         if (srcMac != null) {
-            actionList.add(SfcOpenflowUtils.createActionSetDlSrc(srcMac, order++));
+            actionList.add(SfcOpenflowUtils.createActionSetDlSrc(srcMac, actionList.size()));
         }
 
         return configureTransportEgressFlow(
-                match, actionList, port, order,
+                match, actionList, port,
                 flowPriority,
                 cookieStr);
     }
@@ -1413,23 +1406,22 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @param match -already created matches
      * @param actionList - a list of actions already created
      * @param port - the switch port to send the packet out on
-     * @param order - order to use when writing to the actionList
      * @param flowPriority - the priority to set on the flow
      *
      * @return a FlowBuilder with the created Path Mapper flow
      */
     private FlowBuilder configureTransportEgressFlow(
-            MatchBuilder match, List<Action> actionList, String port, int order, int flowPriority, String cookieStr) {
+            MatchBuilder match, List<Action> actionList, String port, int flowPriority, String cookieStr) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
         if(port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > APP_COEXISTENCE_NOT_SET) {
             // Application Coexistence:
             // Instead of egressing the packet out a port, send it to
             // a different application pipeline on this same switch
-            actionList.add(SfcOpenflowUtils.createActionResubmitTable(getTableEgress(), order++));
+            actionList.add(SfcOpenflowUtils.createActionResubmitTable(getTableEgress(), actionList.size()));
 
         } else {
-            actionList.add(SfcOpenflowUtils.createActionOutPort(port, order++));
+            actionList.add(SfcOpenflowUtils.createActionOutPort(port, actionList.size()));
         }
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
@@ -1552,7 +1544,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         FlowBuilder nextHopFlow =
                 SfcOpenflowUtils.createFlowBuilder(
                         getTableId(TABLE_INDEX_NEXT_HOP),
-                        flowPriority, "nextHop", match, isb);
+                        flowPriority, NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 

@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.opendaylight.lispflowmapping.interfaces.lisp.IFlowMapping;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -58,7 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev15090
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class LispUpdater implements ILispUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(LispUpdater.class);
@@ -80,10 +78,6 @@ public class LispUpdater implements ILispUpdater {
         return lfmService;
     }
 
-    public static void setFlowMapping(IFlowMapping fm) {
-        // flowMapping = fm;
-    }
-
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
         Lisp lispLocation = getLispLocationFromSff(locations);
@@ -92,6 +86,72 @@ public class LispUpdater implements ILispUpdater {
         } else {
             return serviceFunctionForwarder;
         }
+    }
+
+    public ServiceFunction updateLispData(ServiceFunction serviceFunction) {
+        List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
+        Lisp lispLocation = getLispLocationFromSf(locations);
+        if (lispLocation != null) {
+            return updateLispData(lispLocation, serviceFunction);
+        } else {
+            return serviceFunction;
+        }
+    }
+
+    private
+            ServiceFunctionForwarder
+                updateLispData(Lisp lispLocation, ServiceFunctionForwarder serviceFunctionForwarder) {
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
+                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
+                executor);
+        if (reply == null) {
+            return serviceFunctionForwarder;
+        }
+
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
+            if (address instanceof ApplicationData) {
+                ApplicationData applicationData = (ApplicationData) address;
+                Ip locatorType = SfcLispUtil.createLocator(applicationData);
+                DataPlaneLocator dpl = new DataPlaneLocatorBuilder().setLocatorType(locatorType).build();
+                SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(lispLocation.getEid().toString());
+                SffDataPlaneLocatorKey key = new SffDataPlaneLocatorKey(name);
+                SffDataPlaneLocator loc = new SffDataPlaneLocatorBuilder().setDataPlaneLocator(dpl).setKey(key)
+                        .setName(name).build();
+                ServiceFunctionForwarderBuilder fb = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
+                fb.getSffDataPlaneLocator().add(loc);
+                return fb.build();
+            }
+
+        }
+        return serviceFunctionForwarder;
+    }
+
+    private ServiceFunction updateLispData(Lisp lispLocation, ServiceFunction serviceFunction) {
+        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
+        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
+                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
+                executor);
+        if (reply == null) {
+            return serviceFunction;
+        }
+        for (LocatorRecord locator : reply.getLocatorRecord()) {
+            Address address = locator.getRloc().getAddress();
+            if (address instanceof ApplicationData) {
+                ApplicationData applicationData = (ApplicationData) address;
+                Ip locatorType = SfcLispUtil.createLocator(applicationData);
+                SfDataPlaneLocatorName name = new SfDataPlaneLocatorName(lispLocation.getEid().toString());
+                SfDataPlaneLocatorKey key = new SfDataPlaneLocatorKey(name);
+                SfDataPlaneLocator loc = new SfDataPlaneLocatorBuilder().setLocatorType(locatorType).setKey(key)
+                        .setName(name).build();
+                ServiceFunctionBuilder fb = new ServiceFunctionBuilder(serviceFunction);
+                fb.getSfDataPlaneLocator().add(loc);
+                return fb.build();
+            }
+
+        }
+        return serviceFunction;
     }
 
     private Lisp getLispLocationFromSff(List<SffDataPlaneLocator> locations) {
@@ -125,16 +185,6 @@ public class LispUpdater implements ILispUpdater {
         return false;
     }
 
-    public ServiceFunction updateLispData(ServiceFunction serviceFunction) {
-        List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
-        Lisp lispLocation = getLispLocationFromSf(locations);
-        if (lispLocation != null) {
-            return updateLispData(lispLocation, serviceFunction);
-        } else {
-            return serviceFunction;
-        }
-    }
-
     private Lisp getLispLocationFromSf(List<SfDataPlaneLocator> locations) {
         for (SfDataPlaneLocator location : locations) {
             LocatorType lt = location.getLocatorType();
@@ -143,61 +193,6 @@ public class LispUpdater implements ILispUpdater {
             }
         }
         return null;
-    }
-
-    private ServiceFunction updateLispData(Lisp lispLocation, ServiceFunction serviceFunction) {
-        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
-        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
-                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                        executor);
-        if (reply == null) {
-            return serviceFunction;
-        }
-        for (LocatorRecord locator : reply.getLocatorRecord()) {
-            Address address = locator.getRloc().getAddress();
-            if (address instanceof ApplicationData) {
-                ApplicationData applicationData = (ApplicationData) address;
-                Ip locatorType = SfcLispUtil.createLocator(applicationData);
-                SfDataPlaneLocatorName name = new SfDataPlaneLocatorName(lispLocation.getEid().toString());
-                SfDataPlaneLocatorKey key = new SfDataPlaneLocatorKey(name);
-                SfDataPlaneLocator loc =
-                        new SfDataPlaneLocatorBuilder().setLocatorType(locatorType).setKey(key).setName(name).build();
-                ServiceFunctionBuilder fb = new ServiceFunctionBuilder(serviceFunction);
-                fb.getSfDataPlaneLocator().add(loc);
-                return fb.build();
-            }
-
-        }
-        return serviceFunction;
-    }
-
-    private ServiceFunctionForwarder updateLispData(Lisp lispLocation,
-            ServiceFunctionForwarder serviceFunctionForwarder) {
-        Object[] methodParameters = { LispAddressUtil.toIpPrefixEid(lispLocation.getEid(), 0) };
-        MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
-                new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                        executor);
-        if (reply == null ) {
-            return serviceFunctionForwarder;
-        }
-
-        for (LocatorRecord locator : reply.getLocatorRecord()) {
-            Address address = locator.getRloc().getAddress();
-            if (address instanceof ApplicationData) {
-                ApplicationData applicationData = (ApplicationData) address;
-                Ip locatorType = SfcLispUtil.createLocator(applicationData);
-                DataPlaneLocator dpl = new DataPlaneLocatorBuilder().setLocatorType(locatorType).build();
-                SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(lispLocation.getEid().toString());
-                SffDataPlaneLocatorKey key = new SffDataPlaneLocatorKey(name);
-                SffDataPlaneLocator loc =
-                        new SffDataPlaneLocatorBuilder().setDataPlaneLocator(dpl).setKey(key).setName(name).build();
-                ServiceFunctionForwarderBuilder fb = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
-                fb.getSffDataPlaneLocator().add(loc);
-                return fb.build();
-            }
-
-        }
-        return serviceFunctionForwarder;
     }
 
     private boolean isIpInList(List<IpAddress> ipList, IpAddress newIp) {
@@ -224,7 +219,7 @@ public class LispUpdater implements ILispUpdater {
         Object[] methodParameters = { prefix };
         MappingRecord reply = (MappingRecord) SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.GET_MAPPING, methodParameters),
-                            executor);
+                executor);
         if (reply == null) {
             return null;
         }
@@ -247,15 +242,16 @@ public class LispUpdater implements ILispUpdater {
     private void buildAndRegisterTeMapping(Eid eid, List<IpAddress> hopList) {
         Rloc locatorPath = LispAddressUtil.asTeLcafRloc(hopList);
         List<Rloc> locators = Collections.singletonList(locatorPath);
-        Object[] methodParameters = {eid, locators};
+        Object[] methodParameters = { eid, locators };
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                            executor);
+                executor);
     }
 
     private Eid getSrcDstFromAce(AceIp ipMatch) {
         AceIpVersion ipMatchVersion = ipMatch.getAceIpVersion();
-        String[] srcPrefixParts = null, dstPrefixParts = null;
+        String[] srcPrefixParts = null;
+        String[] dstPrefixParts = null;
 
         if (ipMatchVersion instanceof AceIpv4) {
             AceIpv4 ipMatch4 = (AceIpv4) ipMatchVersion;
@@ -269,8 +265,8 @@ public class LispUpdater implements ILispUpdater {
 
         if (srcPrefixParts != null && srcPrefixParts.length == 2 && dstPrefixParts != null
                 && dstPrefixParts.length == 2) {
-            return LispAddressUtil.asSrcDstEid(srcPrefixParts[0], dstPrefixParts[0], Integer.parseInt(srcPrefixParts[1]),
-                    Integer.parseInt(dstPrefixParts[1]), 0);
+            return LispAddressUtil.asSrcDstEid(srcPrefixParts[0], dstPrefixParts[0],
+                    Integer.parseInt(srcPrefixParts[1]), Integer.parseInt(dstPrefixParts[1]), 0);
         } else {
             LOG.debug("Couldn't parse src/dst prefixes for ACE: {}", ipMatch);
             return null;
@@ -279,7 +275,8 @@ public class LispUpdater implements ILispUpdater {
 
     @Deprecated
     public void registerPathOld(RenderedServicePath rsp) {
-        // build locator paths from rsp hops and the locators of each src/dst pair of the associated
+        // build locator paths from rsp hops and the locators of each src/dst
+        // pair of the associated
         // acl's aces
         List<IpAddress> hopIpList = new ArrayList<>();
         List<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop();
@@ -302,7 +299,8 @@ public class LispUpdater implements ILispUpdater {
                     LOG.debug("Found for SFF {} the locator {}", sffName, dpLocator);
                     if (dpLocator.getLocatorType() instanceof Ip) {
                         Ip sffLocator = (Ip) dpLocator.getLocatorType();
-                        // For now we do not support an SFF appearing twice on a TE path
+                        // For now we do not support an SFF appearing twice on a
+                        // TE path
                         // and we only use one SFF locator
                         if (sffLocator != null) {
                             addIfNotInList(hopIpList, sffLocator.getIp());
@@ -364,10 +362,14 @@ public class LispUpdater implements ILispUpdater {
                 } else {
                     hopIpList.add(lastHop);
                 }
-                // ... build a TE LCAF with the just found locator as last hop and register it with lfm.
-                // NOTE: We contemplate only the case when dst has an associated mapping in lfm's db, as the
-                // insertion of a new src/dst mapping does not affect it. If however, a src/dst mapping does
-                // exist, we overwrite it lower, thus this might require fixing. XXX
+                // ... build a TE LCAF with the just found locator as last hop
+                // and register it with lfm.
+                // NOTE: We contemplate only the case when dst has an associated
+                // mapping in lfm's db, as the
+                // insertion of a new src/dst mapping does not affect it. If
+                // however, a src/dst mapping does
+                // exist, we overwrite it lower, thus this might require fixing.
+                // XXX
                 buildAndRegisterTeMapping(srcDst, hopIpList);
             }
         }
@@ -375,10 +377,10 @@ public class LispUpdater implements ILispUpdater {
 
     private void registerMapping(Eid eid, Rloc rloc) {
         List<Rloc> locators = Collections.singletonList(rloc);
-        Object[] methodParameters = {eid, locators};
+        Object[] methodParameters = { eid, locators };
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.ADD_MAPPING, methodParameters),
-                        executor);
+                executor);
     }
 
     private void registerElpMapping(Eid eid, List<IpAddress> hopList) {
@@ -387,7 +389,8 @@ public class LispUpdater implements ILispUpdater {
     }
 
     public void registerPath(RenderedServicePath rsp) {
-        // build locator paths from rsp hops and the locators of each src/dst pair of the associated
+        // build locator paths from rsp hops and the locators of each src/dst
+        // pair of the associated
         // acl's aces
         List<IpAddress> hopIpList = new ArrayList<>();
         List<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop();
@@ -410,7 +413,8 @@ public class LispUpdater implements ILispUpdater {
                     LOG.debug("Found for SFF {} the locator {}", sffName, dpLocator);
                     if (dpLocator.getLocatorType() instanceof Ip) {
                         Ip sffLocator = (Ip) dpLocator.getLocatorType();
-                        // For now we do not support an SFF appearing twice on a TE path
+                        // For now we do not support an SFF appearing twice on a
+                        // TE path
                         // and we only use one SFF locator
                         if (sffLocator != null) {
                             hopIpList.add(sffLocator.getIp());
@@ -431,17 +435,21 @@ public class LispUpdater implements ILispUpdater {
                 LispAddressUtil.STARTING_SERVICE_INDEX);
         registerElpMapping(spEid, hopIpList);
 
-        // TODO for each ACE in the RSP's ACL we should insert a SourceDest mapping pointing at the ServicePath LCAF.
-        // For now we can't because we default to SourceDest mapping lookups in LFM so both the classifier and the end
-        // of chain xTR would retrieve the same mapping. The solution is to use an ELP as a locator BUT at this time
-        // the hops can only be SimpleAddresses. The ServicePath LCAF is not one.
+        // TODO for each ACE in the RSP's ACL we should insert a SourceDest
+        // mapping pointing at the ServicePath LCAF.
+        // For now we can't because we default to SourceDest mapping lookups in
+        // LFM so both the classifier and the end
+        // of chain xTR would retrieve the same mapping. The solution is to use
+        // an ELP as a locator BUT at this time
+        // the hops can only be SimpleAddresses. The ServicePath LCAF is not
+        // one.
     }
 
     private void removeMapping(Eid eid) {
-        Object[] methodParameters = {eid};
+        Object[] methodParameters = { eid };
         SfcLispUtil.submitCallable(
                 new SfcLispFlowMappingApi(lfmService, SfcLispFlowMappingApi.Method.DELETE_MAPPING, methodParameters),
-                            executor);
+                executor);
     }
 
     @Deprecated

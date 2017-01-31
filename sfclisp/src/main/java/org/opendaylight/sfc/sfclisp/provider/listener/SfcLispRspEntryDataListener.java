@@ -27,10 +27,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SfcLispRspEntryDataListener extends SfcLispAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispRspEntryDataListener.class);
-    private LispUpdater lispUpdater;
+    private final LispUpdater lispUpdater;
 
     public SfcLispRspEntryDataListener(LispUpdater lispUpdater) {
         this.lispUpdater = lispUpdater;
@@ -38,11 +37,10 @@ public class SfcLispRspEntryDataListener extends SfcLispAbstractDataListener {
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
     }
 
-    public void setDataProvider(DataBroker r){
-        setDataBroker(r);
+    public void setDataProvider(DataBroker broker) {
+        setDataBroker(broker);
         registerAsDataChangeListener();
         LOG.info("Initialized RSP listener");
-
     }
 
     @Override
@@ -80,8 +78,5 @@ public class SfcLispRspEntryDataListener extends SfcLispAbstractDataListener {
                 lispUpdater.deletePath(renderedServicePath);
             }
         }
-
     }
-
-
 }

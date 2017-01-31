@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Contextream, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Contextream, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,17 +20,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SfcProviderServiceLispAPI {
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceLispAPI.class);
-    private static DataBroker dataProvider=null;
+    private static DataBroker dataProvider;
 
-    public void setDataProvider(DataBroker r){
-        dataProvider=r;
+    public void setDataProvider(DataBroker broker) {
+        dataProvider = broker;
     }
 
     public static void lispUpdateServiceFunction(ServiceFunction sf) {
         LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (dataProvider!= null) {
+        if (dataProvider != null) {
             sf = LispUpdater.getLispUpdaterObj().updateLispData(sf);
 
             InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
@@ -50,15 +49,14 @@ public class SfcProviderServiceLispAPI {
 
             sff = LispUpdater.getLispUpdaterObj().updateLispData(sff);
 
-            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier.builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class, sff.getKey()).build();
+            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
+                    .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, sff.getKey())
+                    .build();
 
             WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
             writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, sff, true);
             writeTx.submit();
-
         }
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
-
 }

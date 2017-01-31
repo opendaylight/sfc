@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -50,13 +50,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SfcLispUtil {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SfcLispUtil.class);
+    private SfcLispUtil() {
+    }
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfcLispUtil.class);
 
     public static Object submitCallable(Callable<Object> callable, ExecutorService executor) {
-        Future<Object> future = null;
+        Future<Object> future;
         Object result = null;
 
         future = executor.submit(callable);
@@ -71,11 +73,9 @@ public class SfcLispUtil {
     }
 
     public static Ip createLocator(ApplicationData applicationData) {
-        IpAddress ip = new IpAddress(new Ipv4Address(InetAddresses.fromInteger(
-                applicationData.getApplicationData().getIpTos()).getHostAddress()));
-        Ip locatorType = new IpBuilder().setIp(ip).setPort(applicationData.getApplicationData().getLocalPortLow())
-                .build();
-        return locatorType;
+        IpAddress ip = new IpAddress(new Ipv4Address(
+                InetAddresses.fromInteger(applicationData.getApplicationData().getIpTos()).getHostAddress()));
+        return new IpBuilder().setIp(ip).setPort(applicationData.getApplicationData().getLocalPortLow()).build();
     }
 
     public static GetMappingInput buildGetMappingInput(Eid eid) {
@@ -102,9 +102,10 @@ public class SfcLispUtil {
 
         VirtualNetworkIdentifierKey vniKey = new VirtualNetworkIdentifierKey(
                 new VniUri(Long.toString(eid.getVirtualNetworkId().getValue())));
-        MappingKey eidKey = new MappingKey(new EidUri(LispAddressStringifier.getURIString(eid)), MappingOrigin.Northbound);
-        return InstanceIdentifier.create(MappingDatabase.class)
-                .child(VirtualNetworkIdentifier.class, vniKey).child(Mapping.class, eidKey);
+        MappingKey eidKey = new MappingKey(new EidUri(LispAddressStringifier.getURIString(eid)),
+                MappingOrigin.Northbound);
+        return InstanceIdentifier.create(MappingDatabase.class).child(VirtualNetworkIdentifier.class, vniKey)
+                .child(Mapping.class, eidKey);
     }
 
     public static Acl getServiceFunctionAcl(SfpName sfPathName) {
@@ -112,8 +113,8 @@ public class SfcLispUtil {
         String classifierName = serviceFunctionPath.getClassifier();
         Acl acl = null;
         if (classifierName != null) {
-            ServiceFunctionClassifier classifier =
-                    SfcProviderServiceClassifierAPI.readServiceClassifier(classifierName);
+            ServiceFunctionClassifier classifier = SfcProviderServiceClassifierAPI
+                    .readServiceClassifier(classifierName);
             if (classifier != null && classifier.getAcl() != null) {
                 acl = SfcProviderAclAPI.readAccessList(classifier.getAcl().getName(), classifier.getAcl().getType());
             }

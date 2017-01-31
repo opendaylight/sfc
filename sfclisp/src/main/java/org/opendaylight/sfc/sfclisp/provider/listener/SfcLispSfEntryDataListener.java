@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2014 Contextream, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Contextream, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.sfclisp.provider.listener;
-
 
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -22,19 +21,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class gets called whenever there is a change to
- * a Service Function list entry, i.e.,
- * added.
+ * This class gets called whenever there is a change to a Service Function list
+ * entry, i.e., added.
  *
  * <p>
+ *
  * @author David Goldberg (david.goldberg@contextream.com)
  * @author Florin Coras (fcoras@cisco.com)
  * @version 0.1
- * @since       2014-06-30
+ * @since 2014-06-30
  */
-public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
+public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
-    private LispUpdater lispUpdater;
+    private final LispUpdater lispUpdater;
 
     public SfcLispSfEntryDataListener(LispUpdater lispUpdater) {
         setInstanceIdentifier(SfcInstanceIdentifiers.SF_ENTRY_IID);
@@ -42,33 +41,28 @@ public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener  {
         this.lispUpdater = lispUpdater;
     }
 
-    public void setDataProvider(DataBroker r){
-        setDataBroker(r);
+    public void setDataProvider(DataBroker dataBroker) {
+        setDataBroker(dataBroker);
         registerAsDataChangeListener();
         LOG.info("Initialized SF listener");
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change ) {
-
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
 
         // SF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if( entry.getValue() instanceof  ServiceFunction) {
+            if (entry.getValue() instanceof ServiceFunction) {
                 ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
 
                 if (lispUpdater.containsLispAddress(createdServiceFunction)) {
                     SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
                 }
-
             }
-
         }
-
         LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
     }
-
 }

@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_bfc7bc11",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfNodeListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Just want to make sure that the break being within the if block is intentional as it may overflow to the next case block.",
+      "range": {
+        "startLine": 89,
+        "startChar": 24,
+        "endLine": 89,
+        "endChar": 29
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_3f6d8c33",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/listener/SfcPotNetconfNodeListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "If you end up stepping up a bit the abstract listener, most of this can be moved there. The abstract listener can process the changes and the call add, update, and delete override methods of specific listeners. See org.opendaylight.genius.datastoreutils.AsyncClusteredDataTreeChangeListenerBase as an example.",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 9
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_5fe210a0",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfIoam.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Redundant initialization.",
+      "range": {
+        "startLine": 201,
+        "startChar": 15,
+        "endLine": 201,
+        "endChar": 22
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_5f5fb00e",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfNodeManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "I see now that this API is using Guava Optional. In case you can do away with intermediate logging ...\nWith JDK8 optional it ca be like:\nDataBroker dataBroker \u003d Optional.ofNullable(mountService.getMountPoint(mountPointIid).orNull())\n                .map(mp -\u003e mp.getService(DataBroker.class).orNull())\n                .orElse(null);\nWith Guava Optional:\nDataBroker dataBroker \u003d mountService.getMountPoint(mountPointIid)\n                .transform(mp -\u003e mp.getService(DataBroker.class).orNull())\n                .orNull();\nI do recommend sticking with the JDK8 Optional version if any.",
+      "range": {
+        "startLine": 111,
+        "startChar": 8,
+        "endLine": 111,
+        "endChar": 16
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_3f962c95",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotNetconfNodeManager.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Redundant.",
+      "range": {
+        "startLine": 165,
+        "startChar": 12,
+        "endLine": 165,
+        "endChar": 18
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_bfe97c1c",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "I feel bad for this but now I see: \nreturn potRspInfoStore !\u003d null \u0026\u0026 potRspInfoStore.get(rspName.getValue()) !\u003d null;\n\nSorry!",
+      "range": {
+        "startLine": 62,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 63
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_3f02ac3e",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerData.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Split to a new line within it\u0027s own block\nif (...) {\n    ...\n}",
+      "range": {
+        "startLine": 88,
+        "startChar": 8,
+        "endLine": 88,
+        "endChar": 44
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_7f9394fa",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/SfcPotTimerThread.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Just want to make sure that this thread being un-interruptible by ignoring the interrupt exception is intentional. Why not LOG and re-throw?",
+      "range": {
+        "startLine": 92,
+        "startChar": 16,
+        "endLine": 92,
+        "endChar": 72
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_84db8b1a",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "I missed this one before, should be private?",
+      "range": {
+        "startLine": 29,
+        "startChar": 4,
+        "endLine": 29,
+        "endChar": 10
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_ffb66489",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyClassAPI.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-01-31T17:01:48Z",
+      "side": 1,
+      "message": "Maybe it is better to return an empty list and avoid some caller checking for null?",
+      "range": {
+        "startLine": 41,
+        "startChar": 15,
+        "endLine": 41,
+        "endChar": 19
+      },
+      "revId": "07b4ef7b10a217119a957c14c00862c9c0855df1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

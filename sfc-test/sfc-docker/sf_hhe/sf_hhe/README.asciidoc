@@ -1,0 +1,44 @@
+Service Function HTTP Header Enrichment
+=======================================
+
+Basic information
+-----------------
+
+.Server
+  $ python HttpServer.py
+
+.Client
+  $ python3 ./HttpClient.py -ip 10.0.0.4
+
+.Service Function HTTP Header Enrichment
+  $ python3 ./sf_hhe.py -i ${interface} --name ${name_hhe} --port ${server_port}
+
+.tcpdump
+( The -n switch stops DNS name lookups (make it more reliably))
+  $ sudo tcpdump -XX -n -i ${interface}
+  $ sudo wireshark
+
+.More help:
+  $ ./HttpClient.py --help
+  $ ./sf_hhe.py --help
+
+
+Extra information
+-----------------
+
+.Other clients
+  $ curl 127.0.0.1:8000
+  $ wget 127.0.0.1:8000
+  $ wget --server-response 10.0.0.4:8000
+  $ wget --header "Accept: */*" --server-response 10.0.0.4:8000
+  $ nc 127.0.0.1 8000 < GET.TXT > HTTP.TXT
+
+.Other tcpdump commands
+  $ sudo tcpdump -XX -n -i `ifconfig -a | grep eth0 | cut -d' ' -f 1`
+  $ sudo tcpdump -n -i lo tcp port 8000 and host 127.0.0.1
+
+.Fix Wireshark LUA error:
+  $ cd /usr/share/wireshark
+  $ vi init.lua
+line #29 change to:
+  $ disable_lua = true

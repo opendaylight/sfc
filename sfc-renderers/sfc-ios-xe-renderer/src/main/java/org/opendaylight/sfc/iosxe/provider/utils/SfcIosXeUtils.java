@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider.utils;
+package org.opendaylight.sfc.iosxe.provider.utils;
 
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -125,7 +125,7 @@ public class SfcIosXeUtils {
      *
      * @return IID of the Local SFF
      */
-    static InstanceIdentifier<Local> createLocalSffIid() {
+    public static InstanceIdentifier<Local> createLocalSffIid() {
         return InstanceIdentifier.builder(Native.class)
                 .child(ServiceChain.class)
                 .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
@@ -138,7 +138,7 @@ public class SfcIosXeUtils {
      *
      * @return IID of the remote SFF
      */
-    static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull ServiceFfName sffName) {
+    public static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull ServiceFfName sffName) {
         return InstanceIdentifier.builder(Native.class)
                 .child(ServiceChain.class)
                 .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
@@ -151,7 +151,7 @@ public class SfcIosXeUtils {
      *
      * @return IID of the remote SFF
      */
-    static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull SffName sffName) {
+    public static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull SffName sffName) {
         return InstanceIdentifier.builder(Native.class)
                 .child(ServiceChain.class)
                 .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
@@ -163,7 +163,7 @@ public class SfcIosXeUtils {
      *
      * @return IID of the SF
      */
-    static InstanceIdentifier<ServiceFunction> createSfIid(@Nonnull ServiceFunctionKey key) {
+    public static InstanceIdentifier<ServiceFunction> createSfIid(@Nonnull ServiceFunctionKey key) {
         return InstanceIdentifier.builder(Native.class)
                 .child(ServiceChain.class)
                 .child(ServiceFunction.class, key)
@@ -175,7 +175,7 @@ public class SfcIosXeUtils {
      *
      * @return IID of the SP
      */
-    static InstanceIdentifier<ServicePath> createServicePathIid(@Nonnull ServicePathKey key) {
+    public static InstanceIdentifier<ServicePath> createServicePathIid(@Nonnull ServicePathKey key) {
         return InstanceIdentifier.builder(Native.class)
                 .child(ServiceChain.class)
                 .child(ServicePath.class, key).build();

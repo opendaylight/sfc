@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
+package org.opendaylight.sfc.iosxe.provider.renderer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -21,8 +21,8 @@ import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.sfc.iosxe.provider.listener.NodeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
-import org.opendaylight.sfc.sfc_ios_xe.provider.listener.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
@@ -149,7 +149,7 @@ public class NodeManager implements BindingAwareProvider {
         return Arrays.asList(capabilityEntries);
     }
 
-    DataBroker getMountpointFromIpAddress(IpAddress ipAddress) {
+    public DataBroker getMountpointFromIpAddress(IpAddress ipAddress) {
         for (Node node : connectedNodes.values()) {
             if (ipAddress.equals(getNetconfNodeIp(node))) {
                 return activeMountPoints.get(node.getNodeId());
@@ -158,17 +158,17 @@ public class NodeManager implements BindingAwareProvider {
         return null;
     }
 
-    IpAddress getNetconfNodeIp(Node node) {
+    public IpAddress getNetconfNodeIp(Node node) {
         NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         return netconfNode.getHost().getIpAddress();
     }
 
-    Map<NodeId, Node> getConnectedNodes() {
+    public Map<NodeId, Node> getConnectedNodes() {
         return connectedNodes;
     }
 
-    Map<NodeId, DataBroker> getActiveMountPoints() {
+    public Map<NodeId, DataBroker> getActiveMountPoints() {
         return activeMountPoints;
     }
 

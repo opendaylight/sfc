@@ -6,15 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider;
+package org.opendaylight.sfc.iosxe.provider;
 
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.IosXeRspProcessor;
-import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.IosXeServiceForwarderMapper;
-import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.IosXeServiceFunctionMapper;
-import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.NodeManager;
+import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
+import org.opendaylight.sfc.iosxe.provider.renderer.IosXeServiceForwarderMapper;
+import org.opendaylight.sfc.iosxe.provider.renderer.IosXeServiceFunctionMapper;
+import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

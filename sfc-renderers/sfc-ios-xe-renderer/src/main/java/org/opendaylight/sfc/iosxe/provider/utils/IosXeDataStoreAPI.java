@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider.utils;
+package org.opendaylight.sfc.iosxe.provider.utils;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

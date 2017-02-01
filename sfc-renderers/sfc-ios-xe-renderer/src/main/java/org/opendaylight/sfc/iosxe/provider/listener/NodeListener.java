@@ -9,7 +9,7 @@
 /**
  * DataChangeListener attached to the Network Topology
  */
-package org.opendaylight.sfc.sfc_ios_xe.provider.listener;
+package org.opendaylight.sfc.iosxe.provider.listener;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
@@ -19,7 +19,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.sfc_ios_xe.provider.renderer.NodeManager;
+import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;

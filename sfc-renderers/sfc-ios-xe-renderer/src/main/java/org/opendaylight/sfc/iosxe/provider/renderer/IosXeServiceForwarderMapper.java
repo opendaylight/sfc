@@ -6,14 +6,17 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
+package org.opendaylight.sfc.iosxe.provider.renderer;
+
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
 
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.sfc_ios_xe.provider.listener.ServiceForwarderListener;
-import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.sfc_ios_xe.provider.utils.SfcIosXeUtils;
+import org.opendaylight.sfc.iosxe.provider.listener.ServiceForwarderListener;
+import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -23,8 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
 
 
 public class IosXeServiceForwarderMapper {

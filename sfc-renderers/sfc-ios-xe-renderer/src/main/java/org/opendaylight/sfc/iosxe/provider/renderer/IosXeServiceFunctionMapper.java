@@ -6,17 +6,17 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_ios_xe.provider.renderer;
+package org.opendaylight.sfc.iosxe.provider.renderer;
 
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
-import static org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 
 import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.sfc_ios_xe.provider.listener.ServiceFunctionListener;
-import org.opendaylight.sfc.sfc_ios_xe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.sfc_ios_xe.provider.utils.SfcIosXeUtils;
+import org.opendaylight.sfc.iosxe.provider.listener.ServiceFunctionListener;
+import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;

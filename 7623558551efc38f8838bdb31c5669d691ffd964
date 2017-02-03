@@ -34,6 +34,24 @@
       "revId": "7623558551efc38f8838bdb31c5669d691ffd964",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0d54cd1f",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-02-03T14:39:14Z",
+      "side": 0,
+      "message": "Out of curiousitoy, I\u0027ve dug a bit more into this, and understand now... this change is \"safe\" because these instructions replicate the default behaviour of maven-bundle-plugin, see http://felix.apache.org/documentation/subprojects/apache-felix-maven-bundle-plugin-bnd.html#default-behavior -  However if e.g. sfc-model, or others using Export-Package have MORE Java packages than those listed here, then such a clean up publicly exposes more than it currently does, which you may not want.",
+      "parentUuid": "fafc7978_6a757f97",
+      "revId": "7623558551efc38f8838bdb31c5669d691ffd964",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

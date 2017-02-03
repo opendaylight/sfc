@@ -16,6 +16,24 @@
       "revId": "7623558551efc38f8838bdb31c5669d691ffd964",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_6a757f97",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-02-03T10:39:50Z",
+      "side": 0,
+      "message": "I am surprised that the module still works :). I do not really why. As you say, most of our bundles (in other projects as well) does not export their packages. I agree, it deserves a little more study.",
+      "parentUuid": "fafc7978_4048815b",
+      "revId": "7623558551efc38f8838bdb31c5669d691ffd964",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -117,7 +117,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.bindToNode(dpnId)
-                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
                 .join();
     }
 
@@ -126,7 +126,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.unbindFromNode(dpnId)
-                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
                 .join();
     }
 
@@ -140,8 +140,8 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
                 .thenCompose(serviceFunctions -> serviceFunctions.isEmpty()
                         ? CompletableFuture.completedFuture(null)
                         : rspHandler.interfaceStateUp(interfaceName, serviceFunctions))
-                .thenCompose((aVoid) -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
-                .handle((aVoid, exception) -> {
+                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .handle((nop, exception) -> {
                     if (exception != null) {
                         LOG.error("Error handling interface {} state up on {}", interfaceName, dpnId, exception);
                     }

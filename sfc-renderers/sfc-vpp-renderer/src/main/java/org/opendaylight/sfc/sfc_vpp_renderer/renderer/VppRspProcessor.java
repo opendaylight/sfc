@@ -33,6 +33,7 @@ public class VppRspProcessor {
 
     private final VppNodeManager nodeManager;
     private static final String SFC_BD_NAME = new String("SFCVPP");
+    private static final String DUMMY_BD_NAME = new String("SFCDUMMY");
     private final Map<String, String> bridgeDomainCreated = new HashMap<>();
 
     public VppRspProcessor(VppNodeManager nodeManager) {
@@ -92,6 +93,9 @@ public class VppRspProcessor {
 
             /* Create BridgeDomain */
             if (!bridgeDomainCreated.containsKey(currentSffName.getValue())) {
+                SfcVppUtils.addDummyBridgeDomain(currentMountpoint, DUMMY_BD_NAME, currentSffName.getValue());
+                SfcVppUtils.addDummyNshEntry(currentMountpoint, 0L, (short)1, currentSffName.getValue());
+                SfcVppUtils.addDummyNshMap(currentMountpoint, 0L, (short)1, 0L, (short)1, new String("local0"), currentSffName.getValue());
                 SfcVppUtils.addBridgeDomain(currentMountpoint, SFC_BD_NAME, currentSffName.getValue());
                 bridgeDomainCreated.put(currentSffName.getValue(), SFC_BD_NAME);
             }

@@ -146,6 +146,11 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-scf-vpp</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-ios-xe-renderer</artifactId>
         <version>${project.version}</version>
     </dependency>

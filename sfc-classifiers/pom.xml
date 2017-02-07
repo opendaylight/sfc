@@ -16,6 +16,7 @@
 
     <modules>
         <module>sfc-scf-openflow</module>
+        <module>sfc-scf-vpp</module>
     </modules>
 
 </project>

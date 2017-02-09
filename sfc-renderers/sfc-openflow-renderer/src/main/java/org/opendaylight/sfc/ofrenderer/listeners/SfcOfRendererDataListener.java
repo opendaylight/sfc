@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,15 +30,15 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
+    // See SfcOfFlowProgrammerImpl.getTableId
+    private static final int MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL = 2;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRendererDataListener.class);
-    private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
-    private SfcSynchronizer sfcSynchronizer;
-    private ExecutorService threadExecutor;
+    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcSynchronizer sfcSynchronizer;
+    private final ExecutorService threadExecutor;
 
-    public SfcOfRendererDataListener(
-            DataBroker dataBroker,
-            SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
+    public SfcOfRendererDataListener(DataBroker dataBroker, SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcSynchronizer sfcSynchronizer) {
         setDataBroker(dataBroker);
         setIID(InstanceIdentifier.builder(SfcOfRendererConfig.class).build());
@@ -53,8 +53,7 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
         // SFC OF Renderer config create
         for (Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
             if (entry.getValue() instanceof SfcOfRendererConfig) {
-                LOG.info("SfcOfRendererDataListener.onDataChanged create SFC OF Renderer config {}",
-                        ((SfcOfRendererConfig) entry.getValue()));
+                LOG.info("SfcOfRendererDataListener.onDataChanged create SFC OF Renderer config {}", entry.getValue());
                 processConfig((SfcOfRendererConfig) entry.getValue());
             }
         }
@@ -62,73 +61,68 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
         // SFC OF Renderer config update
         for (Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
             if (entry.getValue() instanceof SfcOfRendererConfig) {
-                LOG.info("SfcOfRendererDataListener.onDataChanged update SFC OF Renderer config {}",
-                        ((SfcOfRendererConfig) entry.getValue()));
+                LOG.info("SfcOfRendererDataListener.onDataChanged update SFC OF Renderer config {}", entry.getValue());
                 processConfig((SfcOfRendererConfig) entry.getValue());
             }
         }
-
         // Not interested in deleted data
     }
 
     /**
      * Process an OpenFlow Renderer configuration change. Only creates and
      * updates are handled
-     * @param config the configuration details
+     *
+     * @param config
+     *            the configuration details
      */
     private void processConfig(SfcOfRendererConfig config) {
-        if(verifyMaxTableId(config.getSfcOfTableOffset(), this.sfcOfFlowProgrammer.getMaxTableOffset()) == null) {
+        if (verifyMaxTableId(config.getSfcOfTableOffset(), this.sfcOfFlowProgrammer.getMaxTableOffset()) == null) {
             return;
         }
 
-        if(verifyMaxTableId(config.getSfcOfAppEgressTableOffset(), (short) 0) == null) {
+        if (verifyMaxTableId(config.getSfcOfAppEgressTableOffset(), (short) 0) == null) {
             return;
         }
 
-        // See SfcOfFlowProgrammerImpl.getTableId
-        final int MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL = 2;
-        if(config.getSfcOfTableOffset() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
+        if (config.getSfcOfTableOffset() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
             LOG.error("Error SfcOfTableOffset value [{}]", config.getSfcOfTableOffset());
             return;
         }
 
         // Cant set the egress table negative
-        if(config.getSfcOfAppEgressTableOffset() < 0) {
+        if (config.getSfcOfAppEgressTableOffset() < 0) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}]", config.getSfcOfAppEgressTableOffset());
             return;
         }
 
-        // Check that the egress value is not set in the middle of the SFC table range
+        // Check that the egress value is not set in the middle of the SFC table
+        // range
         // Example: tableBase = 20, SfcMaxTableOffset=10, then the SFC tables
-        //          would be in the range [20..30]. So an egress value of 25
-        //          would be invalid
-        if(config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset() &&
-           config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset() + this.sfcOfFlowProgrammer.getMaxTableOffset()) {
+        // would be in the range [20..30]. So an egress value of 25
+        // would be invalid
+        if (config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset()
+                && config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset()
+                        + this.sfcOfFlowProgrammer.getMaxTableOffset()) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}] cant be in the SFC table range [{}..{}]",
-                    config.getSfcOfAppEgressTableOffset(),
-                    config.getSfcOfTableOffset(),
-                    config.getSfcOfTableOffset()+this.sfcOfFlowProgrammer.getMaxTableOffset());
+                    config.getSfcOfAppEgressTableOffset(), config.getSfcOfTableOffset(),
+                    config.getSfcOfTableOffset() + this.sfcOfFlowProgrammer.getMaxTableOffset());
 
             return;
         }
 
-        UpdateOpenFlowTableOffsets updateThread =
-                new UpdateOpenFlowTableOffsets(
-                        config.getSfcOfTableOffset(),
-                        config.getSfcOfAppEgressTableOffset());
+        UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset(),
+                config.getSfcOfAppEgressTableOffset());
 
-        try {
-            threadExecutor.submit(updateThread);
-        } catch(Exception e) {
-            LOG.error("Error executing UpdateOpenFlowTableOffsets thread [{}]", e.toString());
-        }
+        threadExecutor.submit(updateThread);
     }
 
     /**
-     * Verify that the given tableOffset and optional maxTable is in range
+     * Verify that the given tableOffset and optional maxTable is in range.
      *
-     * @param tableOffset the tableOffset to verify
-     * @param maxTable optionally the number of tables beyond tableOffset to be used
+     * @param tableOffset
+     *            the tableOffset to verify
+     * @param maxTable
+     *            optionally the number of tables beyond tableOffset to be used
      * @return a valid TableId or null if invalid
      */
     public TableId verifyMaxTableId(short tableOffset, short maxTable) {
@@ -143,18 +137,18 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
 
     /**
      * A thread to update the OpenFlow table offsets. A thread is needed, since
-     * we cant just update the table offsets while an RSP is being processed,
-     * so we need to wait until RSP processing is completed.
+     * we cant just update the table offsets while an RSP is being processed, so
+     * we need to wait until RSP processing is completed.
      *
      * @author ebrjohn
      *
      */
     private class UpdateOpenFlowTableOffsets implements Runnable {
 
-        private short sfcOffsetTable;
-        private short sfcAppEgressTable;
+        private final short sfcOffsetTable;
+        private final short sfcAppEgressTable;
 
-        public UpdateOpenFlowTableOffsets(short sfcOffsetTable, short sfcAppEgressTable) {
+        UpdateOpenFlowTableOffsets(short sfcOffsetTable, short sfcAppEgressTable) {
             this.sfcOffsetTable = sfcOffsetTable;
             this.sfcAppEgressTable = sfcAppEgressTable;
         }
@@ -166,8 +160,8 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
                 sfcOfFlowProgrammer.setTableBase(this.sfcOffsetTable);
                 sfcOfFlowProgrammer.setTableEgress(this.sfcAppEgressTable);
 
-                LOG.info("UpdateOpenFlowTableOffsets complete tableOffset [{}] egressTable [{}]",
-                        this.sfcOffsetTable, this.sfcAppEgressTable);
+                LOG.info("UpdateOpenFlowTableOffsets complete tableOffset [{}] egressTable [{}]", this.sfcOffsetTable,
+                        this.sfcAppEgressTable);
             } finally {
                 sfcSynchronizer.unlock();
             }

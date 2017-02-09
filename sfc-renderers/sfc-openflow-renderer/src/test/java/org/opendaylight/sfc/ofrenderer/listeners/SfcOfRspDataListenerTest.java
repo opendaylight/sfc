@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -89,11 +89,11 @@ public class SfcOfRspDataListenerTest {
     @Test
     public void onDataTreeChangedDelete() throws Exception {
         RenderedServicePath oldRsp = new RenderedServicePathBuilder().setName(new RspName("RSP1")).build();
-        when(dataObjectModificationRsp.getModificationType()).thenReturn(DataObjectModification.ModificationType.DELETE);
+        when(dataObjectModificationRsp.getModificationType())
+                .thenReturn(DataObjectModification.ModificationType.DELETE);
         when(dataObjectModificationRsp.getDataBefore()).thenReturn(oldRsp);
         sfcOfRspDataListener.onDataTreeChanged(rspModifications);
         verify(sfcOfRspProcessor).deleteRenderedServicePath(same(oldRsp));
         verifyNoMoreInteractions(sfcOfRspProcessor);
     }
-
 }

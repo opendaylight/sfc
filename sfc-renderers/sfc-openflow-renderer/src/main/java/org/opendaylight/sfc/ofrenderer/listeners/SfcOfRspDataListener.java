@@ -23,25 +23,22 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class has will be notified when changes are mad to Rendered Service Paths.
+ * This class has will be notified when changes are mad to Rendered Service
+ * Paths.
  *
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @version 0.1
- * <p>
  * @since 2015-01-27
  */
 public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServicePath>, AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspDataListener.class);
     private final SfcOfRspProcessor sfcOfRspProcessor;
-    private final ListenerRegistration rspListenerRegistration;
+    private final ListenerRegistration<SfcOfRspDataListener> rspListenerRegistration;
 
     public SfcOfRspDataListener(DataBroker dataBroker, SfcOfRspProcessor sfcOfRspProcessor) {
-        rspListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID),
-                this);
+        rspListenerRegistration = dataBroker.registerDataTreeChangeListener(
+                new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID), this);
         this.sfcOfRspProcessor = sfcOfRspProcessor;
     }
 
@@ -58,8 +55,7 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
                         sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
                     } else if (rootNode.getDataAfter().equals(rootNode.getDataBefore())) {
                         LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",
-                                rootNode.getDataAfter(),
-                                rootNode.getDataBefore());
+                                rootNode.getDataAfter(), rootNode.getDataBefore());
                         // This clause supports re-rendering of unmodified RSPs
                         sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
                         sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
@@ -70,6 +66,8 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
                         LOG.info("SfcOfRspDataListener.onDataTreeChanged delete RSP {}", rootNode.getDataBefore());
                         sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
                     }
+                    break;
+                default:
                     break;
             }
         }

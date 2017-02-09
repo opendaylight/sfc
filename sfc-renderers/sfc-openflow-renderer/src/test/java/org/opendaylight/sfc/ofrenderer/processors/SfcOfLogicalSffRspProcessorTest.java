@@ -26,7 +26,7 @@ import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerLSFFImpl;
+import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;

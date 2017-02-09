@@ -16,7 +16,7 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;

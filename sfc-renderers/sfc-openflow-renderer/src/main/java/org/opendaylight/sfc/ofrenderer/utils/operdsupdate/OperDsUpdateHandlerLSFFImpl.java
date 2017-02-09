@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.sfc.ofrenderer.utils.operDsUpdate;
+package org.opendaylight.sfc.ofrenderer.utils.operdsupdate;
 
+import com.google.common.util.concurrent.CheckedFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -48,110 +49,93 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-
 /**
- * Implementation of {@link OperDsUpdateHandlerInterface} for the Logical SFF
+ * Implementation of {@link OperDsUpdateHandlerInterface} for the Logical SFF.
+ *
  * @author Diego Granados (diego.jesus.granados.lopez@ericsson.com)
  *
  */
 public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface {
-
     private static final Logger LOG = LoggerFactory.getLogger(OperDsUpdateHandlerLSFFImpl.class);
 
-    private ExecutorService threadPoolExecutorService;
-    private DataBroker dataBroker=null;
+    private final ExecutorService threadPoolExecutorService;
+    private final DataBroker dataBroker;
 
-    public OperDsUpdateHandlerLSFFImpl(DataBroker r) {
-        dataBroker=r;
-        threadPoolExecutorService = Executors.newSingleThreadExecutor();
+    public OperDsUpdateHandlerLSFFImpl(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+        this.threadPoolExecutorService = Executors.newSingleThreadExecutor();
     }
 
     /**
      * Updates dpnid information in the SFF state part of the operational data
      * model (this method performs the addition of dpnids/RSPs for logical SFFs)
-     * The changes are added only to the passed transaction; it will be committed
-     * in a latter phase, after all datastore changes have been added
-     * @param theGraph The graph used for rendering
-     * @param rsp  The rendered service path
-     * @param transaction  The write transaction to which the datastore operations
-     * will be added
+     * The changes are added only to the passed transaction; it will be
+     * committed in a latter phase, after all datastore changes have been added.
+     *
+     * @param theGraph
+     *            The graph used for rendering
+     * @param rsp
+     *            The rendered service path
+     * @param transaction
+     *            The write transaction to which the datastore operations will
+     *            be added
      */
-    private void updateSffStateWithDpnIds(
-            SffGraph theGraph, RenderedServicePath rsp, WriteTransaction trans) {
-
-        LOG.debug(
-                "updateSffStateWithDpnIds: starting addition of dpnids-rsps to RSP state");
+    private void updateSffStateWithDpnIds(SffGraph theGraph, RenderedServicePath rsp, WriteTransaction trans) {
+        LOG.debug("updateSffStateWithDpnIds: starting addition of dpnids-rsps to RSP state");
         Iterator<SffGraphEntry> graphEntries = theGraph.getGraphEntryIterator();
-        SffGraphEntry aGraphEntry = null;
-
         Map<BigInteger, List<Rsps>> valuesMap = new HashMap<>();
+        SffGraphEntry graphEntry;
         while (graphEntries.hasNext()) {
-            aGraphEntry = graphEntries.next();
-            if (aGraphEntry.getDstSff().equals(SffGraph.EGRESS)) {
+            graphEntry = graphEntries.next();
+            if (graphEntry.getDstSff().equals(SffGraph.EGRESS) || graphEntry.getDstDpnId() == null) {
                 continue;
             }
-            if (aGraphEntry.getDstDpnId() == null) {
-                continue;
-            }
-            ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(
-                    aGraphEntry.getDstSff());
-            InstanceIdentifier<Dpn> dpnidIif = InstanceIdentifier
-                    .builder(ServiceFunctionForwardersState.class)
-                    .child(ServiceFunctionForwarderState.class, sffKey)
-                    .augmentation(SffLogicalSffAugmentation.class)
-                    .child(DpnRsps.class)
-                    .child(Dpn.class, new DpnKey(aGraphEntry.getDstDpnId()))
-                    .build();
-
             RspsForDpnidBuilder builder = new RspsForDpnidBuilder();
-            List<Rsps> values = valuesMap.get(aGraphEntry.getDstDpnId().getValue());
+            List<Rsps> values = valuesMap.get(graphEntry.getDstDpnId().getValue());
             if (values == null) {
                 values = new ArrayList<>();
-                LOG.debug("updateSffStateWithDpnIds: new rsp list for dpnid {}",
-                        aGraphEntry.getDstDpnId().getValue());
-                valuesMap.put(aGraphEntry.getDstDpnId().getValue(), values);
+                LOG.debug("updateSffStateWithDpnIds: new rsp list for dpnid {}", graphEntry.getDstDpnId().getValue());
+                valuesMap.put(graphEntry.getDstDpnId().getValue(), values);
             } else {
                 LOG.debug("updateSffStateWithDpnIds: rsp list already existing for dpnid {}",
-                        aGraphEntry.getDstDpnId().getValue());
+                        graphEntry.getDstDpnId().getValue());
             }
             values.add(new RspsBuilder().setKey(new RspsKey(new SfpName(rsp.getName().getValue()))).build());
             builder.setRsps(values);
             RspsForDpnid dpnRsps = builder.build();
-            Dpn dpnidInfo = new DpnBuilder()
-                    .setKey(new DpnKey(aGraphEntry.getDstDpnId()))
-                    .setRspsForDpnid(dpnRsps)
+            Dpn dpnidInfo = new DpnBuilder().setKey(new DpnKey(graphEntry.getDstDpnId())).setRspsForDpnid(dpnRsps)
                     .build();
-
-            LOG.debug(
-                    "updateSffStateWithDpnIds: iid: {}; info: {}", dpnidIif, dpnidInfo);
-            trans.merge(LogicalDatastoreType.OPERATIONAL, dpnidIif, dpnidInfo,
-                    true);
+            ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(graphEntry.getDstSff());
+            InstanceIdentifier<Dpn> dpnidIif = InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
+                    .child(ServiceFunctionForwarderState.class, sffKey).augmentation(SffLogicalSffAugmentation.class)
+                    .child(DpnRsps.class).child(Dpn.class, new DpnKey(graphEntry.getDstDpnId())).build();
+            LOG.debug("updateSffStateWithDpnIds: iid: {}; info: {}", dpnidIif, dpnidInfo);
+            trans.merge(LogicalDatastoreType.OPERATIONAL, dpnidIif, dpnidInfo, true);
         }
     }
 
     /**
      * Updates dpnid information in the SFF state part of the operational data
      * model (this method performs the removal of dpnids/RSPs from logical SFFs)
-     * The changes are added only to the passed transaction; it will be committed
-     * in a latter phase, after all datastore changes have been added
-     * @param rsp  The rendered service path that is being deleted
-     * @param transaction  The write transaction to which the datastore operations
-     * will be added
+     * The changes are added only to the passed transaction; it will be
+     * committed in a latter phase, after all datastore changes have been added.
+     *
+     * @param rsp
+     *            The rendered service path that is being deleted
+     * @param transaction
+     *            The write transaction to which the datastore operations will
+     *            be added
      */
-    private void deleteRspFromSffState(
-            RenderedServicePath rsp, WriteTransaction transaction) {
-        LOG.debug(
-                "deleteRspFromSffState: starting deletion in dpnids-rsps");
+    private void deleteRspFromSffState(RenderedServicePath rsp, WriteTransaction transaction) {
+        LOG.debug("deleteRspFromSffState: starting deletion in dpnids-rsps");
 
         Iterator<RenderedServicePathHop> hops = rsp.getRenderedServicePathHop().iterator();
-        RenderedServicePathHop aHop = null;
+        RenderedServicePathHop rspHop;
 
         while (hops.hasNext()) {
-            aHop = hops.next();
-            SffName sffName =  aHop.getServiceFunctionForwarder();
-            RspLogicalSffAugmentation lsffAugmentation = aHop.getAugmentation(RspLogicalSffAugmentation.class);
+            rspHop = hops.next();
+            SffName sffName = rspHop.getServiceFunctionForwarder();
+            RspLogicalSffAugmentation lsffAugmentation = rspHop.getAugmentation(RspLogicalSffAugmentation.class);
             if (lsffAugmentation == null) {
                 continue;
             }
@@ -159,25 +143,18 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
             if (dpnid == null) {
                 continue;
             }
-           ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(
-                   sffName);
+            ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(sffName);
             RspsForDpnidBuilder builder = new RspsForDpnidBuilder();
-            List<Rsps>values = new ArrayList<>();
+            List<Rsps> values = new ArrayList<>();
             values.add(new RspsBuilder().setKey(new RspsKey(new SfpName(rsp.getName().getValue()))).build());
             builder.setRsps(values);
 
-            InstanceIdentifier<Rsps> dpnidIif = InstanceIdentifier
-                    .builder(ServiceFunctionForwardersState.class)
-                    .child(ServiceFunctionForwarderState.class, sffKey)
-                    .augmentation(SffLogicalSffAugmentation.class)
-                    .child(DpnRsps.class)
-                    .child(Dpn.class, new DpnKey(dpnid))
-                    .child(RspsForDpnid.class)
-                    .child(Rsps.class, new RspsKey(new SfpName(rsp.getName().getValue())))
-                    .build();
+            InstanceIdentifier<Rsps> dpnidIif = InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
+                    .child(ServiceFunctionForwarderState.class, sffKey).augmentation(SffLogicalSffAugmentation.class)
+                    .child(DpnRsps.class).child(Dpn.class, new DpnKey(dpnid)).child(RspsForDpnid.class)
+                    .child(Rsps.class, new RspsKey(new SfpName(rsp.getName().getValue()))).build();
 
-            LOG.debug(
-                    "deleteRspFromSffState: iid: {}; ", dpnidIif);
+            LOG.debug("deleteRspFromSffState: iid: {}; ", dpnidIif);
             transaction.delete(LogicalDatastoreType.OPERATIONAL, dpnidIif);
         }
     }
@@ -187,53 +164,52 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
      * model. This method just adds the changes to the passed transaction; the
      * transaction will later be committed after all datastore changes have been
      * added
-     * @param theGraph The graph used for rendering
-     * @param rsp  The rendered service path
-     * @param transaction  The write transaction to which the datastore operations
-     * will be added
+     *
+     * @param theGraph
+     *            The graph used for rendering
+     * @param rsp
+     *            The rendered service path
+     * @param transaction
+     *            The write transaction to which the datastore operations will
+     *            be added
      */
-    private void updateRenderedServicePathOperationalStateWithDpnIds(
-            SffGraph theGraph, RenderedServicePath rsp, WriteTransaction transaction) {
-
-        LOG.debug("updateRenderedServicePathOperationalStateWithDpnIds: "
-                + "starting addition of dpnids to the RSP");
+    private void updateRenderedServicePathOperationalStateWithDpnIds(SffGraph theGraph, RenderedServicePath rsp,
+            WriteTransaction transaction) {
+        LOG.debug("updateRenderedServicePathOperationalStateWithDpnIds: " + "starting addition of dpnids to the RSP");
         Iterator<SffGraphEntry> graphEntries = theGraph.getGraphEntryIterator();
-        SffGraphEntry aGraphEntry = null;
-        RenderedServicePathKey rspKey = new RenderedServicePathKey(
-                rsp.getName());
+        SffGraphEntry graphEntry;
+        RenderedServicePathKey rspKey = new RenderedServicePathKey(rsp.getName());
         short hopIndex = 0;
         while (graphEntries.hasNext()) {
-            aGraphEntry = graphEntries.next();
-            if (aGraphEntry.getDstSff().equals(SffGraph.EGRESS)) {
+            graphEntry = graphEntries.next();
+            if (graphEntry.getDstSff().equals(SffGraph.EGRESS)) {
                 continue;
             }
             InstanceIdentifier<RspLogicalSffAugmentation> iidRspHop = InstanceIdentifier
-                    .builder(RenderedServicePaths.class)
-                    .child(RenderedServicePath.class, rspKey)
-                    .child(RenderedServicePathHop.class,
-                            new RenderedServicePathHopKey(hopIndex++))
+                    .builder(RenderedServicePaths.class).child(RenderedServicePath.class, rspKey)
+                    .child(RenderedServicePathHop.class, new RenderedServicePathHopKey(hopIndex++))
                     .augmentation(RspLogicalSffAugmentation.class).build();
-            RspLogicalSffAugmentation augm = new RspLogicalSffAugmentationBuilder()
-                    .setDpnId(aGraphEntry.getDstDpnId()).build();
-            LOG.debug(
-                    "updateRenderedServicePathOperationalStateWithDpnIds: iid: {}; agumentation: {}", iidRspHop, augm);
+            RspLogicalSffAugmentation augm = new RspLogicalSffAugmentationBuilder().setDpnId(graphEntry.getDstDpnId())
+                    .build();
+            LOG.debug("updateRenderedServicePathOperationalStateWithDpnIds: iid: {}; agumentation: {}", iidRspHop,
+                    augm);
             transaction.put(LogicalDatastoreType.OPERATIONAL, iidRspHop, augm, true);
         }
     }
 
     /**
-     * Asynchronous commit of the passed transaction
-     * @param trans The transaction to submit
+     * Asynchronous commit of the passed transaction.
+     *
+     * @param trans
+     *            The transaction to submit
      */
     private void commitChangesAsync(WriteTransaction trans) {
-        threadPoolExecutorService.submit( () -> {
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans
-                    .submit();
+        threadPoolExecutorService.submit(() -> {
+            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans.submit();
             try {
                 submitFuture.checkedGet();
             } catch (TransactionCommitFailedException e) {
-                LOG.error("commitChangesAsync: Transaction failed. Message: {}",
-                        e.getMessage(), e);
+                LOG.error("commitChangesAsync: Transaction failed. Message: {}", e.getMessage(), e);
             }
         });
     }

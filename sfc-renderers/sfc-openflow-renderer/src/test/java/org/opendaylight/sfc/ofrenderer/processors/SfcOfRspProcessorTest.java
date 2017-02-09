@@ -32,7 +32,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.ofrenderer.utils.operDsUpdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;

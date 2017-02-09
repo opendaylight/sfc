@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson India Global Services Pvt Ltd. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -17,15 +17,15 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public abstract class SfcOfAbstractDataListener implements DataChangeListener {
 
     private DataBroker dataBroker;
-    private InstanceIdentifier<?> iID;
+    private InstanceIdentifier<?> instanceIdentifier;
     private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
 
     public void setDataBroker(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
 
-    public void setIID(InstanceIdentifier<?> iID) {
-        this.iID = iID;
+    public void setIID(InstanceIdentifier<?> instanceIdentifier) {
+        this.instanceIdentifier = instanceIdentifier;
     }
 
     public DataBroker getDataBroker() {
@@ -33,8 +33,8 @@ public abstract class SfcOfAbstractDataListener implements DataChangeListener {
     }
 
     public void registerAsDataChangeListener(LogicalDatastoreType datastoreType) {
-        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(datastoreType, iID,
-                this, DataBroker.DataChangeScope.SUBTREE);
+        dataChangeListenerRegistration = dataBroker.registerDataChangeListener(datastoreType, instanceIdentifier, this,
+                DataBroker.DataChangeScope.SUBTREE);
     }
 
     public void registerAsDataChangeListener() {
@@ -44,5 +44,4 @@ public abstract class SfcOfAbstractDataListener implements DataChangeListener {
     public void closeDataChangeListener() {
         dataChangeListenerRegistration.close();
     }
-
 }

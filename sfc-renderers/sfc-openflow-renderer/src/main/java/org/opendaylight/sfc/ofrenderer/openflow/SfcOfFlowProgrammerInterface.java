@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,7 +11,6 @@ package org.opendaylight.sfc.ofrenderer.openflow;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
@@ -19,93 +18,92 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
-
 /**
- * An interface to be implemented by concrete classes that will write to OpenFlow or OVS switches.
- * <p>
+ * An interface to be implemented by concrete classes that will write to
+ * OpenFlow or OVS switches.
  *
  * @author Brady Johnson (brady.allen.johnson@ericsson.com)
  * @since 2015-02-24
  */
 public interface SfcOfFlowProgrammerInterface {
 
-    public void shutdown() throws ExecutionException, InterruptedException;
+    void shutdown() throws ExecutionException, InterruptedException;
 
     // These table methods are used for app-coexistence
 
-    public short getTableBase();
+    short getTableBase();
 
-    public void setTableBase(short tableBase);
+    void setTableBase(short tableBase);
 
-    public short getMaxTableOffset();
+    short getMaxTableOffset();
 
-    public short getTableEgress();
+    short getTableEgress();
 
-    public void setTableEgress(short tableEgress);
+    void setTableEgress(short tableEgress);
 
     // Set the RSP Id that subsequent flow creations belong to
-    public void setFlowRspId(Long rspId);
+    void setFlowRspId(Long rspId);
 
     /**
-     * Deletes all flows created for a particular RSP and removes
-     * initialization flows from SFFs if the last RSP was removed.
+     * Deletes all flows created for a particular RSP and removes initialization
+     * flows from SFFs if the last RSP was removed.
      *
-     * @param rspId the id of the RSP to be deleted
+     * @param rspId
+     *            the id of the RSP to be deleted
      *
      * @return Node IDs from which initialization flows were removed.
      */
-    public Set<NodeId> deleteRspFlows(final long rspId);
+    Set<NodeId> deleteRspFlows(long rspId);
 
     // Write any buffered flows to the data store
-    public void flushFlows();
+    void flushFlows();
 
     // Purge any unwritten flows not written yet. This should be called upon
     // errors, when the remaining buffered flows should not be written.
-    public void purgeFlows();
+    void purgeFlows();
 
-    //Set FlowWriter implementation
-    public void setFlowWriter(SfcOfFlowWriterInterface sfcOfFlowWriter);
+    // Set FlowWriter implementation
+    void setFlowWriter(SfcOfFlowWriterInterface sfcOfFlowWriter);
 
     //
-    // Congfigure Table 1, Transport Ingress
+    // Configure Table 1, Transport Ingress
     //
-    public void configureIpv4TransportIngressFlow(final String sffNodeName);
+    void configureIpv4TransportIngressFlow(String sffNodeName);
 
-    public void configureVlanTransportIngressFlow(final String sffNodeName);
+    void configureVlanTransportIngressFlow(String sffNodeName);
 
     // These 2 are work-around flows until the OVS NSH patch is completed
-    public void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(final String sffNodeName, final String sfIp, final short vxlanUdpPort, final long sffPort);
-    public void configureNshVxgpeSfReturnLoopbackIngressFlow(final String sffNodeName, final short vxlanUdpPort, final long sffPort);
+    void configureNshVxgpeSfLoopbackEncapsulatedEgressFlow(String sffNodeName, String sfIp, short vxlanUdpPort,
+            long sffPort);
 
-    public void configureNshVxgpeTransportIngressFlow(final String sffNodeName, final long nshNsp, final short nshNsi);
+    void configureNshVxgpeSfReturnLoopbackIngressFlow(String sffNodeName, short vxlanUdpPort, long sffPort);
 
-    public void configureMplsTransportIngressFlow(final String sffNodeName);
+    void configureNshVxgpeTransportIngressFlow(String sffNodeName, long nshNsp, short nshNsi);
 
-    public void configureArpTransportIngressFlow(final String sffNodeName, final String mac);
+    void configureMplsTransportIngressFlow(String sffNodeName);
+
+    void configureArpTransportIngressFlow(String sffNodeName, String mac);
 
     //
     // Configure Table 2, Path Mapper
     //
-    public void configureMplsPathMapperFlow(final String sffNodeName, final long label, long pathId, boolean isSf);
+    void configureMplsPathMapperFlow(String sffNodeName, long label, long pathId, boolean isSf);
 
-    public void configureVlanPathMapperFlow(final String sffNodeName, final int vlan, long pathId, boolean isSf);
+    void configureVlanPathMapperFlow(String sffNodeName, int vlan, long pathId, boolean isSf);
     // PathMapper not needed for NshVxgpe NSH
-    //configureNshVxgpePathMapperFlow()
+    // configureNshVxgpePathMapperFlow()
 
     //
     // Table 3, NextHop
     //
-    public void configureMacNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
-            final String dstMac);
+    void configureMacNextHopFlow(String sffNodeName, long sfpId, String srcMac, String dstMac);
 
-    public void configureGroupNextHopFlow(final String sffNodeName, final long sfpId, final String srcMac,
-            final long groupId, final String groupName);
+    void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId, String groupName);
 
-    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nsp,
-            final short nsi);
+    void configureNshVxgpeNextHopFlow(String sffNodeName, String dstIp, long nsp, short nsi);
 
     /**
-     * Configure nsh next hop flow
+     * Configure nsh next hop flow.
      *
      * @param sffNodeName
      *            The openflow node name
@@ -119,70 +117,85 @@ public interface SfcOfFlowProgrammerInterface {
      * @param nsi
      *            the NSH NSI
      */
-    public void configureNshEthNextHopFlow(final String sffNodeName,
-            final String srcMac, final String dstMac, final long nsp,
-            final short nsi);
+    void configureNshEthNextHopFlow(String sffNodeName, String srcMac, String dstMac, long nsp, short nsi);
 
     //
     // Table 10, Transport Egress
     //
-    public void configureVlanSfTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, final String port, final long pathId, final boolean doPktin);
-    public void configureVlanTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, final String port, final long pathId);
-    public void configureVlanLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final int dstVlan, final String port, final long pathId);
+    void configureVlanSfTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, int dstVlan, String port,
+            long pathId, boolean doPktin);
 
-    public void configureMplsTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final long mplsLabel, final String port, final long pathId);
-    public void configureMplsLastHopTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,
-            final long mplsLabel, final String port, final long pathId);
+    void configureVlanTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, int dstVlan, String port,
+            long pathId);
 
-    public void configureNshVxgpeTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+    void configureVlanLastHopTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, int dstVlan,
+            String port, long pathId);
 
-    public void configureNshVxgpeAppCoexistTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String sffIp);
+    void configureMplsTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, long mplsLabel, String port,
+            long pathId);
 
-    public void configureNshVxgpeLastHopTransportEgressFlow(
-            final String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+    void configureMplsLastHopTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, long mplsLabel,
+            String port, long pathId);
 
-    public void configureNshNscTransportEgressFlow(
-            String sffNodeName, final long nshNsp, final short nshNsi, String switchPort);
+    void configureNshVxgpeTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port);
 
-    public void configureNshEthTransportEgressFlow(
-            String sffNodeName, final long nshNsp, final short nshNsi, final String port);
+    void configureNshVxgpeAppCoexistTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String sffIp);
+
+    void configureNshVxgpeLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port);
+
+    void configureNshNscTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String switchPort);
+
+    /**
+     * Configure transport egress flows, using a list of externally provided
+     * actions.
+     *
+     * @param sffOpenFlowNodeName
+     *            The openflow identifier for the node on which the flows are to
+     *            be written
+     * @param nshNsp
+     *            NSP to use in the match part
+     * @param nshNsi
+     *            NSI to use in the match part
+     * @param actionList
+     *            List of actions to use in the actions part
+     */
+    void configureNshEthTransportEgressFlow(String sffOpenFlowNodeName, long nshNsp, short nshNsi,
+            List<Action> actionList);
+
+    void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port);
 
     //
-    // Configure the MatchAny entry specifying if it should drop or goto the next table
+    // Configure the MatchAny entry specifying if it should drop or goto the
+    // next table
     // Classifier MatchAny will go to Ingress
     // TransportIngress MatchAny will go to PathMapper
     // PathMapper MatchAny will go to PathMapperAcl
     // PathMapperAcl MatchAny will go to NextHop
     // NextHop MatchAny will go to TransportEgress
     //
-    public void configureClassifierTableMatchAny(final String sffNodeName);
+    void configureClassifierTableMatchAny(String sffNodeName);
 
-    public void configureTransportIngressTableMatchAny(final String sffNodeName);
+    void configureTransportIngressTableMatchAny(String sffNodeName);
 
-    public void configurePathMapperTableMatchAny(final String sffNodeName);
+    void configurePathMapperTableMatchAny(String sffNodeName);
 
-    public void configurePathMapperAclTableMatchAny(final String sffNodeName);
+    void configurePathMapperAclTableMatchAny(String sffNodeName);
 
-    public void configureNextHopTableMatchAny(final String sffNodeName);
+    void configureNextHopTableMatchAny(String sffNodeName);
 
-    public void configureTransportEgressTableMatchAny(final String sffNodeName);
+    void configureTransportEgressTableMatchAny(String sffNodeName);
 
     /* OVS DPDK only, these APIs will add extra flows for OVS DPDK */
-    public void configureClassifierTableDpdkOutput(final String sffNodeName, Long outPort);
-    public void configureClassifierTableDpdkInput(final String sffNodeName, Long inPort);
+    void configureClassifierTableDpdkOutput(String sffNodeName, Long outPort);
+
+    void configureClassifierTableDpdkInput(String sffNodeName, Long inPort);
 
     // group configuration
-    public void configureGroup(final String sffNodeName, final String openflowNodeId, final String sfgName,
-            final long sfgId, int groupType, List<GroupBucketInfo> bucketInfos, final boolean isAddGroup);
+    void configureGroup(String sffNodeName, String openflowNodeId, String sfgName, long sfgId, int groupType,
+            List<GroupBucketInfo> bucketInfos, boolean isAddGroup);
 
     /**
-     * Used by logical sff processor in order to write chain egress flows
+     * Used by logical sff processor in order to write chain egress flows.
      *
      * @param sffNodeName
      *            last openflow node in the chain
@@ -197,25 +210,15 @@ public interface SfcOfFlowProgrammerInterface {
      *            time), and the packet would be dropped at subsequent pipeline
      *            processing)
      */
-    public void configureNshEthLastHopTransportEgressFlow(String sffNodeName,
-            long nshNsp, short nshNsi, MacAddress macAddress);
-
-    /**
-     * Configure transport egress flows, using a list of externally provided actions
-     * @param sffOpenFlowNodeName  The openflow identifier for the node on which the flows are to be written
-     * @param nshNsp         NSP to use in the match part
-     * @param nshNsi         NSI to use in the match part
-     * @param actionList     List of actions to use in the actions part
-     */
-    public void configureNshEthTransportEgressFlow(String sffOpenFlowNodeName,
-            long nshNsp, short nshNsi, List<Action> actionList);
+    void configureNshEthLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi,
+            MacAddress macAddress);
 
     /**
      * Setter for the table index mapper (class which provides the tables to use
-     * for Genius-based application coexistence)
+     * for Genius-based application coexistence).
      *
      * @param tableIndexMapper
      *            The table index mapper
      */
-    public void setTableIndexMapper(SfcTableIndexMapper tableIndexMapper);
+    void setTableIndexMapper(SfcTableIndexMapper tableIndexMapper);
 }

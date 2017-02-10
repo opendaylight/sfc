@@ -8,6 +8,10 @@
 
 package org.opendaylight.sfc.sfc_ovs.provider.api;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static junit.framework.TestCase.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,9 +56,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.TestCase.assertEquals;
 
 /**
  * @author Vladimir Lavor

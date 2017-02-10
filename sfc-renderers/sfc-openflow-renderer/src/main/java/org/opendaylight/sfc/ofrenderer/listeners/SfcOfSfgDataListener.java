@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -42,9 +42,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class has will be notified when changes are mad to Service function group.
+ * This class has will be notified when changes are mad to Service function
+ * group.
  *
  * @author Shlomi Alfasi (shlomi.alfasi@contextream.com)
  * @version 0.1
@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
 
-    private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
-    private SfcOfBaseProviderUtils sfcOfProviderUtils;
+    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcOfBaseProviderUtils sfcOfProviderUtils;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfSfgDataListener.class);
 
@@ -84,8 +84,8 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
         // SFG update
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionGroup
-                    && (!(dataCreatedConfigurationObject.containsKey(entry.getKey()))))) {
+            if (entry.getValue() instanceof ServiceFunctionGroup
+                    && !dataCreatedConfigurationObject.containsKey(entry.getKey())) {
                 LOG.info("SfcOfSfgDataListener.onDataChanged Update SFG {}",
                         ((ServiceFunctionGroup) entry.getValue()).getName());
                 ServiceFunctionGroup sfg = (ServiceFunctionGroup) entry.getValue();
@@ -107,43 +107,38 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
     }
 
     private void buildGroup(ServiceFunctionGroup sfg, boolean isAdd) {
-        try {
-            List<SfcServiceFunction> sfs = sfg.getSfcServiceFunction();
-            SfName sfName = new SfName(sfs.get(0).getName());
-            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
-            // assuming all SF's have the same SFF
-            // should use the ovs id
-            SffName sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
-            String sffNodeId = null;
-            sffNodeId = getSffOpenFlowNodeName(sffName);
+        List<SfcServiceFunction> sfs = sfg.getSfcServiceFunction();
+        SfName sfName = new SfName(sfs.get(0).getName());
+        ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+        // assuming all SF's have the same SFF
+        // should use the ovs id
+        SffName sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
+        String sffNodeId = null;
+        sffNodeId = getSffOpenFlowNodeName(sffName);
 
-            if (sffNodeId == null) {
-                LOG.warn("failed to find switch configuration: sffName: {}- \naborting", sffName);
-                return;
-            }
-
-            ServiceFunctionGroupAlgorithm algorithm =
-                    SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlg(sfg.getAlgorithm());
-
-            List<GroupBucketInfo> bucketsInfo = new ArrayList<GroupBucketInfo>();
-
-            ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
-
-            int index = 0;
-            for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
-                sfName = new SfName(sfcServiceFunction.getName());
-                sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
-                ServiceFunctionDictionary sffSfDict = sfcOfProviderUtils.getSffSfDictionary(sff, sfName);
-                String outPort = sfcOfProviderUtils.getDictPortInfoPort(sff, sffSfDict);
-                bucketsInfo.add(buildBucket(sf, outPort, index));
-                index++;
-            }
-            this.sfcOfFlowProgrammer.configureGroup(sffName.getValue(), sffNodeId, sfg.getName(), sfg.getGroupId(),
-                    algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
-
-        } catch (Exception e) {
-            LOG.warn("Failed generating group " + sfg, e);
+        if (sffNodeId == null) {
+            LOG.warn("failed to find switch configuration: sffName: {}- \naborting", sffName);
+            return;
         }
+
+        ServiceFunctionGroupAlgorithm algorithm = SfcProviderServiceFunctionGroupAlgAPI
+                .readServiceFunctionGroupAlg(sfg.getAlgorithm());
+
+        List<GroupBucketInfo> bucketsInfo = new ArrayList<>();
+
+        ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+
+        int index = 0;
+        for (SfcServiceFunction sfcServiceFunction : sfg.getSfcServiceFunction()) {
+            sfName = new SfName(sfcServiceFunction.getName());
+            sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+            ServiceFunctionDictionary sffSfDict = sfcOfProviderUtils.getSffSfDictionary(sff, sfName);
+            String outPort = sfcOfProviderUtils.getDictPortInfoPort(sff, sffSfDict);
+            bucketsInfo.add(buildBucket(sf, outPort, index));
+            index++;
+        }
+        this.sfcOfFlowProgrammer.configureGroup(sffName.getValue(), sffNodeId, sfg.getName(), sfg.getGroupId(),
+                algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
     }
 
     private GroupBucketInfo buildBucket(ServiceFunction sf, String outPort, int index) {

@@ -23,3 +23,10 @@ See dovs/README.txt for more info on dovs.
 In case you want to use an ODL controller with dovs, make sure the controller
 is reachable through the host only network on which this virtual environment is
 connected.
+
+It also contains a set of tools for testing Service Function Chaining (SFC)
+
+- Simple Service Function HTTP Header Enrichment:
+See `sf_hhe/README.asciidoc`
+- Test traffic Logical SFF with dovs + SFC config + sf_hhe
+See `logical_sff/README.asciidoc`

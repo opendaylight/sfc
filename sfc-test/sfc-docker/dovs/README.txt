@@ -50,6 +50,13 @@
     |      dovs-mgmt                                                         |
     +------------------------------------------------------------------------+
 
+    Subcommand sfc-config allows:
+     - Creating Networking (compute nodes and guests)
+     - Setting Service Function Chaining (SFC) Configuration in Opendaylight Controller (ODL)
+        service-function-chains (SFC), service-function-paths (SFP),
+        service-function-forwarders (SFF), service-functions (SF)
+     - Creating/removing Rendered Service Path (RSP) in ODL
+
 
     Example 1: Run a OVS instance and attach a guest namespace.
 

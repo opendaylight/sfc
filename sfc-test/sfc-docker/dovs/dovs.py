@@ -1225,7 +1225,29 @@ class Clean(cli.Application):
 @Dovs.subcommand('sfc-config')
 class SfcConfig(cli.Application):
     """
-    Generate SFC Configuration
+    - Create Networking (compute nodes and guests)
+    - Set Service Function Chaining (SFC) Configuration in Opendaylight Controller (ODL)
+       service-function-chains (SFC), service-function-paths (SFP),
+       service-function-forwarders (SFF), service-functions (SF)
+    - Create/remove Rendered Service Path (RSP) in ODL
+
+    Example:
+     sudo dovs sfc-config --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]" --odl 172.28.128.4 --different-subnets
+       # It creates 6 nodes ('client1', 'firewall', 'napt44', 'server1', 'client2' and 'server2'
+       # It creates 6 guests, one per node ('dovs-client1', 'dovs-firewall', etc.) each one in its own subnet ("10.0.1.x", "10.0.2.x" ...)
+       # It configures in ODL:
+       #  2 symmetric SFC ("SFC1" with 'firewall, napt44' and "SFC2" with 'napt44')
+       #  2 SFP ("SFP1" associated to "SFC1" and "SFP2" associated to "SFC2"),
+       #  1 SFF ("sfflogical1")
+       #  2 SF ("firewall" and "napt44") with its corresponding "interface-name" neutron port uuid
+     sudo dovs sfc-config --create-rsp-from-id 1 --odl 172.28.128.4
+       # It creates symmetric RSP "RSP1" associated to "SFP1"
+     sudo dovs sfc-config --create-rsp-from-id 2 --odl 172.28.128.4
+       # It creates symmetric RSP "RSP2" associated to "SFP2"
+     sudo dovs sfc-config --delete-rsp-from-id 1 --odl 172.28.128.4
+       # It removes RSP "RSP1"
+     sudo dovs sfc-config --delete-rsp-from-id 2 --odl 172.28.128.4
+       # It removes RSP "RSP2"
     """
     _odl = None
     _chains = []
@@ -1238,7 +1260,7 @@ class SfcConfig(cli.Application):
     @cli.autoswitch(str)
     def odl(self, odl):
         """
-        ip address of ODL controller.
+        IP address of ODL controller.
         """
         self._odl = odl
 
@@ -1261,18 +1283,17 @@ class SfcConfig(cli.Application):
 
     @cli.autoswitch(str, requires = ['--odl'])
     def chains(self, chains):
-        print ("chains:" + chains)
         """
-        Create Service Function Chain,
-        Example: --chains "[['client1', 'firewall, napt44', 'server1'], ['client2', 'napt44', 'server2']]"
-        service-function-type [
+        Create Networking and set SFC configuration in ODL, base on the specify chain
+        """
+        # print ("chains:" + chains)
+        """ Example of service-function-type
          firewall,
          dpi (Deep Packet Inspection),
          napt44 (Traditional NAT [RFC3022]),
          qos (Quality of Service),
          ids (Intrusion Detection System),
          http-header-enrichment
-        ]
         """
         try:
             self._chains = self.createListChains(self, chains)
@@ -1292,7 +1313,7 @@ class SfcConfig(cli.Application):
     @cli.autoswitch(requires = ['--chains'])
     def different_subnets(self):
         """
-        All the Guest belong to different subnets
+        When creating guests associated them to different subnets
         """
         self._different_subnets = True
 
@@ -1306,14 +1327,14 @@ class SfcConfig(cli.Application):
     @cli.autoswitch(int, requires = ['--odl'])
     def create_rsp_from_id(self, chain_id):
         """
-        Create a RSP
+        Create a RSP "RSP<CHAIN_ID>"
         """
         self._create_rsp_from_id = chain_id
 
     @cli.autoswitch(int, requires = ['--odl'])
     def delete_rsp_from_id(self, chain_id):
         """
-        Delete a RSP
+        Delete a RSP "RSP<CHAIN_ID>"
         """
         self._delete_rsp_from_id = chain_id
 

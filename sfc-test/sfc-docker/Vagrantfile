@@ -49,4 +49,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      inline: "cd /vagrant/provision && ./setup_dovs_dhcp.sh"
   config.vm.provision "setup_dovs", type: "shell",
     inline: "cd /vagrant/provision && ./setup_dovs.sh"
+  config.vm.provision "setup_sf_hhe", type: "shell",
+    inline: "cd /vagrant/provision && ./setup_sf_hhe.sh"
 end

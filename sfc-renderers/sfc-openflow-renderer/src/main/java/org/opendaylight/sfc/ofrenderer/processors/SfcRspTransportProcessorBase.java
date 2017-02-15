@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -49,11 +49,8 @@ public abstract class SfcRspTransportProcessorBase {
         this.sffGraph = null;
     }
 
-    public SfcRspTransportProcessorBase(
-            RenderedServicePath rsp,
-            SfcOfBaseProviderUtils sfcProviderUtils,
-            SfcOfFlowProgrammerInterface sfcFlowProgrammer,
-            SffGraph sffGraph) {
+    public SfcRspTransportProcessorBase(RenderedServicePath rsp, SfcOfBaseProviderUtils sfcProviderUtils,
+            SfcOfFlowProgrammerInterface sfcFlowProgrammer, SffGraph sffGraph) {
         this.rsp = rsp;
         this.sfcProviderUtils = sfcProviderUtils;
         this.sfcFlowProgrammer = sfcFlowProgrammer;
@@ -85,20 +82,30 @@ public abstract class SfcRspTransportProcessorBase {
     //
 
     public abstract void configureSfTransportIngressFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl);
+
     public abstract void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl);
 
     public abstract void configureSfPathMapperFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl);
+
     public abstract void configureSffPathMapperFlow(SffGraph.SffGraphEntry entry, DataPlaneLocator hopDpl);
 
-    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl);
-    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SffDataPlaneLocator dstSffDpl);
-    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl, SfDataPlaneLocator dstSfDpl);
-    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl);
+    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SfDataPlaneLocator dstSfDpl);
 
-    public abstract void configureSfTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl);
-    public abstract void configureSffTransportEgressFlow(
-            SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl);
+    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl,
+            SffDataPlaneLocator dstSffDpl);
+
+    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator srcSfDpl,
+            SfDataPlaneLocator dstSfDpl);
+
+    public abstract void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SffDataPlaneLocator dstSffDpl);
+
+    public abstract void configureSfTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl);
+
+    public abstract void configureSffTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
+            SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl);
 
     public abstract void setRspTransports();
 
@@ -118,13 +125,14 @@ public abstract class SfcRspTransportProcessorBase {
 
     /**
      * Iterate the SFF graph for the Rendered Service Path and process the Data
-     * Plane Locators (DPLs).  This method will figure out which DPL is the
+     * Plane Locators (DPLs). This method will figure out which DPL is the
      * ingress and which is the egress, and try to calculate Hop DPLs.
      */
     public void processSffDpls() {
         // Iterate the entries in the SFF Graph
 
-        // DPLs are not used for the logical SFF (no SFF DPL / dictionary; SF dpl is a logical interface definition)
+        // DPLs are not used for the logical SFF (no SFF DPL / dictionary; SF
+        // dpl is a logical interface definition)
         if (sffGraph.isUsingLogicalSFF()) {
             LOG.debug("processSFFDpls: skipping src dpl setup for logical sff");
             return;
@@ -137,21 +145,21 @@ public abstract class SfcRspTransportProcessorBase {
                 continue;
             }
             LOG.debug("processSffDpl - handling entry {}", entry);
-            ServiceFunctionForwarder srcSff =
-                    sfcProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), entry.getPathId());
+            ServiceFunctionForwarder srcSff = sfcProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(),
+                    entry.getPathId());
             if (srcSff == null) {
                 throw new SfcRenderingException("processSffDpls srcSff is null [" + entry.getSrcSff() + "]");
             }
 
             // may be null if its EGRESS
-            ServiceFunctionForwarder dstSff =
-                    sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(), entry.getPathId());
+            ServiceFunctionForwarder dstSff = sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
+                    entry.getPathId());
             if (dstSff != null) {
                 // Set the SFF-SFF Hop DPL
                 if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
-                    throw new SfcRenderingException(
-                            "Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff() + "] dstSff [" + entry.getDstSff()
-                                    + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
+                    throw new SfcRenderingException("Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff()
+                            + "] dstSff [" + entry.getDstSff() + "] transport [" + rsp.getTransportType() + "] pathId ["
+                            + entry.getPathId() + "]");
                 }
             }
 
@@ -165,7 +173,8 @@ public abstract class SfcRspTransportProcessorBase {
                             + "] transport [" + rsp.getTransportType() + "] pathId [" + entry.getPathId() + "]");
                 }
             } else {
-                // The srcSff egress DPL was just set above, now set its ingress DPL
+                // The srcSff egress DPL was just set above, now set its ingress
+                // DPL
                 SffDataPlaneLocator srcSffEgressDpl = sfcProviderUtils.getSffDataPlaneLocator(srcSff,
                         sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
                 if (!setSffRemainingHopDataPlaneLocator(srcSff, srcSffEgressDpl, false)) {
@@ -177,14 +186,17 @@ public abstract class SfcRspTransportProcessorBase {
     }
 
     /*
-     * For the given sff that has either the ingress or egress DPL set, as indicated
-     * by ingressDplSet, iterate the SFF DPLs looking for the one that has the same
-     * transportType as the already set DPL. Once found set it as the SFF ingress/egress DPL.
-     * For example, if ingressDplSet is true, then the SFF ingress DPL has already been
-     * set, so set the SFF egress DPL that has the same transportType as the ingress DPL.
+     * For the given sff that has either the ingress or egress DPL set, as
+     * indicated by ingressDplSet, iterate the SFF DPLs looking for the one that
+     * has the same transportType as the already set DPL. Once found set it as
+     * the SFF ingress/egress DPL. For example, if ingressDplSet is true, then
+     * the SFF ingress DPL has already been set, so set the SFF egress DPL that
+     * has the same transportType as the ingress DPL.
      *
      * @param sff - the sff to iterate
+     *
      * @param alreadySetSffDpl - the DPL already set
+     *
      * @param ingressDplSet - indicates if alreadySetSffDpl is the ingress DPL
      *
      * @return true if the remaining Hop DPL was set, false otherwise
@@ -209,7 +221,8 @@ public abstract class SfcRspTransportProcessorBase {
             }
             if (sffDpl.getDataPlaneLocator().getTransport().getName().equals(rspTransport)) {
                 if (ingressDplSet) {
-                    // the SFF ingressDpl was already set, so we need to set the egress
+                    // the SFF ingressDpl was already set, so we need to set the
+                    // egress
                     this.sffGraph.setSffEgressDpl(sff.getName(), pathId, sffDpl.getName());
                 } else {
                     this.sffGraph.setSffIngressDpl(sff.getName(), pathId, sffDpl.getName());
@@ -226,8 +239,10 @@ public abstract class SfcRspTransportProcessorBase {
      * Given the previous and current SFFs, try to calculate and set the ingress
      * and egress Data Plane Locators (DPL).
      *
-     * @param prevSff - the previous SFF
-     * @param curSff - the current SFF
+     * @param prevSff
+     *            - the previous SFF
+     * @param curSff
+     *            - the current SFF
      *
      * @return true if it was possible to set the SFF DPLs, false otherwise
      */
@@ -239,7 +254,8 @@ public abstract class SfcRspTransportProcessorBase {
         List<SffDataPlaneLocator> curSffDplList = curSff.getSffDataPlaneLocator();
         boolean hasSingleDpl = false;
 
-        // If the prevSffDplList has just one DPL, nothing special needs to be done
+        // If the prevSffDplList has just one DPL, nothing special needs to be
+        // done
         // Just check that its DPL transport matches the RSP transport
         if (prevSffDplList.size() == 1) {
             SffDataPlaneLocator prevSffDpl = prevSffDplList.get(0);
@@ -310,8 +326,10 @@ public abstract class SfcRspTransportProcessorBase {
     /**
      * Given 2 LocatorType objects, compare if they are equal.
      *
-     * @param lhs - Left Hand Side Locator to compare
-     * @param rhs - Right Hand Side Locator to compare
+     * @param lhs
+     *            - Left Hand Side Locator to compare
+     * @param rhs
+     *            - Right Hand Side Locator to compare
      *
      * @return true if the locators are equal, false otherwise
      */
@@ -324,7 +342,7 @@ public abstract class SfcRspTransportProcessorBase {
         switch (type) {
             case IP:
                 if (((Ip) lhs).getPort().getValue().intValue() == ((Ip) rhs).getPort().getValue().intValue()) {
-                    if(((Ip) lhs).getIp().toString().equals(((Ip) rhs).getIp().toString())) {
+                    if (((Ip) lhs).getIp().toString().equals(((Ip) rhs).getIp().toString())) {
                         return true;
                     }
                 }
@@ -352,21 +370,26 @@ public abstract class SfcRspTransportProcessorBase {
     }
 
     /**
-     * Create the appropriate rules in the classifier table (when necessary)
-     * @param sffNodeName  the openflow node identifier
+     * Create the appropriate rules in the classifier table (when necessary).
+     *
+     * @param sffNodeName
+     *            the openflow node identifier
      */
     public void configureClassifierTableMatchAny(final String sffNodeName) {
         this.sfcFlowProgrammer.configureClassifierTableMatchAny(sffNodeName);
     }
 
-   /**
-     * Update the operational datastore with information related to the rendered path
-     * @param theGraph the graph on which the just-rendered path was based
-     * @param rsp the rendered service path
+    /**
+     * Update the operational datastore with information related to the rendered
+     * path.
+     *
+     * @param theGraph
+     *            the graph on which the just-rendered path was based
+     * @param rsp
+     *            the rendered service path
      */
-    public void updateOperationalDSInfo(
-            SffGraph theGraph,
-            RenderedServicePath rsp) {
-     // Overriden by transport processors which do perform operational datastore updates
+    public void updateOperationalDSInfo(SffGraph theGraph, RenderedServicePath rsp) {
+        // Overriden by transport processors which do perform operational
+        // datastore updates
     }
 }

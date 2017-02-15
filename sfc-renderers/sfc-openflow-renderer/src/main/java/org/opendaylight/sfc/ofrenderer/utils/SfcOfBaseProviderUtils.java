@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 by Ericsson and others. All rights reserved.
+ * Copyright (c) 2014, 2017 by Ericsson and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -34,7 +34,6 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /*
  * This Abstract Base class allows us to completely isolate the
  * SfcOfRspProcessor and SfcOfSfgDataListener from the sfc-provider-api
@@ -47,29 +46,31 @@ public abstract class SfcOfBaseProviderUtils {
 
     protected static final Logger LOG = LoggerFactory.getLogger(SfcOfBaseProviderUtils.class);
 
-    abstract public void addRsp(long rspId);
+    public abstract void addRsp(long rspId);
 
-    abstract public void removeRsp(long rspId);
+    public abstract void removeRsp(long rspId);
 
-    abstract public ServiceFunction getServiceFunction(final SfName sfName, long rspId);
+    public abstract ServiceFunction getServiceFunction(SfName sfName, long rspId);
 
-    abstract public ServiceFunctionForwarder getServiceFunctionForwarder(final SffName sffName, long rspId);
+    public abstract ServiceFunctionForwarder getServiceFunctionForwarder(SffName sffName, long rspId);
 
-    abstract public ServiceFunctionGroup getServiceFunctionGroup(final String sfgName, long rspId);
+    public abstract ServiceFunctionGroup getServiceFunctionGroup(String sfgName, long rspId);
 
-    abstract public Long getPortNumberFromName(final String bridgeName, final String portName, long rspId);
+    public abstract Long getPortNumberFromName(String bridgeName, String portName, long rspId);
 
     /**
-     * Return a named SffDataPlaneLocator on a SFF
+     * Return a named SffDataPlaneLocator on a SFF.
      *
-     * @param sff - The SFF to search in
-     * @param dplName - The name of the DPL to look for
+     * @param sff
+     *            - The SFF to search in
+     * @param dplName
+     *            - The name of the DPL to look for
      * @return SffDataPlaneLocator or null if not found
      */
     public SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, SffDataPlaneLocatorName dplName) {
         SffDataPlaneLocator sffDpl = null;
 
-        if(dplName == null || dplName.getValue() == null) {
+        if (dplName == null || dplName.getValue() == null) {
             return null;
         }
 
@@ -87,10 +88,12 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the SfDataPlaneLocator on the SF that connects to the named SFF
+     * Return the SfDataPlaneLocator on the SF that connects to the named SFF.
      *
-     * @param sf the ServiceFunction to search through
-     * @param sffName the SFF name to search for
+     * @param sf
+     *            the ServiceFunction to search through
+     * @param sffName
+     *            the SFF name to search for
      * @return SfDataPlaneLocator or null if not found
      */
     public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final SffName sffName) {
@@ -105,11 +108,13 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given a ServiceFunction get the SF DPL name from the SffSfDataPlaneLocator
-     * and return the SF DPL
+     * Given a ServiceFunction get the SF DPL name from the
+     * SffSfDataPlaneLocator and return the SF DPL.
      *
-     * @param sf the ServiceFunction to search through
-     * @param sffSfDpl The SffSf DPL to compare against
+     * @param sf
+     *            the ServiceFunction to search through
+     * @param sffSfDpl
+     *            The SffSf DPL to compare against
      * @return SfDataPlaneLocator if found, else null
      */
     public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, SffSfDataPlaneLocator sffSfDpl) {
@@ -125,18 +130,20 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the named SF ServiceFunctionDictionary SffSfDataPlaneLocator
-     * from the sff sf-dictionary list
+     * Return the named SF ServiceFunctionDictionary SffSfDataPlaneLocator from
+     * the sff sf-dictionary list.
      *
-     * @param sff - The SFF to search in
-     * @param sfName - The name of the DPL to look for
+     * @param sff
+     *            - The SFF to search in
+     * @param sfName
+     *            - The name of the DPL to look for
      * @return SffSfDataPlaneLocator or null if not found
      */
     public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, SfName sfName) {
         SffSfDataPlaneLocator sffSfDpl = null;
 
         ServiceFunctionDictionary sffSfDict = getSffSfDictionary(sff, sfName);
-        if(sffSfDict != null) {
+        if (sffSfDict != null) {
             sffSfDpl = sffSfDict.getSffSfDataPlaneLocator();
         }
 
@@ -144,11 +151,13 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the named SF ServiceFunctionDictionary element from the
-     * sff sf-dictionary list
+     * Return the named SF ServiceFunctionDictionary element from the sff
+     * sf-dictionary list.
      *
-     * @param sff the SFF to search through
-     * @param sfName the SF name to look for
+     * @param sff
+     *            the SFF to search through
+     * @param sfName
+     *            the SF name to look for
      * @return A ServiceFunctionDictionary entry or null if not found
      */
     public ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, SfName sfName) {
@@ -169,7 +178,8 @@ public abstract class SfcOfBaseProviderUtils {
     /**
      * Return the mac address from a SF DPL, only if its a MAC DPL.
      *
-     * @param sfDpl the SF DPL to process
+     * @param sfDpl
+     *            the SF DPL to process
      * @return macAddress string or null if its not a MAC DPL
      */
     public String getSfDplMac(SfDataPlaneLocator sfDpl) {
@@ -189,12 +199,14 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given an SFF object and SFF-SF dictionary entry, return the switch port string.
-     * Looks for the SFF DPL name in the SFF-SF dictionary, then looks up
-     * that DPL name on the SFF.
+     * Given an SFF object and SFF-SF dictionary entry, return the switch port
+     * string. Looks for the SFF DPL name in the SFF-SF dictionary, then looks
+     * up that DPL name on the SFF.
      *
-     * @param sff the SFF to process
-     * @param dict used to get the SFF DPL name
+     * @param sff
+     *            the SFF to process
+     * @param dict
+     *            used to get the SFF DPL name
      * @return switch port string, INPORT if not augmented, INPORT if not found
      */
     public String getDictPortInfoPort(final ServiceFunctionForwarder sff, final ServiceFunctionDictionary dict) {
@@ -202,8 +214,10 @@ public abstract class SfcOfBaseProviderUtils {
         OfsPort ofsPort = getSffPortInfoFromDpl(sffDpl);
 
         if (ofsPort == null) {
-            // This case is most likely because the sff-of augmentation wasnt used
-            // assuming the packet should just be sent on the same port it was received on
+            // This case is most likely because the sff-of augmentation wasnt
+            // used
+            // assuming the packet should just be sent on the same port it was
+            // received on
             return OutputPortValues.INPORT.toString();
         }
 
@@ -213,7 +227,8 @@ public abstract class SfcOfBaseProviderUtils {
     /**
      * Given a possibly augmented SFF DPL, return the augmented OfsPort object.
      *
-     * @param sffDpl The SFF DPL to process
+     * @param sffDpl
+     *            The SFF DPL to process
      * @return OfsPort, null if not augmented, null if not found
      */
     public OfsPort getSffPortInfoFromDpl(final SffDataPlaneLocator sffDpl) {
@@ -231,18 +246,21 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given a possibly augmented SFF DPL, return the DPL switch port.
-     * The augmentation will be a OfsPort object.
+     * Given a possibly augmented SFF DPL, return the DPL switch port. The
+     * augmentation will be a OfsPort object.
      *
-     * @param dpl the SFF DPL to process
+     * @param dpl
+     *            the SFF DPL to process
      * @return switch port string, INPORT if not augmented, INPORT if not found
      */
     public String getDplPortInfoPort(final SffDataPlaneLocator dpl) {
         OfsPort ofsPort = getSffPortInfoFromDpl(dpl);
 
         if (ofsPort == null) {
-            // This case is most likely because the sff-of augmentation wasnt used
-            // assuming the packet should just be sent on the same port it was received on
+            // This case is most likely because the sff-of augmentation wasnt
+            // used
+            // assuming the packet should just be sent on the same port it was
+            // received on
             return OutputPortValues.INPORT.toString();
         }
 
@@ -250,10 +268,11 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given a possibly augmented SFF DPL, return the DPL mac address.
-     * The augmentation will be a OfsPort object.
+     * Given a possibly augmented SFF DPL, return the DPL mac address. The
+     * augmentation will be a OfsPort object.
      *
-     * @param dpl the SFF DPL to process
+     * @param dpl
+     *            the SFF DPL to process
      * @return mac address string, null if not augmented, null if not found
      */
     public String getDplPortInfoMac(final SffDataPlaneLocator dpl) {
@@ -271,8 +290,8 @@ public abstract class SfcOfBaseProviderUtils {
         }
 
         if (macStr == null) {
-            if (dpl.getDataPlaneLocator().getTransport().equals(
-                    org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+            if (dpl.getDataPlaneLocator().getTransport()
+                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
                 MacAddress mac = ((MacAddressLocator) dpl.getDataPlaneLocator().getLocatorType()).getMac();
                 if (mac != null) {
                     macStr = mac.getValue();
@@ -285,21 +304,24 @@ public abstract class SfcOfBaseProviderUtils {
 
     /**
      * Given an SFF object and SFF-SF dictionary entry, return the SFF Mac.
-     * Looks for the SFF DPL name in the SFF-SF dictionary, then looks up
-     * that DPL name on the SFF.
+     * Looks for the SFF DPL name in the SFF-SF dictionary, then looks up that
+     * DPL name on the SFF.
      *
-     * @param sff The SFF to process
-     * @param dict contains the SFF DPL name to process
+     * @param sff
+     *            The SFF to process
+     * @param dict
+     *            contains the SFF DPL name to process
      * @return MAC Address string, null if the DPL is not mac, null if not found
      */
     public String getDictPortInfoMac(final ServiceFunctionForwarder sff, final ServiceFunctionDictionary dict) {
         SffDataPlaneLocator sffDpl = getSffDataPlaneLocator(sff, dict.getSffSfDataPlaneLocator().getSffDplName());
         String macStr = getDplPortInfoMac(sffDpl);
 
-        // If the SFF DPL wasnt augmented, check if the DPL is of type mac, and return that mac address
+        // If the SFF DPL wasnt augmented, check if the DPL is of type mac, and
+        // return that mac address
         if (macStr == null) {
-            if (sffDpl.getDataPlaneLocator().getTransport().equals(
-                    org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
+            if (sffDpl.getDataPlaneLocator().getTransport()
+                    .equals(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac.class)) {
                 MacAddress mac = ((MacAddressLocator) sffDpl.getDataPlaneLocator().getLocatorType()).getMac();
                 if (mac != null) {
                     macStr = mac.getValue();
@@ -311,10 +333,12 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given an SFF name, return the augmented OpenFlow NodeName
+     * Given an SFF name, return the augmented OpenFlow NodeName.
      *
-     * @param sffName The SFF name to process
-     * @param rspId the rsp the SFF is being processed on
+     * @param sffName
+     *            The SFF name to process
+     * @param rspId
+     *            the rsp the SFF is being processed on
      * @return OpenFlow NodeName, null if not augmented, null if not found
      */
     public String getSffOpenFlowNodeName(final SffName sffName, long rspId) {
@@ -324,12 +348,16 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given an SFF name, return the augmented OpenFlow NodeName
+     * Given an SFF name, return the augmented OpenFlow NodeName.
      *
-     * @param sffName The SFF name to process
-     * @param rspId the rsp the SFF is being processed on
-     * @param dpnid data plane node identifier for the switch. It is null when it is not known;
-     *              when provided, it is used directly to build the openflow node name
+     * @param sffName
+     *            The SFF name to process
+     * @param rspId
+     *            the rsp the SFF is being processed on
+     * @param dpnid
+     *            data plane node identifier for the switch. It is null when it
+     *            is not known; when provided, it is used directly to build the
+     *            openflow node name
      * @return OpenFlow NodeName, null if not augmented, null if not found
      */
     public String getSffOpenFlowNodeName(final SffName sffName, long rspId, final DpnIdType dpnid) {
@@ -341,9 +369,10 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given an SFF object, return the augmented OpenFlow NodeName
+     * Given an SFF object, return the augmented OpenFlow NodeName.
      *
-     * @param sff The SFF name to process
+     * @param sff
+     *            The SFF name to process
      * @return OpenFlow NodeName or null if augmented or not found
      */
     public String getSffOpenFlowNodeName(final ServiceFunctionForwarder sff) {
@@ -365,28 +394,29 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given a SF, retrieve the logical interface name
-     * @param sf   The service function to use
-     * @return    String the logical interface name when the SF is
-     *            using a logical interface; null otherwise
+     * Given a SF, retrieve the logical interface name.
+     *
+     * @param sf
+     *            The service function to use
+     * @return String the logical interface name when the SF is using a logical
+     *         interface; null otherwise
      */
     public String getSfLogicalInterfaceName(ServiceFunction sf) {
         String interfaceName = null;
         LOG.debug("getSfLogicalInterfaceName: called for sf {}", sf.getName());
-        if ((sf.getSfDataPlaneLocator() != null) && (sf.getSfDataPlaneLocator().get(0) != null)) {
+        if (sf.getSfDataPlaneLocator() != null && sf.getSfDataPlaneLocator().get(0) != null) {
             SfDataPlaneLocator sfdpl = sf.getSfDataPlaneLocator().get(0);
             LOG.debug("getSfLogicalInterfaceName: dpl 0 is not null! it is {}", sfdpl);
-            if ((sfdpl.getLocatorType()!= null)
-                && (sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class)) {
-                LogicalInterface logicalInterface = ((LogicalInterface)sfdpl.getLocatorType());
-                if ((logicalInterface != null) && (logicalInterface.getInterfaceName() != null)) {
-                    LOG.debug("getSfLogicalInterfaceName: hop is using a logical interface [{}]"
-                        , logicalInterface.getInterfaceName());
+            if (sfdpl.getLocatorType() != null
+                    && sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class) {
+                LogicalInterface logicalInterface = (LogicalInterface) sfdpl.getLocatorType();
+                if (logicalInterface != null && logicalInterface.getInterfaceName() != null) {
+                    LOG.debug("getSfLogicalInterfaceName: hop is using a logical interface [{}]",
+                            logicalInterface.getInterfaceName());
                     interfaceName = logicalInterface.getInterfaceName();
                 }
             }
         }
         return interfaceName;
     }
-
 }

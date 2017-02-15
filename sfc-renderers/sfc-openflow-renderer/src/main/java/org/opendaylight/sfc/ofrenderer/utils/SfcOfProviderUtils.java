@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -52,20 +51,18 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
         // store the SFs and SFFs internally so we dont have to
         // query the DataStore repeatedly for the same thing
-        private Map<SfName, ServiceFunction> serviceFunctions;
-        private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
-        private Map<SffName, ServiceFunctionForwarder> serviceFunctionFowarders;
+        private final Map<SfName, ServiceFunction> serviceFunctions;
+        private final Map<String, ServiceFunctionGroup> serviceFunctionGroups;
+        private final Map<SffName, ServiceFunctionForwarder> serviceFunctionFowarders;
 
-
-
-        public RspContext() {
+        RspContext() {
             serviceFunctions = Collections.synchronizedMap(new HashMap<SfName, ServiceFunction>());
             serviceFunctionGroups = Collections.synchronizedMap(new HashMap<String, ServiceFunctionGroup>());
             serviceFunctionFowarders = Collections.synchronizedMap(new HashMap<SffName, ServiceFunctionForwarder>());
         }
     }
 
-    private Map<Long, RspContext> rspIdToContext;
+    private final Map<Long, RspContext> rspIdToContext;
     protected static ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public SfcOfProviderUtils() {
@@ -83,12 +80,12 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the named ServiceFunction
-     * Acts as a local cache to not have to go to DataStore so often
-     * First look in internal storage, if its not there
-     * get it from the DataStore and store it internally
+     * Return the named ServiceFunction Acts as a local cache to not have to go
+     * to DataStore so often First look in internal storage, if its not there
+     * get it from the DataStore and store it internally.
      *
-     * @param sfName - The SF Name to search for
+     * @param sfName
+     *            - The SF Name to search for
      * @return - The ServiceFunction object, or null if not found
      */
     @Override
@@ -107,12 +104,12 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the named ServiceFunctionForwarder
-     * Acts as a local cache to not have to go to DataStore so often
-     * First look in internal storage, if its not there
-     * get it from the DataStore and store it internally
+     * Return the named ServiceFunctionForwarder Acts as a local cache to not
+     * have to go to DataStore so often First look in internal storage, if its
+     * not there get it from the DataStore and store it internally.
      *
-     * @param sffName - The SFF Name to search for
+     * @param sffName
+     *            - The SFF Name to search for
      * @return The ServiceFunctionForwarder object, or null if not found
      */
     @Override
@@ -155,10 +152,13 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(new SffName(sffName), rspId);
         SffOvsBridgeAugmentation sffOvsBridge = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-        if(sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
-            throw new RuntimeException("getPortNumberFromName: SFF [" + sffName + "] does not have the expected SffOvsBridgeAugmentation.");
+        if (sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null
+                || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
+            throw new RuntimeException("getPortNumberFromName: SFF [" + sffName
+                    + "] does not have the expected SffOvsBridgeAugmentation.");
         }
-        //we shouldn't use the getter getOpendaylightSfcObj, but nobody uses getPortNumberFromName
+        // we shouldn't use the getter getOpendaylightSfcObj, but nobody uses
+        // getPortNumberFromName
         Node node = SfcOvsUtil.lookupTopologyNode(sff, executor);
         if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
@@ -198,13 +198,13 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     // internal support method for getPortNumberFromName() and related methods
-    public List<OvsdbTerminationPointAugmentation> extractTerminationPointAugmentations( Node node ) {
+    public List<OvsdbTerminationPointAugmentation> extractTerminationPointAugmentations(Node node) {
         List<OvsdbTerminationPointAugmentation> tpAugmentations = new ArrayList<>();
         List<TerminationPoint> terminationPoints = node.getTerminationPoint();
-        if(terminationPoints != null && !terminationPoints.isEmpty()){
-            for(TerminationPoint tp : terminationPoints){
-                OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation =
-                        tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+        if (terminationPoints != null && !terminationPoints.isEmpty()) {
+            for (TerminationPoint tp : terminationPoints) {
+                OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation = tp
+                        .getAugmentation(OvsdbTerminationPointAugmentation.class);
                 if (ovsdbTerminationPointAugmentation != null) {
                     tpAugmentations.add(ovsdbTerminationPointAugmentation);
                 }
@@ -215,13 +215,12 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
     // internal support method for getPortNumberFromName() and related methods
     private TerminationPoint readTerminationPoint(Node ovsdbNode, String bridgeName, String portName) {
-        InstanceIdentifier<TerminationPoint> tpIid =
-                InstanceIdentifier.create(NetworkTopology.class)
+        InstanceIdentifier<TerminationPoint> tpIid = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId(new Uri("ovsdb:1"))))
-                .child(Node.class, new NodeKey(new NodeId(ovsdbNode.getKey().getNodeId().getValue() + "/bridge/" + bridgeName)))
+                .child(Node.class,
+                        new NodeKey(new NodeId(ovsdbNode.getKey().getNodeId().getValue() + "/bridge/" + bridgeName)))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(portName)));
 
         return SfcDataStoreAPI.readTransactionAPI(tpIid, LogicalDatastoreType.OPERATIONAL);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,22 +18,21 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class SfcSynchronizer {
-    private ReentrantLock lock;
+    private final ReentrantLock lock;
 
     public SfcSynchronizer() {
         lock = new ReentrantLock();
     }
 
     /**
-     * To be called by threads that need to lock.
-     * This is a blocking call.
+     * To be called by threads that need to lock. This is a blocking call.
      */
     public void lock() {
         lock.lock();
     }
 
     /**
-     * Query if the lock is available
+     * Query if the lock is available.
      *
      * @return true if no threads are waiting on the lock, false otherwise
      */
@@ -42,7 +41,7 @@ public class SfcSynchronizer {
     }
 
     /**
-     * Release the lock
+     * Release the lock.
      */
     public void unlock() {
         lock.unlock();

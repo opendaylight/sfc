@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -54,11 +54,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SfcEncapsulationIdentity;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -72,7 +72,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-
 
 public class RspBuilder {
 
@@ -89,20 +88,20 @@ public class RspBuilder {
     private static int VXLAN_UDP_PORT = 6633;
     private static String SWITCH_PORT_STR = "1";
 
-    private long RSP_PATHID_INDEX = 0;
-    private int SF_NAME_INDEX = 0;
-    private int SFF_NAME_INDEX = 0;
-    private int SFF_DPL_NAME_INDEX = 0;
-    private int SFC_NAME_INDEX = 0;
-    private int SFP_NAME_INDEX = 0;
-    private int RSP_NAME_INDEX = 0;
-    private int MAC_ADDR_INDEX = 0;
-    private int IP_ADDR_INDEX = 1;
-    private int VLAN_SFF_INDEX = 0;
-    private int VLAN_SF_INDEX = 0;
-    private int MPLS_SFF_INDEX = 0;
-    private int IF_NAME_INDEX = 0;
-    private Short STARTING_INDEX = 255;
+    private long rspPathIdIndex = 0;
+    private int sfNameIndex = 0;
+    private int sffNameIndex = 0;
+    private int sffDplNameIndex = 0;
+    private int sfcNameIndex = 0;
+    private int sfpNameIndex = 0;
+    private int rspNameIndex = 0;
+    private int macAddrIndex = 0;
+    private int idAddrIndex = 1;
+    private int vlanSffIndex = 0;
+    private int vlanSfIndex = 0;
+    private int mplsSffIndex = 0;
+    private int ifNameIndex = 0;
+    private static final Short STARTING_INDEX = 255;
 
     SfcOfProviderUtilsTestMock sfcUtilsTestMock;
 
@@ -123,7 +122,7 @@ public class RspBuilder {
 
         // build the SFs
         sfTypes.forEach(sftTypeName -> {
-            SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(SF_NAME_INDEX++));
+            SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(sfNameIndex++));
             sfList.add(createServiceFunction(sfName, logicalSff, sftTypeName, Mac.class));
         });
 
@@ -137,8 +136,8 @@ public class RspBuilder {
         List<ServiceFunctionForwarder> sffList = new ArrayList<>();
 
         for (SftTypeName sfType : sfTypes) {
-            SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(SF_NAME_INDEX++));
-            SffName sffName = new SffName(SFF_NAME_PREFIX + String.valueOf(SFF_NAME_INDEX++));
+            SfName sfName = new SfName(SF_NAME_PREFIX + String.valueOf(sfNameIndex++));
+            SffName sffName = new SffName(SFF_NAME_PREFIX + String.valueOf(sffNameIndex++));
 
             ServiceFunction sf = createServiceFunction(sfName, sffName, sfType, transportType);
             sfList.add(sf);
@@ -150,17 +149,15 @@ public class RspBuilder {
 
     public String getLogicalInterfaceName(int index) {
         return String.format("tap0000-%02d", index);
-    };
+    }
 
     public Short getStartingIndex() {
         return STARTING_INDEX;
     }
 
-    private RenderedServicePath createRsp(List<SftTypeName> sfTypes,
-                                          List<ServiceFunction> sfList,
-                                          List<ServiceFunctionForwarder> sffList,
-                                          Class<? extends SlTransportType> transportType,
-                                          Class<? extends SfcEncapsulationIdentity> sfcEncap) {
+    private RenderedServicePath createRsp(List<SftTypeName> sfTypes, List<ServiceFunction> sfList,
+            List<ServiceFunctionForwarder> sffList, Class<? extends SlTransportType> transportType,
+            Class<? extends SfcEncapsulationIdentity> sfcEncap) {
         ServiceFunctionChain sfc = createServiceFunctionChain(sfTypes);
         ServiceFunctionPath sfp = createServiceFunctionPath(sfc, transportType, sfcEncap);
         return createRenderedServicePath(sfp, sfList, sffList);
@@ -180,7 +177,7 @@ public class RspBuilder {
             sfcSfs.add(sfcSfBuilder.build());
         }
 
-        SfcName sfcName = new SfcName(SFC_NAME_PREFIX + String.valueOf(SFC_NAME_INDEX++));
+        SfcName sfcName = new SfcName(SFC_NAME_PREFIX + String.valueOf(sfcNameIndex++));
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
         sfcBuilder.setName(sfcName);
         sfcBuilder.setKey(new ServiceFunctionChainKey(sfcName));
@@ -191,9 +188,9 @@ public class RspBuilder {
     }
 
     private ServiceFunctionPath createServiceFunctionPath(ServiceFunctionChain sfc,
-            Class<? extends SlTransportType> transportType, Class <? extends SfcEncapsulationIdentity> encap) {
+            Class<? extends SlTransportType> transportType, Class<? extends SfcEncapsulationIdentity> encap) {
 
-        SfpName sfpName = new SfpName(SFP_NAME_PREFIX + String.valueOf(SFP_NAME_INDEX++));
+        SfpName sfpName = new SfpName(SFP_NAME_PREFIX + String.valueOf(sfpNameIndex++));
         ServiceFunctionPathBuilder sfpBuilder = new ServiceFunctionPathBuilder();
         sfpBuilder.setKey(new ServiceFunctionPathKey(sfpName));
         sfpBuilder.setName(sfpName);
@@ -207,13 +204,13 @@ public class RspBuilder {
 
     private RenderedServicePath createRenderedServicePath(ServiceFunctionPath sfp, List<ServiceFunction> sfList,
             List<ServiceFunctionForwarder> sffList) {
-        RspName rspName = new RspName(RSP_NAME_PREFIX + String.valueOf(RSP_NAME_INDEX++));
+        RspName rspName = new RspName(RSP_NAME_PREFIX + String.valueOf(rspNameIndex++));
         RenderedServicePathBuilder rspBuilder = new RenderedServicePathBuilder();
         rspBuilder.setKey(new RenderedServicePathKey(rspName));
         rspBuilder.setStartingIndex(STARTING_INDEX);
         rspBuilder.setName(rspName);
         rspBuilder.setParentServiceFunctionPath(sfp.getName());
-        rspBuilder.setPathId(RSP_PATHID_INDEX++);
+        rspBuilder.setPathId(rspPathIdIndex++);
         rspBuilder.setTransportType(sfp.getTransportType());
         rspBuilder.setSfcEncapsulation(sfp.getSfcEncapsulation());
 
@@ -226,10 +223,11 @@ public class RspBuilder {
             rspHopBuilder.setKey(new RenderedServicePathHopKey(index));
             rspHopBuilder.setServiceFunctionForwarder(sff.getName());
             rspHopBuilder.setServiceFunctionName(sf.getName());
-            // if we're using a logical SFF, there won't be any dataplane locators
+            // if we're using a logical SFF, there won't be any dataplane
+            // locators
             rspHopBuilder.setServiceFunctionForwarderLocator(
-                    !sff.getSffDataPlaneLocator().isEmpty() ?
-                                sff.getSffDataPlaneLocator().get(0).getName() : new SffDataPlaneLocatorName(""));
+                    !sff.getSffDataPlaneLocator().isEmpty() ? sff.getSffDataPlaneLocator().get(0).getName()
+                            : new SffDataPlaneLocatorName(""));
             rspHopBuilder.setServiceIndex(serviceIndex);
             rspHopBuilder.setHopNumber(index);
 
@@ -243,15 +241,13 @@ public class RspBuilder {
         return rspBuilder.build();
     }
 
-    private ServiceFunctionForwarder createServiceFunctionForwarder(
-            SffName sffName, ServiceFunction sf, Class<? extends SlTransportType> transportType, boolean isLogicalSff) {
+    private ServiceFunctionForwarder createServiceFunctionForwarder(SffName sffName, ServiceFunction sf,
+            Class<? extends SlTransportType> transportType, boolean isLogicalSff) {
         if (!isLogicalSff) {
             return createServiceFunctionForwarder(sffName, sf, transportType);
-        }
-        else { // *do not set* the SFF dataplane locators
-            ServiceFunctionForwarder sff =
-                    buildServiceFunctionForwarder(
-                            new SffName("logical"), Collections.emptyList(), Collections.emptyList());
+        } else { // *do not set* the SFF dataplane locators
+            ServiceFunctionForwarder sff = buildServiceFunctionForwarder(new SffName("logical"),
+                    Collections.emptyList(), Collections.emptyList());
             sfcUtilsTestMock.addServiceFunctionForwarder(sffName, sff);
             return sff;
         }
@@ -272,8 +268,8 @@ public class RspBuilder {
             Class<? extends SlTransportType> transportType) {
 
         // For MPLS and MAC transport types, we want the SF to be MAC/VLAN
-        Class<? extends SlTransportType> sfTransportType =
-                (transportType.equals(VxlanGpe.class) ? transportType : Mac.class);
+        Class<? extends SlTransportType> sfTransportType = transportType.equals(VxlanGpe.class) ? transportType
+                : Mac.class;
 
         SfDataPlaneLocator sfDpl = buildSfDataPlaneLocator(new SfDataPlaneLocatorName(sfName.getValue() + "_sfDpl"),
                 buildSfLocatorType(sfTransportType), sffName, sfTransportType);
@@ -285,7 +281,7 @@ public class RspBuilder {
     }
 
     private List<SffDataPlaneLocator> createSffDpls(Class<? extends SlTransportType> transportType) {
-        int dplCount = (transportType.equals(VxlanGpe.class) ? 1 : 2);
+        int dplCount = transportType.equals(VxlanGpe.class) ? 1 : 2;
 
         ArrayList<Integer> tunnelIds = new ArrayList<>();
         int tunnelIdsIndex = 0;
@@ -300,8 +296,8 @@ public class RspBuilder {
 
         List<SffDataPlaneLocator> sffDpls = new ArrayList<>();
         for (int i = 0; i < dplCount; ++i) {
-            SffDataPlaneLocatorName name =
-                    new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(SFF_DPL_NAME_INDEX++));
+            SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(
+                    SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
             SffDataPlaneLocatorBuilder sffDplBuilder = new SffDataPlaneLocatorBuilder();
             sffDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
             sffDplBuilder.setName(name);
@@ -336,7 +332,15 @@ public class RspBuilder {
 
     private List<ServiceFunctionDictionary> createSfDictList(ServiceFunction sf, SffDataPlaneLocatorName sffDplName) {
         SffSfDataPlaneLocatorBuilder sffSfDplBuilder = new SffSfDataPlaneLocatorBuilder();
-        sffSfDplBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName());    // TODO what if there is more than one DPL?
+        sffSfDplBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName()); // TODO
+                                                                                    // what
+                                                                                    // if
+                                                                                    // there
+                                                                                    // is
+                                                                                    // more
+                                                                                    // than
+                                                                                    // one
+                                                                                    // DPL?
         sffSfDplBuilder.setSffDplName(sffDplName);
 
         ServiceFunctionDictionaryBuilder sfDictBuilder = new ServiceFunctionDictionaryBuilder();
@@ -354,31 +358,31 @@ public class RspBuilder {
     // Internal Util methods
     //
     private String getNextMacAddress() {
-        return MAC_ADDRESS_PREFIX + String.format("%02d", MAC_ADDR_INDEX++);
+        return MAC_ADDRESS_PREFIX + String.format("%02d", macAddrIndex++);
     }
 
     private int getNextSffVlanId() {
-        return VLAN_BASE + (++VLAN_SFF_INDEX);
+        return VLAN_BASE + (++vlanSffIndex);
     }
 
     private int getLastSffVlanId() {
-        return VLAN_BASE + VLAN_SFF_INDEX;
+        return VLAN_BASE + vlanSffIndex;
     }
 
     private int getNextSfVlanId() {
-        return VLAN_BASE + (++VLAN_SF_INDEX);
+        return VLAN_BASE + (++vlanSfIndex);
     }
 
     private int getNextSffMplsLabel() {
-        return MPLS_BASE + (++MPLS_SFF_INDEX);
+        return MPLS_BASE + (++mplsSffIndex);
     }
 
     private int getLastSffMplsLabel() {
-        return MPLS_BASE + MPLS_SFF_INDEX;
+        return MPLS_BASE + mplsSffIndex;
     }
 
     private String getNextIpAddress() {
-        return IP_ADDRESS_PREFIX + String.valueOf(IP_ADDR_INDEX++);
+        return IP_ADDRESS_PREFIX + String.valueOf(idAddrIndex++);
     }
 
     private IpAddress getIpMgmt() {
@@ -387,7 +391,7 @@ public class RspBuilder {
     }
 
     private String getNextLogicalInterfaceName() {
-        return String.format("tap0000-%02d", IF_NAME_INDEX++);
+        return String.format("tap0000-%02d", ifNameIndex++);
     }
 
     private LocatorType buildSfLocatorType(Class<? extends SlTransportType> transport) {
@@ -396,7 +400,7 @@ public class RspBuilder {
         if (transport.equals(Mac.class)) {
             if (!usesLogicalSff) {
                 lt = buildLocatorTypeMac(getNextMacAddress(), getNextSfVlanId());
-                } else {
+            } else {
                 lt = new LogicalInterfaceBuilder().setInterfaceName(getNextLogicalInterfaceName()).build();
             }
         } else if (transport.equals(Mpls.class)) {
@@ -409,7 +413,8 @@ public class RspBuilder {
         return lt;
     }
 
-    private org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac buildLocatorTypeMac(
+    private org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc
+        .sl.rev140701.data.plane.locator.locator.type.Mac buildLocatorTypeMac(
             String macAddress, int vlan) {
         MacBuilder macBuilder = new MacBuilder();
         macBuilder.setMac(new MacAddress(macAddress));
@@ -418,7 +423,8 @@ public class RspBuilder {
         return macBuilder.build();
     }
 
-    private org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mpls buildLocatorTypeMpls(
+    private org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc
+        .sl.rev140701.data.plane.locator.locator.type.Mpls buildLocatorTypeMpls(
             long label) {
         MplsBuilder mplsBuilder = new MplsBuilder();
         mplsBuilder.setMplsLabel(label);
@@ -442,11 +448,8 @@ public class RspBuilder {
             SffName serviceFunctionForwarder, Class<? extends SlTransportType> transport) {
 
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(name)
-            .setKey(new SfDataPlaneLocatorKey(name))
-            .setLocatorType(locatorType)
-            .setServiceFunctionForwarder(serviceFunctionForwarder)
-            .setTransport(transport);
+        locatorBuilder.setName(name).setKey(new SfDataPlaneLocatorKey(name)).setLocatorType(locatorType)
+                .setServiceFunctionForwarder(serviceFunctionForwarder).setTransport(transport);
 
         return locatorBuilder.build();
     }
@@ -464,11 +467,8 @@ public class RspBuilder {
             List<SfDataPlaneLocator> dsfDataPlaneLocatorList) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name)
-            .setKey(new ServiceFunctionKey(name))
-            .setType(type)
-            .setIpMgmtAddress(ipMgmtAddress)
-            .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
+        sfBuilder.setName(name).setKey(new ServiceFunctionKey(name)).setType(type).setIpMgmtAddress(ipMgmtAddress)
+                .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
 
         return sfBuilder.build();
     }
@@ -476,11 +476,9 @@ public class RspBuilder {
     private ServiceFunctionForwarder buildServiceFunctionForwarder(SffName name,
             List<SffDataPlaneLocator> sffDataplaneLocatorList, List<ServiceFunctionDictionary> dictionaryList) {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        sffBuilder.setName(name)
-            .setKey(new ServiceFunctionForwarderKey(name))
-            .setServiceNode(new SnName(name.getValue()))
-            .setSffDataPlaneLocator(sffDataplaneLocatorList)
-            .setServiceFunctionDictionary(dictionaryList);
+        sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
+                .setServiceNode(new SnName(name.getValue())).setSffDataPlaneLocator(sffDataplaneLocatorList)
+                .setServiceFunctionDictionary(dictionaryList);
 
         return sffBuilder.build();
     }

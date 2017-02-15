@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -29,10 +29,10 @@ import org.junit.Test;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
@@ -49,10 +49,10 @@ import org.slf4j.LoggerFactory;
  * These Unit Tests isolate the SfcOfRspProcessor class by mocking the
  * SfcOfFlowProgrammerImpl class with Mockito. Given a particular RSP, the
  * SfcOfRspProcessor should create several OpenFlow flows by calling into the
- * SfcOfFlowProgrammerInterface, whose implementation is SfcOfFlowProgrammerImpl.
- * The SfcOfFlowProgrammerImpl is mocked with Mockito, which allows us to
- * verify that exactly the correct Flow creation methods are called with the
- * expected arguments.
+ * SfcOfFlowProgrammerInterface, whose implementation is
+ * SfcOfFlowProgrammerImpl. The SfcOfFlowProgrammerImpl is mocked with Mockito,
+ * which allows us to verify that exactly the correct Flow creation methods are
+ * called with the expected arguments.
  *
  * @author ebrjohn
  */
@@ -73,13 +73,8 @@ public class SfcOfRspProcessorTest {
         this.flowProgrammerTestMoc = mock(SfcOfFlowProgrammerImpl.class);
         this.flowProgrammerTestMoc.setFlowWriter(mock(SfcOfFlowWriterInterface.class));
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
-        this.sfcOfRspProcessor = new SfcOfRspProcessor(
-                this.flowProgrammerTestMoc,
-                this.sfcUtilsTestMock,
-                new SfcSynchronizer(),
-                null,
-                null
-                );
+        this.sfcOfRspProcessor = new SfcOfRspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock,
+                new SfcSynchronizer(), null, null);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();
@@ -138,9 +133,12 @@ public class SfcOfRspProcessorTest {
 
         // Verify calls to configureVlanPathMapperFlow
         // the first 2 calls are SFF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), eq((long) 0), eq(false));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), eq((long) 0), eq(false));
-        // the next 2 are SF vlans, these calls should instead be configureVlanSfPathMapperFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_0"), anyInt(), eq((long) 0),
+                eq(false));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow(eq("SFF_1"), anyInt(), eq((long) 0),
+                eq(false));
+        // the next 2 are SF vlans, these calls should instead be
+        // configureVlanSfPathMapperFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_0", 2, 0, true);
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanPathMapperFlow("SFF_1", 3, 0, true);
 
@@ -154,15 +152,15 @@ public class SfcOfRspProcessorTest {
 
         // Verify calls to configureVlanTransportEgressFlow
         // the first 2 calls are SFF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(
-                eq("SFF_0"), eq("00:00:00:00:00:04"), eq("00:00:00:00:00:07"), anyInt(), eq("1"), eq((long) 0));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(
-                eq("SFF_1"), eq("00:00:00:00:00:09"), eq((String) null), anyInt(), eq("1"), eq((long) 0));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(eq("SFF_0"),
+                eq("00:00:00:00:00:04"), eq("00:00:00:00:00:07"), anyInt(), eq("1"), eq((long) 0));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(eq("SFF_1"),
+                eq("00:00:00:00:00:09"), eq((String) null), anyInt(), eq("1"), eq((long) 0));
         // the next 2 are SF vlans
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                "SFF_0", "00:00:00:00:00:02", "00:00:00:00:00:00", 2, "1", 0, false);
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                "SFF_1", "00:00:00:00:00:07", "00:00:00:00:00:05", 3, "1", 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow("SFF_0", "00:00:00:00:00:02",
+                "00:00:00:00:00:00", 2, "1", 0, false);
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow("SFF_1", "00:00:00:00:00:07",
+                "00:00:00:00:00:05", 3, "1", 0, false);
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
@@ -252,30 +250,31 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
         // Verify calls to configureNshVxgpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_1"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(),
+                anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_1"), anyLong(),
+                anyShort());
 
         // Verify calls to configureNshVxgpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(
-                eq("SFF_0"), anyString(), anyLong(), anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
-                eq("SFF_1"), anyString(), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(eq("SFF_0"), anyString(), anyLong(),
+                anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(eq("SFF_1"), anyString(), anyLong(),
+                anyShort());
 
         // Verify calls to configureNshVxgpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(
-                eq("SFF_0"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                "SFF_1", 0, (short) 253, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(eq("SFF_0"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow("SFF_1", 0, (short) 253, "INPORT");
 
         // Verify calls to configureNshNscTransportEgressFlow
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
-                eq("SFF_1"), anyLong(), anyShort(), anyString());
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(eq("SFF_1"), anyLong(), anyShort(),
+                anyString());
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(eq("SFF_1"), anyLong(),
+                anyShort(), anyString());
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
@@ -304,24 +303,24 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
         // Verify calls to configureNshVxgpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(),
+                anyShort());
 
         // Verify calls to configureNshVxgpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(
-                "SFF_0", "192.168.0.1", 0, (short) 255);
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow("SFF_0", "192.168.0.1", 0,
+                (short) 255);
 
         // Verify calls to configureNshVxgpeTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "INPORT");
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow(
-                "SFF_0", 0, (short) 255, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeLastHopTransportEgressFlow("SFF_0", 0,
+                (short) 254, "INPORT");
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportEgressFlow("SFF_0", 0, (short) 255,
+                "INPORT");
 
         // Verify calls to configureNshNscTransportEgressFlow
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "INPORT");
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow("SFF_0", 0, (short) 254, "INPORT");
 
-        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow(
-                "SFF_0", 0, (short) 254, "192.168.0.2");
+        verify(this.flowProgrammerTestMoc).configureNshVxgpeAppCoexistTransportEgressFlow("SFF_0", 0, (short) 254,
+                "192.168.0.2");
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
@@ -344,7 +343,8 @@ public class SfcOfRspProcessorTest {
 
         // TODO
         // ArgumentCaptor's can be used to get method argument values
-        // ArgumentCaptor<Integer> intArg = ArgumentCaptor.forClass(Integer.class);
+        // ArgumentCaptor<Integer> intArg =
+        // ArgumentCaptor.forClass(Integer.class);
         // verify(mock).doSomething(intArg.capture());
         // assertEquals(100, argument.getValue());
 
@@ -378,21 +378,19 @@ public class SfcOfRspProcessorTest {
                 anyString());
 
         // Verify calls to configureVlanTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(
-                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(), anyLong());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(
-                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(), anyLong());
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                eq("SFF_0"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
-        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(
-                eq("SFF_1"), anyString(), anyString(), anyInt(), anyString(), anyLong(), eq(true));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(eq("SFF_0"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(eq("SFF_1"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_0"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong(), eq(true));
+        verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_1"), anyString(),
+                anyString(), anyInt(), anyString(), anyLong(), eq(true));
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
         verify(this.flowProgrammerTestMoc).purgeFlows();
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
-
     }
-
 }

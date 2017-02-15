@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -24,32 +24,29 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class stores a simple Connection Graph of how the
- * SFFs (Service Function Forwarders) are interconnected.
- * Additionally, it stores SFF ingress and egress DPLs (Data Plane Locators)
- * for a particular PathId
+ * This class stores a simple Connection Graph of how the SFFs (Service Function
+ * Forwarders) are interconnected. Additionally, it stores SFF ingress and
+ * egress DPLs (Data Plane Locators) for a particular PathId
  *
  * @author Brady Johnson brady.allen.johnson@ericsson.com
  */
 public class SffGraph {
 
     /**
-     * Internal class to hold each SffGraph entry
+     * Internal class to hold each SffGraph entry.
      */
     public class SffGraphEntry {
 
-        private SffName srcSff;
-        private SffName dstSff;
+        private final SffName srcSff;
+        private final SffName dstSff;
         private SfName prevSf;
-        private SfName sf;
-        private String sfg;
-        private long pathId;
-        private short serviceIndex;
+        private final SfName sf;
+        private final String sfg;
+        private final long pathId;
+        private final short serviceIndex;
         private DpnIdType logicalSffSrcDpnId;
         private DpnIdType logicalSffDstDpnId;
-
 
         public SffName getSrcSff() {
             return srcSff;
@@ -96,10 +93,12 @@ public class SffGraph {
 
         @Override
         public String toString() {
-            StringBuffer returnValue = new StringBuffer("SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf="
-                    + sf + ", prevSf=" + prevSf + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex);
-            if ((getSrcDpnId() != null) || (getDstDpnId() != null)) {
-                returnValue.append(", Logical SFF params: src dpnid [" +  getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]");
+            StringBuffer returnValue = new StringBuffer(
+                    "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", prevSf=" + prevSf
+                            + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex);
+            if (getSrcDpnId() != null || getDstDpnId() != null) {
+                returnValue.append(
+                        ", Logical SFF params: src dpnid [" + getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]");
             }
             returnValue.append("]");
             return returnValue.toString();
@@ -114,12 +113,12 @@ public class SffGraph {
         }
 
         public boolean isIntraLogicalSFFEntry() {
-           return ((logicalSffSrcDpnId != null) && (logicalSffDstDpnId != null));
+            return logicalSffSrcDpnId != null && logicalSffDstDpnId != null;
         }
 
         public boolean usesLogicalSFF() {
-            return ((logicalSffSrcDpnId != null) || (logicalSffDstDpnId != null));
-         }
+            return logicalSffSrcDpnId != null || logicalSffDstDpnId != null;
+        }
 
         public void setSrcDpnId(DpnIdType srcDpnId) {
             this.logicalSffSrcDpnId = srcDpnId;
@@ -131,17 +130,17 @@ public class SffGraph {
     }
 
     /**
-     * Internal class to hold the ingress and egress DPLs for an SFF for a particular pathId
+     * Internal class to hold the ingress and egress DPLs for an SFF for a
+     * particular pathId.
      */
     public class SffDataPlaneLocators {
 
-        private SffName sffName;
-        private long pathId;
+        private final SffName sffName;
+        private final long pathId;
         private SffDataPlaneLocatorName ingressDplName;
         private SffDataPlaneLocatorName egressDplName;
         // The Ingress DPL info for this hop
         private DataPlaneLocator ingressHopDpl;
-
 
         public SffDataPlaneLocators(SffName sffName, long pathId, SffDataPlaneLocatorName ingressDplName,
                 SffDataPlaneLocatorName egressDplName, DataPlaneLocator hopDpl) {
@@ -178,10 +177,10 @@ public class SffGraph {
     public static final SffName EGRESS = new SffName("egress");
     private static final Logger LOG = LoggerFactory.getLogger(SffGraph.class);
 
-    private List<SffGraphEntry> graphEntries;
-    private Map<Long, Map<SffName, SffDataPlaneLocators>> pathIdToSffDataPlaneLocators;
+    private final List<SffGraphEntry> graphEntries;
+    private final Map<Long, Map<SffName, SffDataPlaneLocators>> pathIdToSffDataPlaneLocators;
     // Store the RSP egress DPL info
-    private Map<Long, DataPlaneLocator> pathIdToPathEgressLocators;
+    private final Map<Long, DataPlaneLocator> pathIdToPathEgressLocators;
 
     public SffGraph() {
         this.graphEntries = new ArrayList<>();
@@ -229,8 +228,8 @@ public class SffGraph {
 
         Map<SffName, SffDataPlaneLocators> sffToDpls = pathIdToSffDataPlaneLocators.get(pathId);
 
-        LOG.debug("SffGraphEntry addSffDpls sff [{}] path [{}] ingressDpl [{}] egressDpl [{}]",
-                sffName.getValue(), pathId, ingressDpl.getValue(), egressDpl.getValue());
+        LOG.debug("SffGraphEntry addSffDpls sff [{}] path [{}] ingressDpl [{}] egressDpl [{}]", sffName.getValue(),
+                pathId, ingressDpl.getValue(), egressDpl.getValue());
 
         if (sffToDpls == null) {
             sffToDpls = new HashMap<>();
@@ -248,8 +247,8 @@ public class SffGraph {
         Map<SffName, SffDataPlaneLocators> sffToDpls = pathIdToSffDataPlaneLocators.get(pathId);
         if (sffToDpls == null) {
             if (!createEntry) {
-                LOG.debug("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]",
-                        sffName.getValue(), pathId);
+                LOG.debug("SffGraph getSffDpl cant find sffToDpls list for sff [{}] path [{}]", sffName.getValue(),
+                        pathId);
 
                 return null;
             }
@@ -331,13 +330,11 @@ public class SffGraph {
                 LOG.info(
                         "SFF [{}] pathId [{}] IngressDpl [{}] EgressDpl [{}] IngressHopDpl Transport [{}] Vlan ID [{}]",
                         sffDpl.getSffName(), sffDpl.getPathId(), sffDpl.getIngressDplName(), sffDpl.getEgressDplName(),
-                        ((sffDpl.getIngressHopDpl() == null) ? "null" : sffDpl.getIngressHopDpl()
-                            .getTransport()
-                            .getName()),
+                        sffDpl.getIngressHopDpl() == null ? "null"
+                                : sffDpl.getIngressHopDpl().getTransport().getName(),
                         // ((Mpls)sffDpl.getIngressHopDpl().getLocatorType()).getMplsLabel());
-                        ((sffDpl
-                            .getIngressHopDpl() == null) ? "null" : ((Mac) sffDpl.getIngressHopDpl().getLocatorType())
-                                .getVlanId()));
+                        sffDpl.getIngressHopDpl() == null ? "null"
+                                : ((Mac) sffDpl.getIngressHopDpl().getLocatorType()).getVlanId());
             }
         }
 
@@ -369,9 +366,11 @@ public class SffGraph {
     }
 
     /**
-     * Return whether the rendered service path that the graph models is using a logical SFF.
-     * Note: this is only one very simple one among possible implementations (e.g. other
-     * one would be to check that the chain is using SFF's without any data plane locator).
+     * Return whether the rendered service path that the graph models is using a
+     * logical SFF. Note: this is only one very simple one among possible
+     * implementations (e.g. other one would be to check that the chain is using
+     * SFF's without any data plane locator).
+     *
      * @return whether the RSP modeled by this graph is using a logical SFF
      */
     public boolean isUsingLogicalSFF() {

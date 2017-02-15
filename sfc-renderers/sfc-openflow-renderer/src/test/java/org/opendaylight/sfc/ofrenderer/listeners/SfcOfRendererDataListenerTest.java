@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,10 @@
 
 package org.opendaylight.sfc.ofrenderer.listeners;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
@@ -15,39 +19,38 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 
 public class SfcOfRendererDataListenerTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRendererDataListenerTest.class);
-    private static final long SLEEP = 100; // milliseconds to sleep after onDataChanged is called.
-    private SfcOfRendererDataListener sfcOfRendererDataListener;
-    private SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private static final long SLEEP = 100; // milliseconds to sleep after
+                                            // onDataChanged is called.
+    private final SfcOfRendererDataListener sfcOfRendererDataListener;
+    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
 
     public SfcOfRendererDataListenerTest() {
         LOG.info("SfcOfRendererDataListenerTest constructor");
-        this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl((SfcOfFlowWriterInterface) mock(SfcOfFlowWriterInterface.class));
+        this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(
+                mock(SfcOfFlowWriterInterface.class));
         DataBroker dataBroker = mock(DataBroker.class);
         SfcSynchronizer sfcSynchronizer = mock(SfcSynchronizer.class);
 
-        this.sfcOfRendererDataListener =
-                new SfcOfRendererDataListener(dataBroker, this.sfcOfFlowProgrammer, sfcSynchronizer);
+        this.sfcOfRendererDataListener = new SfcOfRendererDataListener(dataBroker, this.sfcOfFlowProgrammer,
+                sfcSynchronizer);
     }
 
     @Test
     public void invalidTableOffset() throws InterruptedException {
-        // Negatives cant be tested here since setting Table Offset causes an exception in:
-        //    SfcOfRendererConfigBuilder.checkSfcOfTableOffsetRange()
+        // Negatives cant be tested here since setting Table Offset causes an
+        // exception in:
+        // SfcOfRendererConfigBuilder.checkSfcOfTableOffsetRange()
 
         // Table Offset must be greater than 1
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(0, 100);
@@ -71,12 +74,13 @@ public class SfcOfRendererDataListenerTest {
     @Test
     public void invalidTableEgress() throws InterruptedException {
         // Table Egress cannot be negative
-        // This cant be tested here since setting Table Egress causes an exception in:
-        //    SfcOfRendererConfigBuilder.checkSfcOfAppEgressTableOffsetRange()
+        // This cant be tested here since setting Table Egress causes an
+        // exception in:
+        // SfcOfRendererConfigBuilder.checkSfcOfAppEgressTableOffsetRange()
 
         // Table Egress cannot be in the tableOffset range
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = null;
-        for(int i = 100; i < 110; ++i) {
+        for (int i = 100; i < 110; ++i) {
             change = createSfcOfRendererConfig(100, i);
             this.sfcOfRendererDataListener.onDataChanged(change);
             Thread.sleep(SLEEP); // otherwise the failure is not detected
@@ -117,14 +121,16 @@ public class SfcOfRendererDataListenerTest {
         verifySettersCalled(offset, egress);
     }
 
-    private AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> createSfcOfRendererConfig(int tableOffset, int tableEgress) {
+    private AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> createSfcOfRendererConfig(int tableOffset,
+            int tableEgress) {
         SfcOfRendererConfigBuilder configBuilder = new SfcOfRendererConfigBuilder();
         configBuilder.setSfcOfTableOffset((short) tableOffset);
         configBuilder.setSfcOfAppEgressTableOffset((short) tableEgress);
         SfcOfRendererConfig entryValue = configBuilder.build();
 
-        InstanceIdentifier<SfcOfRendererConfig> entryKey = InstanceIdentifier.builder(SfcOfRendererConfig.class).build();
-        Map<InstanceIdentifier<?>, DataObject> entrySet = new HashMap<InstanceIdentifier<?>, DataObject>();
+        InstanceIdentifier<SfcOfRendererConfig> entryKey = InstanceIdentifier.builder(SfcOfRendererConfig.class)
+                .build();
+        Map<InstanceIdentifier<?>, DataObject> entrySet = new HashMap<>();
         entrySet.put(entryKey, entryValue);
 
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = mock(AsyncDataChangeEvent.class);
@@ -139,7 +145,7 @@ public class SfcOfRendererDataListenerTest {
     }
 
     private void verifySettersNotCalled() {
-        assertEquals(this.sfcOfFlowProgrammer.getTableBase(),   SfcOfFlowProgrammerImpl.APP_COEXISTENCE_NOT_SET);
+        assertEquals(this.sfcOfFlowProgrammer.getTableBase(), SfcOfFlowProgrammerImpl.APP_COEXISTENCE_NOT_SET);
         assertEquals(this.sfcOfFlowProgrammer.getTableEgress(), SfcOfFlowProgrammerImpl.APP_COEXISTENCE_NOT_SET);
     }
 }

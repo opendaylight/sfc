@@ -11,7 +11,7 @@ import org.opendaylight.sfc.ofrenderer.processors.SffGraph;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 
 /**
- * Interface for processors which expose state in the operational datastore
+ * Interface for processors which expose state in the operational datastore.
  *
  * @author Diego Granados (diego.jesus.granados.lopez@ericsson.com).
  */

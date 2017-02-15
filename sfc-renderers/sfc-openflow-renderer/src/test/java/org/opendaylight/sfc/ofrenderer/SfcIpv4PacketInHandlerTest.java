@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -59,8 +59,8 @@ public class SfcIpv4PacketInHandlerTest {
         this.pktInHandler.close();
 
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
     }
@@ -73,8 +73,8 @@ public class SfcIpv4PacketInHandlerTest {
 
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
 
@@ -94,19 +94,20 @@ public class SfcIpv4PacketInHandlerTest {
 
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
 
         // When called again, the packet should be sent to the FlowProgrammer
         // again, since the timeout is 1 millisecond
-        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time expire
+        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time
+                            // expire
         resetFlowProgrammerMock();
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
     }
@@ -120,20 +121,21 @@ public class SfcIpv4PacketInHandlerTest {
         assertEquals(this.pktInHandler.getBufferSize(), 0);
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
         assertEquals(this.pktInHandler.getBufferSize(), 1);
 
         // When called again, the purgeCount will be exceeded, the buffer will
         // be flushed, and this packet will be added back, making a size of 1
-        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time expire
+        Thread.sleep(10); // sleep 10 milliseconds, to let the buffer time
+                            // expire
         resetFlowProgrammerMock();
         this.pktInHandler.onPacketReceived(pkt);
         verify(this.flowProgrammerMock, times(2)).setFlowRspId(anyLong());
-        verify(this.flowProgrammerMock, times(2)).
-            configurePathMapperAclFlow(anyString(), anyString(), anyString(), anyShort());
+        verify(this.flowProgrammerMock, times(2)).configurePathMapperAclFlow(anyString(), anyString(), anyString(),
+                anyShort());
         verify(this.flowProgrammerMock, times(1)).compareClassificationTableCookie((FlowCookie) anyObject());
         verifyNoMoreInteractions(this.flowProgrammerMock);
         assertEquals(this.pktInHandler.getBufferSize(), 1);
@@ -156,9 +158,7 @@ public class SfcIpv4PacketInHandlerTest {
         // MacSrc=a1a1a1a1a1a1, MacDst=b2b2b2b2b2b2, etherType=0800
         // IpHdrStuff=000000000000000000000000, IpSrc=0a0a0001, IpDst=0b0b0001
         byte[] payload = hexStringToByteArray(
-                "a1a1a1a1a1a1b2b2b2b2b2b20800" +
-                "0000000000000000000000000" +
-                "a0a00010b0b0001");
+                "a1a1a1a1a1a1b2b2b2b2b2b20800" + "0000000000000000000000000" + "a0a00010b0b0001");
         when(pktMock.getPayload()).thenReturn(payload);
 
         // getMatch(), getMatch().getMetadata()
@@ -169,13 +169,11 @@ public class SfcIpv4PacketInHandlerTest {
         when(pktMock.getMatch()).thenReturn(matchBuilder.build());
 
         // getIngress()
-        //    .getValue()
-        //    .firstKeyOf(Node.class, NodeKey.class)
-        //    .getId().getValue();
-        InstanceIdentifier<Node> nodeId =
-                InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("openflow:1")))
-                .build();
+        // .getValue()
+        // .firstKeyOf(Node.class, NodeKey.class)
+        // .getId().getValue();
+        InstanceIdentifier<Node> nodeId = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
 
         NodeConnectorRef nodeConnRef = new NodeConnectorRef(nodeId);
         when(pktMock.getIngress()).thenReturn(nodeConnRef);
@@ -183,12 +181,12 @@ public class SfcIpv4PacketInHandlerTest {
         return pktMock;
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
+    public static byte[] hexStringToByteArray(String string) {
+        int len = string.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                                 + Character.digit(s.charAt(i+1), 16));
+            data[i / 2] = (byte) ((Character.digit(string.charAt(i), 16) << 4)
+                    + Character.digit(string.charAt(i + 1), 16));
         }
         return data;
     }

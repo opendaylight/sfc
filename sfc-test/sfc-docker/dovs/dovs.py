@@ -101,9 +101,12 @@ class ODL:
     @staticmethod
     @ifNotFound(False)
     def isInterfaceParent(api, name, isParent):
-        interface = api(ODL.IETF_IF_RES).get(name)['interface'][0]
-        parent = interface['odl-interface:parent-interface']
-        return True if parent == isParent else False
+        try:
+            interface = api(ODL.IETF_IF_RES).get(name)['interface'][0]
+            parent = interface['odl-interface:parent-interface']
+            return True if parent == isParent else False
+        except KeyError:
+            return False
 
     @staticmethod
     @ifNotFound([])
@@ -935,7 +938,7 @@ class AddGuest(cli.Application):
             network = self.addNetwork()
             subnet = self.addSubnet()
             router, rport = self.addRouter(subnet)
-            port = self.addPort(id, name, tapdev, mac)
+            port = self.addPort(id, name, mac)
 
         extra = {
             'name' : name,
@@ -946,6 +949,9 @@ class AddGuest(cli.Application):
         }
         LOG.debug('Adding guest tap device {} to OVS of node {}', tapdev, node)
         CMD.addDevToOvs(node, tapdev, mac, str(id), extra)
+
+        while not ODL.isInterfaceParent(api, str(id), tapdev):
+            time.sleep(1)
 
     def addNetwork(self):
         network = ODL.getNetwork(self._api, ODL.NETWORK)
@@ -1029,7 +1035,7 @@ class AddGuest(cli.Application):
         CMD.setNsDefaultRoute(self._ns, ip)
         return router, port
 
-    def addPort(self, id, name, tap, mac):
+    def addPort(self, id, name, mac):
         node = self._node
         api = self._api
         net = self._net
@@ -1059,9 +1065,6 @@ class AddGuest(cli.Application):
             str(ip_interface(ip).ip),
             owner,
             ovsId)
-
-        while not ODL.isInterfaceParent(api, str(id), tap):
-            time.sleep(1)
 
         return netId
 

@@ -6,6 +6,7 @@ from itertools import groupby
 from functools import reduce, wraps
 from ipaddress import ip_interface, ip_network
 from requests import HTTPError
+from retry import retry
 from ast import literal_eval
 from sets import Set
 
@@ -13,7 +14,6 @@ import shlex
 import time
 import tortilla
 import uuid
-import os
 import logging
 
 import json
@@ -22,7 +22,6 @@ import ast
 import os
 import sys
 import random
-import math
 
 BRIDGE = 'br-int'
 DOVS_PREFIX = 'dovs-'
@@ -84,6 +83,7 @@ class ODL:
     TZ = DOVS_PREFIX + 'tz'
     NETWORK_ID = '177bef73-514e-4922-990f-d7aba0f3b0f4'
     TENANT_ID = '5d806f0e-e197-4a72-88e6-72b024fa5c97'
+    SEGMENTATION_ID = '1'
 
     class Ugly:
         """ So ugly that it just does not compare """
@@ -101,9 +101,12 @@ class ODL:
     @staticmethod
     @ifNotFound(False)
     def isInterfaceParent(api, name, isParent):
-        interface = api(ODL.IETF_IF_RES).get(name)['interface'][0]
-        parent = interface['odl-interface:parent-interface']
-        return True if parent == isParent else False
+        try:
+            interface = api(ODL.IETF_IF_RES).get(name)['interface'][0]
+            parent = interface['odl-interface:parent-interface']
+            return True if parent == isParent else False
+        except KeyError:
+            return False
 
     @staticmethod
     @ifNotFound([])
@@ -131,7 +134,7 @@ class ODL:
                 'shared' : 'false',
                 'admin-state-up' : 'true',
                 'network-provider-extension:network-type' : 'neutron-networks:network-type-vxlan',
-                'network-provider-extension:segmentation-id' : '0',
+                'network-provider-extension:segmentation-id' : ODL.SEGMENTATION_ID,
                 'network-l3-extension:external' : "false",
              }
         }
@@ -828,6 +831,7 @@ class AddNode(cli.Application):
             return
 
         LOG.debug('Add node vtep to transport-zone with ip {}', node_ip)
+        return
 
         try:
             tz = ODL.getTz(self._api, ODL.TZ)
@@ -935,7 +939,7 @@ class AddGuest(cli.Application):
             network = self.addNetwork()
             subnet = self.addSubnet()
             router, rport = self.addRouter(subnet)
-            port = self.addPort(id, name, tapdev, mac)
+            port = self.addPort(id, name, mac)
 
         extra = {
             'name' : name,
@@ -946,6 +950,15 @@ class AddGuest(cli.Application):
         }
         LOG.debug('Adding guest tap device {} to OVS of node {}', tapdev, node)
         CMD.addDevToOvs(node, tapdev, mac, str(id), extra)
+
+        LOG.debug('Wait for {} to be set as parent of {}', tapdev, id)
+        self.waitForParentInterface(str(id), tapdev)
+
+    @retry(Dovs.Error, tries=60, delay=1)
+    def waitForParentInterface(self, name, parent):
+        if not ODL.isInterfaceParent(self._api, name, parent):
+            raise Dovs.Error('{} was not set as parent interface of {}'.format(parent, name))
+
 
     def addNetwork(self):
         network = ODL.getNetwork(self._api, ODL.NETWORK)
@@ -1029,7 +1042,7 @@ class AddGuest(cli.Application):
         CMD.setNsDefaultRoute(self._ns, ip)
         return router, port
 
-    def addPort(self, id, name, tap, mac):
+    def addPort(self, id, name, mac):
         node = self._node
         api = self._api
         net = self._net
@@ -1059,9 +1072,6 @@ class AddGuest(cli.Application):
             str(ip_interface(ip).ip),
             owner,
             ovsId)
-
-        while not ODL.isInterfaceParent(api, str(id), tap):
-            time.sleep(1)
 
         return netId
 

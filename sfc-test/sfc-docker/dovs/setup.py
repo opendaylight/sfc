@@ -22,7 +22,8 @@ setup(name="dovs",
       install_requires=[
           "plumbum",
           "tortilla",
-          "ipaddress"
+          "ipaddress",
+          "retry"
       ],
       entry_points={
           'console_scripts' : [

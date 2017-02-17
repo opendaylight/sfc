@@ -115,6 +115,11 @@ module vpp-nsh {
     description "ipv6 vxlan encap type";
   }
 
+  identity none {
+    base "encap-type";
+    description "encap-none";
+  }
+
   typedef nsh-encap-type {
     type identityref {
       base "encap-type";

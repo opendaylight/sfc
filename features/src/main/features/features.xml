@@ -70,6 +70,14 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-openflow-utils/{{VERSION}}</bundle>
     </feature>
 
+    <feature name="odl-sfc-scf-vpp" version="${project.version}" description="OpenDaylight :: sfc-scf-vpp">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-connector-all</feature>
+        <feature version="${netconf.parent.version}">odl-netconf-topology</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-scf-vpp/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.sfc/sfc-vpp-utils/{{VERSION}}</bundle>
+    </feature>
+
     <feature name="odl-sfc-openflow-renderer" version="${project.version}" description="OpenDaylight :: sfc-openflow-renderer">
         <feature version="${project.version}">odl-sfc-ovs</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,14 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This class implements load balance scheduling mode.
- * <p>
  *
+ * <p>
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @version 0.1
- *          <p>
  * @since 2015-03-13
  */
 public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
@@ -42,20 +40,19 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
     }
 
     /*
-     * TODO suggest renaming this method since getServiceFunctionByType is at odds with the
-     * relationship.
-     * A Type can have many instances of ServiceFunctions, hence one would expect this to return a
-     * list of SfNames.
-     * What it appears to actually be doing is finding the first instance of an SF within a Type
-     * that meets the CPUUtilization criteria.
-     * Since it appears to be returning an SfName, will make that change here rather than casting
-     * the return from where it was called.
-     * Since these methods appear to be common, perhaps consider making
+     * TODO suggest renaming this method since getServiceFunctionByType is at
+     * odds with the relationship. A Type can have many instances of
+     * ServiceFunctions, hence one would expect this to return a list of
+     * SfNames. What it appears to actually be doing is finding the first
+     * instance of an SF within a Type that meets the CPUUtilization criteria.
+     * Since it appears to be returning an SfName, will make that change here
+     * rather than casting the return from where it was called. Since these
+     * methods appear to be common, perhaps consider making
      * SfcServiceFunctionSchedulerAPI and Interface?
      */
     private SfName getServiceFunctionByType(ServiceFunctionType serviceFunctionType) {
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
-        SfName sfName = null;
+        SfName sfName;
         SfName sftServiceFunctionName = null;
         java.lang.Long preCPUUtilization = java.lang.Long.MAX_VALUE;
 
@@ -80,8 +77,8 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
                 break;
             }
 
-            java.lang.Long curCPUUtilization =
-                    sfcSfDescMon.getMonitoringInfo().getResourceUtilization().getCPUUtilization();
+            java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
 
             if (preCPUUtilization > curCPUUtilization) {
                 preCPUUtilization = curCPUUtilization;
@@ -105,8 +102,9 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
         Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
-         * For each ServiceFunction type in the list of ServiceFunctions we select a specific
-         * service function from the list of service functions by type.
+         * For each ServiceFunction type in the list of ServiceFunctions we
+         * select a specific service function from the list of service functions
+         * by type.
          */
         short index = 0;
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
@@ -118,16 +116,17 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctio
                 continue;
             }
             /*
-             * We iterate thorough the list of service function types and for each one we try to get
-             * get a suitable Service Function. WE need to perform lots of checking to make sure
-             * we do not hit NULL Pointer exceptions
+             * We iterate thorough the list of service function types and for
+             * each one we try to get get a suitable Service Function. WE need
+             * to perform lots of checking to make sure we do not hit NULL
+             * Pointer exceptions
              */
 
             ServiceFunctionType serviceFunctionType;
             serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList =
-                        serviceFunctionType.getSftServiceFunctionName();
+                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType
+                        .getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     // TODO As part of typedef refactor not message with SFTs
                     SfName sfName = getServiceFunctionByType(serviceFunctionType);

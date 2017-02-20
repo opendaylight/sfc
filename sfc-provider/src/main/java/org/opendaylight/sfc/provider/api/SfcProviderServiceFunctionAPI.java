@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,12 +36,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to operate on the ServiceFunction
- * datastore.
+ * This class has the APIs to operate on the ServiceFunction datastore.
+ *
  * <p>
- * It is normally called from onDataChanged() through a executor
- * service. We need to use an executor service because we can not
- * operate on a datastore while on onDataChanged() context.
+ * It is normally called from onDataChanged() through a executor service. We
+ * need to use an executor service because we can not operate on a datastore
+ * while on onDataChanged() context.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -53,11 +53,16 @@ public class SfcProviderServiceFunctionAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionAPI.class);
 
+    private SfcProviderServiceFunctionAPI() {
+    }
+
     /**
      * This method reads the operational state for a service function.
+     *
      * <p>
      *
-     * @param serviceFunctionName SF name
+     * @param serviceFunctionName
+     *            SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
@@ -67,8 +72,7 @@ public class SfcProviderServiceFunctionAPI {
         List<SfServicePath> ret = null;
         ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-            .build();
+                .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 
         ServiceFunctionState dataSfcStateObject;
         dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
@@ -84,9 +88,11 @@ public class SfcProviderServiceFunctionAPI {
 
     /**
      * This method reads the operational state for a service function.
+     *
      * <p>
      *
-     * @param serviceFunctionName SF name
+     * @param serviceFunctionName
+     *            SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
@@ -97,11 +103,10 @@ public class SfcProviderServiceFunctionAPI {
         List<RspName> rspList = new ArrayList<>();
         ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-            .build();
+                .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 
-        ServiceFunctionState dataSfcStateObject =
-                SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
+        ServiceFunctionState dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID,
+                LogicalDatastoreType.OPERATIONAL);
         if (dataSfcStateObject != null) {
             sfServicePathList = dataSfcStateObject.getSfServicePath();
             for (SfServicePath sfServicePath : sfServicePathList) {
@@ -114,16 +119,17 @@ public class SfcProviderServiceFunctionAPI {
 
         printTraceStop(LOG);
         return rspList;
-
     }
 
     /**
      * This method reads the operational state for a service function.
+     *
      * <p>
      *
-     * @param serviceFunctionName SF name
-     * @return service function description and monitor information
-     *         null otherwise
+     * @param serviceFunctionName
+     *            SF name
+     * @return service function description and monitor information null
+     *         otherwise
      */
     public static SfcSfDescMon readServiceFunctionDescriptionMonitor(SfName serviceFunctionName) {
         printTraceStart(LOG);
@@ -131,8 +137,7 @@ public class SfcProviderServiceFunctionAPI {
         SfcSfDescMon ret = null;
         ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-            .build();
+                .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 
         ServiceFunctionState dataSfcStateObject;
         dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
@@ -149,9 +154,11 @@ public class SfcProviderServiceFunctionAPI {
 
     /**
      * This method deletes the operational state for a service function.
+     *
      * <p>
      *
-     * @param serviceFunctionName SF name
+     * @param serviceFunctionName
+     *            SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
@@ -160,8 +167,7 @@ public class SfcProviderServiceFunctionAPI {
         boolean ret = false;
         ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(serviceFunctionName);
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-            .build();
+                .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL)) {
             ret = true;
@@ -174,13 +180,14 @@ public class SfcProviderServiceFunctionAPI {
 
     /**
      * This method adds a RSP name to the corresponding SF operational state.
+     *
      * <p>
      *
-     * @param renderedServicePath RSP object
+     * @param renderedServicePath
+     *            RSP object
      * @return true if SFP was added, false otherwise
      */
     public static boolean addPathToServiceFunctionState(RenderedServicePath renderedServicePath) {
-
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -198,13 +205,12 @@ public class SfcProviderServiceFunctionAPI {
             LOG.debug("handling hop index: {}, sf: {}, sfg: {}", renderedServicePathHop.getHopNumber(),
                     serviceFunctionName, serviceFunctionGroupName);
             if (serviceFunctionName != null) {
-                ServiceFunctionStateKey serviceFunctionStateKey =
-                        new ServiceFunctionStateKey(renderedServicePathHop.getServiceFunctionName());
+                ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(
+                        renderedServicePathHop.getServiceFunctionName());
 
                 InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                    .child(SfServicePath.class, sfServicePathKey)
-                    .build();
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .child(SfServicePath.class, sfServicePathKey).build();
                 serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
 
                 if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
@@ -221,26 +227,26 @@ public class SfcProviderServiceFunctionAPI {
                         serviceFunctionGroupName);
                 ret = true;
             }
-
         }
         printTraceStop(LOG);
         return ret;
-
     }
 
     /**
      * This method puts a SF to data store.
+     *
      * <p>
      *
-     * @param sf Service Function
+     * @param sf
+     *            Service Function
      * @return true if SF was added, false otherwise
      */
     public static boolean putServiceFunction(ServiceFunction sf) {
         boolean ret;
         printTraceStart(LOG);
 
-        InstanceIdentifier<ServiceFunction> sfEntryIID =
-                InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sf.getKey()).build();
+        InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
+                .child(ServiceFunction.class, sf.getKey()).build();
 
         ret = SfcDataStoreAPI.writeMergeTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
@@ -249,10 +255,12 @@ public class SfcProviderServiceFunctionAPI {
     }
 
     /**
-     * Add ServiceFunctionState to datastore
+     * Add ServiceFunctionState to datastore.
+     *
      * <p>
      *
-     * @param sfState ServiceFunctionState Object
+     * @param sfState
+     *            ServiceFunctionState Object
      * @return true if state was added, false otherwise
      */
     public static boolean putServiceFunctionState(ServiceFunctionState sfState) {
@@ -260,8 +268,7 @@ public class SfcProviderServiceFunctionAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, sfState.getKey())
-            .build();
+                .child(ServiceFunctionState.class, sfState.getKey()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfState, LogicalDatastoreType.OPERATIONAL);
 
@@ -275,8 +282,7 @@ public class SfcProviderServiceFunctionAPI {
 
         ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfState.getKey());
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-            .child(ServiceFunctionState.class, serviceFunctionStateKey)
-            .build();
+                .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 
         ret = SfcDataStoreAPI.writeMergeTransactionAPI(sfStateIID, sfState, LogicalDatastoreType.OPERATIONAL);
 
@@ -285,10 +291,12 @@ public class SfcProviderServiceFunctionAPI {
     }
 
     /**
-     * This method reads a SF from the datastore
+     * This method reads a SF from the datastore.
+     *
      * <p>
      *
-     * @param serviceFunctionName SF name
+     * @param serviceFunctionName
+     *            SF name
      * @return SF object or null if not found
      */
     public static ServiceFunction readServiceFunction(SfName serviceFunctionName) {
@@ -296,9 +304,8 @@ public class SfcProviderServiceFunctionAPI {
         ServiceFunction sf;
         InstanceIdentifier<ServiceFunction> sfIID;
         ServiceFunctionKey serviceFunctionKey = new ServiceFunctionKey(serviceFunctionName);
-        sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
-            .child(ServiceFunction.class, serviceFunctionKey)
-            .build();
+        sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, serviceFunctionKey)
+                .build();
 
         sf = SfcDataStoreAPI.readTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -319,30 +326,31 @@ public class SfcProviderServiceFunctionAPI {
 
     /**
      * This method removes the given Service Path from the all SF operational
-     * states that use it.
-     * It assumes that the associated Rendered Service Path has not been deleted
-     * yet since it reads it in order to have access to all SFs that are used
-     * by this RSP.
+     * states that use it. It assumes that the associated Rendered Service Path
+     * has not been deleted yet since it reads it in order to have access to all
+     * SFs that are used by this RSP.
+     *
      * <p>
      *
-     * @param sfpName SFP name
+     * @param sfpName
+     *            SFP name
      * @return true if SF was deleted, false otherwise
      */
     public static boolean deleteServicePathFromServiceFunctionState(SfpName sfpName) {
-
         printTraceStart(LOG);
         boolean ret = true;
         // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
         RspName rspNameFromSfpName = new RspName(sfpName.getValue());
-        RenderedServicePath renderedServicePath =
-                SfcProviderRenderedPathAPI.readRenderedServicePath(rspNameFromSfpName);
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI
+                .readRenderedServicePath(rspNameFromSfpName);
 
         if (renderedServicePath != null) {
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
             for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
                 SfName sfName = renderedServicePathHop.getServiceFunctionName();
                 RspName rspName = renderedServicePath.getName();
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings -
+                // alagalah
                 SfpName sfpNameFromRspName = new SfpName(rspName.getValue());
                 SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpNameFromRspName);
                 SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
@@ -351,9 +359,8 @@ public class SfcProviderServiceFunctionAPI {
 
                 ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
                 InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-                    .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                    .child(SfServicePath.class, sfServicePathKey)
-                    .build();
+                        .child(ServiceFunctionState.class, serviceFunctionStateKey)
+                        .child(SfServicePath.class, sfServicePathKey).build();
                 if (SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL)) {
                     ret = true;
                 } else {
@@ -373,47 +380,45 @@ public class SfcProviderServiceFunctionAPI {
     /**
      * Delete the given list of RSP from the SFF operational state.
      *
-     * @param rspNames list of RSP names.
+     * @param rspNames
+     *            list of RSP names.
      * @return True if everything went ok, false otherwise.
      */
     public static boolean deleteServicePathFromServiceFunctionState(List<RspName> rspNames) {
-       return rspNames.stream()
-               .map(rspName -> new SfpName(rspName.getValue()))
-               .map(SfcProviderServiceFunctionAPI::deleteServicePathFromServiceFunctionState)
-               .reduce(true, (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
+        return rspNames.stream().map(rspName -> new SfpName(rspName.getValue()))
+                .map(SfcProviderServiceFunctionAPI::deleteServicePathFromServiceFunctionState)
+                .reduce(true, (booleanA, booleanB) -> booleanA && booleanB);
     }
 
     /**
-     * This method removes the given Rendered Service Path from the all
-     * SF operational states that use it.
-     * It assumes that the associated Rendered Service Path has not been deleted
-     * yet since it reads it in order to have access to all SFs that are used
-     * by this RSP.
-     * <p>
+     * This method removes the given Rendered Service Path from the all SF
+     * operational states that use it. It assumes that the associated Rendered
+     * Service Path has not been deleted yet since it reads it in order to have
+     * access to all SFs that are used by this RSP.
      *
-     * @param rspName Rendered Service Path name
+     * <p>
+     * @param rspName
+     *            Rendered Service Path name
      * @return true if RSP was deleted, false otherwise
      */
     public static boolean deleteRspFromServiceFunctionState(RspName rspName) {
-
         printTraceStart(LOG);
         boolean ret = true;
-        RenderedServicePath renderedServicePath =
-            SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
 
         if (renderedServicePath != null) {
             List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
             for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
                 SfName sfName = renderedServicePathHop.getServiceFunctionName();
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
+                // TODO Bug 4495 - RPCs hiding heuristics using Strings -
+                // alagalah
                 SfpName sfpNameFromRspName = new SfpName(rspName.getValue());
                 SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpNameFromRspName);
 
                 ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
                 InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
-                        .child(SfServicePath.class, sfServicePathKey)
-                        .build();
+                        .child(SfServicePath.class, sfServicePathKey).build();
                 if (SfcDataStoreAPI.deleteTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL)) {
                     ret = true;
                 } else {
@@ -429,5 +434,4 @@ public class SfcProviderServiceFunctionAPI {
         printTraceStop(LOG);
         return ret;
     }
-
 }

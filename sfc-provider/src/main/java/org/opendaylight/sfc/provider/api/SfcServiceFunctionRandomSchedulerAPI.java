@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,11 +25,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a random SF scheduling mode.
- * <p>
  *
+ * <p>
  * @author Johnson Li (johnson.li@intel.com)
  * @version 0.1
- *          <p>
  * @since 2015-03-04
  */
 public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
@@ -46,7 +45,7 @@ public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSche
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         int maxTries = sftServiceFunctionNameList.size();
         Random rad = new Random();
-        ServiceFunction serviceFunction = null;
+        ServiceFunction serviceFunction;
         SfName serviceFunctionName = null;
         int start = rad.nextInt(sftServiceFunctionNameList.size());
 

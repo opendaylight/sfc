@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_bcce512c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_b77843f3",
+      "range": {
+        "startLine": 111,
+        "startChar": 85,
+        "endLine": 111,
+        "endChar": 106
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_f7612b3a",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2017-02-14T16:39:03Z",
       "side": 1,
       "message": "same here",
+      "range": {
+        "startLine": 113,
+        "startChar": 91,
+        "endLine": 113,
+        "endChar": 112
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_dcc99527",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_f7612b3a",
       "range": {
         "startLine": 113,
         "startChar": 91,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_7c4989b6",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_d764e74a",
+      "range": {
+        "startLine": 115,
+        "startChar": 71,
+        "endLine": 115,
+        "endChar": 92
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_17edcf8b",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
         "patchSetId": 5
@@ -82,6 +154,30 @@
       "writtenOn": "2017-02-14T16:39:03Z",
       "side": 1,
       "message": "same here",
+      "range": {
+        "startLine": 152,
+        "startChar": 28,
+        "endLine": 152,
+        "endChar": 48
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_9c4c2dca",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_17edcf8b",
       "range": {
         "startLine": 152,
         "startChar": 28,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_3c53816c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_77037b42",
+      "range": {
+        "startLine": 153,
+        "startChar": 28,
+        "endLine": 153,
+        "endChar": 48
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_77b1bb8e",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
         "patchSetId": 5
@@ -128,6 +248,30 @@
       "writtenOn": "2017-02-14T16:39:03Z",
       "side": 1,
       "message": "had to pay close attention to what was being done here - maybe my ADD kicked in, but I think something like this is clearer: \n\nSffName targetSff \u003d  entry.getDstSff().equals(SffGraph.EGRESS) ?  entry.getSrcSff() : entry.getDstSff(); \n\nServiceFunctionForwarder sff \u003d sfcProviderUtils.getServiceFunctionForwarder(targetSff, entry.getPathId());\n\nJust a suggestion though.",
+      "range": {
+        "startLine": 225,
+        "startChar": 1,
+        "endLine": 231,
+        "endChar": 13
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_9ce38da3",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshEth.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_77b1bb8e",
       "range": {
         "startLine": 225,
         "startChar": 1,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_7cf7c959",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_5773d7e6",
+      "range": {
+        "startLine": 105,
+        "startChar": 12,
+        "endLine": 105,
+        "endChar": 36
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_3746137d",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
         "patchSetId": 5
@@ -174,6 +342,30 @@
       "writtenOn": "2017-02-14T16:39:03Z",
       "side": 1,
       "message": "same here",
+      "range": {
+        "startLine": 205,
+        "startChar": 12,
+        "endLine": 205,
+        "endChar": 36
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_dc97d5ea",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorNshVxgpe.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fafc7978_3746137d",
       "range": {
         "startLine": 205,
         "startChar": 12,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_3c88a1c4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspTransportProcessorBase.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "I\u0027ll update the comment. The use case is for Vxgpe+NSH for classifier-SFF and SFF-SFF, but Eth+NSH for SFF-SF. In which case there will be one SFF DPL for the SFs which will be Eth+NSH, and another SFF DPL for Vxgpe+NSH for the rest. What I need here is the SFF DPL that is NOT used for the SFF-SFs.",
+      "parentUuid": "fafc7978_575ab750",
+      "range": {
+        "startLine": 156,
+        "startChar": 1,
+        "endLine": 164,
+        "endChar": 13
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_17402f55",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/SfcOfBaseProviderUtils.java",
         "patchSetId": 5
@@ -220,6 +436,30 @@
       "writtenOn": "2017-02-14T16:39:03Z",
       "side": 1,
       "message": "couldn\u0027t you compare SfNames instead of strings?",
+      "range": {
+        "startLine": 396,
+        "startChar": 15,
+        "endLine": 396,
+        "endChar": 68
+      },
+      "revId": "8ca762f09c34c14e42efcbc02b2d585508c42de9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_dc4cf5a0",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/SfcOfBaseProviderUtils.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-02-20T14:01:03Z",
+      "side": 1,
+      "message": "According to Google: The default equals() method on java.lang.Object compares memory addresses, which means that all objects are different from each other (only two references to the same object will return true).\n\nI took a look at the SfName implementation, and it does indeed implement equals() to check the String value.\n\nI\u0027ll modify this according to your comment.",
+      "parentUuid": "fafc7978_17402f55",
       "range": {
         "startLine": 396,
         "startChar": 15,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,7 +8,9 @@
 
 package org.opendaylight.sfc.provider;
 
-import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
@@ -22,6 +24,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -81,20 +84,17 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
 
 /**
  * This class holds all RPCs methods for SFC Provider.
- * <p>
  *
+ * <p>
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
  * @version 0.1
@@ -111,14 +111,14 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         return new SfcProviderRpc();
     }
 
-    //blueprint setter
-    public void setDataProvider(DataBroker r) {
-        dataBroker = r;
+    // blueprint setter
+    public void setDataProvider(DataBroker broker) {
+        dataBroker = broker;
     }
 
-    //aux setter just for test
-    public static void setDataProviderAux(DataBroker r) {
-        dataBroker = r;
+    // aux setter just for test
+    public static void setDataProviderAux(DataBroker broker) {
+        dataBroker = broker;
     }
 
     @Override
@@ -146,20 +146,17 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
         ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
         ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
-        ServiceFunction sf = sfbuilder.setName(input.getName())
-            .setType(input.getType())
-            .setKey(sfkey)
-            .setIpMgmtAddress(input.getIpMgmtAddress())
-            .setSfDataPlaneLocator(sfDataPlaneLocatorList)
-            .build();
+        ServiceFunction sf = sfbuilder.setName(input.getName()).setType(input.getType()).setKey(sfkey)
+                .setIpMgmtAddress(input.getIpMgmtAddress()).setSfDataPlaneLocator(sfDataPlaneLocatorList).build();
 
-        InstanceIdentifier<ServiceFunction> sfEntryIID =
-                InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sf.getKey()).build();
+        InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
+                .child(ServiceFunction.class, sf.getKey()).build();
 
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
-        return Futures.transform(writeTx.submit(), (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build());
+        return Futures.transform(writeTx.submit(),
+                (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build());
     }
 
     @Override
@@ -184,10 +181,9 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 LOG.debug("readServiceFunction Success: {}", serviceFunction.getName());
                 ReadServiceFunctionOutput readServiceFunctionOutput = null;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
-                outputBuilder.setName(serviceFunction.getName())
-                    .setType(serviceFunction.getType())
-                    .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
-                    .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
+                outputBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
+                        .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
+                        .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
                 readServiceFunctionOutput = outputBuilder.build();
                 printTraceStop(LOG);
                 return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>getRpcResult(true,
@@ -214,8 +210,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     public Future<RpcResult<Void>> putServiceFunctionChains(PutServiceFunctionChainsInput input) {
         printTraceStart(LOG);
         ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
-        serviceFunctionChainsBuilder =
-                serviceFunctionChainsBuilder.setServiceFunctionChain(input.getServiceFunctionChain());
+        serviceFunctionChainsBuilder = serviceFunctionChainsBuilder
+                .setServiceFunctionChain(input.getServiceFunctionChain());
         ServiceFunctionChains sfcs = serviceFunctionChainsBuilder.build();
 
         if (!SfcDataStoreAPI.writeMergeTransactionAPI(SfcInstanceIdentifiers.SFC_IID, sfcs,
@@ -228,11 +224,11 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @SuppressWarnings("unused")
     private ServiceFunctionChain findServiceFunctionChain(SfcName name) {
         ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
-        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class, key).build();
+        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier = InstanceIdentifier
+                .builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class, key).build();
 
         ServiceFunctionChain serviceFunctionChain = SfcDataStoreAPI
-            .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
+                .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
         if (serviceFunctionChain == null) {
             LOG.error("Failed to find Service Function Chain: {}", name);
         }
@@ -251,18 +247,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RspName retRspName = null;
 
         createdServiceFunctionPath = SfcProviderServicePathAPI
-            .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
+                .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
 
         if (createdServiceFunctionPath != null) {
             renderedServicePath = SfcProviderRenderedPathAPI
-                .createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput);
+                    .createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput);
             if (renderedServicePath != null) {
                 retRspName = renderedServicePath.getName();
                 createRenderedPathOutputBuilder.setName(retRspName.getValue());
                 rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
                 if (SfcProviderRenderedPathAPI.isChainSymmetric(createdServiceFunctionPath, renderedServicePath)) {
-                    revRenderedServicePath =
-                            SfcProviderRenderedPathAPI.createSymmetricRenderedServicePathAndState(renderedServicePath);
+                    revRenderedServicePath = SfcProviderRenderedPathAPI
+                            .createSymmetricRenderedServicePathAndState(renderedServicePath);
                     if (revRenderedServicePath == null) {
                         LOG.error("Failed to create symmetric service path: {}");
                     } else {
@@ -272,41 +268,42 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 }
             } else {
                 rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                    .withError(ErrorType.APPLICATION, "Failed to create RSP")
-                    .build();
+                        .withError(ErrorType.APPLICATION, "Failed to create RSP").build();
             }
 
         } else {
             rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                .withError(ErrorType.APPLICATION, "Service Function Path does not exist")
-                .build();
+                    .withError(ErrorType.APPLICATION, "Service Function Path does not exist").build();
         }
         return Futures.immediateFuture(rpcResult);
     }
 
     /**
-     * When a RSP is deleted, it has to be removed from:
-     * SFF, SF and RSP operational state
-     * <p>
+     * When a RSP is deleted, it has to be removed from: SFF, SF and RSP
+     * operational state.
      *
-     * @param rspName RspName object with the Rendered Service Path
+     * <p>
+     * @param rspName
+     *            RspName object with the Rendered Service Path
      * @return true if all path was deleted, false otherwise.
      */
     private boolean deleteRenderedPathWithRspName(RspName rspName) {
 
         boolean ret = true;
         ret = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
-        ret = (ret && SfcProviderServiceFunctionAPI.deleteRspFromServiceFunctionState(rspName));
+        ret = ret && SfcProviderServiceFunctionAPI.deleteRspFromServiceFunctionState(rspName);
 
-        ret = (ret && SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName));
+        ret = ret && SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName);
         return ret;
     }
 
     /**
-     * Remove RSP from all the operational state
-     * <p>
+     * Remove RSP from all the operational state.
      *
-     * @param input schema path <i>rendered-service-path/delete-rendered-path/input</i>
+     * <p>
+     * @param input
+     *            schema path
+     *            <i>rendered-service-path/delete-rendered-path/input</i>
      * @return RPC output
      */
     @Override
@@ -318,9 +315,9 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
         if (reverseRspName != null) {
             // The RSP has a symmetric ("Reverse") Path
-            ret = (ret && this.deleteRenderedPathWithRspName(reverseRspName));
+            ret = ret && this.deleteRenderedPathWithRspName(reverseRspName);
         }
-        ret = (ret && this.deleteRenderedPathWithRspName(rspName));
+        ret = ret && this.deleteRenderedPathWithRspName(rspName);
 
         DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
         deleteRenderedPathOutputBuilder.setResult(ret);
@@ -328,20 +325,21 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
             rpcResultBuilder = RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
         } else {
             String message = "Error Deleting Rendered Service Path: " + input.getName();
-            rpcResultBuilder =
-                    RpcResultBuilder.<DeleteRenderedPathOutput>failed().withError(ErrorType.APPLICATION, message);
+            rpcResultBuilder = RpcResultBuilder.<DeleteRenderedPathOutput>failed().withError(ErrorType.APPLICATION,
+                    message);
         }
 
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
     /**
-     * This method gets all necessary information for a system to construct
-     * a NSH header and associated overlay packet to target the first
-     * service hop of a Rendered Service Path
-     * <p>
+     * This method gets all necessary information for a system to construct a
+     * NSH header and associated overlay packet to target the first service hop
+     * of a Rendered Service Path.
      *
-     * @param input RPC input including a Rendered Service Path name
+     * <p>
+     * @param input
+     *            RPC input including a Rendered Service Path name
      * @return RPC output including a renderedServicePathFirstHop.
      */
     @Override
@@ -351,8 +349,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
         RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
-        renderedServicePathFirstHop =
-                SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(new RspName(input.getName()));
+        renderedServicePathFirstHop = SfcProviderRenderedPathAPI
+                .readRenderedServicePathFirstHop(new RspName(input.getName()));
 
         ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
         if (renderedServicePathFirstHop != null) {
@@ -365,7 +363,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         } else {
             String message = "Error Reading RSP First Hop from DataStore: " + input.getName();
             rpcResultBuilder = RpcResultBuilder.<ReadRenderedServicePathFirstHopOutput>failed()
-                .withError(ErrorType.APPLICATION, message);
+                    .withError(ErrorType.APPLICATION, message);
         }
 
         return Futures.immediateFuture(rpcResultBuilder.build());
@@ -374,17 +372,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     /**
      * This method reads all the necessary information for the first hop of a
      * Rendered Service Path by ServiceFunctionTypeIdentity list.
-     * <p>
      *
-     * @param input RPC input including a ServiceFunctionTypeIdentity list
+     * <p>
+     * @param input
+     *            RPC input including a ServiceFunctionTypeIdentity list
      * @return RPC output including a renderedServicePathFirstHop.
      */
     @Override
     public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(
             ReadRspFirstHopBySftListInput input) {
         RenderedServicePathFirstHop renderedServicePathFirstHop = null;
-        renderedServicePathFirstHop =
-                SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(), input.getSftList());
+        renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(),
+                input.getSftList());
         ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;
         if (renderedServicePathFirstHop != null) {
             ReadRspFirstHopBySftListOutputBuilder readRspFirstHopBySftListOutputBuilder =
@@ -393,8 +392,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
             readRspFirstHopBySftListOutput = readRspFirstHopBySftListOutputBuilder.build();
         }
 
-        RpcResultBuilder<ReadRspFirstHopBySftListOutput> rpcResultBuilder =
-                RpcResultBuilder.success(readRspFirstHopBySftListOutput);
+        RpcResultBuilder<ReadRspFirstHopBySftListOutput> rpcResultBuilder = RpcResultBuilder
+                .success(readRspFirstHopBySftListOutput);
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
@@ -432,10 +431,9 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         SetGenerationAlgorithmOutputBuilder setGenerationAlgorithmOutputBuilder =
                 new SetGenerationAlgorithmOutputBuilder();
         setGenerationAlgorithmOutputBuilder.setResult(result);
-        RpcResultBuilder<SetGenerationAlgorithmOutput> rpcResultBuilder =
-                RpcResultBuilder.success(setGenerationAlgorithmOutputBuilder.build());
+        RpcResultBuilder<SetGenerationAlgorithmOutput> rpcResultBuilder = RpcResultBuilder
+                .success(setGenerationAlgorithmOutputBuilder.build());
 
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
-
 }

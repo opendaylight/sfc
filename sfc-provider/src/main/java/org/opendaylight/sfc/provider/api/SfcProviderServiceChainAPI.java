@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
@@ -16,16 +19,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
 
 /**
- * This class has the APIs to operate on the ServiceFunctionChain
- * datastore.
- * It is normally called from onDataChanged() through a executor
- * service. We need to use an executor service because we can not
- * operate on a datastore while on onDataChanged() context.
+ * This class has the APIs to operate on the ServiceFunctionChain datastore. It
+ * is normally called from onDataChanged() through a executor service. We need
+ * to use an executor service because we can not operate on a datastore while on
+ * onDataChanged() context.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -39,10 +38,11 @@ public class SfcProviderServiceChainAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPI.class);
 
     /**
-     * This method reads the service function chain specified by the given name from
-     * the datastore
+     * This method reads the service function chain specified by the given name
+     * from the datastore.
      *
-     * @param serviceFunctionChainName SF name
+     * @param serviceFunctionChainName
+     *            SF name
      * @return A ServiceFunctionState object that is a list of all paths using
      *         this service function, null otherwise
      */
@@ -52,8 +52,7 @@ public class SfcProviderServiceChainAPI {
         InstanceIdentifier<ServiceFunctionChain> sfcIID;
         ServiceFunctionChainKey serviceFunctionChainKey = new ServiceFunctionChainKey(serviceFunctionChainName);
         sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-            .child(ServiceFunctionChain.class, serviceFunctionChainKey)
-            .build();
+                .child(ServiceFunctionChain.class, serviceFunctionChainKey).build();
 
         sfc = SfcDataStoreAPI.readTransactionAPI(sfcIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -64,7 +63,8 @@ public class SfcProviderServiceChainAPI {
     /**
      * This method creates a SFC from the datastore.
      *
-     * @param serviceFunctionChain SFC object
+     * @param serviceFunctionChain
+     *            SFC object
      * @return true if SFC was created, false otherwise
      */
     public static boolean putServiceFunctionChain(ServiceFunctionChain serviceFunctionChain) {
@@ -72,8 +72,7 @@ public class SfcProviderServiceChainAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-            .child(ServiceFunctionChain.class, serviceFunctionChain.getKey())
-            .build();
+                .child(ServiceFunctionChain.class, serviceFunctionChain.getKey()).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcEntryIID, serviceFunctionChain,
                 LogicalDatastoreType.CONFIGURATION)) {

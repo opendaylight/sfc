@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,19 +14,22 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class holds SFC Concurrency high level APIs <p>
+ * This class holds SFC Concurrency high level APIs.
+ *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since 2015-06-23
  */
 
 public class SfcConcurrencyAPI {
-
     private static final Lock SFC_LOCK = new ReentrantLock();
     private static final Lock SFC_PATHID_LOCK = new ReentrantLock();
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcConcurrencyAPI.class);
+
+    private SfcConcurrencyAPI() {
+    }
 
     public static boolean getLock() {
         try {
@@ -57,5 +60,4 @@ public class SfcConcurrencyAPI {
     public static void releasePathIdLock() {
         SFC_PATHID_LOCK.unlock();
     }
-
 }

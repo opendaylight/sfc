@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,15 +27,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 /**
- * This class has the APIs to operate on the ServiceFunctionPath
- * datastore.
- * It is normally called from onDataChanged() through a executor
- * service. We need to use an executor service because we can not
- * operate on a datastore while on onDataChanged() context.
+ * This class has the APIs to operate on the ServiceFunctionPath datastore. It
+ * is normally called from onDataChanged() through a executor service. We need
+ * to use an executor service because we can not operate on a datastore while on
+ * onDataChanged() context.
  *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -43,10 +43,14 @@ public class SfcProviderServicePathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
 
+    private SfcProviderServicePathAPI() {
+    }
+
     /**
-     * API to read the Service Function Path operational state
+     * API to read the Service Function Path operational state.
      *
-     * @param servicePathName Service Path Name
+     * @param servicePathName
+     *            Service Path Name
      * @return List of RSP name objects
      */
     public static List<SfpRenderedServicePath> readServicePathState(SfpName servicePathName) {
@@ -58,11 +62,10 @@ public class SfcProviderServicePathAPI {
         ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
 
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-            .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
-            .build();
+                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).build();
 
-        ServiceFunctionPathState serviceFunctionPathState =
-                SfcDataStoreAPI.readTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL);
+        ServiceFunctionPathState serviceFunctionPathState = SfcDataStoreAPI.readTransactionAPI(sfpIID,
+                LogicalDatastoreType.OPERATIONAL);
         if (serviceFunctionPathState != null) {
             ret = serviceFunctionPathState.getSfpRenderedServicePath();
         }
@@ -72,11 +75,13 @@ public class SfcProviderServicePathAPI {
     }
 
     /**
-     * We iterate through all service paths that use this service function and if
-     * necessary, remove them.
+     * We iterate through all service paths that use this service function and
+     * if necessary, remove them.
      *
-     * @param servicePathName Service Function Path name
-     * @param renderedPathName Rendered Path name
+     * @param servicePathName
+     *            Service Function Path name
+     * @param renderedPathName
+     *            Rendered Path name
      * @return Nothing.
      */
     public static boolean addRenderedPathToServicePathState(SfpName servicePathName, RspName renderedPathName) {
@@ -92,9 +97,8 @@ public class SfcProviderServicePathAPI {
         ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
 
         rspIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-            .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
-            .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey)
-            .build();
+                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
+                .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, sfpRenderedServicePathBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL)) {
@@ -108,9 +112,10 @@ public class SfcProviderServicePathAPI {
     }
 
     /**
-     * This function reads a SFP from the datastore
+     * This function reads a SFP from the datastore.
      *
-     * @param serviceFunctionPathName RSP name
+     * @param serviceFunctionPathName
+     *            RSP name
      * @return Nothing.
      */
     public static ServiceFunctionPath readServiceFunctionPath(SfpName serviceFunctionPathName) {
@@ -119,8 +124,7 @@ public class SfcProviderServicePathAPI {
         InstanceIdentifier<ServiceFunctionPath> sfpIID;
         ServiceFunctionPathKey serviceFunctionPathKey = new ServiceFunctionPathKey(serviceFunctionPathName);
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-            .child(ServiceFunctionPath.class, serviceFunctionPathKey)
-            .build();
+                .child(ServiceFunctionPath.class, serviceFunctionPathKey).build();
 
         sfp = SfcDataStoreAPI.readTransactionAPI(sfpIID, LogicalDatastoreType.CONFIGURATION);
         printTraceStop(LOG);
@@ -130,8 +134,8 @@ public class SfcProviderServicePathAPI {
     public static ServiceFunctionPaths readAllServiceFunctionPaths() {
         ServiceFunctionPaths sfps;
         printTraceStart(LOG);
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                .build();
 
         sfps = SfcDataStoreAPI.readTransactionAPI(sfpsIID, LogicalDatastoreType.CONFIGURATION);
 
@@ -144,8 +148,7 @@ public class SfcProviderServicePathAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-            .child(ServiceFunctionPath.class, sfp.getKey())
-            .build();
+                .child(ServiceFunctionPath.class, sfp.getKey()).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sfpEntryIID, sfp, LogicalDatastoreType.CONFIGURATION)) {
             LOG.debug("Created Service Function Path: {}", sfp.getName());

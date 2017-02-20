@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,9 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.opendaylight.sfc.provider.topology.SfcProviderGraph;
 import org.opendaylight.sfc.provider.topology.SfcProviderTopologyNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -26,59 +29,63 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.service.functions.state.service.function.state.SfcSfDescMon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements LoadPath aware scheduling mode.
+ *
  * <p>
  *
  * @author Dongeun Suh (dongensuh@gmail.com)
  * @author Jaewook Lee (iioiioiio123@korea.ac.kr)
  * @author Hosung Beak (ghlemd@korea.ac.kr)
  * @author Sangheon Pack (shpack@korea.ac.kr)
- * <p>
  * @since 2016-09-10
  */
 
 public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionLoadPathAwareSchedulerAPI.class);
+
     SfcServiceFunctionLoadPathAwareSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(
                 org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadPathAware.class);
     }
 
     /**
-     * This method finds out name of the Service Function which has lowest load (e,g., CPU Utilization)
-     * and lower path between Service Function preSfName than path threshold whcich is predefiend value
-     * per serviceFunctionType.
-     * In this code, we define path threshold to 3.
+     * This method finds out name of the Service Function which has lowest load
+     * (e,g., CPU Utilization) and lower path between Service Function preSfName
+     * than path threshold which is predefined value per serviceFunctionType. In
+     * this code, we define path threshold to 3.
      *
-     * @param serviceFunctionType Type of Service Function to find
-     * @param preSfName Name of previous Service Function in Service Function Path
-     * @param sfcProviderGraph Topology graph comprised of all the SFs and SFFs
+     * @param serviceFunctionType
+     *            Type of Service Function to find
+     * @param preSfName
+     *            Name of previous Service Function in Service Function Path
+     * @param sfcProviderGraph
+     *            Topology graph comprised of all the SFs and SFFs
      * @return String Name of the Service Function with type serviceFunctionType
      */
     private SfName getServiceFunctionByType(ServiceFunctionType serviceFunctionType, SfName preSfName,
             SfcProviderGraph sfcProviderGraph) {
-        SfName sfcProviderTopologyNodeName = null;
-        SfName sfcProviderTopologyNodeName_backup = null;
-        List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
- //       int maxTries = sftServiceFunctionNameList.size();
+        SfName sfcProviderTopologyNodeName;
 
-        /* Return null if there are no available instances for the serviceFunctionType */
-        if (sftServiceFunctionNameList.size() == 0) {
+        List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
+
+        /*
+         * Return null if there are no available instances for the
+         * serviceFunctionType
+         */
+        if (sftServiceFunctionNameList.isEmpty()) {
             LOG.debug("No Service Function for {}", serviceFunctionType);
             return null;
         }
 
         /*
-         * If this is the first SF instance selection round (i.e., preSfName == null),
-         * find a SF instance with the lowest CPU utilization and return its name
+         * If this is the first SF instance selection round (i.e., preSfName ==
+         * null), find a SF instance with the lowest CPU utilization and return
+         * its name
          */
         if (preSfName == null) {
-            SfName sfName = null;
+            SfName sfName;
             SfName sftServiceFunctionName = null;
             java.lang.Long preCPUUtilization = java.lang.Long.MAX_VALUE;
 
@@ -92,7 +99,10 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                     continue;
                 }
 
-                /* Read service function description monitor information (e.g., CPU utilization) of the sfName */
+                /*
+                 * Read service function description monitor information (e.g.,
+                 * CPU utilization) of the sfName
+                 */
                 SfcSfDescMon sfcSfDescMon = SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfName);
                 if (sfcSfDescMon == null) {
                     sftServiceFunctionName = sfName;
@@ -100,8 +110,8 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                     break;
                 }
 
-                java.lang.Long curCPUUtilization =
-                    sfcSfDescMon.getMonitoringInfo().getResourceUtilization().getCPUUtilization();
+                java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
+                        .getCPUUtilization();
 
                 if (preCPUUtilization > curCPUUtilization) {
                     preCPUUtilization = curCPUUtilization;
@@ -110,20 +120,20 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
             }
 
             if (sftServiceFunctionName == null) {
-            LOG.error("Failed to get one available ServiceFunction for {}", serviceFunctionType.getType());
+                LOG.error("Failed to get one available ServiceFunction for {}", serviceFunctionType.getType());
             }
 
             SfcProviderTopologyNode firstHopNode;
-            sfcProviderTopologyNodeName =  sftServiceFunctionName;
+            sfcProviderTopologyNodeName = sftServiceFunctionName;
             /*
-             * XXX noticed that SfcProviderGraph sometimes refers to SFFs as well so leaving
-             * that alone for now until a general discussion
+             * XXX noticed that SfcProviderGraph sometimes refers to SFFs as
+             * well so leaving that alone for now until a general discussion
              * about Schedulers can be had.
              */
             firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName.getValue());
             LOG.debug("The first ServiceFunction name: {}", sfcProviderTopologyNodeName);
             return sfcProviderTopologyNodeName;
-      }
+        }
 
         SfcProviderTopologyNode preSfcProviderTopologyNode = sfcProviderGraph.getNode(preSfName.getValue());
 
@@ -134,16 +144,18 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
         }
 
         /*
-         * If this is not the first SF instance selection round (i.e., preSfName != null), find an
-         * instance with the lowest CPU utilization among the instances whose hop counts to the previously
-         * selected SF instance are less than or equal to Path_threshold (default value is 3) and return its name
+         * If this is not the first SF instance selection round (i.e., preSfName
+         * != null), find an instance with the lowest CPU utilization among the
+         * instances whose hop counts to the previously selected SF instance are
+         * less than or equal to Path_threshold (default value is 3) and return
+         * its name
          */
-        int Path_length;
-        int Path_threshold = 3;
+        int pathLength;
+        int pathThreshold = 3;
         sfcProviderTopologyNodeName = null;
-        sfcProviderTopologyNodeName_backup = null;
-        java.lang.Long preCPUUtilization = java.lang.Long.MAX_VALUE;
-        java.lang.Long preCPUUtilization_backup = java.lang.Long.MAX_VALUE;
+        SfName sfcProviderTopologyNodeNameBackup = null;
+        Long preCPUUtilization = java.lang.Long.MAX_VALUE;
+        Long preCPUUtilizationBackup = java.lang.Long.MAX_VALUE;
         int preLength = Integer.MAX_VALUE;
 
         for (SftServiceFunctionName sftServiceFunctionName : sftServiceFunctionNameList) {
@@ -154,13 +166,13 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                 continue;
             }
 
-            /* Get shotestpath length from the preSfName to curSfName*/
-            List<SfcProviderTopologyNode> sfcProviderTopologyNodeList =
-                    sfcProviderGraph.getShortestPath(preSfName.getValue(), curSfName.getValue());
-            Path_length = sfcProviderTopologyNodeList.size()-1;
-            LOG.debug("Shortest path length between {} and {} : {}", preSfName, curSfName, Path_length);
+            /* Get shotestpath length from the preSfName to curSfName */
+            List<SfcProviderTopologyNode> sfcProviderTopologyNodeList = sfcProviderGraph
+                    .getShortestPath(preSfName.getValue(), curSfName.getValue());
+            pathLength = sfcProviderTopologyNodeList.size() - 1;
+            LOG.debug("Shortest path length between {} and {} : {}", preSfName, curSfName, pathLength);
 
-            if (Path_length <= 1) {
+            if (pathLength <= 1) {
                 LOG.debug("No path from {} to {}", preSfName, curSfName);
                 continue;
             }
@@ -178,37 +190,32 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                 break;
             }
 
-            java.lang.Long curCPUUtilization =
-                    sfcSfDescMon.getMonitoringInfo().getResourceUtilization().getCPUUtilization();
+            java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
             LOG.debug("CPU Utilization of {} is {}", curSfName, curCPUUtilization);
-            if (preCPUUtilization> curCPUUtilization && Path_length <= Path_threshold) {
+            if (preCPUUtilization > curCPUUtilization && pathLength <= pathThreshold) {
                 preCPUUtilization = curCPUUtilization;
                 sfcProviderTopologyNodeName = curSfName;
-            } else if (Path_length > Path_threshold) {
-                if (preLength > Path_length) {
-                    preLength = Path_length;
-                    sfcProviderTopologyNodeName_backup = curSfName;
-                    preCPUUtilization_backup = curCPUUtilization;
-                } else if (preLength == Path_length && preCPUUtilization_backup > curCPUUtilization) {
-                    sfcProviderTopologyNodeName_backup = curSfName;
-                    preCPUUtilization_backup = curCPUUtilization;
+            } else if (pathLength > pathThreshold) {
+                if (preLength > pathLength) {
+                    preLength = pathLength;
+                    sfcProviderTopologyNodeNameBackup = curSfName;
+                    preCPUUtilizationBackup = curCPUUtilization;
+                } else if (preLength == pathLength && preCPUUtilizationBackup > curCPUUtilization) {
+                    sfcProviderTopologyNodeNameBackup = curSfName;
+                    preCPUUtilizationBackup = curCPUUtilization;
                 }
             }
         }
-
-        /*
-         *
-         *
-         */
-
         if (sfcProviderTopologyNodeName == null) {
-        sfcProviderTopologyNodeName = sfcProviderTopologyNodeName_backup;
-            LOG.debug("Since we cannot find {} of Sevice function within Path_Threshold, we select backup sf", preSfName);
+            sfcProviderTopologyNodeName = sfcProviderTopologyNodeNameBackup;
+            LOG.debug("Since we cannot find {} of Sevice function within Path_Threshold, we select backup sf",
+                    preSfName);
         }
 
         /*
-         * sfcProviderTopologyNodeName will be null
-         * if the next hop can't be found.
+         * sfcProviderTopologyNodeName will be null if the next hop can't be
+         * found.
          */
         if (sfcProviderTopologyNodeName == null) {
             LOG.debug("Next hop of {} doesn't exist", preSfName);
@@ -216,14 +223,14 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
         return sfcProviderTopologyNodeName;
     }
 
-
     /**
-     * This method builds a SfcProviderGraph comprised of
-     * all the SFs and SFFs. sfcProviderGraph will store
-     * all the info about vertex/node and edge.
+     * This method builds a SfcProviderGraph comprised of all the SFs and SFFs.
+     * sfcProviderGraph will store all the info about vertex/node and edge.
+     *
      * <p>
      *
-     * @param sfcProviderGraph input and output of this method
+     * @param sfcProviderGraph
+     *            input and output of this method
      */
     private void buildTopologyGraph(SfcProviderGraph sfcProviderGraph) {
         SfName sfName;
@@ -249,12 +256,12 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
             sfcProviderGraph.addNode(sffName.getValue());
             LOG.debug("Add ServiceFunctionForwarder: {}", sffName);
 
-            List<ServiceFunctionDictionary> serviceFunctionDictionaryList =
-                    serviceFunctionForwarder.getServiceFunctionDictionary();
+            List<ServiceFunctionDictionary> serviceFunctionDictionaryList = serviceFunctionForwarder
+                    .getServiceFunctionDictionary();
 
             /*
-             * Add edge for every ServiceFunction attached
-             * to serviceFunctionForwarder
+             * Add edge for every ServiceFunction attached to
+             * serviceFunctionForwarder
              */
             for (ServiceFunctionDictionary serviceFunctionDictionary : serviceFunctionDictionaryList) {
                 sfName = serviceFunctionDictionary.getName();
@@ -262,12 +269,12 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                 LOG.debug("Add SF-to-SFF edge: {} => {}", sfName, sffName);
             }
 
-            List<ConnectedSffDictionary> connectedSffDictionaryList =
-                    serviceFunctionForwarder.getConnectedSffDictionary();
+            List<ConnectedSffDictionary> connectedSffDictionaryList = serviceFunctionForwarder
+                    .getConnectedSffDictionary();
 
             /*
-             * Add edge for every ServiceFunctionForwarder connected
-             * to serviceFunctionForwarder
+             * Add edge for every ServiceFunctionForwarder connected to
+             * serviceFunctionForwarder
              */
             for (ConnectedSffDictionary connectedSffDictionary : connectedSffDictionaryList) {
                 toSffName = connectedSffDictionary.getName();
@@ -278,21 +285,25 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
     }
 
     /**
-     * This method finds out the load and path-aware Service Function Path
-     * for the given Service Function Chain. For each SF type in the given
-     * chain, this method calls the getServiceFunctionByType method to find
-     * an SF instance to be included in the SFP.
-     * For the first SF type in the chain, the getServiceFunctionByType method
-     * returns a name of the SF instance who has the lowest CPU utilization.
-     * From the second SF type in the chain, the getServiceFunctionByType method
-     * returns a name of the instance with the lowest CPU utilization among the
-     * instances whose hop counts to the previously selected SF instance are less
-     * than or equal to Path_threshold (default value is 3).
+     * This method finds out the load and path-aware Service Function Path for
+     * the given Service Function Chain. For each SF type in the given chain,
+     * this method calls the getServiceFunctionByType method to find an SF
+     * instance to be included in the SFP. For the first SF type in the chain,
+     * the getServiceFunctionByType method returns a name of the SF instance who
+     * has the lowest CPU utilization. From the second SF type in the chain, the
+     * getServiceFunctionByType method returns a name of the instance with the
+     * lowest CPU utilization among the instances whose hop counts to the
+     * previously selected SF instance are less than or equal to Path_threshold
+     * (default value is 3).
+     *
      * <p>
      *
-     * @param chain Service Function Chain to render
-     * @param serviceIndex Not used currently
-     * @return List&lt;String&gt; Service Function name list in the shortest path
+     * @param chain
+     *            Service Function Chain to render
+     * @param serviceIndex
+     *            Not used currently
+     * @return List&lt;String&gt; Service Function name list in the shortest
+     *         path
      */
     @Override
     public List<SfName> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
@@ -307,14 +318,14 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
         Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
-         * Build topology graph for all the nodes,
-         * including every ServiceFunction and ServiceFunctionForwarder
+         * Build topology graph for all the nodes, including every
+         * ServiceFunction and ServiceFunctionForwarder
          */
         buildTopologyGraph(sfcProviderGraph);
 
         /*
-         * Select a SF instance closest to previous hop in SFP
-         * for each ServiceFunction type in sfcServiceFunctionList.
+         * Select a SF instance closest to previous hop in SFP for each
+         * ServiceFunction type in sfcServiceFunctionList.
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -324,11 +335,11 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunct
                 continue;
             }
 
-            ServiceFunctionType serviceFunctionType =
-                    SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
+            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI
+                    .readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList =
-                        serviceFunctionType.getSftServiceFunctionName();
+                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType
+                        .getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     sfName = getServiceFunctionByType(serviceFunctionType, preSfName, sfcProviderGraph);
                     if (sfName != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -23,14 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This class implements a round robin SF scheduling mode.
+ *
  * <p>
  *
  * @author Johnson Li (johnson.li@intel.com)
  * @version 0.1
- *          <p>
  * @since 2015-03-04
  */
 public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
@@ -73,8 +72,9 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
         Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
-         * For each ServiceFunction type in the list of ServiceFunctions we select a specific
-         * service function from the list of service functions by type.
+         * For each ServiceFunction type in the list of ServiceFunctions we
+         * select a specific service function from the list of service functions
+         * by type.
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.info("ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -84,15 +84,16 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
                 continue;
             }
             /*
-             * We iterate thorough the list of service function types and for each one we try to get
-             * get a suitable Service Function. WE need to perform lots of checking to make sure
-             * we do not hit NULL Pointer exceptions
+             * We iterate thorough the list of service function types and for
+             * each one we try to get get a suitable Service Function. WE need
+             * to perform lots of checking to make sure we do not hit NULL
+             * Pointer exceptions
              */
             ServiceFunctionType serviceFunctionType;
             serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList =
-                        serviceFunctionType.getSftServiceFunctionName();
+                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType
+                        .getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     SfName sfName = getServiceFunctionByType(serviceFunctionType);
                     sfNameList.add(sfName);
@@ -107,7 +108,6 @@ public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunction
                 return null;
             }
         }
-
         return sfNameList;
     }
 }

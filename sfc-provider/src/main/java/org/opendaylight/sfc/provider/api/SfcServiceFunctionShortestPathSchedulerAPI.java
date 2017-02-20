@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,14 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This class implements shortest path scheduling mode.
+ *
  * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @author Yi Yang (yi.y.yang@intel.com)
- *         <p>
+ *
  * @since 2015-03-13
  */
 public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
@@ -50,13 +50,17 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
     }
 
     /**
-     * This method finds out name of the Service Function closest to
-     * Service Function preSfName per serviceFunctionType.
+     * This method finds out name of the Service Function closest to Service
+     * Function preSfName per serviceFunctionType.
+     *
      * <p>
      *
-     * @param serviceFunctionType Type of Service Function to find
-     * @param preSfName Name of previous Service Function in Service Function Path
-     * @param sfcProviderGraph Topology graph comprised of all the SFs and SFFs
+     * @param serviceFunctionType
+     *            Type of Service Function to find
+     * @param preSfName
+     *            Name of previous Service Function in Service Function Path
+     * @param sfcProviderGraph
+     *            Topology graph comprised of all the SFs and SFFs
      * @return String Name of the Service Function with type serviceFunctionType
      */
     private SfName getServiceFunctionByType(ServiceFunctionType serviceFunctionType, SfName preSfName,
@@ -66,14 +70,14 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         int maxTries = sftServiceFunctionNameList.size();
 
         /* Return null if sftServiceFunctionNameList is empty */
-        if (sftServiceFunctionNameList.size() == 0) {
+        if (sftServiceFunctionNameList.isEmpty()) {
             LOG.debug("No Service Function for {}", serviceFunctionType);
             return null;
         }
 
         /*
-         * Randomly find one instance of serviceFunctionType
-         * and return its name if preSfName is null
+         * Randomly find one instance of serviceFunctionType and return its name
+         * if preSfName is null
          */
         if (preSfName == null) {
             /* Randomly find one instance of serviceFunctionType */
@@ -83,8 +87,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             while (maxTries > 0) {
                 sfcProviderTopologyNodeName = new SfName(sftServiceFunctionNameList.get(start).getName());
                 /*
-                 * XXX noticed that SfcProviderGraph sometimes refers to SFFs as well so leaving
-                 * that alone for now until a general discussion
+                 * XXX noticed that SfcProviderGraph sometimes refers to SFFs as
+                 * well so leaving that alone for now until a general discussion
                  * about Schedulers can be had.
                  */
                 firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName.getValue());
@@ -120,8 +124,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                 // curSfName doesn't exist in sfcProviderGraph, so skip it
                 continue;
             }
-            List<SfcProviderTopologyNode> sfcProviderTopologyNodeList =
-                    sfcProviderGraph.getShortestPath(preSfName.getValue(), curSfName.getValue());
+            List<SfcProviderTopologyNode> sfcProviderTopologyNodeList = sfcProviderGraph
+                    .getShortestPath(preSfName.getValue(), curSfName.getValue());
             length = sfcProviderTopologyNodeList.size();
             if (length <= 1) {
                 LOG.debug("No path from {} to {}", preSfName, curSfName);
@@ -134,8 +138,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         }
 
         /*
-         * sfcProviderTopologyNodeName will be null
-         * if the next hop can't be found.
+         * sfcProviderTopologyNodeName will be null if the next hop can't be
+         * found.
          */
         if (sfcProviderTopologyNodeName == null) {
             LOG.debug("Next hop of {} doesn't exist", preSfName);
@@ -144,12 +148,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
     }
 
     /**
-     * This method builds a SfcProviderGraph comprised of
-     * all the SFs and SFFs. sfcProviderGraph will store
-     * all the info about vertex/node and edge.
-     * <p>
+     * This method builds a SfcProviderGraph comprised of all the SFs and SFFs.
+     * sfcProviderGraph will store all the info about vertex/node and edge.
      *
-     * @param sfcProviderGraph input and output of this method
+     * <p>
+     * @param sfcProviderGraph
+     *            input and output of this method
      */
     private void buildTopologyGraph(SfcProviderGraph sfcProviderGraph) {
         SfName sfName;
@@ -175,12 +179,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
             sfcProviderGraph.addNode(sffName.getValue());
             LOG.debug("Add ServiceFunctionForwarder: {}", sffName);
 
-            List<ServiceFunctionDictionary> serviceFunctionDictionaryList =
-                    serviceFunctionForwarder.getServiceFunctionDictionary();
+            List<ServiceFunctionDictionary> serviceFunctionDictionaryList = serviceFunctionForwarder
+                    .getServiceFunctionDictionary();
 
             /*
-             * Add edge for every ServiceFunction attached
-             * to serviceFunctionForwarder
+             * Add edge for every ServiceFunction attached to
+             * serviceFunctionForwarder
              */
             for (ServiceFunctionDictionary serviceFunctionDictionary : serviceFunctionDictionaryList) {
                 sfName = serviceFunctionDictionary.getName();
@@ -188,12 +192,12 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                 LOG.debug("Add SF-to-SFF edge: {} => {}", sfName, sffName);
             }
 
-            List<ConnectedSffDictionary> connectedSffDictionaryList =
-                    serviceFunctionForwarder.getConnectedSffDictionary();
+            List<ConnectedSffDictionary> connectedSffDictionaryList = serviceFunctionForwarder
+                    .getConnectedSffDictionary();
 
             /*
-             * Add edge for every ServiceFunctionForwarder connected
-             * to serviceFunctionForwarder
+             * Add edge for every ServiceFunctionForwarder connected to
+             * serviceFunctionForwarder
              */
             for (ConnectedSffDictionary connectedSffDictionary : connectedSffDictionaryList) {
                 toSffName = connectedSffDictionary.getName();
@@ -204,16 +208,18 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
     }
 
     /**
-     * This method finds out the shortest Service Function Path
-     * for the given Service Function Chain chain, any two adjacent
-     * Service Functions in this Service Function Path have the
-     * shortest distance compared to other two Service Functions
-     * with same Service Function Types.
-     * <p>
+     * This method finds out the shortest Service Function Path for the given
+     * Service Function Chain chain, any two adjacent Service Functions in this
+     * Service Function Path have the shortest distance compared to other two
+     * Service Functions with same Service Function Types.
      *
-     * @param chain Service Function Chain to render
-     * @param serviceIndex Not used currently
-     * @return List&lt;String&gt; Service Function name list in the shortest path
+     * <p>
+     * @param chain
+     *            Service Function Chain to render
+     * @param serviceIndex
+     *            Not used currently
+     * @return List&lt;String&gt; Service Function name list in the shortest
+     *         path
      */
     @Override
     public List<SfName> scheduleServiceFunctions(ServiceFunctionChain chain, int serviceIndex,
@@ -228,14 +234,14 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
         Map<Short, SfName> sfpMapping = getSFPHopSfMapping(sfp);
 
         /*
-         * Build topology graph for all the nodes,
-         * including every ServiceFunction and ServiceFunctionForwarder
+         * Build topology graph for all the nodes, including every
+         * ServiceFunction and ServiceFunctionForwarder
          */
         buildTopologyGraph(sfcProviderGraph);
 
         /*
-         * Select a SF instance closest to previous hop in SFP
-         * for each ServiceFunction type in sfcServiceFunctionList.
+         * Select a SF instance closest to previous hop in SFP for each
+         * ServiceFunction type in sfcServiceFunctionList.
          */
         for (SfcServiceFunction sfcServiceFunction : sfcServiceFunctionList) {
             LOG.debug("ServiceFunction name: {}", sfcServiceFunction.getName());
@@ -245,11 +251,11 @@ public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFuncti
                 continue;
             }
 
-            ServiceFunctionType serviceFunctionType =
-                    SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
+            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI
+                    .readServiceFunctionType(sfcServiceFunction.getType());
             if (serviceFunctionType != null) {
-                List<SftServiceFunctionName> sftServiceFunctionNameList =
-                        serviceFunctionType.getSftServiceFunctionName();
+                List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType
+                        .getSftServiceFunctionName();
                 if (!sftServiceFunctionNameList.isEmpty()) {
                     sfName = getServiceFunctionByType(serviceFunctionType, preSfName, sfcProviderGraph);
                     if (sfName != null) {

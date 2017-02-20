@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -49,7 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fiel
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * This class contains unit tests for SfcProviderAclAPI
+ * This class contains unit tests for SfcProviderAclAPI.
  *
  * @author Vladimir Lavor vladimir.lavor@pantheon.sk
  * @version 0.1
@@ -58,11 +58,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
-    private final String ACL_NAME = "aclName";
-    private final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
-    private final String CLASSIFIER_NAME = "classifier";
+    private static final String ACL_NAME = "aclName";
+    private static final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
+    private static final String CLASSIFIER_NAME = "classifier";
 
-    private final List<String> IP_V4_ADDRESS = new ArrayList<String>(){
+    private static final List<String> IP_V4_ADDRESS = new ArrayList<String>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -71,7 +71,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         }
     };
 
-    private final List<String> IP_PREFIX = new ArrayList<String>(){
+    private static final List<String> IP_PREFIX = new ArrayList<String>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -81,7 +81,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         }
     };
 
-    private final List<String> IP_V6_ADDRESS = new ArrayList<String>(){
+    private static final List<String> IP_V6_ADDRESS = new ArrayList<String>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -96,24 +96,24 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
     }
 
     @Test
-    //read existing access list from data store
+    // read existing access list from data store
     public void testReadAccessList() throws Exception {
 
-
-        //create Access List with entries and IID, then write transaction to data store
+        // create Access List with entries and IID, then write transaction to
+        // data store
         AclBuilder aclBuilder = new AclBuilder();
-        aclBuilder.setAclName(ACL_NAME)
-                .setKey(new AclKey(ACL_NAME, ACL_TYPE))
+        aclBuilder.setAclName(ACL_NAME).setKey(new AclKey(ACL_NAME, ACL_TYPE))
                 .setAccessListEntries(createAccessListEntries());
 
         InstanceIdentifier<Acl> aclIID = InstanceIdentifier.builder(AccessLists.class)
                 .child(Acl.class, new AclKey(ACL_NAME, ACL_TYPE)).build();
 
-        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclIID, aclBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclIID, aclBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
 
         assertTrue("must be true", transactionSuccessful);
 
-        //read access list from data store
+        // read access list from data store
         Acl accessList = SfcProviderAclAPI.readAccessList(ACL_NAME, ACL_TYPE);
 
         assertNotNull("Must not be null", accessList);
@@ -122,132 +122,130 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         assertEquals("Must be equal", accessList.getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.getKey().getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.getAccessListEntries().getAce().size(), 4);
-        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(0).equals(createAccessListEntries().getAce().get(0)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(1).equals(createAccessListEntries().getAce().get(1)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(2).equals(createAccessListEntries().getAce().get(2)));
-        assertTrue("Must be equal", accessList.getAccessListEntries().getAce().get(3).equals(createAccessListEntries().getAce().get(3)));
+        assertTrue("Must be equal",
+                accessList.getAccessListEntries().getAce().get(0).equals(createAccessListEntries().getAce().get(0)));
+        assertTrue("Must be equal",
+                accessList.getAccessListEntries().getAce().get(1).equals(createAccessListEntries().getAce().get(1)));
+        assertTrue("Must be equal",
+                accessList.getAccessListEntries().getAce().get(2).equals(createAccessListEntries().getAce().get(2)));
+        assertTrue("Must be equal",
+                accessList.getAccessListEntries().getAce().get(3).equals(createAccessListEntries().getAce().get(3)));
 
-        //delete transaction
+        // delete transaction
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);
 
         assertTrue("must be true", transactionSuccessful);
     }
 
     @Test
-    //read existing access list from data store
+    // read existing access list from data store
     public void testReadAccessListState() throws Exception {
 
-        //create Access List state and IID, then write transaction to data store
-        String ACL_STATE_NAME = "aclStateName";
+        // create Access List state and IID, then write transaction to data
+        // store
+        final String ACL_STATE_NAME = "aclStateName";
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
-        accessListStateBuilder.setAclName(ACL_STATE_NAME)
-                .setKey(new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE))
+        accessListStateBuilder.setAclName(ACL_STATE_NAME).setKey(new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE))
                 .setAclServiceFunctionClassifier(createAclServiceFunctionClassifier());
 
         InstanceIdentifier<AccessListState> aclStateIID = InstanceIdentifier.builder(AccessListsState.class)
                 .child(AccessListState.class, new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE)).build();
 
-        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclStateIID, accessListStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(aclStateIID,
+                accessListStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
 
         assertTrue("must be true", transactionSuccessful);
 
-        //read access list state from data store
+        // read access list state from data store
         AccessListState accessListState = SfcProviderAclAPI.readAccessListState(ACL_STATE_NAME, ACL_TYPE);
 
         assertNotNull("Must not be null", accessListState);
         assertEquals("Must be equal", accessListState.getAclName(), ACL_STATE_NAME);
         assertEquals("Must be equal", accessListState.getKey().getAclName(), ACL_STATE_NAME);
-        assertEquals("Must be equal", accessListState.getAclServiceFunctionClassifier().get(0).getName(), CLASSIFIER_NAME);
+        assertEquals("Must be equal", accessListState.getAclServiceFunctionClassifier().get(0).getName(),
+                CLASSIFIER_NAME);
 
-        //delete transaction
+        // delete transaction
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(aclStateIID, LogicalDatastoreType.OPERATIONAL);
 
         assertTrue("must be true", transactionSuccessful);
     }
 
     @Test
-    //add classifier to access list
+    // add classifier to access list
     public void testAddAndDeleteClassifier() throws Exception {
 
-        //add classifier
+        // add classifier
         boolean result = SfcProviderAclAPI.addClassifierToAccessListState(ACL_NAME, ACL_TYPE, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
 
-        //delete classifier
+        // delete classifier
         result = SfcProviderAclAPI.deleteClassifierFromAccessListState(ACL_NAME, ACL_TYPE, CLASSIFIER_NAME);
 
         assertTrue("Must be true", result);
     }
 
-    //create classifier list
+    // create classifier list
     private List<AclServiceFunctionClassifier> createAclServiceFunctionClassifier() {
         List<AclServiceFunctionClassifier> aclServiceFunctionClassifierList = new ArrayList<>();
 
-        AclServiceFunctionClassifierBuilder aclServiceFunctionClassifierBuilder = new AclServiceFunctionClassifierBuilder();
+        AclServiceFunctionClassifierBuilder
+            aclServiceFunctionClassifierBuilder = new AclServiceFunctionClassifierBuilder();
         aclServiceFunctionClassifierBuilder.setName(CLASSIFIER_NAME);
         aclServiceFunctionClassifierList.add(aclServiceFunctionClassifierBuilder.build());
 
         return aclServiceFunctionClassifierList;
     }
 
-    //create entries for access list
+    // create entries for access list
     private AccessListEntries createAccessListEntries() {
-        String ACE_RULE_NAME = "aceRule";
+        final String ACE_RULE_NAME = "aceRule";
         AccessListEntriesBuilder accessListEntriesBuilder = new AccessListEntriesBuilder();
         List<Ace> aceList = new ArrayList<>();
 
         for (int i = 1; i <= 4; i++) {
 
-            //build actions
+            // build actions
             PermitBuilder permitBuilder = new PermitBuilder();
             permitBuilder.setPermit(true);
 
             ActionsBuilder actionsBuilder = new ActionsBuilder();
             actionsBuilder.setPacketHandling(permitBuilder.build());
 
-            //build matches
-            //create src & dst port ranges
+            // build matches
+            // create src & dst port ranges
             SourcePortRangeBuilder sourcePortRangeBuilder = new SourcePortRangeBuilder();
-            sourcePortRangeBuilder.setLowerPort(new PortNumber(1000 + i))
-                    .setUpperPort(new PortNumber(2000 + i));
+            sourcePortRangeBuilder.setLowerPort(new PortNumber(1000 + i)).setUpperPort(new PortNumber(2000 + i));
             DestinationPortRangeBuilder destinationPortRangeBuilder = new DestinationPortRangeBuilder();
-            destinationPortRangeBuilder.setLowerPort(new PortNumber(3000 + i))
-                    .setUpperPort(new PortNumber(4000 + i));
+            destinationPortRangeBuilder.setLowerPort(new PortNumber(3000 + i)).setUpperPort(new PortNumber(4000 + i));
 
-            //build ip ace
+            // build ip ace
             AceIpBuilder aceIpBuilder = new AceIpBuilder();
-            aceIpBuilder.setDscp(new Dscp((short) i))
-                    .setSourcePortRange(sourcePortRangeBuilder.build())
-                    .setDestinationPortRange(destinationPortRangeBuilder.build())
-                    .setDscp(new Dscp((short) i));
+            aceIpBuilder.setDscp(new Dscp((short) i)).setSourcePortRange(sourcePortRangeBuilder.build())
+                    .setDestinationPortRange(destinationPortRangeBuilder.build()).setDscp(new Dscp((short) i));
 
             if (i <= 2) {
-                //create ip address & prefix
+                // create ip address & prefix
                 AceIpv4Builder aceIpv4Builder = new AceIpv4Builder();
                 aceIpv4Builder.setSourceIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS.get(0) + i + IP_PREFIX.get(0)))
                         .setDestinationIpv4Network(new Ipv4Prefix(IP_V4_ADDRESS.get(1) + i + IP_PREFIX.get(1)));
-                aceIpBuilder.setAceIpVersion(aceIpv4Builder.build())
-                        .setProtocol((short) 4);
+                aceIpBuilder.setAceIpVersion(aceIpv4Builder.build()).setProtocol((short) 4);
 
             } else {
-                //create ip address & prefix
+                // create ip address & prefix
                 AceIpv6Builder aceIpv6Builder = new AceIpv6Builder();
                 aceIpv6Builder.setSourceIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS.get(0) + i + IP_PREFIX.get(1)))
                         .setDestinationIpv6Network(new Ipv6Prefix(IP_V6_ADDRESS.get(1) + i + IP_PREFIX.get(2)));
-                aceIpBuilder.setAceIpVersion(aceIpv6Builder.build())
-                        .setProtocol((short) 41);
+                aceIpBuilder.setAceIpVersion(aceIpv6Builder.build()).setProtocol((short) 41);
             }
 
             MatchesBuilder matchesBuilder = new MatchesBuilder();
-            matchesBuilder.setInputInterface("interface-" + i)
-                    .setAceType(aceIpBuilder.build());
+            matchesBuilder.setInputInterface("interface-" + i).setAceType(aceIpBuilder.build());
 
-            //set matches and actions
+            // set matches and actions
             AceBuilder ace = new AceBuilder();
-            ace.setRuleName(ACE_RULE_NAME + i)
-                    .setActions(actionsBuilder.build())
-                    .setMatches(matchesBuilder.build());
+            ace.setRuleName(ACE_RULE_NAME + i).setActions(actionsBuilder.build()).setMatches(matchesBuilder.build());
 
             aceList.add(ace.build());
         }

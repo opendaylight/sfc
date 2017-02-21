@@ -108,6 +108,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -122,6 +123,7 @@ public class SfcVppUtils {
     private static final Map<String, Integer> tableIndice = new HashMap<>();
     private static final Map<String, String> firstTable = new HashMap<>();
     private static Map<String, List<String>> rspTblIdList = new HashMap<String, List<String>>();
+    private static final HashMap<String, HashMap<String, AtomicInteger>> vxlanGpePortRefCnt = new HashMap<String, HashMap<String, AtomicInteger>>();
 
     public static DataBroker getSffMountpoint(MountPointService mountService, SffName sffName) {
         final NodeId nodeId = new NodeId(sffName.getValue());
@@ -367,8 +369,37 @@ public class SfcVppUtils {
         return new String("vxlanGpeTun" + "_" + remote.getIpv4Address().getValue());
     }
 
+    private static int incrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
+        if (vxlanGpePortRefCnt.get(vppNode) == null) {
+            vxlanGpePortRefCnt.put(vppNode, new HashMap<String, AtomicInteger>());
+        }
+        if (vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey) == null) {
+            vxlanGpePortRefCnt.get(vppNode).put(vxlanGpePortKey, new AtomicInteger(1));
+            return 1;
+        } else {
+            return vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey).incrementAndGet();
+        }
+    }
+
+    private static int decrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
+        if (vxlanGpePortRefCnt.get(vppNode) == null) {
+            return 0;
+        }
+        if (vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey) == null) {
+            return 0;
+        }
+        return vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey).decrementAndGet();
+    }
+
     private static void addVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote, Long vni, String vppNode, String bridgeDomainName)
     {
+        String vxlanGpePortKey = buildVxlanGpePortKey(remote);
+        LOG.info("addVxlanGpePort {} on vpp node {}", vxlanGpePortKey, vppNode);
+        /* do nothing if vxlanGpePortKey has been added on vppNode*/
+        if (incrementVxlanGpeRefCnt(vxlanGpePortKey, vppNode) > 1) {
+            return;
+        }
+
         final VxlanGpeBuilder vxlanGpeBuilder = new VxlanGpeBuilder();
 
         vxlanGpeBuilder.setLocal(local);
@@ -382,7 +413,7 @@ public class SfcVppUtils {
         routingBuilder.setIpv4VrfId(0L);
 
         final InterfaceBuilder interfaceBuilder = new InterfaceBuilder();
-        interfaceBuilder.setName(buildVxlanGpePortKey(remote));
+        interfaceBuilder.setName(vxlanGpePortKey);
         interfaceBuilder.setType(VxlanGpeTunnel.class);
         VppInterfaceAugmentationBuilder vppInterfaceAugmentationBuilder = new VppInterfaceAugmentationBuilder();
         vppInterfaceAugmentationBuilder.setVxlanGpe(vxlanGpeBuilder.build());
@@ -410,10 +441,18 @@ public class SfcVppUtils {
     }
 
     public static void removeVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote, Long vni, String vppNode) {
+        String interfaceKey = buildVxlanGpePortKey(remote);
+        LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
+        /* do nothing if interfaceKey is still used by other RSPs on vppNode*/
+        if (decrementVxlanGpeRefCnt(interfaceKey, vppNode) > 0) {
+            return;
+        }
+
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(buildVxlanGpePortKey(remote)));
+                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceKey));
+        LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, interfaceIid);
         addFuturesCallback(wTx);
     }
@@ -539,8 +578,10 @@ public class SfcVppUtils {
     public static void removeNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
+        String nshEntryKey = buildNshEntryKey(nsp, nsi);
         final InstanceIdentifier<NshEntry> nshEntryIid
-                    = InstanceIdentifier.create(NshEntries.class).child(NshEntry.class, new NshEntryKey(buildNshEntryKey(nsp, nsi)));
+                    = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class).child(NshEntry.class, new NshEntryKey(nshEntryKey));
+        LOG.info("removeNshEntry {} on vpp node {}", nshEntryKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshEntryIid);
         addFuturesCallback(wTx);
     }
@@ -618,8 +659,10 @@ public class SfcVppUtils {
     public static void removeNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
+        String nshMapKey = buildNshMapKey(nsp, nsi, mappedNsp, mappedNsi);
         final InstanceIdentifier<NshMap> nshMapIid
-                    = InstanceIdentifier.create(NshMaps.class).child(NshMap.class, new NshMapKey(buildNshMapKey(nsp, nsi, mappedNsp, mappedNsi)));
+                    = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class).child(NshMap.class, new NshMapKey(nshMapKey));
+        LOG.info("removeNshMap {} on vpp node {}", nshMapKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshMapIid);
         addFuturesCallback(wTx);
     }
@@ -635,13 +678,12 @@ public class SfcVppUtils {
     }
 
     public static boolean removeVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
-        Short nextNsi = nsi;
-        nextNsi--;
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
-        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
+
+        removeNshMap(dataBroker, nsp, nsi, nsp, nsi, sffName.getValue());
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
-        removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF
-        removeNshMap(dataBroker, nsp, nsi, nsp, nextNsi, sffName.getValue());
+        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
+
         return true;
     }
 
@@ -861,12 +903,10 @@ public class SfcVppUtils {
 
     public static boolean removeClassifierVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
-        Short nextNsi = nsi;
-        nextNsi--;
 
-        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //Classifier<->SFF
+        removeNshMap(dataBroker, nsp, nsi, nsp, nsi, sffName.getValue());
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SFF
-        removeNshMap(dataBroker, nsp, nsi, nsp, nextNsi, sffName.getValue());
+        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //Classifier<->SFF
 
         return true;
     }

@@ -14,13 +14,14 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppRspProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class RenderedPathListener extends AbstractDataTreeChangeListener<RenderedServicePaths> {
+public class RenderedPathListener extends AbstractDataTreeChangeListener<RenderedServicePath> {
 
     private final VppRspProcessor rspProcessor;
     private final ListenerRegistration<RenderedPathListener> vppRspListenerRegistration;
@@ -29,9 +30,9 @@ public class RenderedPathListener extends AbstractDataTreeChangeListener<Rendere
     public RenderedPathListener(DataBroker dataBroker, VppRspProcessor rspProcessor) {
         this.rspProcessor = rspProcessor;
         // Register listener
-        final DataTreeIdentifier<RenderedServicePaths> treeId = new DataTreeIdentifier<>(
+        final DataTreeIdentifier<RenderedServicePath> treeId = new DataTreeIdentifier<>(
                 LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(RenderedServicePaths.class));
+                InstanceIdentifier.create(RenderedServicePaths.class).child(RenderedServicePath.class));
         vppRspListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
@@ -44,20 +45,19 @@ public class RenderedPathListener extends AbstractDataTreeChangeListener<Rendere
     }
 
     @Override
-    protected void add(RenderedServicePaths newDataObject) {
-        LOG.info("RSPs created");
-        newDataObject.getRenderedServicePath().forEach(rspProcessor::updateRsp);
+    protected void add(RenderedServicePath newDataObject) {
+        LOG.info("RSP created");
+        this.rspProcessor.updateRsp(newDataObject);
     }
 
     @Override
-    protected void remove(RenderedServicePaths removedDataObject) {
-        LOG.info("RSPs deleted");
-        removedDataObject.getRenderedServicePath().forEach(rspProcessor::deleteRsp);
+    protected void remove(RenderedServicePath removedDataObject) {
+        LOG.info("RSP deleted");
+        this.rspProcessor.deleteRsp(removedDataObject);
     }
 
     @Override
-    protected void update(RenderedServicePaths originalDataObject, RenderedServicePaths updatedDataObject) {
-        LOG.info("RSPs updated");
-        updatedDataObject.getRenderedServicePath().forEach(rspProcessor::updateRsp);
+    protected void update(RenderedServicePath originalDataObject, RenderedServicePath updatedDataObject) {
+        //Needn't care it
     }
 }

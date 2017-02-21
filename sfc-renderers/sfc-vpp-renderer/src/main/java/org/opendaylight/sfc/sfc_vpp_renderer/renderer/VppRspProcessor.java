@@ -209,8 +209,11 @@ public class VppRspProcessor {
             }
 
             if (previousSffName != null && !previousSffName.equals(currentSffName)) {
-                SfcVppUtils.removeVxlanGpePort(previousMountPoint, preLocalIp, localIp, 0L, previousSffName.getValue()); //previous SFF <-> current SFF
-                SfcVppUtils.removeVxlanGpePort(currentMountpoint, localIp, preLocalIp, 0L, currentSffName.getValue());  //current SFF <-> previous SFF
+                ret = SfcVppUtils.removeVxlanGpeNsh(previousMountPoint, previousSffName, preLocalIp, localIp, pathId, serviceIndex);
+                if (!ret) {
+                    LOG.error("failed to remove VxLAN-gpe and NSH for RSP {} in SFF {}", renderedServicePath.getName().getValue(), previousSffName.getValue());
+                    return;
+                }
             }
         }
     }

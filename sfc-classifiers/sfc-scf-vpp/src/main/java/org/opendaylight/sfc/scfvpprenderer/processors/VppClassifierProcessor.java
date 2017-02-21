@@ -585,14 +585,16 @@ public class VppClassifierProcessor {
 
                 // Remove classify sessions and tables
                 SfcVppUtils.removeVppClassifier(mountPoint, sffName, tableKeyList, matchList);
-                SfcVppUtils.removeClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip, sffInfo.pathId, sffInfo.serviceIndex);
 
                 // Remove NSH entry and map for the traffic from the first SFF to VPP classifier node
-                SfcVppUtils.removeNshEntry(mountPoint, reversePathId, reverseServiceIndex, sffName.getValue());
                 SfcVppUtils.removeNshMap(mountPoint, reversePathId, reverseServiceIndex, reversePathId, reverseServiceIndex, sffName.getValue());
+                SfcVppUtils.removeNshEntry(mountPoint, reversePathId, reverseServiceIndex, sffName.getValue());
 
                 // Remove configuration for the first SFF, VPP renderer doesn't know this
                 SfcVppUtils.removeVxlanGpeNsh(sffInfo.mountPoint, sffInfo.sffName, sffInfo.ip, sffIp, reversePathId, reverseServiceIndex);
+
+                // Remove vxlan-gpe port and nsh entry and map for classifier
+                SfcVppUtils.removeClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip, sffInfo.pathId, sffInfo.serviceIndex);
             }
         }
         return true;

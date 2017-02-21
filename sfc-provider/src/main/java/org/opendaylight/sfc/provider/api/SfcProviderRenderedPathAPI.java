@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHopKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
@@ -459,6 +460,21 @@ public class SfcProviderRenderedPathAPI {
             LOG.warn("createRenderedServicePathEntry scheduler.scheduleServiceFunctions() returned null list");
             return null;
         }
+
+        // Before trying to create the RSP, iterate the SFs checking for one-chain-only
+        for (SfName sfName : sfNameList) {
+            List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
+            ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
+            if (sf.isOneChainOnly() != null && sfServicePathList != null) {
+                if (sf.isOneChainOnly() == true && !sfServicePathList.isEmpty()) {
+                    LOG.error(
+                        "createRenderedServicePathEntry SF [{}] is-one-chain-only is TRUE and the SF is already in use",
+                        sfName);
+                    return null;
+                }
+            }
+        }
+
         List<RenderedServicePathHop> renderedServicePathHopArrayList = createRenderedServicePathHopList(sfNameList,
                 sfgNameList, serviceIndex);
 

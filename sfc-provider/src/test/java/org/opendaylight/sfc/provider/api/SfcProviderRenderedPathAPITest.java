@@ -349,4 +349,71 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         assertEquals("Must be equal", testRenderedServicePath.getContextMetadata(), "CMD");
         assertEquals("Must be equal", testRenderedServicePath.getVariableMetadata(), "VMD");
     }
+
+    /*
+     * Test that a Service Function with OneChainOnly set True, can only be used in one RSP
+     */
+    @Test
+    public void testCreateRenderedServicePathAndState_OneChainSfTrue() {
+        // Instead of calling the generic init(), first call
+        // initSfsOneChainOnly() then call the rest of the
+        // init methods like init() does internally.
+        initSfsOneChainOnly(true);
+        initSffs();
+        initSfcs();
+        initSfps();
+
+        // Get the SFP that was already created in initSfps(), to be used to create the RSP next
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
+        assertNotNull("Must be not null", serviceFunctionPath);
+
+        // Create the RSP, the first one should be created successfully
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
+        RenderedServicePath rsp1 = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
+        assertNotNull("Must be not null", rsp1);
+
+        // Now, try creating a second RSP with the same SFP
+        // This should fail, since the SFs are already used, and have OneChainOnly set true
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(RSP2_NAME.getValue());
+        RenderedServicePath rsp2 = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
+        assertNull("Must be null", rsp2);
+    }
+
+    /*
+     * Test that a Service Function with OneChainOnly set False, can be used in multiple RSPs
+     */
+    @Test
+    public void testCreateRenderedServicePathAndState_OneChainSfFalse() {
+        // Instead of calling the generic init(), first call
+        // initSfsOneChainOnly() then call the rest of the
+        // init methods like init() does internally.
+        initSfsOneChainOnly(false);
+        initSffs();
+        initSfcs();
+        initSfps();
+
+        // Get the SFP that was already created in initSfps(), to be used to create the RSP next
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
+        assertNotNull("Must be not null", serviceFunctionPath);
+
+        // Create the RSP, the first one should be created successfully
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
+        RenderedServicePath rsp1 = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
+        assertNotNull("Must be not null", rsp1);
+
+        // Now, try creating a second RSP with the same SFP
+        // This should pass, since OneChainOnly is set false
+        createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(RSP2_NAME.getValue());
+        RenderedServicePath rsp2 = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
+        assertNotNull("Must be null", rsp2);
+    }
+
 }

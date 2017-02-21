@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_ecbca4de",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1416,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2017-02-21T01:19:58Z",
+      "side": 1,
+      "message": "MoveNshNp should be enough because push_nsh has set it correctly.",
+      "revId": "d91d35f7661d758391d5363ca9da50752e86b38a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,16 +8,18 @@
 
 package org.opendaylight.sfc.provider;
 
-import com.google.common.collect.ImmutableSet.Builder;
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.AccessListsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -33,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yangtools.yang.binding.YangModuleInfo;
 import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * This class contains auxiliary methods to manage abstract data store
@@ -50,7 +51,7 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
 
     protected DataBroker dataBroker;
     protected SfcInstanceIdentifiers sfcIids;
-    protected static ExecutorService executor =  Executors.newFixedThreadPool(5);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     // initial sfc setup, executor is set only once, new data broker
     // is created before every set, it ensures empty data store
@@ -62,15 +63,15 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
     }
 
     protected void close() throws ExecutionException, InterruptedException {
-        if(sfcIids != null) {
+        if (sfcIids != null) {
             // Deletes everything from SFC that was created in the datastore
             sfcIids.close();
         }
     }
 
     /*
-     * loads only SFC YANG modules - increased performance
-     * Specify a class from YANG which should be loaded
+     * loads only SFC YANG modules - increased performance Specify a class from
+     * YANG which should be loaded
      */
     @Override
     protected Iterable<YangModuleInfo> getModuleInfos() throws Exception {

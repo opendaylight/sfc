@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ericsson and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Ericsson and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,16 @@
 
 package org.opendaylight.sfc.provider.listeners;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,18 +26,15 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.*;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 
 /**
  * Test Suite to test the ServiceFunctionSchedulerTypeListener class.
@@ -39,8 +46,8 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     private DataTreeModification<ServiceFunctionSchedulerType> dataTreeModification;
     DataObjectModification<ServiceFunctionSchedulerType> dataObjectModification;
 
-    private final String SFST_NAME = "listernerSFST";
-    private final List<String> SFST_NAMES = new ArrayList<String>() {
+    private static final String SFST_NAME = "listernerSFST";
+    private static final List<String> SFST_NAMES = new ArrayList<String>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -49,10 +56,10 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
             add("listernerSFST3");
         }
     };
-    private final Class<? extends ServiceFunctionSchedulerTypeIdentity> SFST_TYPE = Random.class;
-    @SuppressWarnings("rawtypes")
-    private final Class[] SFST_TYPES = {ShortestPath.class, RoundRobin.class, LoadBalance.class};
 
+    private static final Class<? extends ServiceFunctionSchedulerTypeIdentity> SFST_TYPE = Random.class;
+    @SuppressWarnings("rawtypes")
+    private static final Class[] SFST_TYPES = { ShortestPath.class, RoundRobin.class, LoadBalance.class };
 
     // Class under test
     private ServiceFunctionSchedulerTypeListener serviceFunctionSchedulerTypeListener;
@@ -74,8 +81,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     }
 
     /**
-     * Creates SFST object, call listeners explicitly
-     * cleans up
+     * Creates SFST object, call listeners explicitly cleans up.
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeCreated() throws Exception {
@@ -97,12 +103,11 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         Thread.sleep(500);
 
         // Check none Scheduler Type is enabled and clean-up
-        assertEquals(countNumOfEnabledAlgorithmType(),0);
+        assertEquals(countNumOfEnabledAlgorithmType(), 0);
     }
 
     /**
-     * Deletes SFST object, call listeners explicitly
-     * cleans up
+     * Deletes SFST object, call listeners explicitly cleans up.
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeRemoved() throws Exception {
@@ -117,14 +122,15 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         Thread.sleep(500);
 
-        // Check the new Service Function Scheduler Type Object is the desired one
-        ServiceFunctionSchedulerType sfst =
-                SfcProviderScheduleTypeAPI.readServiceFunctionScheduleType(serviceFunctionSchedulerType.getType());
+        // Check the new Service Function Scheduler Type Object is the desired
+        // one
+        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI
+                .readServiceFunctionScheduleType(serviceFunctionSchedulerType.getType());
         assertNotNull(sfst);
         assertEquals(serviceFunctionSchedulerType, sfst);
 
-
-        // We trigger the removal of the new service Function Scheduler Type Object
+        // We trigger the removal of the new service Function Scheduler Type
+        // Object
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
         when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionSchedulerType);
@@ -133,14 +139,12 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         Thread.sleep(500);
 
-
         // Check just one Scheduler Type is enabled and clean-up
-        assertEquals(countNumOfEnabledAlgorithmType(),1);
+        assertEquals(countNumOfEnabledAlgorithmType(), 1);
     }
 
     /**
-     * Updates SFST object, call listeners explicitly
-     * cleans up
+     * Updates SFST object, call listeners explicitly cleans up.
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeUpdated() throws Exception {
@@ -149,26 +153,28 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         // ShortestPath, RoundRobin and LoadBalance
         buildServiceFunctionSchedulerTypes();
 
-        // Builds a Random Service Function Scheduler Type Object with isEnabled set to FALSE
+        // Builds a Random Service Function Scheduler Type Object with isEnabled
+        // set to FALSE
         ServiceFunctionSchedulerType originalServiceFunctionSchedulerType = buildServiceFunctionSchedulerType(false);
         assertTrue(SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(originalServiceFunctionSchedulerType));
         Thread.sleep(500);
 
-        // Check the new Service Function Scheduler Type Object is the desired one
-        ServiceFunctionSchedulerType sfst =
-                SfcProviderScheduleTypeAPI.readServiceFunctionScheduleType(originalServiceFunctionSchedulerType.getType());
+        // Check the new Service Function Scheduler Type Object is the desired
+        // one
+        ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI
+                .readServiceFunctionScheduleType(originalServiceFunctionSchedulerType.getType());
         assertEquals(originalServiceFunctionSchedulerType, sfst);
-        assertFalse (sfst.isEnabled());
-        assertEquals(countNumOfEnabledAlgorithmType(),1);
+        assertFalse(sfst.isEnabled());
+        assertEquals(countNumOfEnabledAlgorithmType(), 1);
 
-        // Modify the last Service Function Scheduler Type Object created setting isEnabled to TRUE
-
+        // Modify the last Service Function Scheduler Type Object created
+        // setting isEnabled to TRUE
         ServiceFunctionSchedulerTypeBuilder updatedServiceFunctionSchedulerTypeBuilder =
                 new ServiceFunctionSchedulerTypeBuilder(originalServiceFunctionSchedulerType);
 
         updatedServiceFunctionSchedulerTypeBuilder.setEnabled(true);
-        ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType =
-                updatedServiceFunctionSchedulerTypeBuilder.build();
+        ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = updatedServiceFunctionSchedulerTypeBuilder
+                .build();
 
         // We trigger the update of the service Function Scheduler Type Object
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
@@ -180,12 +186,13 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         Thread.sleep(500);
 
-        // Check that the Random Scheduler Type is the only one enabled and clean-up
-        assertEquals(countNumOfEnabledAlgorithmType(),0);
+        // Check that the Random Scheduler Type is the only one enabled and
+        // clean-up
+        assertEquals(countNumOfEnabledAlgorithmType(), 0);
     }
 
     /**
-     * Builds a complete service Function Scheduler Type Object
+     * Builds a complete service Function Scheduler Type Object.
      *
      * @return ServiceFunctionSchedulerType object
      */
@@ -201,8 +208,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         return sfstBuilder.build();
     }
+
     /**
-     * Builds a complete service Function Scheduler Types Object
+     * Builds a complete service Function Scheduler Types Object.
      */
     @SuppressWarnings("unchecked")
     public void buildServiceFunctionSchedulerTypes() throws Exception {
@@ -220,7 +228,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         }
     }
 
-
     private int countNumOfEnabledAlgorithmType() throws Exception {
         int count = 0;
         ServiceFunctionSchedulerTypes sfsts = SfcProviderScheduleTypeAPI.readAllServiceFunctionScheduleTypes();
@@ -228,7 +235,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         for (ServiceFunctionSchedulerType sfst : sfstList) {
             boolean enabled = sfst.isEnabled();
-            if ( enabled ) {
+            if (enabled) {
                 count++;
             }
             // Clean-up
@@ -237,5 +244,4 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         }
         return count;
     }
-
 }

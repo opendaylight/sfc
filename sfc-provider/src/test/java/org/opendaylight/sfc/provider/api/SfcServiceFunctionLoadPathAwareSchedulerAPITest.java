@@ -8,13 +8,23 @@
 
 package org.opendaylight.sfc.provider.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
@@ -38,7 +48,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.*;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -63,8 +77,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.ResourceUtilizationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
-
 
 public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDataStoreManager {
 
@@ -82,7 +94,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         scheduler = new SfcServiceFunctionLoadPathAwareSchedulerAPI();
         // build SFs
 
-        final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+        final List<String> locatorIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -101,7 +113,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             }
         };
 
-        final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+        final List<String> managementIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -120,7 +132,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
 
         final int PORT = 555;
 
-        final List<SfName> SF_NAMES = new ArrayList<SfName>() {
+        final List<SfName> serviceFunctionNames = new ArrayList<SfName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -137,7 +149,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             }
         };
 
-        final List<SftTypeName> SF_TYPES = new ArrayList<SftTypeName>() {
+        final List<SftTypeName> serviceFunctionTypes = new ArrayList<SftTypeName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -155,23 +167,22 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         };
 
         PortNumber portNumber = new PortNumber(PORT);
-        for (int i = 0; i < SF_NAMES.size(); i++) {
-            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(i)));
-            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(i)));
+        for (int i = 0; i < serviceFunctionNames.size(); i++) {
+
+            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(locatorIPAddresses.get(i)));
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(dplIpAddr).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
+            locatorBuilder.setName(new SfDataPlaneLocatorName(locatorIPAddresses.get(i)))
                     .setLocatorType(ipBuilder.build());
             SfDataPlaneLocator sfDataPlaneLocator = locatorBuilder.build();
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator);
-            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(SF_NAMES.get(i)));
-            sfBuilder.setName(new SfName(SF_NAMES.get(i)))
-                    .setKey(serviceFunctonKey)
-                    .setType(SF_TYPES.get(i))
-                    .setIpMgmtAddress(ipMgmtAddr)
+            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(serviceFunctionNames.get(i)));
+            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(managementIPAddresses.get(i)));
+            sfBuilder.setName(new SfName(serviceFunctionNames.get(i))).setKey(serviceFunctonKey)
+                    .setType(serviceFunctionTypes.get(i)).setIpMgmtAddress(ipMgmtAddr)
                     .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
@@ -185,7 +196,8 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
 
         SfcName sfcName = new SfcName("LoadPathAware-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -215,24 +227,21 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
-        sfChain = new ServiceFunctionChainBuilder().setName(sfcName)
-                .setKey(new ServiceFunctionChainKey(sfcName))
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(false)
-                .build();
+        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+                .setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false).build();
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
-        serviceFunctionPathBuilder.setPathId(1l);
+        serviceFunctionPathBuilder.setPathId(1L);
         serviceFunctionPathBuilder.setServiceChainName(sfcName);
         List<ServicePathHop> sphs = new ArrayList<>();
         serviceFunctionPathBuilder.setServicePathHop(sphs);
         sfPath = serviceFunctionPathBuilder.build();
 
         // build SFFs
-        String[][] TO_SFF_NAMES = {{"SFF2"}, {"SFF1","SFF3"}, {"SFF2","SFF4"},{"SFF3"}};
+        final String[][] toSFFNames = { { "SFF2" }, { "SFF1", "SFF3" }, { "SFF2", "SFF4" }, { "SFF3" } };
 
-        List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+        final List<SffName> sffNames = new ArrayList<SffName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -243,7 +252,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             }
         };
 
-        List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+        final List<String> sffLocatorIPs = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -254,22 +263,22 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             }
         };
 
-        for (int i = 0; i < SFF_NAMES.size(); i++) {
+        for (int i = 0; i < sffNames.size(); i++) {
             /*
-             * ServiceFunctionForwarders connected to special SFF_NAMES[i]
-             * * SFF_NAMES[1] is connected to SFF_NAMES[2]
-             * * SFF_NAMES[2] is connected to SFF_NAMES[1] and SFF_NAMES[3]
-             * * SFF_NAMES[3] is connected to SFF_NAMES[2] and SFF_NAMES[4]
-             * * SFF_NAMES[4] is connected to SFF_NAMES[3]
-            */
+             * ServiceFunctionForwarders connected to special SFF_NAMES[i] *
+             * SFF_NAMES[1] is connected to SFF_NAMES[2] * SFF_NAMES[2] is
+             * connected to SFF_NAMES[1] and SFF_NAMES[3] * SFF_NAMES[3] is
+             * connected to SFF_NAMES[2] and SFF_NAMES[4] * SFF_NAMES[4] is
+             * connected to SFF_NAMES[3]
+             */
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
-                if (i == 0 & j == 1  || i==3 & j == 1) {
+                if (i == 0 & j == 1 || i == 3 & j == 1) {
                     break;
                 }
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry =
-                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
+                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(toSFFNames[i][j]))
+                        .build();
                 sffDictionaryList.add(sffDictEntry);
             }
 
@@ -277,7 +286,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             ServiceFunction serviceFunction = null;
             for (int j = 0; j < 3; j++) {
-                if (i == 0 ) {
+                if (i == 0) {
                     if (j == 2) {
                         break;
                     }
@@ -288,40 +297,35 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
                     }
                     serviceFunction = sfList.get(i * 3 + j - 1);
                 } else {
-                   serviceFunction = sfList.get(i * 3 + j - 2);
+                    serviceFunction = sfList.get(i * 3 + j - 2);
                 }
 
-                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder =
-                        new SffSfDataPlaneLocatorBuilder();
+                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
                 sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
                 SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
                 ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
                 dictionaryEntryBuilder.setName(serviceFunction.getName())
                         .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                        .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                        .setFailmode(Open.class)
-                        .setSffInterfaces(null);
+                        .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
                 ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
                 sfDictionaryList.add(sfDictEntry);
             }
 
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(555));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(sffLocatorIPs.get(i)))).setPort(new PortNumber(555));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+            locatorBuilder.setName(new SffDataPlaneLocatorName(sffLocatorIPs.get(i)))
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
+            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
-                    .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
-                    .setSffDataPlaneLocator(locatorList)
-                    .setServiceFunctionDictionary(sfDictionaryList)
-                    .setConnectedSffDictionary(sffDictionaryList)
-                    .setServiceNode(null);
+            sffBuilder.setName(new SffName(sffNames.get(i)))
+                    .setKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
+                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         }
@@ -329,13 +333,13 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         // Set CPUUtilization for each ServiceFunctions
         String sfNameFW = "fw_";
         for (int i = 1; i < 5; i = i + 1) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameFW.concat(sCount));
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameFW.concat(counter));
             int cpuUtil = 0;
-            if ( i == 1) {
+            if (i == 1) {
                 cpuUtil = 15;
             } else {
-                cpuUtil = (i-1) * 5;
+                cpuUtil = (i - 1) * 5;
             }
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) cpuUtil).build();
@@ -345,17 +349,16 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
-            LOG.debug("Setting ServiceFunction {}'s CPU : {}",
-                    sfName,cpuUtil);
+            LOG.debug("Setting ServiceFunction {}'s CPU : {}", sfName, cpuUtil);
         }
 
         String sfNameDPI = "dpi_";
         for (int i = 1; i < 5; i = i + 1) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameDPI.concat(sCount));
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameDPI.concat(counter));
             int cpuUtil = i * 10;
             if (i == 4) {
-               cpuUtil = 5;
+                cpuUtil = 5;
             }
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) cpuUtil).build();
@@ -365,15 +368,14 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
-            LOG.debug("Setting ServiceFunction {}'s CPU : {}",
-                    sfName, cpuUtil);
+            LOG.debug("Setting ServiceFunction {}'s CPU : {}", sfName, cpuUtil);
         }
 
         String sfNameNAT = "nat_";
         for (int i = 3; i < 5; i = i + 1) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameNAT.concat(sCount));
-            int cpuUtil = i*10 - 20;
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameNAT.concat(counter));
+            int cpuUtil = i * 10 - 20;
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) cpuUtil).build();
             MonitoringInfo monInfo = new MonitoringInfoBuilder().setResourceUtilization(resrcUtil).build();
@@ -382,8 +384,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
                     .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
-            LOG.debug("Setting ServiceFunction {}'s CPU : {}",
-                    sfName, cpuUtil);
+            LOG.debug("Setting ServiceFunction {}'s CPU : {}", sfName, cpuUtil);
         }
     }
 
@@ -416,11 +417,10 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfChain.getSfcServiceFunction());
         for (SfcServiceFunction sfcServiceFunction : sfChain.getSfcServiceFunction()) {
             LOG.debug("sfcServiceFunction.name = {}", sfcServiceFunction.getName());
-            ServiceFunctionType serviceFunctionType =
-                    SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
+            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI
+                    .readServiceFunctionType(sfcServiceFunction.getType());
             assertNotNull("Must be not null", serviceFunctionType);
         }
-
 
         ServiceFunctionType serviceFunctionType;
         List<SftServiceFunctionName> sftServiceFunctionNameList;
@@ -440,7 +440,6 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 2);
 
-        int serviceIndex = 255;
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("firewall"));
         List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("dpi"));
@@ -448,56 +447,53 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("napt44"));
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
+        int serviceIndex = 255;
         List<SfName> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         for (int i = 0; i < 4; i++) {
             SfName sfFWName = new SfName(sftFirewallList.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfFWName)
-                            .getMonitoringInfo()
-                            .getResourceUtilization()
-                            .getCPUUtilization();
-            assertNotNull(cPUUtilization);
-            LOG.debug("Reading CPU of ServiceFunction {} : {}",sfFWName, cPUUtilization);
+            java.lang.Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfFWName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
+            LOG.debug("Reading CPU of ServiceFunction {} : {}", sfFWName, utilization);
 
         }
 
         for (int i = 0; i < 4; i++) {
             SfName sfDPIName = new SfName(sftDpiList.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfDPIName)
-                            .getMonitoringInfo()
-                            .getResourceUtilization()
-                            .getCPUUtilization();
-            assertNotNull(cPUUtilization);
-            LOG.debug("Reading CPU of ServiceFunction {} : {}",sfDPIName, cPUUtilization);
+            java.lang.Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfDPIName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
+            LOG.debug("Reading CPU of ServiceFunction {} : {}", sfDPIName, utilization);
         }
 
         for (int i = 0; i < 2; i++) {
             SfName sfNATName = new SfName(sftNapt44List.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfNATName)
-                            .getMonitoringInfo()
-                            .getResourceUtilization()
-                            .getCPUUtilization();
-            assertNotNull(cPUUtilization);
-            LOG.debug("Reading CPU of ServiceFunction {} : {}", sfNATName, cPUUtilization);
+            java.lang.Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfNATName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
+            LOG.debug("Reading CPU of ServiceFunction {} : {}", sfNATName, utilization);
         }
 
-
         ServiceFunction sfHop0 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(0));
-        ServiceFunction sfHop1 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(1));
-        ServiceFunction sfHop2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(2));
 
         assertNotNull("Must be not null", sfHop0);
         assertEquals("Must be equal", sfHop0.getName().getValue(), "fw_2");
+
+        ServiceFunction sfHop1 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(1));
         assertNotNull("Must be not null", sfHop1);
         assertEquals("Must be equal", sfHop1.getName().getValue(), "dpi_1");
+
+        ServiceFunction sfHop2 = SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(2));
         assertNotNull("Must be not null", sfHop2);
         assertEquals("Must be equal", sfHop2.getName().getValue(), "nat_3");
 
-        LOG.debug("The rendered service path for chain : {} => {} => {}", sfHop0.getName(), sfHop1.getName(), sfHop2.getName());
+        LOG.debug("The rendered service path for chain : {} => {} => {}", sfHop0.getName(), sfHop1.getName(),
+                sfHop2.getName());
     }
 
     @Test
@@ -515,11 +511,11 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
 
         List<SfName> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, 1, sfp);
-        LOG.debug("{} => {}", serviceFunctionNameArrayList.get(0).getValue(),serviceFunctionNameArrayList.get(1).getValue());
+        LOG.debug("{} => {}", serviceFunctionNameArrayList.get(0).getValue(),
+                serviceFunctionNameArrayList.get(1).getValue());
         assertEquals("fw_2", serviceFunctionNameArrayList.get(0).getValue());
         assertEquals("hop-dpi", serviceFunctionNameArrayList.get(1).getValue());
     }
-
 
     @Test
     public void loadBalance__OverrideAllHops() {
@@ -537,7 +533,8 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
         ServiceFunctionPath sfp = serviceFunctionPathBuilder.build();
 
         List<SfName> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, 1, sfp);
-LOG.debug("{} => {}", serviceFunctionNameArrayList.get(0).getValue(),serviceFunctionNameArrayList.get(1).getValue());
+        LOG.debug("{} => {}", serviceFunctionNameArrayList.get(0).getValue(),
+                serviceFunctionNameArrayList.get(1).getValue());
         assertEquals("hop-dpi-0", serviceFunctionNameArrayList.get(0).getValue());
         assertEquals("hop-dpi-1", serviceFunctionNameArrayList.get(1).getValue());
     }

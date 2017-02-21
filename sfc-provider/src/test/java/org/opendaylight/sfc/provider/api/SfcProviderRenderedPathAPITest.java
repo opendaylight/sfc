@@ -160,7 +160,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         final int startingIndex = 255;
 
         SfcProviderRenderedPathAPI sfcProviderRenderedPathAPI = new SfcProviderRenderedPathAPI();
-
         List<RenderedServicePathHop> rspHopList;
 
         // sfNameList and sfgNameList null

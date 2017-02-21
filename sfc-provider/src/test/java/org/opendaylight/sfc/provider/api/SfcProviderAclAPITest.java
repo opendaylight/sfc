@@ -55,7 +55,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @version 0.1
  * @since 2015-06-19
  */
-
 public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
     private static final String ACL_NAME = "aclName";

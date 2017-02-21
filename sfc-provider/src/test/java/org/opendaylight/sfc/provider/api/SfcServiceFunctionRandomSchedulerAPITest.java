@@ -52,7 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * This class contains unit tests for SfcServiceFunctionRandomSchedulerAPI
+ * This class contains unit tests for SfcServiceFunctionRandomSchedulerAPI.
  *
  * @author Vladimir Lavor vladimir.lavor@pantheon.sk
  * @version 0.1
@@ -86,24 +86,23 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
      */
     @Test
     public void testServiceFunctionRandomScheduler() {
-
-        List<SfName> result =
-                scheduler.scheduleServiceFunctions(createServiceFunctionChain(), 255, createServiceFunctionPath());
-
-        // list of all service function names, the one returned by scheduleServiceFunction have to
+        // list of all service function names, the one returned by
+        // scheduleServiceFunction have to
         // be the same
         List<SfName> serviceFunctions = new ArrayList<>();
         serviceFunctions.add(SF_NAME1);
         serviceFunctions.add(SF_NAME2);
         serviceFunctions.add(SF_NAME3);
 
+        List<SfName> result = scheduler.scheduleServiceFunctions(createServiceFunctionChain(), 255,
+                createServiceFunctionPath());
         assertNotNull("Must be not null", result);
         assertTrue("Must be equal", result.containsAll(serviceFunctions));
     }
 
     /*
-     * from existing service functions and types, ans service function is found and returned as a
-     * string
+     * from existing service functions and types, ans service function is found
+     * and returned as a string
      */
     @Test
     public void testServiceFunctionRandomScheduler1() {
@@ -161,29 +160,25 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
     // create service function chain with three entries
     private ServiceFunctionChain createServiceFunctionChain() {
-        ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue())
-            .setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
-            .setType(new SftTypeName("firewall"));
+        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
+                .setType(new SftTypeName("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue())
-            .setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
-            .setType(new SftTypeName("dpi"));
+        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
+                .setType(new SftTypeName("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME3.getValue())
-            .setKey(new SfcServiceFunctionKey(SF_NAME3.getValue()))
-            .setType(new SftTypeName("qos"));
+        sfcServiceFunctionBuilder.setName(SF_NAME3.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME3.getValue()))
+                .setType(new SftTypeName("qos"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
-        serviceFunctionChainBuilder.setName(SFC_NAME)
-            .setKey(new ServiceFunctionChainKey(SFC_NAME))
-            .setSymmetric(true)
-            .setSfcServiceFunction(sfcServiceFunctionList);
+        ServiceFunctionChainBuilder serviceFunctionChainBuilder =
+                new ServiceFunctionChainBuilder();
+        serviceFunctionChainBuilder.setName(SFC_NAME).setKey(new ServiceFunctionChainKey(SFC_NAME)).setSymmetric(true)
+                .setSfcServiceFunction(sfcServiceFunctionList);
 
         return serviceFunctionChainBuilder.build();
     }
@@ -196,8 +191,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         SfName sfName = new SfName(SF_NAME_BASE + serviceFunctionType);
 
-        sftServiceFunctionNameBuilder.setName(sfName)
-            .setKey(new SftServiceFunctionNameKey(sfName));
+        sftServiceFunctionNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
         sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
 
         return sftServiceFunctionNames;
@@ -211,68 +205,65 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         for (int i = 0; i < 3; i++) {
             ServicePathHopBuilder servicePathHopBuilder = new ServicePathHopBuilder();
-            servicePathHopBuilder.setHopNumber((short) i)
-                .setKey(new ServicePathHopKey((short) i))
-                .setServiceFunctionForwarder(SFF_NAME)
-                .setServiceFunctionGroupName(SFG_NAME)
-                .setServiceIndex((short) (i + 1))
-                .setServiceFunctionName(new SfName(SF_NAME_BASE + (i + 1)));
+            servicePathHopBuilder.setHopNumber((short) i).setKey(new ServicePathHopKey((short) i))
+                    .setServiceFunctionForwarder(SFF_NAME).setServiceFunctionGroupName(SFG_NAME)
+                    .setServiceIndex((short) (i + 1)).setServiceFunctionName(new SfName(SF_NAME_BASE + (i + 1)));
             servicePathHopList.add(servicePathHopBuilder.build());
         }
 
-        serviceFunctionPathBuilder.setName(SFP_NAME)
-            .setKey(new ServiceFunctionPathKey(SFP_NAME))
-            .setServicePathHop(servicePathHopList);
+        serviceFunctionPathBuilder.setName(SFP_NAME).setKey(new ServiceFunctionPathKey(SFP_NAME))
+                .setServicePathHop(servicePathHopList);
 
         return serviceFunctionPathBuilder.build();
     }
 
     // write types
     private boolean writeTypes(boolean write) {
-        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder = new ServiceFunctionTypesBuilder();
         List<ServiceFunctionType> serviceFunctionTypeList = new ArrayList<>();
 
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Firewall"))
-            .setType(new SftTypeName("firewall"));
+                .setType(new SftTypeName("firewall"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
         serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Dpi"))
-            .setType(new SftTypeName("dpi"));
+                .setType(new SftTypeName("dpi"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
         serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         serviceFunctionTypeBuilder.setSftServiceFunctionName(createSftServiceFunctionNames("Qos"))
-            .setType(new SftTypeName("qos"));
+                .setType(new SftTypeName("qos"));
         serviceFunctionTypeList.add(serviceFunctionTypeBuilder.build());
 
+        ServiceFunctionTypesBuilder serviceFunctionTypesBuilder =
+                new ServiceFunctionTypesBuilder();
         serviceFunctionTypesBuilder.setServiceFunctionType(serviceFunctionTypeList);
 
-        InstanceIdentifier<ServiceFunctionTypes> sftIID =
-                InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
+        InstanceIdentifier<ServiceFunctionTypes> sftIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                .build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sftIID, serviceFunctionTypesBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
+        }
     }
 
     // write service function
     private boolean writeServiceFunction(String sfType, boolean write) {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(new SfName(SF_NAME_BASE + sfType))
-            .setKey(new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType)))
-            .setType(new SftTypeName("firewall"));
+                .setKey(new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType))).setType(new SftTypeName("firewall"));
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
-            .child(ServiceFunction.class, new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType)))
-            .build();
+                .child(ServiceFunction.class, new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType))).build();
 
-        if (write)
+        if (write) {
             return SfcDataStoreAPI.writePutTransactionAPI(sfIID, serviceFunctionBuilder.build(),
                     LogicalDatastoreType.CONFIGURATION);
-        else
+        } else {
             return SfcDataStoreAPI.deleteTransactionAPI(sfIID, LogicalDatastoreType.CONFIGURATION);
+        }
     }
 }

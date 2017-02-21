@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Intel Corporation.  All rights reserved.
+ * Copyright (c) 2014, 2017 Intel Corporation.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
  * connection between two nodes/vertexes, it is mainly used to implement
  * Dijkstra shortest path algorithm, method getShortestPath can find the
  * shortest path between 'from' node and 'to' node in a graph.
+ *
  * <p>
  *
  * @author Shuqiang Zhao (shuqiangx.zhao@intel.com)
  * @author Yi Yang (yi.y.yang@intel.com)
  *
- *         <p>
  * @since 2015-03-13
  */
 public class SfcProviderGraph {
@@ -40,6 +40,7 @@ public class SfcProviderGraph {
     private static final int BLACK = 0;
     private final HashMap<SfcProviderTopologyNode, TreeSet<SfcProviderTopologyNode>> sfcProviderTopoEdges;
     private final HashMap<String, SfcProviderTopologyNode> sfcProviderTopoNodes;
+
     public SfcProviderGraph() {
         sfcProviderTopoEdges = new HashMap<>();
         sfcProviderTopoNodes = new HashMap<>();
@@ -123,16 +124,16 @@ public class SfcProviderGraph {
         queue.offer(sfcProviderTopologyNode);
 
         while (!queue.isEmpty()) {
-            SfcProviderTopologyNode qSfcNode = queue.poll();
-            for (SfcProviderTopologyNode sfcNode : getNeighborNodes(qSfcNode.getName())) {
+            SfcProviderTopologyNode sfcProviderNode = queue.poll();
+            for (SfcProviderTopologyNode sfcNode : getNeighborNodes(sfcProviderNode.getName())) {
                 if (sfcNode.getColor() == WHITE) {
                     sfcNode.setColor(GRAY);
-                    sfcNode.setDist(qSfcNode.getDist() + 1);
+                    sfcNode.setDist(sfcProviderNode.getDist() + 1);
                     queue.offer(sfcNode);
-                    sfcNode.setParent(qSfcNode);
+                    sfcNode.setParent(sfcProviderNode);
                 }
             }
-            qSfcNode.setColor(BLACK);
+            sfcProviderNode.setColor(BLACK);
         }
         return;
     }

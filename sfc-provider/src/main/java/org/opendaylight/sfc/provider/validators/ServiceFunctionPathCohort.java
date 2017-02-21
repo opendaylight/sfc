@@ -7,11 +7,12 @@
  */
 package org.opendaylight.sfc.provider.validators;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
 import java.util.Collection;
 import java.util.Iterator;
-
+import javassist.ClassPool;
 import org.opendaylight.mdsal.common.api.DataValidationFailedException;
 import org.opendaylight.mdsal.common.api.PostCanCommitStep;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCandidate;
@@ -30,19 +31,16 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
-
-import javassist.ClassPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Pre-commit semantic validation for service function path datastore objects
  *
- * After registration, the canCommit() method will be invoked in order to validate
- * SFP object creations / modifications. This validation will check coherence
- * with referenced SF, SFC type definitions
+ * <p>
+ * After registration, the canCommit() method will be invoked in order to
+ * validate SFP object creations / modifications. This validation will check
+ * coherence with referenced SF, SFC type definitions
  */
 public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
 
@@ -50,9 +48,8 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
     ModuleInfoBackedContext moduleContext = ModuleInfoBackedContext.create();
     ImmutableSet<YangModuleInfo> infos = BindingReflections.loadModuleInfos();
     BindingRuntimeContext bindingContext;
-    BindingNormalizedNodeCodecRegistry codecRegistry =
-            new BindingNormalizedNodeCodecRegistry(StreamWriterGenerator
-                    .create(JavassistUtils.forClassPool(ClassPool.getDefault())));
+    BindingNormalizedNodeCodecRegistry codecRegistry = new BindingNormalizedNodeCodecRegistry(
+            StreamWriterGenerator.create(JavassistUtils.forClassPool(ClassPool.getDefault())));
     ServiceFunctionPathValidator sfpv;
 
     public ServiceFunctionPathCohort(ServiceFunctionPathValidator sfpv) {
@@ -61,9 +58,8 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public CheckedFuture<PostCanCommitStep, DataValidationFailedException> canCommit(
-            Object txId, DOMDataTreeCandidate candidate,
-            SchemaContext ctx) {
+    public CheckedFuture<PostCanCommitStep, DataValidationFailedException> canCommit(Object txId,
+            DOMDataTreeCandidate candidate, SchemaContext ctx) {
 
         LOG.debug("canCommit:called! txId={}, candidate={}, context={} ", txId, candidate, ctx);
 
@@ -82,29 +78,32 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
         LOG.debug("canCommit:Mapping service ready");
 
         LOG.debug("canCommit:before deserializing:  {}", nn);
-        //(nn is an immutableMapNode). Contains an unmodifiable collection
+        // (nn is an immutableMapNode). Contains an unmodifiable collection
         // reference of all this thing
-        //https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:Design:Normalized_DOM_Model
-        Collection c = (Collection<MapEntryNode>) nn.getValue();
-        LOG.debug("canCommit:collection containing the sfs:  {}", c);
-        Iterator<MapEntryNode> menIter = (Iterator<MapEntryNode>)c.iterator();
+        // https://wiki.opendaylight.org/view/OpenDaylight_Controller:MD-SAL:Design:Normalized_DOM_Model
+        Collection collection = (Collection<MapEntryNode>) nn.getValue();
+        LOG.debug("canCommit:collection containing the sfs:  {}", collection);
+        Iterator<MapEntryNode> menIter = collection.iterator();
         while (menIter.hasNext()) {
             MapEntryNode meNode = menIter.next();
             LOG.debug("canCommit:sfp to process: {}", meNode);
             NormalizedNode sfpAsNormalizedNode = meNode;
             LOG.debug("canCommit:the first SF (as nn):  {}", sfpAsNormalizedNode);
-            DataObject dobj = codecRegistry.fromNormalizedNode(ValidationConstants.SFP_PATH_YII, sfpAsNormalizedNode).getValue();
+            DataObject dobj = codecRegistry.fromNormalizedNode(ValidationConstants.SFP_PATH_YII, sfpAsNormalizedNode)
+                    .getValue();
             LOG.debug("canCommit:registerValidationCohorts:the first SFP (as dataobject):  {}", dobj);
-            ServiceFunctionPath sfp = (ServiceFunctionPath)dobj;
-            LOG.debug("canCommit:registerValidationCohorts:the implemented interface: {}", dobj.getImplementedInterface());
+            ServiceFunctionPath sfp = (ServiceFunctionPath) dobj;
+            LOG.debug("canCommit:registerValidationCohorts:the implemented interface: {}",
+                    dobj.getImplementedInterface());
             LOG.debug("canCommit:the first SF (as binding representation):  {}", sfp);
             try {
                 if (!sfpv.validateServiceFunctionPath(sfp)) {
-                        return ValidationConstants.FAILED_CAN_COMMIT_SFP_FUTURE;
+                    return ValidationConstants.FAILED_CAN_COMMIT_SFP_FUTURE;
                 }
             } catch (DataValidationFailedException dvfe) {
                 return Futures.immediateFailedCheckedFuture(dvfe);
             }
         }
         return ValidationConstants.SUCCESS_CAN_COMMIT_FUTURE;
-    }}
+    }
+}

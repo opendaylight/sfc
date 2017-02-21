@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -73,25 +73,17 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         scheduler = new SfcServiceFunctionLoadBalanceSchedulerAPI();
         int maxTries;
 
-        SfcName sfcName = new SfcName("loadbalance-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("firewall")
-            .setKey(new SfcServiceFunctionKey("firewall"))
-            .setType(new SftTypeName("firewall"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("firewall")).setType(new SftTypeName("firewall")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("dpi")
-            .setKey(new SfcServiceFunctionKey("dpi"))
-            .setType(new SftTypeName("dpi"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("dpi")).setType(new SftTypeName("dpi")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("nat")
-            .setKey(new SfcServiceFunctionKey("nat"))
-            .setType(new SftTypeName("napt44"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("nat")).setType(new SftTypeName("napt44")).build());
 
-        sfChain = new ServiceFunctionChainBuilder().setName(sfcName)
-            .setKey(new ServiceFunctionChainKey(sfcName))
-            .setSfcServiceFunction(sfcServiceFunctionList)
-            .build();
+        SfcName sfcName = new SfcName("loadbalance-unittest-chain-1");
+        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+                .setSfcServiceFunction(sfcServiceFunctionList).build();
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
@@ -119,12 +111,15 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
                 SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("7.7.7.7")), 777), sffName,
                 VxlanGpe.class));
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.100.101")), sfDPLList.get(0), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.110.101")), sfDPLList.get(1), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.120.101")), sfDPLList.get(2), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.100.101")), sfDPLList.get(0), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.110.101")), sfDPLList.get(1), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.120.101")), sfDPLList.get(2), Boolean.FALSE));
 
         sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_100"), new SftTypeName("dpi"),
                 new IpAddress(new Ipv4Address("192.168.100.102")), sfDPLList.get(0), Boolean.FALSE));
@@ -142,7 +137,8 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
         // Wait a while in order to ensure they are really created
 
         for (ServiceFunction serviceFunction : sfList) {
@@ -161,14 +157,14 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
                 }
             }
             LOG.debug("SfcServiceFunctionLoadBalanceSchedulerAPITest: getRead ServiceFunction {} {} times: {}",
-                    serviceFunction.getName(), 10 - maxTries, (sf2 == null) ? "Failed" : "Successful");
+                    serviceFunction.getName(), 10 - maxTries, sf2 == null ? "Failed" : "Successful");
         }
 
         // set CPUUtilization for SF
         String sfNameFW = "simple_fw_";
         for (int i = 100; i < 130; i = i + 10) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameFW.concat(sCount));
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameFW.concat(counter));
             int cpuUtil = i + 5;
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) cpuUtil).build();
@@ -176,14 +172,14 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
         String sfNameDPI = "simple_dpi_";
         for (int i = 100; i < 130; i = i + 10) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameDPI.concat(sCount));
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameDPI.concat(counter));
             int cpuUtil = 190 - i;
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) cpuUtil).build();
@@ -191,14 +187,14 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
         String sfNameNAT = "simple_nat_";
         for (int i = 100; i < 130; i = i + 10) {
-            String sCount = i + "";
-            SfName sfName = new SfName(sfNameNAT.concat(sCount));
+            String counter = i + "";
+            SfName sfName = new SfName(sfNameNAT.concat(counter));
 
             ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
             ResourceUtilization resrcUtil = new ResourceUtilizationBuilder().setCPUUtilization((long) (i - 90)).build();
@@ -206,10 +202,9 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
-
     }
 
     @Test
@@ -238,7 +233,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         assertNotNull("Must be not null", sftServiceFunctionNameList);
         assertEquals("Must be equal", sftServiceFunctionNameList.size(), 3);
 
-        int serviceIndex = 255;
+
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("firewall"));
         List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("dpi"));
@@ -246,37 +241,32 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("napt44"));
         List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
+        int serviceIndex = 255;
         List<SfName> serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
         for (int i = 0; i < 3; i++) {
             SfName sfFWName = new SfName(sftFirewallList.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfFWName)
-                        .getMonitoringInfo()
-                        .getResourceUtilization()
-                        .getCPUUtilization();
-            assertNotNull(cPUUtilization);
+            Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfFWName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
         }
 
         for (int i = 0; i < 3; i++) {
             SfName sfDPIName = new SfName(sftDpiList.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfDPIName)
-                        .getMonitoringInfo()
-                        .getResourceUtilization()
-                        .getCPUUtilization();
-            assertNotNull(cPUUtilization);
+            Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfDPIName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
         }
 
         for (int i = 0; i < 3; i++) {
             SfName sfNATName = new SfName(sftNapt44List.get(i).getName());
-            java.lang.Long cPUUtilization =
-                    SfcProviderServiceFunctionAPI.readServiceFunctionDescriptionMonitor(sfNATName)
-                        .getMonitoringInfo()
-                        .getResourceUtilization()
-                        .getCPUUtilization();
-            assertNotNull(cPUUtilization);
+            Long utilization = SfcProviderServiceFunctionAPI
+                    .readServiceFunctionDescriptionMonitor(sfNATName).getMonitoringInfo().getResourceUtilization()
+                    .getCPUUtilization();
+            assertNotNull(utilization);
         }
 
         assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(), "simple_fw_100");
@@ -330,5 +320,4 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         sphb.setServiceFunctionName(sfName);
         return sphb.build();
     }
-
 }

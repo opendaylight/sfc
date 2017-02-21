@@ -91,7 +91,7 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
                 .setEnabled(true)
                 .setType(RoundRobin.class);
 
-        //write service function scheduler type
+        // Write service function scheduler type
         boolean transactionSuccessful
             = SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(serviceFunctionSchedulerTypeBuilder.build());
         assertTrue("Must be true", transactionSuccessful);

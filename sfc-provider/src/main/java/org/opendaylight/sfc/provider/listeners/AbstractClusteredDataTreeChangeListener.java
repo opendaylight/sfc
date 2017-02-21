@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -32,21 +32,21 @@ public abstract class AbstractClusteredDataTreeChangeListener<T extends DataObje
         for (final DataTreeModification<T> dataTreeModification : collection) {
             final DataObjectModification<T> dataObjectModification = dataTreeModification.getRootNode();
             switch (dataObjectModification.getModificationType()) {
-            case SUBTREE_MODIFIED:
-                update(dataObjectModification.getDataBefore(), dataObjectModification.getDataAfter());
-                break;
-            case DELETE:
-                remove(dataObjectModification.getDataBefore());
-                break;
-            case WRITE:
-                if (dataObjectModification.getDataBefore() == null) {
-                    add(dataObjectModification.getDataAfter());
-                } else {
+                case SUBTREE_MODIFIED:
                     update(dataObjectModification.getDataBefore(), dataObjectModification.getDataAfter());
-                }
-                break;
-            default:
-                break;
+                    break;
+                case DELETE:
+                    remove(dataObjectModification.getDataBefore());
+                    break;
+                case WRITE:
+                    if (dataObjectModification.getDataBefore() == null) {
+                        add(dataObjectModification.getDataAfter());
+                    } else {
+                        update(dataObjectModification.getDataBefore(), dataObjectModification.getDataAfter());
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 

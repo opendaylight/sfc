@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -46,7 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 
 /**
- * Tests for dictionary operations on SFFs
+ * Tests for dictionary operations on SFFs.
  */
 public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataStoreManager {
 
@@ -85,12 +85,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
 
     @Test
     public void testUpdateDictionary() {
-
-        SffName name = new SffName(sffNames.get(0));
         SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("locator-1");
-
-        List<SffDataPlaneLocator> locatorList = new ArrayList<>();
-
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(new IpAddress(new Ipv4Address("10.1.1.101"))).setPort(new PortNumber(555));
 
@@ -101,7 +96,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         locatorBuilder.setName(sffDplName)
             .setKey(new SffDataPlaneLocatorKey(sffDplName))
             .setDataPlaneLocator(sffLocatorBuilder.build());
-
+        List<SffDataPlaneLocator> locatorList = new ArrayList<>();
         locatorList.add(locatorBuilder.build());
 
         List<ServiceFunctionDictionary> dictionary = new ArrayList<>();
@@ -121,6 +116,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         dictionary.add(firstDictEntry);
 
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
+        SffName name = new SffName(sffNames.get(0));
 
         ServiceFunctionForwarder sff = sffBuilder.setName(name)
             .setKey(new ServiceFunctionForwarderKey(name))

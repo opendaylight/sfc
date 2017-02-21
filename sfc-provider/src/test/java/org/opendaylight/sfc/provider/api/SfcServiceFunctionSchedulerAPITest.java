@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -63,31 +63,25 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         int maxTries = 10;
         boolean emptyFlag = true;
 
-        // before test, private static variable mapCountRoundRobin has to be restored to original
+        // before test, private static variable mapCountRoundRobin has to be
+        // restored to original
         // state
         Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class,
                 new HashMap<>());
 
         LOG.debug("Empty SFC data store {} times: {}", 10 - maxTries, emptyFlag ? "Successful" : "Failed");
-        SfcName sfcName = new SfcName("unittest-sched-chain-1");
+
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("firewall")
-            .setKey(new SfcServiceFunctionKey("firewall"))
-            .setType(new SftTypeName("firewall"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("firewall")).setType(new SftTypeName("firewall")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("dpi")
-            .setKey(new SfcServiceFunctionKey("dpi"))
-            .setType(new SftTypeName("dpi"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("dpi")).setType(new SftTypeName("dpi")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("nat")
-            .setKey(new SfcServiceFunctionKey("nat"))
-            .setType(new SftTypeName("napt44"))
-            .build());
+                .setKey(new SfcServiceFunctionKey("nat")).setType(new SftTypeName("napt44")).build());
 
-        sfChain = new ServiceFunctionChainBuilder().setName(sfcName)
-            .setKey(new ServiceFunctionChainKey(sfcName))
-            .setSfcServiceFunction(sfcServiceFunctionList)
-            .build();
+        SfcName sfcName = new SfcName("unittest-sched-chain-1");
+        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+                .setSfcServiceFunction(sfcServiceFunctionList).build();
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
@@ -115,12 +109,15 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
                 SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("7.7.7.7")), 777), sffName,
                 VxlanGpe.class));
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.100.101")), sfDPLList.get(0), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.110.101")), sfDPLList.get(1), Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.120.101")), sfDPLList.get(2), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_100"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.100.101")), sfDPLList.get(0), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_110"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.110.101")), sfDPLList.get(1), Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_120"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.120.101")), sfDPLList.get(2), Boolean.FALSE));
 
         sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_dpi_100"), new SftTypeName("dpi"),
                 new IpAddress(new Ipv4Address("192.168.100.102")), sfDPLList.get(0), Boolean.FALSE));
@@ -138,7 +135,8 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
 
         for (ServiceFunction serviceFunction : sfList) {
             SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
@@ -161,7 +159,7 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
                 }
             }
             LOG.debug("SfcServiceFunctionSchedulerAPITest: getRead ServiceFunction {} {} times: {}",
-                    serviceFunction.getName(), 10 - maxTries, (sf2 != null) ? "Successful" : "Failed");
+                    serviceFunction.getName(), 10 - maxTries, sf2 != null ? "Successful" : "Failed");
             assertNotNull("Must be not null", sf2);
             assertEquals("Must be equal", sf2.getName(), serviceFunction.getName());
             assertEquals("Must be equal", sf2.getType(), serviceFunction.getType());
@@ -203,8 +201,8 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
 
-        ServiceFunction serviceFunction =
-                SfcProviderServiceFunctionAPI.readServiceFunction(serviceFunctionNameArrayList.get(0));
+        ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI
+                .readServiceFunction(serviceFunctionNameArrayList.get(0));
         assertNotNull("Must be not null", serviceFunction);
         assertEquals("Must be equal", serviceFunction.getType(), new SftTypeName("firewall"));
         assertNotEquals("Must be not equal", serviceFunction.getType(), new SftTypeName("dpi"));
@@ -220,43 +218,57 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
 
     @Test
     public void testServiceFunctionRoundRobinScheduler() {
-        int serviceIndex = 255;
-        SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
-        List<SfName> serviceFunctionNameArrayList;
+        final int serviceIndex = 255;
 
         ServiceFunctionType serviceFunctionType;
+
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("firewall"));
-        List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
+        final List<SftServiceFunctionName> sftFirewallList = serviceFunctionType.getSftServiceFunctionName();
+
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("dpi"));
-        List<SftServiceFunctionName> sftDpiList = serviceFunctionType.getSftServiceFunctionName();
+        final List<SftServiceFunctionName> sftDpiList = serviceFunctionType.getSftServiceFunctionName();
+
         serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName("napt44"));
-        List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
+        final List<SftServiceFunctionName> sftNapt44List = serviceFunctionType.getSftServiceFunctionName();
 
-        /* First round */
+        List<SfName> serviceFunctionNameArrayList;
+        final SfcServiceFunctionSchedulerAPI scheduler = new SfcServiceFunctionRoundRobinSchedulerAPI();
         serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(), sftFirewallList.get(0).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(), sftDpiList.get(0).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(), sftNapt44List.get(0).getName().getValue());
-
-        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
-        assertNotNull("Must be not null", serviceFunctionNameArrayList);
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(), sftFirewallList.get(1).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(), sftDpiList.get(1).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(), sftNapt44List.get(1).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(),
+                sftFirewallList.get(0).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(),
+                sftDpiList.get(0).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(),
+                sftNapt44List.get(0).getName().getValue());
 
         serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(), sftFirewallList.get(2).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(), sftDpiList.get(2).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(), sftNapt44List.get(2).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(),
+                sftFirewallList.get(1).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(),
+                sftDpiList.get(1).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(),
+                sftNapt44List.get(1).getName().getValue());
+
+        serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
+        assertNotNull("Must be not null", serviceFunctionNameArrayList);
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(),
+                sftFirewallList.get(2).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(),
+                sftDpiList.get(2).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(),
+                sftNapt44List.get(2).getName().getValue());
 
         /* Second round */
         serviceFunctionNameArrayList = scheduler.scheduleServiceFunctions(sfChain, serviceIndex, sfPath);
         assertNotNull("Must be not null", serviceFunctionNameArrayList);
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(), sftFirewallList.get(0).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(), sftDpiList.get(0).getName().getValue());
-        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(), sftNapt44List.get(0).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(0).getValue(),
+                sftFirewallList.get(0).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(1).getValue(),
+                sftDpiList.get(0).getName().getValue());
+        assertEquals("Must be equal", serviceFunctionNameArrayList.get(2).getValue(),
+                sftNapt44List.get(0).getName().getValue());
 
         Class<?> scheduleType = scheduler.getSfcServiceFunctionSchedulerType();
 

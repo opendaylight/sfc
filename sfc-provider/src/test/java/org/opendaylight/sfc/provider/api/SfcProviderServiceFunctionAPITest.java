@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -89,13 +89,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
     @Test
     public void testCreateReadServiceFunction() {
-
-        SfName name = new SfName("unittest-fw-1");
-        SftTypeName type = new SftTypeName("firewall");
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         SfDataPlaneLocator sfDataPlaneLocator;
-        ServiceFunctionKey key = new ServiceFunctionKey(name);
-
         IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
         PortNumber portNumber = new PortNumber(PORT);
         IpBuilder ipBuilder = new IpBuilder();
@@ -108,7 +102,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
 
+        SfName name = new SfName("unittest-fw-1");
+        SftTypeName type = new SftTypeName("firewall");
+        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
+        ServiceFunctionKey key = new ServiceFunctionKey(name);
         sfBuilder.setName(name)
             .setKey(key)
             .setType(type)
@@ -137,9 +135,9 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             }
         };
         final SftTypeName sfType = new SftTypeName("firewall");
-        final IpAddress[] ipMgmtAddress = {new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))),
-                new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(1))),
-                new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(2)))};
+        final IpAddress[] ipMgmtAddress = { new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))),
+                                            new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(1))),
+                                            new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(2))) };
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[3];
         ServiceFunctionKey[] key = new ServiceFunctionKey[3];
         for (int i = 0; i < 3; i++) {
@@ -147,8 +145,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         }
 
         final IpAddress[] locatorIpAddress = {new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0))),
-                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(1))),
-                new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(2)))};
+                                              new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(1))),
+                                              new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(2)))};
         PortNumber portNumber = new PortNumber(PORT);
 
         List<ServiceFunction> list = new ArrayList<>();
@@ -176,7 +174,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(list);
 
-        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
         ServiceFunction sf2 = SfcProviderServiceFunctionAPI.readServiceFunction(new SfName(sfName.get(1)));
 
         assertNotNull("Must be not null", sf2);

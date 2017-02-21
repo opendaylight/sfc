@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,11 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Gre;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
- * This class contains unit tests for class SfcProviderServicePathAPI
+ * This class contains unit tests for class SfcProviderServicePathAPI.
  *
  * @author Vladimir Lavor vladimir.lavor@pantheon.sk
  * @version 0.1
@@ -66,12 +67,11 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // create service path state
         ServiceFunctionPathStateBuilder serviceFunctionPathStateBuilder = new ServiceFunctionPathStateBuilder();
         serviceFunctionPathStateBuilder.setKey(new ServiceFunctionPathStateKey(sfpKey))
-            .setSfpRenderedServicePath(renderedServicePaths);
+                .setSfpRenderedServicePath(renderedServicePaths);
 
-        InstanceIdentifier<ServiceFunctionPathState> sfpIID =
-                InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-                    .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(sfpKey))
-                    .build();
+        InstanceIdentifier<ServiceFunctionPathState> sfpIID = InstanceIdentifier
+                .builder(ServiceFunctionPathsState.class)
+                .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(sfpKey)).build();
 
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfpIID,
                 serviceFunctionPathStateBuilder.build(), LogicalDatastoreType.OPERATIONAL);
@@ -104,7 +104,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         serviceFunctionPathStateBuilder.setName(sfpKey).setKey(new ServiceFunctionPathStateKey(sfpKey));
 
         boolean transactionSuccessful = SfcProviderServicePathAPI
-            .addRenderedPathToServicePathState(serviceFunctionPathStateBuilder.build().getName(), rspKey);
+                .addRenderedPathToServicePathState(serviceFunctionPathStateBuilder.build().getName(), rspKey);
         assertTrue("Must be true", transactionSuccessful);
 
         // check if path is already added
@@ -117,33 +117,30 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
     @Test
     public void testReadAllServiceFunctionPaths() throws Exception {
         SfpName sfpName1 = new SfpName("SFP1");
-        SfpName sfpName2 = new SfpName("SFP2");
 
         // create service function paths
         List<ServiceFunctionPath> serviceFunctionPaths = new ArrayList<>();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setName(sfpName1)
-            .setKey(new ServiceFunctionPathKey(sfpName1))
-            .setSymmetric(false)
-            .setTransportType(VxlanGpe.class);
+        serviceFunctionPathBuilder.setName(sfpName1).setKey(new ServiceFunctionPathKey(sfpName1)).setSymmetric(false)
+                .setTransportType(VxlanGpe.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setName(sfpName2)
-            .setKey(new ServiceFunctionPathKey(sfpName2))
-            .setSymmetric(false)
-            .setTransportType(Gre.class);
+        SfpName sfpName2 = new SfpName("SFP2");
+        serviceFunctionPathBuilder.setName(sfpName2).setKey(new ServiceFunctionPathKey(sfpName2)).setSymmetric(false)
+                .setTransportType(Gre.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
         ServiceFunctionPathsBuilder serviceFunctionPathsBuilder = new ServiceFunctionPathsBuilder();
         serviceFunctionPathsBuilder.setServiceFunctionPath(serviceFunctionPaths);
         ServiceFunctionPaths writtenPaths = serviceFunctionPathsBuilder.build();
 
-        InstanceIdentifier<ServiceFunctionPaths> sfpsIID =
-                InstanceIdentifier.builder(ServiceFunctionPaths.class).build();
+        InstanceIdentifier<ServiceFunctionPaths> sfpsIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                .build();
 
         // put all paths
-        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, writtenPaths, LogicalDatastoreType.CONFIGURATION);
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfpsIID, writtenPaths,
+                LogicalDatastoreType.CONFIGURATION);
         assertTrue("Must be true", transactionSuccessful);
 
         // read all paths

@@ -39,7 +39,8 @@ public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener
     }
 
     private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionChain> treeId = new DataTreeIdentifier<ServiceFunctionChain>(LogicalDatastoreType.CONFIGURATION,
+        final DataTreeIdentifier<ServiceFunctionChain> treeId = new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(ServiceFunctionChains.class).child(ServiceFunctionChain.class));
         listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
 
@@ -62,12 +63,13 @@ public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener
     public void add(ServiceFunctionChain serviceFunctionChain) {
         if (serviceFunctionChain != null) {
             LOG.debug("add:starting..(new sfc name: {})", serviceFunctionChain.getName());
-            List<String> serviceFunctionTypesForChain = new ArrayList<String>();
-            for (SfcServiceFunction sfcSf: serviceFunctionChain.getSfcServiceFunction()) {
+            List<String> serviceFunctionTypesForChain = new ArrayList<>();
+            for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {
                 LOG.debug("add:new sfc sf found; name={}, type={})", sfcSf.getName(), sfcSf.getType().getValue());
                 serviceFunctionTypesForChain.add(sfcSf.getType().getValue());
             }
-            SfcDatastoreCache.getSfChainToSfTypeList().put(serviceFunctionChain.getName(), serviceFunctionTypesForChain);
+            SfcDatastoreCache.getSfChainToSfTypeList().put(serviceFunctionChain.getName(),
+                    serviceFunctionTypesForChain);
         }
     }
 
@@ -80,7 +82,8 @@ public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener
     }
 
     @Override
-    protected void update(ServiceFunctionChain originalServiceFunctionChain, ServiceFunctionChain updatedServiceFunctionChain) {
+    protected void update(ServiceFunctionChain originalServiceFunctionChain,
+            ServiceFunctionChain updatedServiceFunctionChain) {
         if (originalServiceFunctionChain != null && updatedServiceFunctionChain != null) {
             LOG.debug("update:Updating Service Function chain: {}", originalServiceFunctionChain.getName());
             SfcDatastoreCache.getSfChainToSfTypeList().invalidate(originalServiceFunctionChain.getName());

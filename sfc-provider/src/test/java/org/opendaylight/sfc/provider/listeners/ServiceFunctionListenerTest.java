@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -26,8 +26,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
-import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
@@ -113,11 +113,11 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
     /**
      * Test that creates a Service Function, calls listener explicitly, verify
-     * that Service Function Type was created and cleans up
+     * that Service Function Type was created and cleans up.
      */
     @Test
     public void testOnServiceFunctionCreated() throws Exception {
-        ServiceFunction serviceFunction = build_service_function();
+        ServiceFunction serviceFunction = buildServiceFunction();
 
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
@@ -138,11 +138,11 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
     /**
      * Test that removes a Service Function, calls listener explicitly, verify
-     * that the Service Function Type was removed and cleans up
+     * that the Service Function Type was removed and cleans up.
      */
     @Test
     public void testOnServiceFunctionRemoved() throws Exception {
-        ServiceFunction serviceFunction = build_service_function();
+        ServiceFunction serviceFunction = buildServiceFunction();
 
         // First we create a Service Function Type Entry
         assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
@@ -163,18 +163,18 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * to data store, creates a copy of the original SF and updates the type and
      * management address, then feeds the original and updated SFs to the
      * listener; finally asserts that the listener has removed the original and
-     * created a new entry
+     * created a new entry.
      */
     @Test
     public void testOnServiceFunctionUpdated() throws Exception {
-        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.102";
-        ServiceFunction originalServiceFunction = build_service_function();
+        final String updatedManagementIPAddress = "196.168.55.102";
+        ServiceFunction originalServiceFunction = buildServiceFunction();
 
         assertTrue(SfcProviderServiceFunctionAPI.putServiceFunction(originalServiceFunction));
 
         // Now we prepare the updated data. We change mgmt address and type
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
-        IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(UPDATED_IP_MGMT_ADDRESS));
+        IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(updatedManagementIPAddress));
         SftTypeName updatedType = new SftTypeName("dpi");
         updatedServiceFunctionBuilder.setIpMgmtAddress(updatedIpMgmtAddress).setType(updatedType);
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
@@ -235,11 +235,16 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         }
 
         // Cleanup
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        // Dont remove the SF, it was removed in serviceFunctionListener.onDataTreeChanged()
-        //assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        // Dont remove the SF, it was removed in
+        // serviceFunctionListener.onDataTreeChanged()
+        // assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+        // LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -253,7 +258,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      */
     @Test
     public void testOnServiceFunctionUpdatedWithRSP_updateIpMgmt() throws Exception {
-        String UPDATED_IP_MGMT_ADDRESS = "196.168.55.112";
+        final String updatedManagementIPAddress = "196.168.55.112";
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
         assertNotNull(renderedServicePath);
@@ -263,9 +268,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunction originalServiceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
         assertNotNull(originalServiceFunction);
 
-        // Now we prepare the updated data. We change management address and type
+        // Now we prepare the updated data. We change management address and
+        // type
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
-        IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(UPDATED_IP_MGMT_ADDRESS));
+        IpAddress updatedIpMgmtAddress = new IpAddress(new Ipv4Address(updatedManagementIPAddress));
         updatedServiceFunctionBuilder.setIpMgmtAddress(updatedIpMgmtAddress);
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
 
@@ -294,10 +300,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         }
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        //assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        // assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+        // LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -320,7 +330,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunction originalServiceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
         assertNotNull(originalServiceFunction);
 
-        // Now we prepare the updated data. We change management address and type
+        // Now we prepare the updated data. We change management address and
+        // type
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
         updatedServiceFunctionBuilder.setType(new SftTypeName("dpi"));
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
@@ -349,10 +360,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         }
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        //assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        // assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+        // LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -375,7 +390,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunction originalServiceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
         assertNotNull(originalServiceFunction);
 
-        // Now we prepare the updated data. We change management address and type
+        // Now we prepare the updated data. We change management address and
+        // type
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
         removeSfDpl(updatedServiceFunctionBuilder);
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
@@ -405,10 +421,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         }
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        //assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        // assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+        // LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
     }
 
     /**
@@ -431,11 +451,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunction originalServiceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
         assertNotNull(originalServiceFunction);
 
-        // Now we prepare the updated data. Neither of these changes should trigger an RSP deletion
+        // Now we prepare the updated data. Neither of these changes should
+        // trigger an RSP deletion
         ServiceFunctionBuilder updatedServiceFunctionBuilder = new ServiceFunctionBuilder(originalServiceFunction);
-        updatedServiceFunctionBuilder
-            .setTenantId(new TenantId("EMPTY"))
-            .setRestUri(new Uri("EMPTY"));
+        updatedServiceFunctionBuilder.setTenantId(new TenantId("EMPTY")).setRestUri(new Uri("EMPTY"));
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
 
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
@@ -456,10 +475,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
         assertTrue(SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName()));
 
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION));
-        //assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID, LogicalDatastoreType.CONFIGURATION));
-        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID, LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        // assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+        // LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
     }
 
     private void removeSfDpl(ServiceFunctionBuilder sfBuilder) {
@@ -467,7 +490,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         List<SfDataPlaneLocator> locatorList = new ArrayList<>();
 
         // We want to remove a DPL entry, so just copy all but the last one
-        for(int i = 0; i < sfDplList.size()-1; i++) {
+        for (int i = 0; i < sfDplList.size() - 1; i++) {
             SfDataPlaneLocator sfDpl = sfDplList.get(i);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder(sfDpl);
             locatorList.add(locatorBuilder.build());
@@ -477,13 +500,13 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     }
 
     /**
-     * Builds a complete service Function Object
+     * Builds a complete service Function Object.
      *
      * @return ServiceFunction object
      */
-    ServiceFunction build_service_function() {
+    ServiceFunction buildServiceFunction() {
 
-        List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+        final List<String> locatorIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -493,7 +516,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+        final List<String> managementIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -502,19 +525,19 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
                 add("196.168.55.103");
             }
         };
-        String SF_NAME = "listernerSF";
-        int PORT = 555;
-        SftTypeName type = new SftTypeName("firewall");
-        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
-        SfDataPlaneLocator sfDataPlaneLocator;
-        ServiceFunctionKey key = new ServiceFunctionKey(new SfName(SF_NAME));
+        final String SF_NAME = "listernerSF";
+        final int PORT = 555;
+        final SftTypeName type = new SftTypeName("firewall");
 
-        IpAddress ipAddress = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
+        IpAddress ipAddress = new IpAddress(new Ipv4Address(locatorIPAddresses.get(0)));
         PortNumber portNumber = new PortNumber(PORT);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(ipAddress).setPort(portNumber);
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(0))).setLocatorType(ipBuilder.build());
+        locatorBuilder.setName(new SfDataPlaneLocatorName(locatorIPAddresses.get(0))).setLocatorType(ipBuilder.build());
+        IpAddress ipMgmtAddress = new IpAddress(new Ipv4Address(managementIPAddresses.get(0)));
+        SfDataPlaneLocator sfDataPlaneLocator;
+        ServiceFunctionKey key = new ServiceFunctionKey(new SfName(SF_NAME));
         sfDataPlaneLocator = locatorBuilder.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(sfDataPlaneLocator);
@@ -528,12 +551,12 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     }
 
     /**
-     * Builds and return a complete RSP Object
+     * Builds and return a complete RSP Object.
      *
      * @return RSP object
      */
     RenderedServicePath build_and_commit_rendered_service_path() throws Exception {
-        List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+        final List<String> locatorIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -545,7 +568,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+        final List<String> managementIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -557,7 +580,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<Integer> PORT = new ArrayList<Integer>() {
+        final List<Integer> PORT = new ArrayList<Integer>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -569,7 +592,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<SftTypeName> sfTypes = new ArrayList<SftTypeName>() {
+        final List<SftTypeName> sfTypes = new ArrayList<SftTypeName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -581,7 +604,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
+        final List<String> serviceFunctionAbstractNames = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -593,9 +616,9 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        String SFC_NAME = "unittest-chain-1";
-        String SFP_NAME = "unittest-sfp-1";
-        String RSP_NAME = "unittest-rsp-1";
+        final String SFC_NAME = "unittest-chain-1";
+        final String SFP_NAME = "unittest-sfp-1";
+        final String RSP_NAME = "unittest-rsp-1";
 
         List<SfName> sfNames = new ArrayList<SfName>() {
             private static final long serialVersionUID = 1L;
@@ -609,7 +632,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+        final List<SffName> sffNames = new ArrayList<SffName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -621,10 +644,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             }
         };
 
-        String[][] TO_SFF_NAMES = { { "SFF2", "SFF5" }, { "SFF3", "SFF1" }, { "SFF4", "SFF2" }, { "SFF5", "SFF3" },
-                { "SFF1", "SFF4" } };
+        final String[][] toSFFNames = { { "SFF2", "SFF5" }, { "SFF3", "SFF1" }, { "SFF4", "SFF2" }, { "SFF5", "SFF3" },
+                                        { "SFF1", "SFF4" } };
 
-        List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+        final List<String> sffLocatorIPs = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -644,16 +667,16 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames.size()];
         ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames.size()];
         for (int i = 0; i < sfNames.size(); i++) {
-            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
-            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
+            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(managementIPAddresses.get(0)));
+            locatorIpAddress[i] = new IpAddress(new Ipv4Address(locatorIPAddresses.get(0)));
             PortNumber portNumber = new PortNumber(PORT.get(i));
             key[i] = new ServiceFunctionKey(new SfName(sfNames.get(i)));
 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
-                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(new SffName(SFF_NAMES.get(i)));
+            locatorBuilder.setName(new SfDataPlaneLocatorName(locatorIPAddresses.get(i)))
+                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(new SffName(sffNames.get(i)));
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
@@ -678,12 +701,12 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         }
 
         // Create Service Function Forwarders
-        for (int i = 0; i < SFF_NAMES.size(); i++) {
+        for (int i = 0; i < sffNames.size(); i++) {
             // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j]))
+                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(toSFFNames[i][j]))
                         .build();
                 sffDictionaryList.add(sffDictEntry);
             }
@@ -701,19 +724,19 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
 
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(PORT.get(i)));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(sffLocatorIPs.get(i)))).setPort(new PortNumber(PORT.get(i)));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+            locatorBuilder.setName(new SffDataPlaneLocatorName(sffLocatorIPs.get(i)))
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
+            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
-                    .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
+            sffBuilder.setName(new SffName(sffNames.get(i)))
+                    .setKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
                     .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
                     .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
@@ -727,10 +750,11 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(new SfcName(SFC_NAME));
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
+        for (int i = 0; i < serviceFunctionAbstractNames.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                    .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(sfTypes.get(i)).build();
+            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(serviceFunctionAbstractNames.get(i))
+                    .setKey(new SfcServiceFunctionKey(serviceFunctionAbstractNames.get(i))).setType(sfTypes.get(i))
+                    .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
@@ -763,12 +787,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         createRenderedPathInputBuilder.setName(RSP_NAME);
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
-        try {
-            renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
-                    createRenderedPathInputBuilder.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
         assertNotNull("Must be not null", renderedServicePath);
         return renderedServicePath;
     }

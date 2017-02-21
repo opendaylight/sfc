@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015 Intel Corporation.  All rights reserved.
+ * Copyright (c) 2014, 2017 Intel Corporation.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,7 +11,7 @@ package org.opendaylight.sfc.provider.topology;
 /**
  * This class represents a node/vertex in the topology graph that composes of SFs
  * (Service Functions) and SFFs (Service Function Forwarders) , a node may be SF
- * or SFF, please refer to class SfcProviderGraph for topology graph
+ * or SFF, please refer to class SfcProviderGraph for topology graph.
  *
  * @author Shuqiang Zhao &lt;shuqiangx.zhao@intel.com&gt;
  * @author Yi Yang &lt;yi.y.yang@intel.com&gt;

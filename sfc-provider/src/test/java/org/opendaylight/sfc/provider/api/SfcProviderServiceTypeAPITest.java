@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -30,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.service.function.type.SftServiceFunctionNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
 public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
 
     @Before
@@ -42,20 +41,16 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
     public void testPutServiceFunctionType() throws Exception {
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
         SftTypeName sftType = new SftTypeName("firewall");
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType))
-            .setType(sftType)
-            .setBidirectional(false)
-            .setNshAware(false)
-            .setRequestReclassification(false);
+        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(sftType)).setType(sftType).setBidirectional(false)
+                .setNshAware(false).setRequestReclassification(false);
         ServiceFunctionType serviceFunctionType = serviceFunctionTypeBuilder.build();
 
         assertTrue(SfcProviderServiceTypeAPI.putServiceFunctionType(serviceFunctionType));
 
         InstanceIdentifier<ServiceFunctionType> sftEntryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-            .child(ServiceFunctionType.class, serviceFunctionType.getKey())
-            .build();
-        ServiceFunctionType serviceFunctionTypeRead =
-                SfcDataStoreAPI.readTransactionAPI(sftEntryIID, LogicalDatastoreType.CONFIGURATION);
+                .child(ServiceFunctionType.class, serviceFunctionType.getKey()).build();
+        ServiceFunctionType serviceFunctionTypeRead = SfcDataStoreAPI.readTransactionAPI(sftEntryIID,
+                LogicalDatastoreType.CONFIGURATION);
         assertEquals(serviceFunctionType, serviceFunctionTypeRead);
     }
 
@@ -64,22 +59,20 @@ public class SfcProviderServiceTypeAPITest extends AbstractDataStoreManager {
         SfName sfName = new SfName("SF1");
 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName)).setType(new SftTypeName("firewall"));
+        serviceFunctionBuilder.setName(sfName).setKey(new ServiceFunctionKey(sfName))
+                .setType(new SftTypeName("firewall"));
         ServiceFunction serviceFunction = serviceFunctionBuilder.build();
 
-        SftServiceFunctionNameKey sftServiceFunctionNameKey =
-                new SftServiceFunctionNameKey(sfName);
+        SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(sfName);
 
-        ServiceFunctionTypeKey serviceFunctionTypeKey =
-                new ServiceFunctionTypeKey(new ServiceFunctionTypeKey(new SftTypeName("firewall")));
+        ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(
+                new ServiceFunctionTypeKey(new SftTypeName("firewall")));
         InstanceIdentifier<SftServiceFunctionName> sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-            .child(ServiceFunctionType.class, serviceFunctionTypeKey)
-            .child(SftServiceFunctionName.class, sftServiceFunctionNameKey)
-            .build();
+                .child(ServiceFunctionType.class, serviceFunctionTypeKey)
+                .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
 
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-        sftServiceFunctionNameBuilder.setName(sfName)
-            .setKey(new SftServiceFunctionNameKey(sfName));
+        sftServiceFunctionNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameBuilder.build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sftentryIID, sftServiceFunctionName, LogicalDatastoreType.CONFIGURATION);

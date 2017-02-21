@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Ltd. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Ltd. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -81,7 +81,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         scheduler = new SfcServiceFunctionShortestPathSchedulerAPI();
         // build SFs
 
-        final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+        final List<String> locatorIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -97,7 +97,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
 
-        final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+        final List<String> managementIPAddresses = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -115,7 +115,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         final int PORT = 555;
 
-        final List<SfName> SF_NAMES = new ArrayList<SfName>() {
+        final List<SfName> serviceFunctionNames = new ArrayList<SfName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -131,7 +131,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
 
-        final List<SftTypeName> SF_TYPES = new ArrayList<SftTypeName>() {
+        final List<SftTypeName> serviceFunctionTypes = new ArrayList<SftTypeName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -148,24 +148,23 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         };
 
         PortNumber portNumber = new PortNumber(PORT);
-        for (int i = 0; i < SF_NAMES.size(); i++) {
-            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(i)));
-            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(i)));
+        for (int i = 0; i < serviceFunctionNames.size(); i++) {
+
+            IpAddress dplIpAddr = new IpAddress(new Ipv4Address(locatorIPAddresses.get(i)));
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(dplIpAddr).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
-                .setLocatorType(ipBuilder.build());
+            locatorBuilder.setName(new SfDataPlaneLocatorName(locatorIPAddresses.get(i)))
+                    .setLocatorType(ipBuilder.build());
             SfDataPlaneLocator sfDataPlaneLocator = locatorBuilder.build();
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator);
-            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(SF_NAMES.get(i)));
-            sfBuilder.setName(new SfName(SF_NAMES.get(i)))
-                .setKey(serviceFunctonKey)
-                .setType(SF_TYPES.get(i))
-                .setIpMgmtAddress(ipMgmtAddr)
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
+            ServiceFunctionKey serviceFunctonKey = new ServiceFunctionKey(new SfName(serviceFunctionNames.get(i)));
+            IpAddress ipMgmtAddr = new IpAddress(new Ipv4Address(managementIPAddresses.get(i)));
+            sfBuilder.setName(new SfName(serviceFunctionNames.get(i))).setKey(serviceFunctonKey)
+                    .setType(serviceFunctionTypes.get(i)).setIpMgmtAddress(ipMgmtAddr)
+                    .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
 
@@ -178,7 +177,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
 
         ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
         sfsBuilder.setServiceFunction(sfList);
-        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
 
         SfcName sfcName = new SfcName("ShortestPath-unittest-chain-1");
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
@@ -208,11 +208,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
-        sfChain = new ServiceFunctionChainBuilder().setName(sfcName)
-            .setKey(new ServiceFunctionChainKey(sfcName))
-            .setSfcServiceFunction(sfcServiceFunctionList)
-            .setSymmetric(false)
-            .build();
+        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+                .setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false).build();
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
@@ -223,9 +220,9 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         sfPath = serviceFunctionPathBuilder.build();
 
         // build SFFs
-        String[][] TO_SFF_NAMES = {{"SFF2", "SFF3"}, {"SFF3", "SFF1"}, {"SFF1", "SFF2"}};
+        final String[][] toSFFNames = { { "SFF2", "SFF3" }, { "SFF3", "SFF1" }, { "SFF1", "SFF2" } };
 
-        List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+        final List<SffName> sffNames = new ArrayList<SffName>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -235,7 +232,7 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
 
-        List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+        List<String> sffLocatorIPs = new ArrayList<String>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -245,13 +242,13 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             }
         };
 
-        for (int i = 0; i < SFF_NAMES.size(); i++) {
+        for (int i = 0; i < sffNames.size(); i++) {
             // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry =
-                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
+                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(toSFFNames[i][j]))
+                        .build();
                 sffDictionaryList.add(sffDictEntry);
             }
 
@@ -259,37 +256,33 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             for (int j = 0; j < 3; j++) {
                 ServiceFunction serviceFunction = sfList.get(i * 3 + j);
-                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder =
-                        new SffSfDataPlaneLocatorBuilder();
+                SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
                 sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
                 SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
                 ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
                 dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                    .setFailmode(Open.class)
-                    .setSffInterfaces(null);
+                        .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                        .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
                 ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
                 sfDictionaryList.add(sfDictEntry);
             }
 
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
+
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(555));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(sffLocatorIPs.get(i)))).setPort(new PortNumber(555));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
-                .setDataPlaneLocator(sffLocatorBuilder.build());
+            locatorBuilder.setName(new SffDataPlaneLocatorName(sffLocatorIPs.get(i)))
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
+                    .setDataPlaneLocator(sffLocatorBuilder.build());
+            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
-                .setSffDataPlaneLocator(locatorList)
-                .setServiceFunctionDictionary(sfDictionaryList)
-                .setConnectedSffDictionary(sffDictionaryList)
-                .setServiceNode(null);
+            sffBuilder.setName(new SffName(sffNames.get(i)))
+                    .setKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
+                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         }
@@ -324,8 +317,8 @@ public class SfcServiceFunctionShortestPathSchedulerAPITest extends AbstractData
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfChain.getSfcServiceFunction());
         for (SfcServiceFunction sfcServiceFunction : sfChain.getSfcServiceFunction()) {
             LOG.debug("sfcServiceFunction.name = {}", sfcServiceFunction.getName());
-            ServiceFunctionType serviceFunctionType =
-                    SfcProviderServiceTypeAPI.readServiceFunctionType(sfcServiceFunction.getType());
+            ServiceFunctionType serviceFunctionType = SfcProviderServiceTypeAPI
+                    .readServiceFunctionType(sfcServiceFunction.getType());
             assertNotNull("Must be not null", serviceFunctionType);
         }
 

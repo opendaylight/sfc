@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,10 @@
  */
 
 package org.opendaylight.sfc.provider.api;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
-    private List<ServiceFunction> sfList = new ArrayList<>();
+    private final List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before
     public void before() {
@@ -59,13 +60,13 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         for (ServiceFunction serviceFunction : sfList) {
 
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            // As per YANG model for service-chain, this name is NOT Service Function name hence
+            // As per YANG model for service-chain, this name is NOT Service
+            // Function name hence
             // still String
-            SfcServiceFunction sfcServiceFunction =
-                    sfcServiceFunctionBuilder.setName(serviceFunction.getName().getValue())
-                        .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
-                        .setType(serviceFunction.getType())
-                        .build();
+            SfcServiceFunction sfcServiceFunction = sfcServiceFunctionBuilder
+                    .setName(serviceFunction.getName().getValue())
+                    .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
+                    .setType(serviceFunction.getType()).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
@@ -86,11 +87,10 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         for (ServiceFunction serviceFunction : sfList) {
 
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction =
-                    sfcServiceFunctionBuilder.setName(serviceFunction.getName().getValue())
-                        .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
-                        .setType(serviceFunction.getType())
-                        .build();
+            SfcServiceFunction sfcServiceFunction = sfcServiceFunctionBuilder
+                    .setName(serviceFunction.getName().getValue())
+                    .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
+                    .setType(serviceFunction.getType()).build();
             sfcAllServiceFunctionList.add(sfcServiceFunction);
         }
 
@@ -102,32 +102,29 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         ServiceFunctionChain[] sfcArray = new ServiceFunctionChain[3];
 
         List<ServiceFunctionChain> sfcList = new ArrayList<>();
-        int i = 0;
+        int index = 0;
         for (SfcName name : sfcName) {
             List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-            int j = 0;
+            int index2 = 0;
             for (SfcServiceFunction sf : sfcAllServiceFunctionList) {
-                if (i != j) {
+                if (index != index2) {
                     sfcServiceFunctionList.add(sf);
                 }
-                j++;
+                index2++;
             }
             ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-            sfcArray[i] = sfcBuilder.setName(name)
-                .setKey(new ServiceFunctionChainKey(name))
-                .setSfcServiceFunction(sfcServiceFunctionList)
-                .setSymmetric(false)
-                .build();
-            sfcList.add(sfcArray[i]);
-            i++;
+            sfcArray[index] = sfcBuilder.setName(name).setKey(new ServiceFunctionChainKey(name))
+                    .setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false).build();
+            sfcList.add(sfcArray[index]);
+            index++;
         }
 
         ServiceFunctionChainsBuilder sfcsBuilder = new ServiceFunctionChainsBuilder();
         sfcsBuilder.setServiceFunctionChain(sfcList);
 
-        InstanceIdentifier<ServiceFunctionChains> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        InstanceIdentifier<ServiceFunctionChains> sfcsIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+                .build();
         SfcDataStoreAPI.writePutTransactionAPI(sfcsIID, sfcsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         final int INDEX_TO_READ = 1;
@@ -138,9 +135,9 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
     }
 
     /*
-     * create service function chains object with one chain, that chain contains one service
-     * function
-     * all these data are written into data store and then get back
+     * create service function chains object with one chain, that chain contains
+     * one service function all these data are written into data store and then
+     * get back
      */
     @Test
     public void testGetServiceFunctionChainsRef() {
@@ -157,9 +154,8 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
         // build service function chain
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
-        serviceFunctionChainBuilder.setName(sfcName)
-            .setKey(new ServiceFunctionChainKey(sfcName))
-            .setSfcServiceFunction(serviceFunctionList);
+        serviceFunctionChainBuilder.setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+                .setSfcServiceFunction(serviceFunctionList);
 
         // add chain to service function chains
         ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
@@ -168,8 +164,8 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         serviceFunctionChainsBuilder.setServiceFunctionChain(serviceFunctionChainList);
 
         // create instance identifier
-        InstanceIdentifier<ServiceFunctionChains> sfcIID =
-                InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        InstanceIdentifier<ServiceFunctionChains> sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
+                .build();
 
         // write chain to data store
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfcIID,
@@ -177,7 +173,8 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         assertTrue("Must be true", transactionSuccessful);
 
         // get service function chains
-        ServiceFunctionChains serviceFunctionChains = SfcDataStoreAPI.readTransactionAPI(InstanceIdentifier.builder(ServiceFunctionChains.class).build(), LogicalDatastoreType.CONFIGURATION);
+        ServiceFunctionChains serviceFunctionChains = SfcDataStoreAPI.readTransactionAPI(
+                InstanceIdentifier.builder(ServiceFunctionChains.class).build(), LogicalDatastoreType.CONFIGURATION);
         assertNotNull("Must not be null", serviceFunctionChains);
         assertEquals("Must be equal", serviceFunctionChains.getServiceFunctionChain().get(0).getName(), sfcName);
         assertEquals("Must be equal",
@@ -190,15 +187,14 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
     }
 
     /*
-     * create service function chains state object with one service function chain state containing
-     * service function path
-     * this object is put into data store, then get back and removed
+     * create service function chains state object with one service function
+     * chain state containing service function path this object is put into data
+     * store, then get back and removed
      */
     @Test
     public void testGetServiceFunctionChainsStateRef() {
         SfcName sfcName = new SfcName("SFC1");
         SfpName sfpName = new SfpName("SP1");
-        ServiceFunctionChainsStateBuilder serviceFunctionChainsStateBuilder = new ServiceFunctionChainsStateBuilder();
 
         // build service function path and add to list
         SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
@@ -210,17 +206,18 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         // create service function chain state with sfc path and add to list
         ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
         List<ServiceFunctionChainState> serviceFunctionChainStateList = new ArrayList<>();
-        serviceFunctionChainStateBuilder.setName(sfcName)
-            .setKey(new ServiceFunctionChainStateKey(sfcName))
-            .setSfcServicePath(sfcServicePathList);
+        serviceFunctionChainStateBuilder.setName(sfcName).setKey(new ServiceFunctionChainStateKey(sfcName))
+                .setSfcServicePath(sfcServicePathList);
         serviceFunctionChainStateList.add(serviceFunctionChainStateBuilder.build());
 
         // build service function chains state
+        ServiceFunctionChainsStateBuilder serviceFunctionChainsStateBuilder =
+                new ServiceFunctionChainsStateBuilder();
         serviceFunctionChainsStateBuilder.setServiceFunctionChainState(serviceFunctionChainStateList);
 
         // create instance identifier
-        InstanceIdentifier<ServiceFunctionChainsState> sfcsIID =
-                InstanceIdentifier.builder(ServiceFunctionChainsState.class).build();
+        InstanceIdentifier<ServiceFunctionChainsState> sfcsIID = InstanceIdentifier
+                .builder(ServiceFunctionChainsState.class).build();
 
         // write transaction
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfcsIID,
@@ -228,8 +225,8 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         assertTrue("Must be true", transactionSuccessful);
 
         // get data
-        ServiceFunctionChainsState serviceFunctionChainsState =
-                SfcDataStoreAPI.readTransactionAPI(InstanceIdentifier.builder(ServiceFunctionChainsState.class).build(), LogicalDatastoreType.OPERATIONAL);
+        ServiceFunctionChainsState serviceFunctionChainsState = SfcDataStoreAPI.readTransactionAPI(
+                InstanceIdentifier.builder(ServiceFunctionChainsState.class).build(), LogicalDatastoreType.OPERATIONAL);
         assertNotNull("Must not be null", serviceFunctionChainsState);
         assertEquals("Must be equal", serviceFunctionChainsState.getServiceFunctionChainState().get(0).getName(),
                 sfcName);
@@ -241,5 +238,4 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(sfcsIID, LogicalDatastoreType.OPERATIONAL);
         assertTrue("Must be true", transactionSuccessful);
     }
-
 }

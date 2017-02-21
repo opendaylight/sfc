@@ -68,10 +68,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wrapper around DataStore APIs. These methods take care of retries and callbacks
- * automatically.
+ * Wrapper around DataStore APIs. These methods take care of retries and
+ * callbacks automatically.
  *
  * <p>
+ *
  * @author Reinaldo Penno (rapenno@gmail.com)
  * @version 0.1
  * @since 2015-09-01
@@ -204,18 +205,15 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
-                .setLocatorType(ipBuilder.build())
-                .setServiceFunctionForwarder(new SffName(SFF_NAMES.get(i)));
+                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(new SffName(SFF_NAMES.get(i)));
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(SERVICE_FUNCTION_NAMES.get(i)))
-                .setKey(key[i])
-                .setType(SERVICE_FUNCTION_TYPES.get(i))
-                .setIpMgmtAddress(ipMgmtAddress[i])
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
+            sfBuilder.setName(new SfName(SERVICE_FUNCTION_NAMES.get(i))).setKey(key[i])
+                    .setType(SERVICE_FUNCTION_TYPES.get(i)).setIpMgmtAddress(ipMgmtAddress[i])
+                    .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
 
@@ -238,8 +236,8 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry =
-                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
+                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j]))
+                        .build();
                 sffDictionaryList.add(sffDictEntry);
             }
 
@@ -251,13 +249,10 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                .setFailmode(Open.class)
-                .setSffInterfaces(null);
+                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
-
 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(PORT.get(i)));
@@ -265,17 +260,15 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
-                .setDataPlaneLocator(sffLocatorBuilder.build());
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+                    .setDataPlaneLocator(sffLocatorBuilder.build());
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
-                .setSffDataPlaneLocator(locatorList)
-                .setServiceFunctionDictionary(sfDictionaryList)
-                .setConnectedSffDictionary(sffDictionaryList)
-                .setServiceNode(null);
+                    .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
+                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         }
@@ -287,9 +280,8 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
         for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i)))
-                .setType(SERVICE_FUNCTION_TYPES.get(i))
-                .build();
+                    .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(SERVICE_FUNCTION_TYPES.get(i))
+                    .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
@@ -313,9 +305,12 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
     }
 
     /**
-     * Initialize SF types, then delegate the rest of the initialization to init().
+     * Initialize SF types, then delegate the rest of the initialization to
+     * init().
      *
-     * @param isTypeBidirectional - flag indicating if the SF types should be bidirectional or not
+     * @param isTypeBidirectional
+     *            - flag indicating if the SF types should be bidirectional or
+     *            not
      */
     protected void initWithTypes(boolean isTypeBidirectional) {
         List<ServiceFunctionType> sfTypeList = new ArrayList<>();
@@ -331,8 +326,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
 
             // Create the SF type
             ServiceFunctionTypeBuilder sftBuilder = new ServiceFunctionTypeBuilder()
-                    .setType(SERVICE_FUNCTION_TYPES.get(i))
-                    .setSftServiceFunctionName(sftSfNames)
+                    .setType(SERVICE_FUNCTION_TYPES.get(i)).setSftServiceFunctionName(sftSfNames)
                     .setBidirectional(isTypeBidirectional);
             sfTypeList.add(sftBuilder.build());
         }
@@ -340,9 +334,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
         ServiceFunctionTypesBuilder sfTypesBuilder = new ServiceFunctionTypesBuilder();
         sfTypesBuilder.setServiceFunctionType(sfTypeList);
 
-        SfcDataStoreAPI.writePutTransactionAPI(
-                SfcInstanceIdentifiers.SFT_IID,
-                sfTypesBuilder.build(),
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SFT_IID, sfTypesBuilder.build(),
                 LogicalDatastoreType.CONFIGURATION);
 
         init();

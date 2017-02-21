@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -107,7 +107,8 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
                     // We remove the original SF from SF type list
                     SfcDatastoreCache.getSfToSfTypeCache().invalidate(originalServiceFunction.getName());
                     SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(originalServiceFunction);
-                    SfcDatastoreCache.getSfToSfTypeCache().put(updatedServiceFunction.getName(), updatedServiceFunction.getType().getValue());
+                    SfcDatastoreCache.getSfToSfTypeCache().put(updatedServiceFunction.getName(),
+                            updatedServiceFunction.getType().getValue());
                     // We create a independent entry
                     SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(updatedServiceFunction);
                 }
@@ -172,7 +173,6 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
     /**
      * Removes all the RSP in which the Service Function is referenced.
      *
-     * @param serviceFunction
      */
     private void deleteSfRsps(ServiceFunction sf) {
         /*

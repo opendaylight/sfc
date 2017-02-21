@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Contextream, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Contextream, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -58,14 +58,16 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         setupSfc();
 
         Ip dummyIp = SimpleTestEntityBuilder.buildLocatorTypeIp(new IpAddress(new Ipv4Address("5.5.5.5")), 555);
-        SfDataPlaneLocator dummyLocator =
-                SimpleTestEntityBuilder.buildSfDataPlaneLocator(new SfDataPlaneLocatorName("moscow-5.5.5.5:555-vxlan"),
-                        dummyIp, new SffName("sff-moscow"), VxlanGpe.class);
+        SfDataPlaneLocator dummyLocator = SimpleTestEntityBuilder.buildSfDataPlaneLocator(
+                new SfDataPlaneLocatorName("moscow-5.5.5.5:555-vxlan"), dummyIp, new SffName("sff-moscow"),
+                VxlanGpe.class);
 
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_101"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.100.101")), dummyLocator, Boolean.FALSE));
-        sfList.add(SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_102"), new SftTypeName("firewall"),
-                new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_101"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.100.101")), dummyLocator, Boolean.FALSE));
+        sfList.add(
+                SimpleTestEntityBuilder.buildServiceFunction(new SfName("simple_fw_102"), new SftTypeName("firewall"),
+                        new IpAddress(new Ipv4Address("192.168.100.102")), dummyLocator, Boolean.FALSE));
     }
 
     @Test
@@ -79,8 +81,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         SfcProviderServiceFunctionGroupAlgAPI.putServiceFunctionGroupAlgorithm(sfgAlg);
 
         // Read:
-        ServiceFunctionGroupAlgorithm sfgAlg2 =
-                SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlg(sfgAlgName);
+        ServiceFunctionGroupAlgorithm sfgAlg2 = SfcProviderServiceFunctionGroupAlgAPI
+                .readServiceFunctionGroupAlg(sfgAlgName);
 
         assertNotNull("Must be not null", sfgAlg2);
         assertEquals("Must be equal", sfgAlg2.getName(), sfgAlgName);
@@ -88,7 +90,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         // Delete:
         SfcProviderServiceFunctionGroupAlgAPI.deleteServiceFunctionGroupAlgorithm(sfgAlgName);
         sfgAlg2 = SfcProviderServiceFunctionGroupAlgAPI.readServiceFunctionGroupAlgorithm(sfgAlgName);
-        assertNull("Must be null", sfgAlg2); // TODO: test passes locally but fails on Jenkins
+        assertNull("Must be null", sfgAlg2); // TODO: test passes locally but
+                                                // fails on Jenkins
     }
 
     @Test
@@ -96,8 +99,10 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
-        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking that the algorithm
-                                                                 // exists
+        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking
+                                                                    // that the
+                                                                    // algorithm
+                                                                    // exists
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Put:
@@ -123,8 +128,10 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
 
         // Create:
         String sfgName = "testServiceFunctionGroup";
-        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking that the algorithm
-                                                                 // exists
+        String sfgAlgName = "testServiceFunctionGroupAlgorithm"; // Not checking
+                                                                    // that the
+                                                                    // algorithm
+                                                                    // exists
         ServiceFunctionGroup sfg = SimpleTestEntityBuilder.buildServiceFunctionGroup(sfgName, sfgAlgName);
 
         // Add Service Function:
@@ -138,7 +145,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
     }
 
     /*
-     * Create two service function groups with different types, then read an delete them
+     * Create two service function groups with different types, then read an
+     * delete them
      */
     @Test
     public void testPutGetDeleteServiceFunctionGroup() {
@@ -147,8 +155,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionGroupsBuilder serviceFunctionGroupsBuilder = new ServiceFunctionGroupsBuilder();
         serviceFunctionGroupsBuilder.setServiceFunctionGroup(createServiceFunctionGroupList());
 
-        InstanceIdentifier<ServiceFunctionGroups> sfgIID =
-                InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
+        InstanceIdentifier<ServiceFunctionGroups> sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
+                .build();
 
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfgIID,
                 serviceFunctionGroupsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
@@ -156,8 +164,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         assertTrue("Must be true", transactionSuccessful);
 
         // get service function by type
-        ServiceFunctionGroup serviceFunctionGroup =
-                SfcProviderServiceFunctionGroupAPI.getServiceFunctionGroupByType(new SftTypeName("firewall"));
+        ServiceFunctionGroup serviceFunctionGroup = SfcProviderServiceFunctionGroupAPI
+                .getServiceFunctionGroupByType(new SftTypeName("firewall"));
 
         assertNotNull("Must be not null", serviceFunctionGroup);
         assertEquals("Must be equal", serviceFunctionGroup.getIpMgmtAddress().getIpv4Address().getValue(),
@@ -201,8 +209,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionGroupsBuilder serviceFunctionGroupsBuilder = new ServiceFunctionGroupsBuilder();
         serviceFunctionGroupsBuilder.setServiceFunctionGroup(createServiceFunctionGroupList());
 
-        InstanceIdentifier<ServiceFunctionGroups> sfgIID =
-                InstanceIdentifier.builder(ServiceFunctionGroups.class).build();
+        InstanceIdentifier<ServiceFunctionGroups> sfgIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
+                .build();
 
         boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(sfgIID,
                 serviceFunctionGroupsBuilder.build(), LogicalDatastoreType.CONFIGURATION);
@@ -213,8 +221,8 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
         serviceFunctionChainBuilder.setSfcServiceFunction(createSfcServiceFunctionList());
 
-        List<String> sfgNameList =
-                SfcProviderServiceFunctionGroupAPI.getSfgNameList(serviceFunctionChainBuilder.build());
+        List<String> sfgNameList = SfcProviderServiceFunctionGroupAPI
+                .getSfgNameList(serviceFunctionChainBuilder.build());
 
         assertNotNull("Must be not null", sfgNameList);
         assertEquals("Must be equal", sfgNameList.toString(), "[" + SFG_NAME + 1 + ", " + SFG_NAME + 2 + "]");
@@ -227,21 +235,15 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
 
         // ip v4 group
-        serviceFunctionGroupBuilder.setName(SFG_NAME + 1)
-            .setKey(new ServiceFunctionGroupKey(SFG_NAME + 1))
-            .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_V4_ADDRESS)))
-            .setAlgorithm(ALGORITHM + 1)
-            .setGroupId(100L)
-            .setType(new SftTypeName("firewall"));
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 1).setKey(new ServiceFunctionGroupKey(SFG_NAME + 1))
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_V4_ADDRESS))).setAlgorithm(ALGORITHM + 1)
+                .setGroupId(100L).setType(new SftTypeName("firewall"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
 
         // ipv6 group
-        serviceFunctionGroupBuilder.setName(SFG_NAME + 2)
-            .setKey(new ServiceFunctionGroupKey(SFG_NAME + 2))
-            .setIpMgmtAddress(new IpAddress(new Ipv6Address(IP_V6_ADDRESS)))
-            .setAlgorithm(ALGORITHM + 2)
-            .setGroupId(101L)
-            .setType(new SftTypeName("dpi"));
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 2).setKey(new ServiceFunctionGroupKey(SFG_NAME + 2))
+                .setIpMgmtAddress(new IpAddress(new Ipv6Address(IP_V6_ADDRESS))).setAlgorithm(ALGORITHM + 2)
+                .setGroupId(101L).setType(new SftTypeName("dpi"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
 
         return serviceFunctionGroupList;
@@ -253,20 +255,19 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
         // first entry
-        // XXX Note SFC YANG model says that this Service Function Name IS NOT the name of a Service
+        // XXX Note SFC YANG model says that this Service Function Name IS NOT
+        // the name of a Service
         // Function, so
         // not sure exactly what this is testing.
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue())
-            .setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
-            .setType(new SftTypeName("firewall"));
+        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
+                .setType(new SftTypeName("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         // second entry
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue())
-            .setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
-            .setType(new SftTypeName("dpi"));
+        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
+                .setType(new SftTypeName("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         return sfcServiceFunctionList;

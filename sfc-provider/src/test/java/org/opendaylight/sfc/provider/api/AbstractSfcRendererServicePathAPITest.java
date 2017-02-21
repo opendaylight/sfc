@@ -143,6 +143,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
     protected static final SfcName SFC_NAME = new SfcName("unittest-chain-1");
     protected static final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
     protected static final RspName RSP_NAME = new RspName("unittest-rsp-1");
+    protected static final RspName RSP2_NAME = new RspName("unittest-rsp-2");
 
     @SuppressWarnings("serial")
     protected static final List<SfName> SERVICE_FUNCTION_NAMES = new ArrayList<SfName>() {
@@ -188,9 +189,7 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
 
     // auxiliary method
 
-    protected void init() {
-        setupSfc();
-        // Create Service Functions
+    protected void initSfs() {
         final IpAddress[] ipMgmtAddress = new IpAddress[SERVICE_FUNCTION_NAMES.size()];
         final IpAddress[] locatorIpAddress = new IpAddress[SERVICE_FUNCTION_NAMES.size()];
         SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[SERVICE_FUNCTION_NAMES.size()];
@@ -229,8 +228,50 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
             assertTrue("Must be true", ret);
         }
+    }
 
-        // Create Service Function Forwarders
+    protected void initSfsOneChainOnly(boolean oneChainOnly) {
+        final IpAddress[] ipMgmtAddress = new IpAddress[SERVICE_FUNCTION_NAMES.size()];
+        final IpAddress[] locatorIpAddress = new IpAddress[SERVICE_FUNCTION_NAMES.size()];
+        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[SERVICE_FUNCTION_NAMES.size()];
+        ServiceFunctionKey[] key = new ServiceFunctionKey[SERVICE_FUNCTION_NAMES.size()];
+        for (int i = 0; i < SERVICE_FUNCTION_NAMES.size(); i++) {
+            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
+            locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
+            PortNumber portNumber = new PortNumber(PORT.get(i));
+            key[i] = new ServiceFunctionKey(new SfName(SERVICE_FUNCTION_NAMES.get(i)));
+
+            IpBuilder ipBuilder = new IpBuilder();
+            ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
+            SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
+                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(new SffName(SFF_NAMES.get(i)));
+            sfDataPlaneLocator[i] = locatorBuilder.build();
+
+            ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
+            List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
+            dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
+            sfBuilder.setName(new SfName(SERVICE_FUNCTION_NAMES.get(i))).setKey(key[i])
+                    .setType(SERVICE_FUNCTION_TYPES.get(i)).setIpMgmtAddress(ipMgmtAddress[i])
+                    .setSfDataPlaneLocator(dataPlaneLocatorList).setOneChainOnly(oneChainOnly);
+            sfList.add(sfBuilder.build());
+        }
+
+        ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
+        sfsBuilder.setServiceFunction(sfList);
+
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
+
+        // Create ServiceFunctionTypeEntry for all ServiceFunctions
+        for (ServiceFunction serviceFunction : sfList) {
+            boolean ret = SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction);
+            LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
+            assertTrue("Must be true", ret);
+        }
+    }
+
+    protected void initSffs() {
         for (int i = 0; i < SFF_NAMES.size(); i++) {
             // ServiceFunctionForwarders connected to SFF_NAMES[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
@@ -272,8 +313,9 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
             ServiceFunctionForwarder sff = sffBuilder.build();
             SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
         }
+    }
 
-        // Create Service Function Chain
+    protected void initSfcs() {
         ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
@@ -294,14 +336,30 @@ public abstract class AbstractSfcRendererServicePathAPITest extends AbstractData
 
         assertNotNull("Must be not null", sfc2);
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfcServiceFunctionList);
+    }
 
-        /* Create ServiceFunctionPath */
+    protected void initSfps() {
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(SFP_NAME).setServiceChainName(SFC_NAME).setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         boolean ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
         assertTrue("Must be true", ret);
+    }
+
+    protected void init() {
+        setupSfc();
+        // Create Service Functions
+        initSfs();
+
+        // Create Service Function Forwarders
+        initSffs();
+
+        // Create Service Function Chain
+        initSfcs();
+
+        /* Create ServiceFunctionPath */
+        initSfps();
     }
 
     /**

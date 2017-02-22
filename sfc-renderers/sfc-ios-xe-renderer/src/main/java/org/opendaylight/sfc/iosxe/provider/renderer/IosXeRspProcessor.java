@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,13 @@
  */
 
 package org.opendaylight.sfc.iosxe.provider.renderer;
+
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Failure;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.InProgress;
+import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Success;
 
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -43,13 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
-import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Failure;
-import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.InProgress;
-import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Success;
-
 public class IosXeRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(IosXeRspProcessor.class);
@@ -72,31 +72,32 @@ public class IosXeRspProcessor {
 
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
-        Short serviceIndex = renderedServicePath.getStartingIndex();
+
         DataBroker previousMountPoint;
         DataBroker currentMountpoint;
         SffName previousSffName;
         SffName currentSffName;
-        if (renderedServicePath.getRenderedServicePathHop() == null ||
-                renderedServicePath.getRenderedServicePathHop().isEmpty()) {
+        if (renderedServicePath.getRenderedServicePathHop() == null
+                || renderedServicePath.getRenderedServicePathHop().isEmpty()) {
             LOG.warn("Rendered path {} does not contain any hop", renderedServicePath.getName().getValue());
             status.writeStatus(Failure);
             return;
         }
-        Iterator<RenderedServicePathHop> rspHopIterator = renderedServicePath.getRenderedServicePathHop()
-                .iterator();
-        // Proceed first hop in Rsp. Service Type choice for first hop is always Service Function
+        Iterator<RenderedServicePathHop> rspHopIterator = renderedServicePath.getRenderedServicePathHop().iterator();
+        // Proceed first hop in Rsp. Service Type choice for first hop is always
+        // Service Function
         RenderedServicePathHop hop = rspHopIterator.next();
         currentSffName = hop.getServiceFunctionForwarder();
         currentMountpoint = getSffMountpoint(currentSffName);
         if (currentMountpoint == null) {
-            LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
-                    .getValue(), currentSffName.getValue());
+            LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null",
+                    renderedServicePath.getName().getValue(), currentSffName.getValue());
             deleteRsp(renderedServicePath);
             status.writeStatus(Failure);
             return;
         }
-        // New list of services has to be created every time new mountpoint is created
+        // New list of services has to be created every time new mountpoint is
+        // created
         List<Services> services = new ArrayList<>();
         SfName sfName = hop.getServiceFunctionName();
         ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
@@ -105,6 +106,7 @@ public class IosXeRspProcessor {
             return;
         }
         ServiceTypeChoice serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
+        Short serviceIndex = renderedServicePath.getStartingIndex();
         Services serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
         services.add(serviceEntry);
         serviceIndex--;
@@ -126,13 +128,14 @@ public class IosXeRspProcessor {
                 services.add(serviceEntry);
                 serviceIndex--;
             } else {
-                // Next hop SF is on different node. Store previous SFF and its mountpoint
+                // Next hop SF is on different node. Store previous SFF and its
+                // mountpoint
                 previousMountPoint = currentMountpoint;
                 currentSffName = hop.getServiceFunctionForwarder();
                 currentMountpoint = getSffMountpoint(currentSffName);
                 if (currentMountpoint == null) {
-                    LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null", renderedServicePath.getName()
-                            .getValue(), currentSffName.getValue());
+                    LOG.error("Resolving of RSP {} failed, mountpoint for SFF {} is null",
+                            renderedServicePath.getName().getValue(), currentSffName.getValue());
                     deleteRsp(renderedServicePath);
                     status.writeStatus(Failure);
                     return;
@@ -147,14 +150,16 @@ public class IosXeRspProcessor {
                 }
                 new IosXeDataStoreAPI(previousMountPoint, currentRemoteForwarder, WRITE_REMOTE,
                         LogicalDatastoreType.CONFIGURATION).call();
-                // Create last service entry to previous node which sends traffic to current node
+                // Create last service entry to previous node which sends
+                // traffic to current node
                 serviceTypeChoice = buildServiceFunctionForwarderChoice(currentSffName.getValue());
                 serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
                 services.add(serviceEntry);
-                // List of services completed for last mountpoint, create service path entries and write it
+                // List of services completed for last mountpoint, create
+                // service path entries and write it
                 ServicePath servicePath = createServicePath(pathId, services);
-                new IosXeDataStoreAPI(previousMountPoint, servicePath, WRITE_PATH,
-                        LogicalDatastoreType.CONFIGURATION).call();
+                new IosXeDataStoreAPI(previousMountPoint, servicePath, WRITE_PATH, LogicalDatastoreType.CONFIGURATION)
+                        .call();
                 // Start with new services list
                 services = new ArrayList<>();
                 sfName = hop.getServiceFunctionName();
@@ -169,12 +174,14 @@ public class IosXeRspProcessor {
                 serviceIndex--;
             }
         }
-        // Proceed last entry (it's the same hop as the previous one using same mountpoint and list of services)
+        // Proceed last entry (it's the same hop as the previous one using same
+        // mountpoint and list of services)
         // Service Type choice is always Terminate
         serviceTypeChoice = buildTerminateChoice();
         serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
         services.add(serviceEntry);
-        // List of services completed for last mountpoint, create last service path entries and write it
+        // List of services completed for last mountpoint, create last service
+        // path entries and write it
         ServicePath servicePath = createServicePath(pathId, services);
         new IosXeDataStoreAPI(currentMountpoint, servicePath, WRITE_PATH, LogicalDatastoreType.CONFIGURATION).call();
         LOG.info("Rendered service path {} successfully processed", renderedServicePath.getName().getValue());
@@ -228,24 +235,22 @@ public class IosXeRspProcessor {
         pathModeBuilder.setServiceIndex(serviceIndexBuilder.build());
         // Service Path
         ServicePathBuilder servicePathBuilder = new ServicePathBuilder();
-        servicePathBuilder.setKey(new ServicePathKey(pathId))
-                .setServicePathId(pathId)
+        servicePathBuilder.setKey(new ServicePathKey(pathId)).setServicePathId(pathId)
                 .setConfigServiceChainPathMode(pathModeBuilder.build());
         return servicePathBuilder.build();
     }
 
     private Services createServicesEntry(short index, ServiceTypeChoice choice) {
         ServicesBuilder servicesBuilder = new ServicesBuilder();
-        servicesBuilder.setKey(new ServicesKey(index))
-                .setServiceIndexId(index)
-                .setServiceTypeChoice(choice);
+        servicesBuilder.setKey(new ServicesKey(index)).setServiceIndexId(index).setServiceTypeChoice(choice);
         return servicesBuilder.build();
     }
 
     private DataBroker getSffMountpoint(SffName sffName) {
         // Read SFF from Controller CONF
-        org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder sfcForwarder =
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+        org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701
+            .service.function.forwarders.ServiceFunctionForwarder sfcForwarder = SfcProviderServiceForwarderAPI
+                .readServiceFunctionForwarder(sffName);
         if (sfcForwarder == null) {
             LOG.error("SFF name {} not found in data store", sffName.getValue());
             return null;
@@ -255,8 +260,8 @@ public class IosXeRspProcessor {
             LOG.error("Unable to obtain management IP for SFF {}", sffName.getValue());
             return null;
         }
-        return nodeManager.getMountpointFromIpAddress(new IpAddress(new Ipv4Address(sffMgmtIp.getIpv4Address()
-                .getValue())));
+        return nodeManager
+                .getMountpointFromIpAddress(new IpAddress(new Ipv4Address(sffMgmtIp.getIpv4Address().getValue())));
     }
 
     public void unregisterRspListener() {

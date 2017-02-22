@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -21,8 +21,8 @@ import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.sfc.iosxe.provider.listener.NodeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
+import org.opendaylight.sfc.iosxe.provider.listener.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
@@ -90,11 +90,13 @@ public class NodeManager implements BindingAwareProvider {
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
         NodeId netconfNodeId = node.getNodeId();
         switch (connectionStatus) {
-            case Connected: {
+            case Connected:
                 connectedNodes.remove(netconfNodeId);
                 activeMountPoints.remove(netconfNodeId);
                 LOG.info("Netconf node {} removed", netconfNodeId.getValue());
-            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -105,11 +107,8 @@ public class NodeManager implements BindingAwareProvider {
             return false;
         }
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
-        return capabilities != null &&
-                capabilities.getAvailableCapability().stream()
-                        .map(AvailableCapability::getCapability)
-                        .collect(Collectors.toList())
-                        .containsAll(requiredCapabilities);
+        return capabilities != null && capabilities.getAvailableCapability().stream()
+                .map(AvailableCapability::getCapability).collect(Collectors.toList()).containsAll(requiredCapabilities);
     }
 
     private DataBroker getNetconfNodeDataBroker(InstanceIdentifier mountPointIid) {
@@ -144,8 +143,8 @@ public class NodeManager implements BindingAwareProvider {
         final String tailfMetaExtension = "(http://tail-f.com/yang/common?revision=2013-11-07)tailf-meta-extensions";
         final String ietfYangTypes = "(urn:ietf:params:xml:ns:yang:ietf-yang-types?revision=2013-07-15)ietf-yang-types";
         final String ietfInetTypes = "(urn:ietf:params:xml:ns:yang:ietf-inet-types?revision=2013-07-15)ietf-inet-types";
-        String capabilityEntries[] = {ned, tailfCommon, tailfCliExtension, tailfMetaExtension, ietfYangTypes,
-                ietfInetTypes};
+        String[] capabilityEntries = { ned, tailfCommon, tailfCliExtension, tailfMetaExtension, ietfYangTypes,
+                                       ietfInetTypes };
         return Arrays.asList(capabilityEntries);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -35,26 +35,29 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.forwarder.ServiceFfNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
 public class SfcIosXeUtils {
 
     private static final String REMOTE = "Remote forwarder: ";
 
     /**
-     * Creates local service function forwarder {@link ServiceFunctionForwarder} with respective IP address. Local
-     * forwarder does not contain name, only IP address. Supports only IPv4
+     * Creates local service function forwarder {@link ServiceFunctionForwarder}
+     * with respective IP address. Local forwarder does not contain name, only
+     * IP address. Supports only IPv4
      *
-     * @param ipAddress which will be set on service function forwarder
-     * @return service function forwarder object for ios-xe device which contains {@link Local} SFF. Null if parameter
-     * is not an IPv4 address
+     * @param ipAddress
+     *            which will be set on service function forwarder
+     * @return service function forwarder object for ios-xe device which
+     *         contains {@link Local} SFF. Null if parameter is not an IPv4
+     *         address
      */
-    public static org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder createLocalForwarder(
-            IpAddress ipAddress) {
+    public static org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service
+        .chain.ServiceFunctionForwarder createLocalForwarder(IpAddress ipAddress) {
         if (ipAddress != null && ipAddress.getIpv4Address() != null) {
             // Ip address
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setAddress(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(ipAddress
-                    .getIpv4Address().getValue()));
+            ipBuilder.setAddress(
+                    new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(
+                            ipAddress.getIpv4Address().getValue()));
             LocalBuilder localBuilder = new LocalBuilder();
             localBuilder.setIp(ipBuilder.build());
 
@@ -66,15 +69,19 @@ public class SfcIosXeUtils {
     }
 
     /**
-     * Creates remote service function forwarder (ios-xe SFC entity) {@link ServiceFfName}. Using name of the original
-     * entity, whole SFF configuration is read from ODL CONF data store. This configuration is used to
-     * build remote service function forwarder
+     * Creates remote service function forwarder (ios-xe SFC entity)
+     * {@link ServiceFfName}. Using name of the original entity, whole SFF
+     * configuration is read from ODL CONF data store. This configuration is
+     * used to build remote service function forwarder
      *
-     * @param sffName name of the service function forwarder
-     * @return remote SFF (ios-xe SFC entity), null if SFF does not contain data plane locator with IP locator type
+     * @param sffName
+     *            name of the service function forwarder
+     * @return remote SFF (ios-xe SFC entity), null if SFF does not contain data
+     *         plane locator with IP locator type
      */
     public static ServiceFfName createRemoteForwarder(SffName sffName) {
-        // Actually, local forwarder is without name. As a parameter, use SffName of appropriate sfc forwarder
+        // Actually, local forwarder is without name. As a parameter, use
+        // SffName of appropriate sfc forwarder
         ServiceFunctionForwarder sfcForwarder = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
         if (sfcForwarder == null) {
             return null;
@@ -91,19 +98,20 @@ public class SfcIosXeUtils {
             return null;
         }
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setAddress(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(sffIp.getValue()));
+        ipBuilder.setAddress(
+                new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(
+                        sffIp.getValue()));
         ServiceFfNameBuilder ffNameBuilder = new ServiceFfNameBuilder();
-        ffNameBuilder.setKey(new ServiceFfNameKey(sffName.getValue()))
-                .setName(sffName.getValue())
-                .setIp(ipBuilder.build())
-                .setDescription(REMOTE + sffName.getValue());
+        ffNameBuilder.setKey(new ServiceFfNameKey(sffName.getValue())).setName(sffName.getValue())
+                .setIp(ipBuilder.build()).setDescription(REMOTE + sffName.getValue());
         return ffNameBuilder.build();
     }
 
     /**
-     * From the set of data plane locators, choose the one with IP locator type
+     * From the set of data plane locators, choose the one with IP locator type.
      *
-     * @param dataPlaneLocators set of locators
+     * @param dataPlaneLocators
+     *            set of locators
      * @return first DPL with IP locator type, null if no such locator is found
      */
     public static SfDataPlaneLocator getDplWithIpLocatorType(List<SfDataPlaneLocator> dataPlaneLocators) {
@@ -120,65 +128,61 @@ public class SfcIosXeUtils {
     }
 
     /**
-     * Creates instance identifier for {@link Local} service function forwarder. This IID does not include any key.
-     * Every ios-xe device can contain just one local SFF, that means there is one Local SFF for mountpoint
+     * Creates instance identifier for {@link Local} service function forwarder.
+     * This IID does not include any key. Every ios-xe device can contain just
+     * one local SFF, that means there is one Local SFF for mountpoint
      *
      * @return IID of the Local SFF
      */
     public static InstanceIdentifier<Local> createLocalSffIid() {
-        return InstanceIdentifier.builder(Native.class)
-                .child(ServiceChain.class)
-                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
-                .child(Local.class).build();
+        return InstanceIdentifier.builder(Native.class).child(ServiceChain.class)
+                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service
+                        .chain.ServiceFunctionForwarder.class).child(Local.class).build();
     }
 
     /**
-     * Creates instance identifier for {@link ServiceFfName} service function forwarder. Particular key is created using
-     * {@link ServiceFfName} object
+     * Creates instance identifier for {@link ServiceFfName} service function
+     * forwarder. Particular key is created using {@link ServiceFfName} object
      *
      * @return IID of the remote SFF
      */
     public static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull ServiceFfName sffName) {
-        return InstanceIdentifier.builder(Native.class)
-                .child(ServiceChain.class)
-                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
-                .child(ServiceFfName.class, new ServiceFfNameKey(sffName.getName())).build();
+        return InstanceIdentifier.builder(Native.class).child(ServiceChain.class)
+                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service
+                        .chain.ServiceFunctionForwarder.class).child(ServiceFfName.class,
+                                new ServiceFfNameKey(sffName.getName())).build();
     }
 
     /**
-     * Creates instance identifier for {@link ServiceFfName} service function forwarder. Particular key is created using
-     * {@link SffName} object
+     * Creates instance identifier for {@link ServiceFfName} service function
+     * forwarder. Particular key is created using {@link SffName} object
      *
      * @return IID of the remote SFF
      */
     public static InstanceIdentifier<ServiceFfName> createRemoteSffIid(@Nonnull SffName sffName) {
-        return InstanceIdentifier.builder(Native.class)
-                .child(ServiceChain.class)
-                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder.class)
-                .child(ServiceFfName.class, new ServiceFfNameKey(sffName.getValue())).build();
+        return InstanceIdentifier.builder(Native.class).child(ServiceChain.class)
+                .child(org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service
+                        .chain.ServiceFunctionForwarder.class).child(ServiceFfName.class,
+                                new ServiceFfNameKey(sffName.getValue())).build();
     }
 
     /**
-     * Creates instance identifier for {@link ServiceFunction}
+     * Creates instance identifier for {@link ServiceFunction}.
      *
      * @return IID of the SF
      */
     public static InstanceIdentifier<ServiceFunction> createSfIid(@Nonnull ServiceFunctionKey key) {
-        return InstanceIdentifier.builder(Native.class)
-                .child(ServiceChain.class)
-                .child(ServiceFunction.class, key)
+        return InstanceIdentifier.builder(Native.class).child(ServiceChain.class).child(ServiceFunction.class, key)
                 .build();
     }
 
     /**
-     * Creates instance identifier for {@link ServicePath}
+     * Creates instance identifier for {@link ServicePath}.
      *
      * @return IID of the SP
      */
     public static InstanceIdentifier<ServicePath> createServicePathIid(@Nonnull ServicePathKey key) {
-        return InstanceIdentifier.builder(Native.class)
-                .child(ServiceChain.class)
-                .child(ServicePath.class, key).build();
+        return InstanceIdentifier.builder(Native.class).child(ServiceChain.class).child(ServicePath.class, key).build();
     }
 
 }

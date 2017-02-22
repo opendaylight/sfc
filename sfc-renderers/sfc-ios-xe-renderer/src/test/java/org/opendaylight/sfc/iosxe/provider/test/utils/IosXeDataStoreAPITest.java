@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,21 @@
  */
 
 package org.opendaylight.sfc.iosxe.provider.test.utils;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_REMOTE;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_LOCAL;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_REMOTE;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,26 +48,11 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.forwarder.ServiceFfNameKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.ConfigServiceChainPathModeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.config.service.chain.path.mode.ServiceIndexBuilder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_REMOTE;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_REMOTE;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
-
 
 public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
-    private final String REMOTE_FORWARDER = "remote-forwarder";
-    private final String SERVICE_NAME = "service-function";
+    private static final String REMOTE_FORWARDER = "remote-forwarder";
+    private static final String SERVICE_NAME = "service-function";
     private IosXeDataStoreAPI iosXeDataStoreAPI;
     private DataBroker mountpoint;
 
@@ -60,7 +60,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     public void init() {
         // Initialize datastore
         mountpoint = getDataBroker();
-        //odl.setDataProvider(mountpoint);
+        // odl.setDataProvider(mountpoint);
     }
 
     @Test
@@ -79,8 +79,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
         // Read empty datastore
         ServiceFunction function = (ServiceFunction) iosXeDataStoreAPI.call();
         assertNull(function);
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_FUNCTION,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
         // Write service function
         Boolean result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
@@ -94,8 +93,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     @Test
     public void deleteServiceFunction() {
         ServiceFunction data = buildTestServiceFunction();
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_FUNCTION,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
         // Put service function
         boolean result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
@@ -127,16 +125,13 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     @Test
     public void readLocalServiceForwarder() {
         Local data = buildLocalServiceForwarder();
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL, LogicalDatastoreType.CONFIGURATION);
         Local forwarder = (Local) iosXeDataStoreAPI.call();
         assertNull(forwarder);
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
         Boolean result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL, LogicalDatastoreType.CONFIGURATION);
         forwarder = (Local) iosXeDataStoreAPI.call();
         assertEquals(buildLocalServiceForwarder(), forwarder);
     }
@@ -144,23 +139,19 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     @Test
     public void deleteLocalServiceForwarder() {
         Local data = buildLocalServiceForwarder();
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
         // Put service function
         boolean result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL, LogicalDatastoreType.CONFIGURATION);
         // Read it
         Local forwarder = (Local) iosXeDataStoreAPI.call();
         assertEquals(buildLocalServiceForwarder(), forwarder);
         // Remove
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, DELETE_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, DELETE_LOCAL, LogicalDatastoreType.CONFIGURATION);
         result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, null, READ_LOCAL, LogicalDatastoreType.CONFIGURATION);
         // Read again, should be null
         forwarder = (Local) iosXeDataStoreAPI.call();
         assertNull(forwarder);
@@ -193,8 +184,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     @Test
     public void deleteRemoteServiceForwarder() {
         ServiceFfName data = buildRemoteServiceForwarder();
-        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_REMOTE,
-                LogicalDatastoreType.CONFIGURATION);
+        iosXeDataStoreAPI = new IosXeDataStoreAPI(mountpoint, data, WRITE_REMOTE, LogicalDatastoreType.CONFIGURATION);
         // Put service function
         boolean result = (boolean) iosXeDataStoreAPI.call();
         assertTrue(result);
@@ -233,25 +223,24 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
         sfModeBuilder.setIp(new IpBuilder().setAddress(new Ipv4Address("10.0.0.1")).build())
                 .setEncapsulation(new EncapsulationBuilder().setNone(true).build());
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(SERVICE_NAME)
-                .setKey(new ServiceFunctionKey(SERVICE_NAME))
+        serviceFunctionBuilder.setName(SERVICE_NAME).setKey(new ServiceFunctionKey(SERVICE_NAME))
                 .setConfigServiceChainSfMode(sfModeBuilder.build());
         return serviceFunctionBuilder.build();
     }
 
     private Local buildLocalServiceForwarder() {
         LocalBuilder localBuilder = new LocalBuilder();
-        localBuilder.setIp(new org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.config.service.chain.grouping.IpBuilder()
-                .setAddress(new Ipv4Address("100.0.0.1")).build());
+        localBuilder
+                .setIp(new org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.config
+                        .service.chain.grouping.IpBuilder().setAddress(new Ipv4Address("100.0.0.1")).build());
         return localBuilder.build();
     }
 
     private ServiceFfName buildRemoteServiceForwarder() {
         ServiceFfNameBuilder serviceFfNameBuilder = new ServiceFfNameBuilder();
-        serviceFfNameBuilder.setName(REMOTE_FORWARDER)
-                .setKey(new ServiceFfNameKey(REMOTE_FORWARDER))
-                .setIp(new org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.config.service.chain.grouping.IpBuilder()
-                        .setAddress(new Ipv4Address("200.0.0.1")).build());
+        serviceFfNameBuilder.setName(REMOTE_FORWARDER).setKey(new ServiceFfNameKey(REMOTE_FORWARDER))
+                .setIp(new org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.config
+                        .service.chain.grouping.IpBuilder().setAddress(new Ipv4Address("200.0.0.1")).build());
         return serviceFfNameBuilder.build();
     }
 
@@ -259,38 +248,8 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
         ConfigServiceChainPathModeBuilder configServiceChainPathModeBuilder = new ConfigServiceChainPathModeBuilder();
         configServiceChainPathModeBuilder.setServiceIndex(new ServiceIndexBuilder().build());
         ServicePathBuilder servicePathBuilder = new ServicePathBuilder();
-        servicePathBuilder.setKey(new ServicePathKey(1L))
-                .setServicePathId(1L)
+        servicePathBuilder.setKey(new ServicePathKey(1L)).setServicePathId(1L)
                 .setConfigServiceChainPathMode(configServiceChainPathModeBuilder.build());
         return servicePathBuilder.build();
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

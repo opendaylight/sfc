@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -41,11 +41,11 @@ public class RspStatus {
 
     public void writeStatus(ConfiguredRenderedPath.PathStatus status) {
         final ConfiguredRenderedPathBuilder configuredRenderedPathBuilder = new ConfiguredRenderedPathBuilder();
-        configuredRenderedPathBuilder.setKey(new ConfiguredRenderedPathKey(rspName))
-                .setRspName(rspName);
+        configuredRenderedPathBuilder.setKey(new ConfiguredRenderedPathKey(rspName)).setRspName(rspName);
         configuredRenderedPathBuilder.setPathStatus(status);
         final ConfiguredRenderedPath configuredRenderedPath = configuredRenderedPathBuilder.build();
-        final InstanceIdentifier<ConfiguredRenderedPath> statusIid = InstanceIdentifier.builder(RendererPathStates.class)
+        final InstanceIdentifier<ConfiguredRenderedPath> statusIid = InstanceIdentifier
+                .builder(RendererPathStates.class)
                 .child(RendererPathState.class, new RendererPathStateKey(new RendererName("ios-xe-renderer")))
                 .child(ConfiguredRenderedPaths.class)
                 .child(ConfiguredRenderedPath.class, configuredRenderedPath.getKey()).build();

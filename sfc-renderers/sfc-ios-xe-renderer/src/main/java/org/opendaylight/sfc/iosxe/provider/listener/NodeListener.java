@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,6 +10,8 @@
  * DataChangeListener attached to the Network Topology
  */
 package org.opendaylight.sfc.iosxe.provider.listener;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
@@ -27,23 +29,21 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 
 public class NodeListener implements DataTreeChangeListener<Node> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeListener.class);
 
-    private final ListenerRegistration listenerRegistration;
+    private final ListenerRegistration<NodeListener> listenerRegistration;
     private final NodeManager nodeManager;
 
     public NodeListener(DataBroker dataBroker, NodeManager nodeManager) {
         this.nodeManager = nodeManager;
         // Register listener
-        listenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
-                        InstanceIdentifier.builder(NetworkTopology.class)
-                                .child(Topology.class)
-                                .child(Node.class).build()), this);
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.builder(NetworkTopology.class).child(Topology.class).child(Node.class).build()),
+                this);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class NodeListener implements DataTreeChangeListener<Node> {
                         if (nodeManager.isCapableNetconfDevice(node)) {
                             nodeManager.updateNode(node);
                         }
-                        break;
                     }
+                    break;
                 case DELETE:
                     if (rootNode.getDataBefore() != null) {
                         Node node = rootNode.getDataBefore();
@@ -68,11 +68,14 @@ public class NodeListener implements DataTreeChangeListener<Node> {
                             nodeManager.removeNode(node);
                         }
                     }
+                    break;
+                default:
+                    break;
             }
         }
     }
 
-    public ListenerRegistration getRegistrationObject() {
+    public ListenerRegistration<NodeListener> getRegistrationObject() {
         return listenerRegistration;
     }
 }

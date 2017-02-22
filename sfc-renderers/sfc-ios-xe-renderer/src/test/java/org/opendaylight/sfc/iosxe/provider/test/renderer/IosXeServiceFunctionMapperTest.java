@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,12 @@
  */
 
 package org.opendaylight.sfc.iosxe.provider.test.renderer;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,11 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class IosXeServiceFunctionMapperTest {
 
@@ -59,42 +60,38 @@ public class IosXeServiceFunctionMapperTest {
 
     @Test
     public void syncFunctions_update() {
-        String sfName1 = "function1";
-        String sfName2 = "function2";
+        final String sfName1 = "function1";
+        final String sfName2 = "function2";
         // Prepare DPL
         SfDataPlaneLocatorBuilder macLocatorType = new SfDataPlaneLocatorBuilder();
         macLocatorType.setLocatorType(new MacBuilder().build());
         SfDataPlaneLocatorBuilder ipLocatorType = new SfDataPlaneLocatorBuilder();
         ipLocatorType.setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(ipAddress))).build())
                 .setTransport(Gre.class);
-        SfDataPlaneLocator macDpl = macLocatorType.build();
-        SfDataPlaneLocator ipDpl = ipLocatorType.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList;
         // Service functions
-        List<ServiceFunction> serviceFunctions = new ArrayList<>();
+        final List<ServiceFunction> serviceFunctions = new ArrayList<>();
         // SF without management IP
         ServiceFunctionBuilder emptySfBuilder = new ServiceFunctionBuilder();
-        emptySfBuilder.setName(new SfName(sfName1))
-                .setKey(new ServiceFunctionKey(new SfName(sfName1)));
+        emptySfBuilder.setName(new SfName(sfName1)).setKey(new ServiceFunctionKey(new SfName(sfName1)));
         // SF without data plane locator
         ServiceFunctionBuilder noDplSfBuilder = new ServiceFunctionBuilder();
-        noDplSfBuilder.setName(new SfName(sfName2))
-                .setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        noDplSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)));
         // SF without ip data plane locator
         ServiceFunctionBuilder noIpDplSfBuilder = new ServiceFunctionBuilder();
         dataPlaneLocatorList = new ArrayList<>();
+        SfDataPlaneLocator macDpl = macLocatorType.build();
         dataPlaneLocatorList.add(macDpl);
-        noIpDplSfBuilder.setName(new SfName(sfName2))
-                .setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        noIpDplSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         // Test SF
         ServiceFunctionBuilder testSfBuilder = new ServiceFunctionBuilder();
         dataPlaneLocatorList = new ArrayList<>();
+        SfDataPlaneLocator ipDpl = ipLocatorType.build();
         dataPlaneLocatorList.add(ipDpl);
-        testSfBuilder.setName(new SfName(sfName2))
-                .setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        testSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         serviceFunctions.add(emptySfBuilder.build());
@@ -107,8 +104,7 @@ public class IosXeServiceFunctionMapperTest {
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
         netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(ipAddress))));
-        nodeBuilder.setNodeId(nodeId)
-                .addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
+        nodeBuilder.setNodeId(nodeId).addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();
         nodeMap.put(nodeId, node);
 
@@ -131,7 +127,7 @@ public class IosXeServiceFunctionMapperTest {
 
     @Test
     public void syncFunctions_delete() {
-        String sfName2 = "function2";
+        final String sfName2 = "function2";
         sfMapper = new IosXeServiceFunctionMapper(dataBroker, nodeManager);
         // Prepare DPL
         SfDataPlaneLocatorBuilder macLocatorType = new SfDataPlaneLocatorBuilder();
@@ -142,12 +138,11 @@ public class IosXeServiceFunctionMapperTest {
         SfDataPlaneLocator ipDpl = ipLocatorType.build();
         List<SfDataPlaneLocator> dataPlaneLocatorList;
         // Service function
-        List<ServiceFunction> serviceFunctions = new ArrayList<>();
+        final List<ServiceFunction> serviceFunctions = new ArrayList<>();
         ServiceFunctionBuilder testSfBuilder = new ServiceFunctionBuilder();
         dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(ipDpl);
-        testSfBuilder.setName(new SfName(sfName2))
-                .setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        testSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         serviceFunctions.add(testSfBuilder.build());
@@ -157,8 +152,7 @@ public class IosXeServiceFunctionMapperTest {
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
         netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(ipAddress))));
-        nodeBuilder.setNodeId(nodeId)
-                .addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
+        nodeBuilder.setNodeId(nodeId).addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();
         nodeMap.put(nodeId, node);
 

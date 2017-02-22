@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,14 @@
 
 package org.opendaylight.sfc.iosxe.provider.test.renderer;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -15,6 +23,10 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
+import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
+import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -40,18 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePath;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.ConfigServiceChainPathMode;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
-
-import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
-import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 
 public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
 
@@ -66,7 +66,7 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     @Before
     public void init() {
         dataBroker = getDataBroker();
-        //odl.setDataProvider(dataBroker);
+        // odl.setDataProvider(dataBroker);
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
         nodeManager = mock(NodeManager.class);
         prepareSfcEntities();
@@ -90,9 +90,8 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
     }
 
     private RenderedServicePath createTestRenderedServicePath() {
-        RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         // Prepare hops
-        List<RenderedServicePathHop> hops = new ArrayList<>();
+        final List<RenderedServicePathHop> hops = new ArrayList<>();
         RenderedServicePathHopBuilder firstHop = new RenderedServicePathHopBuilder();
         firstHop.setServiceFunctionForwarder(new SffName(forwarderName))
                 .setServiceFunctionName(new SfName(firstFunctionName));
@@ -105,17 +104,15 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
         hops.add(firstHop.build());
         hops.add(secondHop.build());
         hops.add(thirdHop.build());
+        RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(new RspName("testRsp"))
-                .setKey(new RenderedServicePathKey(new RspName("testRsp")))
-                .setPathId(10L)
-                .setStartingIndex((short) 255)
+                .setKey(new RenderedServicePathKey(new RspName("testRsp"))).setPathId(10L).setStartingIndex((short) 255)
                 .setRenderedServicePathHop(hops);
         return renderedServicePathBuilder.build();
     }
 
     private void prepareSfcEntities() {
         // First SFF
-        ServiceFunctionForwarderBuilder serviceForwarderBuilder = new ServiceFunctionForwarderBuilder();
         List<SffDataPlaneLocator> sffDataPlaneLocators = new ArrayList<>();
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
@@ -126,23 +123,20 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
                 .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffDpl)))
                 .setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         sffDataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
+        ServiceFunctionForwarderBuilder serviceForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceForwarderBuilder.setName(new SffName(forwarderName))
                 .setKey(new ServiceFunctionForwarderKey(new SffName(forwarderName)))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp)))
-                .setSffDataPlaneLocator(sffDataPlaneLocators);
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp))).setSffDataPlaneLocator(sffDataPlaneLocators);
 
         // First SF
         ServiceFunctionBuilder firstServiceFunctionBuilder = new ServiceFunctionBuilder();
-        firstServiceFunctionBuilder.setName(firstFunctionName)
-                .setKey(new ServiceFunctionKey(firstFunctionName));
+        firstServiceFunctionBuilder.setName(firstFunctionName).setKey(new ServiceFunctionKey(firstFunctionName));
         // Second SF
         ServiceFunctionBuilder secondServiceFunctionBuilder = new ServiceFunctionBuilder();
-        secondServiceFunctionBuilder.setName(secondFunctionName)
-                .setKey(new ServiceFunctionKey(secondFunctionName));
+        secondServiceFunctionBuilder.setName(secondFunctionName).setKey(new ServiceFunctionKey(secondFunctionName));
         // Third SF
         ServiceFunctionBuilder thirdServiceFunctionBuilder = new ServiceFunctionBuilder();
-        thirdServiceFunctionBuilder.setName(thirdFunctionName)
-                .setKey(new ServiceFunctionKey(thirdFunctionName));
+        thirdServiceFunctionBuilder.setName(thirdFunctionName).setKey(new ServiceFunctionKey(thirdFunctionName));
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceForwarderBuilder.build());
         SfcProviderServiceFunctionAPI.putServiceFunction(firstServiceFunctionBuilder.build());

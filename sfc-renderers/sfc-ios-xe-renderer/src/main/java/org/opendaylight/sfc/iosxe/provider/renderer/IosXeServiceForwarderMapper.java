@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -68,20 +68,23 @@ public class IosXeServiceForwarderMapper {
                             if (sffIp != null && sffIp.getIp() != null) {
                                 IpAddress ipAddress = sffIp.getIp();
                                 // Create/remove local SFF
-                                org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunctionForwarder localForwarder =
-                                        SfcIosXeUtils.createLocalForwarder(ipAddress);
+                                org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain
+                                    .ServiceFunctionForwarder localForwarder =
+                                    SfcIosXeUtils.createLocalForwarder(ipAddress);
                                 if (localForwarder != null && !delete) {
                                     IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
                                             localForwarder.getLocal(), WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
                                     if (result != null && result == Boolean.TRUE) {
                                         LOG.info("Local forwarder with ip {} created on node {}",
-                                                forwarder.getIpMgmtAddress().toString(), netconfNode.getNodeId().getValue());
+                                                forwarder.getIpMgmtAddress().toString(),
+                                                netconfNode.getNodeId().getValue());
                                     }
                                 }
                                 if (localForwarder != null && delete) {
                                     IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
-                                            localForwarder.getLocal(), DELETE_LOCAL, LogicalDatastoreType.CONFIGURATION);
+                                            localForwarder.getLocal(), DELETE_LOCAL,
+                                            LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
                                     if (result != null && result == Boolean.TRUE) {
                                         LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId()

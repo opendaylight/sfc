@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,11 @@
  */
 
 package org.opendaylight.sfc.iosxe.provider.test.renderer;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,10 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class IosXeServiceForwarderMapperTest {
 
@@ -57,34 +58,30 @@ public class IosXeServiceForwarderMapperTest {
     @Test
     public void syncForwarder_create() {
         // Forwarders
-        List<ServiceFunctionForwarder> forwarders = new ArrayList<>();
+        final List<ServiceFunctionForwarder> forwarders = new ArrayList<>();
         // SFF without management ip
         ServiceFunctionForwarderBuilder noMgmtIpForwarder = new ServiceFunctionForwarderBuilder();
         String sffName1 = "forwarder1";
-        noMgmtIpForwarder.setName(new SffName(sffName1))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(sffName1)));
+        noMgmtIpForwarder.setName(new SffName(sffName1)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName1)));
         // Test SFF
         List<SffDataPlaneLocator> dataPlaneLocators = new ArrayList<>();
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-        dataPlaneLocatorBuilder.setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(ipAddress)))
-                .build());
+        dataPlaneLocatorBuilder
+                .setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(ipAddress))).build());
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         dataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder testSff = new ServiceFunctionForwarderBuilder();
-        testSff.setName(new SffName(sffName2))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
-                .setSffDataPlaneLocator(dataPlaneLocators);
+        testSff.setName(new SffName(sffName2)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress))).setSffDataPlaneLocator(dataPlaneLocators);
         forwarders.add(noMgmtIpForwarder.build());
         forwarders.add(testSff.build());
         // Node
         Map<NodeId, Node> nodeMap = new HashMap<>();
         Map<NodeId, DataBroker> nodeDbMap = new HashMap<>();
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(nodeId))
-                .setKey(new NodeKey(new NodeId(nodeId)));
+        nodeBuilder.setNodeId(new NodeId(nodeId)).setKey(new NodeKey(new NodeId(nodeId)));
         Node node = nodeBuilder.build();
         nodeMap.put(node.getNodeId(), node);
         nodeDbMap.put(node.getNodeId(), dataBroker);
@@ -98,7 +95,7 @@ public class IosXeServiceForwarderMapperTest {
         sffMapper.syncForwarders(forwarders, false);
 
         verify(nodeManager, times(1)).getConnectedNodes();
-        verify(nodeManager,times(1)).getNetconfNodeIp(node);
+        verify(nodeManager, times(1)).getNetconfNodeIp(node);
         verify(nodeManager, times(1)).getActiveMountPoints();
         verify(dataBroker, times(1)).newWriteOnlyTransaction();
     }
@@ -106,28 +103,25 @@ public class IosXeServiceForwarderMapperTest {
     @Test
     public void syncForwarder_delete() {
         // Forwarders
-        List<ServiceFunctionForwarder> forwarders = new ArrayList<>();
+        final List<ServiceFunctionForwarder> forwarders = new ArrayList<>();
         // Test SFF
         List<SffDataPlaneLocator> dataPlaneLocators = new ArrayList<>();
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
-        dataPlaneLocatorBuilder.setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(ipAddress)))
-                .build());
+        dataPlaneLocatorBuilder
+                .setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(ipAddress))).build());
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorBuilder.setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         dataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder testSff = new ServiceFunctionForwarderBuilder();
-        testSff.setName(new SffName(sffName2))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
-                .setSffDataPlaneLocator(dataPlaneLocators);
+        testSff.setName(new SffName(sffName2)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
+                .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress))).setSffDataPlaneLocator(dataPlaneLocators);
         forwarders.add(testSff.build());
         // Node
         Map<NodeId, Node> nodeMap = new HashMap<>();
         Map<NodeId, DataBroker> nodeDbMap = new HashMap<>();
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(nodeId))
-                .setKey(new NodeKey(new NodeId(nodeId)));
+        nodeBuilder.setNodeId(new NodeId(nodeId)).setKey(new NodeKey(new NodeId(nodeId)));
         Node node = nodeBuilder.build();
         nodeMap.put(node.getNodeId(), node);
         nodeDbMap.put(node.getNodeId(), dataBroker);
@@ -141,7 +135,7 @@ public class IosXeServiceForwarderMapperTest {
         sffMapper.syncForwarders(forwarders, true);
 
         verify(nodeManager, times(1)).getConnectedNodes();
-        verify(nodeManager,times(1)).getNetconfNodeIp(node);
+        verify(nodeManager, times(1)).getNetconfNodeIp(node);
         verify(nodeManager, times(1)).getActiveMountPoints();
         verify(dataBroker, times(1)).newWriteOnlyTransaction();
     }

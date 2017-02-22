@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -62,8 +62,8 @@ public class IosXeServiceFunctionMapper {
                     DataBroker mountPoint = nodeManager.getActiveMountPoints()
                             .get(netconfNode.getNodeId());
                     if (mountPoint != null && !delete) {
-                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction serviceFunction =
-                                createNetconfServiceFunction(function);
+                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain
+                            .ServiceFunction serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
                             IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction,
                                     WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
@@ -75,10 +75,11 @@ public class IosXeServiceFunctionMapper {
                         }
                     }
                     if (mountPoint != null && delete) {
-                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction serviceFunction =
-                                createNetconfServiceFunction(function);
+                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain
+                            .ServiceFunction serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
-                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction.getKey(),
+                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
+                                    serviceFunction.getKey(),
                                     DELETE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
                             Object result = writeServiceFunction.call();
                             if (result != null && result == Boolean.TRUE) {
@@ -91,8 +92,8 @@ public class IosXeServiceFunctionMapper {
         }
     }
 
-    private org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction createNetconfServiceFunction(
-            ServiceFunction function) {
+    private org.opendaylight.yang.gen.v1.urn.ios.rev160308._native
+        .service.chain.ServiceFunction createNetconfServiceFunction(ServiceFunction function) {
         SfName sfName = function.getName();
 
         SfDataPlaneLocator sfDataPlaneLocator = SfcIosXeUtils.getDplWithIpLocatorType(function

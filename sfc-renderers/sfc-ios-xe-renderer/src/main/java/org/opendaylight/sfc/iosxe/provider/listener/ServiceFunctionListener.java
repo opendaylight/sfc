@@ -52,6 +52,8 @@ public class ServiceFunctionListener implements DataTreeChangeListener<ServiceFu
                         sfManager.syncFunctions(rootNode.getDataBefore().getServiceFunction(), true);
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -59,5 +61,4 @@ public class ServiceFunctionListener implements DataTreeChangeListener<ServiceFu
     public ListenerRegistration getRegistrationObject() {
         return iosXeSfListenerRegistration;
     }
-
 }

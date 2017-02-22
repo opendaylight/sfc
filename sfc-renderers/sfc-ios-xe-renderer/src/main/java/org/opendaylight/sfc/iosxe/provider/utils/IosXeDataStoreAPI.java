@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class IosXeDataStoreAPI implements Callable {
 
-    private final Logger LOG = LoggerFactory.getLogger(IosXeDataStoreAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IosXeDataStoreAPI.class);
 
     private final DataBroker mountpoint;
     private final Object data;
@@ -182,10 +182,13 @@ public class IosXeDataStoreAPI implements Callable {
                 }
                 break;
             }
+            default:
+                break;
         }
         return null;
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private <U extends DataObject> boolean writeMergeTransaction(InstanceIdentifier<U> addIID, U data) {
         long timeout = 5000L;
         int attempt = 0;
@@ -207,7 +210,8 @@ public class IosXeDataStoreAPI implements Callable {
                     LOG.error("Runtime exception ... {}", e.getMessage());
                 }
             }
-        } while (attempt <= 5 && transaction == null);
+        }
+        while (attempt <= 5 && transaction == null);
         if (transaction == null) {
             LOG.error("Maximum number of attempts reached");
             return false;
@@ -226,6 +230,7 @@ public class IosXeDataStoreAPI implements Callable {
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private <U extends DataObject> boolean deleteTransaction(InstanceIdentifier<U> deleteIID) {
         long timeout = 5000L;
         int attempt = 0;
@@ -247,7 +252,8 @@ public class IosXeDataStoreAPI implements Callable {
                     LOG.error("Runtime exception ... {}", e.getMessage());
                 }
             }
-        } while (attempt <= 5 && transaction == null);
+        }
+        while (attempt <= 5 && transaction == null);
         if (transaction == null) {
             LOG.error("Maximum number of attempts reached");
             return false;
@@ -266,6 +272,7 @@ public class IosXeDataStoreAPI implements Callable {
         }
     }
 
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private <U extends DataObject> U readTransaction(InstanceIdentifier<U> readIID) {
         long timeout = 5000L;
         int attempt = 0;
@@ -287,7 +294,8 @@ public class IosXeDataStoreAPI implements Callable {
                     LOG.error("Runtime exception ... {}", e.getMessage());
                 }
             }
-        } while (attempt <= 5 && transaction == null);
+        }
+        while (attempt <= 5 && transaction == null);
         if (transaction == null) {
             LOG.error("Maximum number of attempts reached");
             return null;

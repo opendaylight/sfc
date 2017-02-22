@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,13 @@
  */
 
 package org.opendaylight.sfc.iosxe.provider.test.renderer;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.base.Optional;
 import org.junit.Before;
@@ -26,12 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class NodeManagerTest {
 
@@ -128,7 +129,7 @@ public class NodeManagerTest {
         netconfNodeBuilder.setConnectionStatus(NetconfNodeConnectionStatus.ConnectionStatus.Connected);
         nodeBuilder.setNodeId(new NodeId(nodeId));
         nodeBuilder.addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
-        Node testNode = nodeBuilder.build();
+
 
         when(bindingAwareBroker.registerProvider(any(BindingAwareProvider.class))).thenReturn(providerContext);
         when(providerContext.getSALService(any())).thenReturn(mountPointService);
@@ -144,6 +145,7 @@ public class NodeManagerTest {
         when(optionalDataBrokerObject.get()).thenReturn(dataBroker);
 
         manager = new NodeManager(dataBroker, bindingAwareBroker);
+        Node testNode = nodeBuilder.build();
         manager.updateNode(testNode);
 
         assertTrue(manager.getActiveMountPoints().size() == 1);

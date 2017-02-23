@@ -53,7 +53,8 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
         MatchBuilder match = new MatchBuilder();
 
         Action geniusDispatcher = SfcOpenflowUtils.createActionResubmitTable(GENIUS_DISPATCHER_TABLE, 0);
-        List<Action> theActionList = new ArrayList<Action>() {{ add(geniusDispatcher); }};
+        List<Action> theActionList = new ArrayList<>();
+        theActionList.add(geniusDispatcher);
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActionList);
 
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(
@@ -105,7 +106,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
             String theTunnelIf = logicalSffDataGetter.getInterfaceBetweenDpnIds(classifierNodeDpnId, firstHopDataplaneId)
                     .orElseThrow(RuntimeException::new);
 
-            LOG.info("createClassifierOutFlow - Must go through tunnel: {}. src: {}; dst: {}",
+            LOG.info("createClassifierOutFlow - Must go through tunnel {}. src: {}; dst: {}",
                     theTunnelIf,
                     classifierNodeDpnId.getValue().toString(),
                     firstHopDataplaneId.getValue().toString());
@@ -187,18 +188,17 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
      * @return          the List of {@link Action} related to NSH which will be pushed into the classifier
      */
     private List<Action> buildNshActions(SfcNshHeader theHeader) {
-        return new ArrayList<Action>(){{
-            int order = 0;
-            add(SfcOpenflowUtils.createActionNxPushNsh(order++));
-            add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, order++));
-            add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, order++));
-            add(SfcOpenflowUtils.createActionNxSetNsp(theHeader.getNshNsp(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNsi(theHeader.getNshStartNsi(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc1(theHeader.getNshMetaC1(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc2(theHeader.getNshMetaC2(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc3(theHeader.getNshMetaC3(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc4(theHeader.getNshMetaC4(), order++));
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
-        }};
+        List<Action> theActions = new ArrayList<>();
+        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(theHeader.getNshNsp(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(theHeader.getNshStartNsi(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(theHeader.getNshMetaC1(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(theHeader.getNshMetaC2(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(theHeader.getNshMetaC3(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(theHeader.getNshMetaC4(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        return theActions;
     }
 }

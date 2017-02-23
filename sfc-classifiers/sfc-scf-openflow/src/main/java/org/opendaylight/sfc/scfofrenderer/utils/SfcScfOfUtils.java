@@ -64,12 +64,10 @@ public class SfcScfOfUtils {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(OutputPortValues.LOCAL.toString()));
 
-        int order = 0;
-
         // Action output
         List<Action> actionList = new ArrayList<>();
         String outPortStr = "output:" + outPort.toString();
-        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
@@ -95,11 +93,9 @@ public class SfcScfOfUtils {
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchInPort(match, new NodeId(nodeName), inPort);
 
-        int order = 0;
-
         // Action NORMAL
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+        actionList.add(SfcOpenflowUtils.createActionNormal(actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
@@ -133,23 +129,21 @@ public class SfcScfOfUtils {
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
 
-        List<Action> theActions = new ArrayList<Action>(){{
-            int order = 0;
-            add(SfcOpenflowUtils.createActionNxPushNsh(order++));
-            add(SfcOpenflowUtils.createActionNxLoadNshMdtype(NSH_MDTYPE_ONE, order++));
-            add(SfcOpenflowUtils.createActionNxLoadNshNp(NSH_NP_ETH, order++));
-            add(SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), order++));
-            add(SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), order++));
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
-            add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++));
-            add( outPort == null ?
-                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++) :
-                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), order++));
-        }};
+        List<Action> theActions = new ArrayList<>();
+        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(NSH_MDTYPE_ONE, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(NSH_NP_ETH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC2(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC3(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC4(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
+        theActions.add( outPort == null ?
+                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()) :
+                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
@@ -178,13 +172,11 @@ public class SfcScfOfUtils {
 
         MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
 
-        List<Action> theActions = new ArrayList<Action>() {{
-            int order = 0;
-            add(SfcOpenflowUtils.createActionNxPopNsh(order++));
-            add(outPort == null ?
-                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++) :
-                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), order++));
-        }};
+        List<Action> theActions = new ArrayList<>();
+        theActions.add(SfcOpenflowUtils.createActionNxPopNsh(theActions.size()));
+        theActions.add(outPort == null ?
+                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()) :
+                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
@@ -214,16 +206,14 @@ public class SfcScfOfUtils {
         MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
 
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
-        List<Action> theActions = new ArrayList<Action>() {{
-            int order = 0;
-            add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, order++));
-            add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, order++));
-            add(SfcOpenflowUtils.createActionNxMoveNsp(order++));
-            add(SfcOpenflowUtils.createActionNxMoveNsi(order++));
-            add(SfcOpenflowUtils.createActionNxMoveNsc1(order++));
-            add(SfcOpenflowUtils.createActionNxMoveNsc2(order++));
-            add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), order++));
-        }};
+        List<Action> theActions = new ArrayList<>();
+        theActions.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxMoveNsp(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxMoveNsi(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxMoveNsc1(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxMoveNsc2(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
         FlowBuilder flowb = new FlowBuilder();

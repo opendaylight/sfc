@@ -21,10 +21,10 @@ import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassi
 import org.opendaylight.sfc.scfofrenderer.processors.OpenflowClassifierProcessor;
 import org.opendaylight.sfc.scfofrenderer.processors.SfcScfOfProcessor;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
 import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
 import org.opendaylight.sfc.scfofrenderer.listeners.ClassifierRspsUpdateListener;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

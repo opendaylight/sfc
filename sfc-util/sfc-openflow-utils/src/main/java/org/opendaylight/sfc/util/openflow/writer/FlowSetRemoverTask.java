@@ -6,8 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.util.openflow.transactional_writer;
-
+package org.opendaylight.sfc.util.openflow.writer;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -29,37 +28,37 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A thread class used to write the flows to the data store.
- * It receives the list of flows to create at object instantiation time - AKA constructor.
- * The flows are written together in a single data store transaction
+ * A thread class used to remove flows on the data store.
+ * It receives the list of flows to remove at object instantiation time - AKA constructor.
+ * The flows are removed in a single data store transaction.
  */
-public class FlowSetWriterTask implements Runnable {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowSetWriterTask.class);
-    private Set<FlowDetails> flowsToWrite = new HashSet<>();
+public class FlowSetRemoverTask implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(FlowSetRemoverTask.class);
+    private Set<FlowDetails> flowsToDelete = new HashSet<>();
     private WriteTransaction tx;
     private DataBroker dataProvider = null;
 
-    public FlowSetWriterTask(DataBroker dataProvider, Set<FlowDetails> flowsToWrite) {
+    public FlowSetRemoverTask(DataBroker dataBroker, Set<FlowDetails> flowsToDelete) {
         tx = null;
-        this.dataProvider = dataProvider;
-        this.flowsToWrite.addAll(flowsToWrite);
+        dataProvider = dataBroker;
+        this.flowsToDelete.addAll(flowsToDelete);
     }
 
-    public FlowSetWriterTask(Set<FlowDetails> flowsToWrite, WriteTransaction theTx) {
-        this(null, flowsToWrite);
+    public FlowSetRemoverTask(Set<FlowDetails> flowsToDelete, WriteTransaction theTx) {
+        this(null, flowsToDelete);
         tx = theTx;
     }
 
     @Override
     public void run(){
-        WriteTransaction trans = tx == null ?
-                dataProvider.newWriteOnlyTransaction() : tx;
 
-        LOG.debug("FlowSetWriterTask: starting addition of {} flows", flowsToWrite.size());
+        WriteTransaction writeTx =
+                tx == null ? dataProvider.newWriteOnlyTransaction() : tx;
 
-        for (FlowDetails f: flowsToWrite) {
+        LOG.debug("FlowSetRemoverTask: starting deletion of {} flows", flowsToDelete.size());
+
+        for (FlowDetails f: flowsToDelete) {
             NodeKey theKey = new NodeKey(new NodeId(f.getSffNodeName()));
-
             InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class)
                     .child(Node.class, theKey)
                     .augmentation(FlowCapableNode.class)
@@ -67,11 +66,10 @@ public class FlowSetWriterTask implements Runnable {
                     .child(Flow.class, f.getFlowKey())
                     .build();
 
-            trans.put(LogicalDatastoreType.CONFIGURATION, iidFlow, f.getFlow(), true);
+            writeTx.delete(LogicalDatastoreType.CONFIGURATION, iidFlow);
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans.submit();
-
+        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
         try {
             submitFuture.checkedGet();
         } catch (TransactionCommitFailedException e) {

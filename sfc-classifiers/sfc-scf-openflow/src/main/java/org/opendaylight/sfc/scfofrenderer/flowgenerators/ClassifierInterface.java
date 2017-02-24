@@ -9,7 +9,7 @@
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
-import org.opendaylight.sfc.util.openflow.transactional_writer.FlowDetails;
+import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
 import java.util.List;

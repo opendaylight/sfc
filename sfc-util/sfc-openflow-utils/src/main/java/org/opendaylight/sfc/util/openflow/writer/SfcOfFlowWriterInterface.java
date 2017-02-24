@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.util.openflow.transactional_writer;
+package org.opendaylight.sfc.util.openflow.writer;
 
 import java.util.Collection;
 import java.util.Set;

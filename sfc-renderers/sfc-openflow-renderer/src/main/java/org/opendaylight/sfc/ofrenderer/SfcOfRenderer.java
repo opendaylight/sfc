@@ -21,7 +21,7 @@ import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
-import org.opendaylight.sfc.util.openflow.transactional_writer.SfcOfFlowWriterImpl;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

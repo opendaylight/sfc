@@ -43,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.HexString;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.RoutingBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.VxlanBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.VxlanGpeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.L2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.Vpp;
@@ -55,8 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeNextProtocol;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeTunnel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeVni;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanTunnel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanVni;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.l2.base.attributes.interconnection.BridgeBasedBuilder;
@@ -206,6 +203,23 @@ public class SfcVppUtils {
         return ip;
     }
 
+    public static IpAddress getSfProxyDplIp(SfLocatorProxyAugmentation augment) {
+        IpAddress ip = null;
+        ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
+
+        if (proxyDpl == null) {
+            return null;
+        }
+
+        LocatorType locatorType = proxyDpl.getLocatorType();
+        if (locatorType instanceof Ip) {
+            IpPortLocator ipPortLocator = (IpPortLocator) locatorType;
+            ip = ipPortLocator.getIp();
+        }
+
+        return ip;
+    }
+
     private static IpAddress getSfDplIp(SfName sfName, SfDataPlaneLocatorName sfDplName) {
         IpAddress ip = null;
         ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
@@ -224,6 +238,11 @@ public class SfcVppUtils {
 
         if (sfDataPlaneLocator == null) {
             return null;
+        }
+
+        SfLocatorProxyAugmentation sfDplProxyAug = sfDataPlaneLocator.getAugmentation(SfLocatorProxyAugmentation.class);
+        if (sfDplProxyAug != null) {
+            return SfcVppUtils.getSfProxyDplIp(sfDplProxyAug);
         }
 
         LocatorType locatorType = sfDataPlaneLocator.getLocatorType();
@@ -263,50 +282,6 @@ public class SfcVppUtils {
         }
         ipList.add(remoteIp);
         return ipList;
-    }
-
-    public static SfLocatorProxyAugmentation getSfDplProxyAugmentation(final ServiceFunction sf, final SffName sffName) {
-        ServiceFunctionDictionary sfDictionary;
-        SfDataPlaneLocatorName sfDplName;
-
-        sfDictionary = getSfDictionary(sffName, sf.getName());
-        if (sfDictionary == null) {
-            return null;
-        }
-
-        sfDplName = sfDictionary.getSffSfDataPlaneLocator().getSfDplName();
-
-        List<SfDataPlaneLocator> sdDplList = sf.getSfDataPlaneLocator();
-        SfDataPlaneLocator sfDataPlaneLocator = null;
-        for (SfDataPlaneLocator sfDpl: sdDplList) {
-            if (sfDpl.getName().equals(sfDplName)) {
-                sfDataPlaneLocator = sfDpl;
-                break;
-            }
-        }
-
-        if (sfDataPlaneLocator == null) {
-            return null;
-        }
-
-        return sfDataPlaneLocator.getAugmentation(SfLocatorProxyAugmentation.class);
-    }
-
-    public static IpAddress getSfProxyDplIp(SfLocatorProxyAugmentation augment) {
-        IpAddress ip = null;
-        ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
-
-        if (proxyDpl == null) {
-            return null;
-        }
-
-        LocatorType locatorType = proxyDpl.getLocatorType();
-        if (locatorType instanceof Ip) {
-            IpPortLocator ipPortLocator = (IpPortLocator) locatorType;
-            ip = ipPortLocator.getIp();
-        }
-
-        return ip;
     }
 
     private static void addFuturesCallback(final WriteTransaction wTx) {
@@ -453,54 +428,6 @@ public class SfcVppUtils {
         final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
                     = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceKey));
         LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
-        wTx.delete(LogicalDatastoreType.CONFIGURATION, interfaceIid);
-        addFuturesCallback(wTx);
-    }
-
-    private static String buildVxlanPortKey(final IpAddress dstIp) {
-        return new String("vxlanTun" + "_" + dstIp.getIpv4Address().getValue());
-    }
-
-    private static void addVxlanPort(final DataBroker dataBroker, final IpAddress srcIp, final IpAddress dstIp, Long vni, String vppNode, String bridgeDomainName)
-    {
-        final VxlanBuilder vxlanBuilder = new VxlanBuilder();
-
-        vxlanBuilder.setSrc(srcIp);
-        vxlanBuilder.setDst(dstIp);
-        vxlanBuilder.setVni(new VxlanVni(vni));
-        vxlanBuilder.setEncapVrfId(0L);
-
-        final InterfaceBuilder interfaceBuilder = new InterfaceBuilder();
-        interfaceBuilder.setName(buildVxlanPortKey(dstIp));
-        interfaceBuilder.setType(VxlanTunnel.class);
-        VppInterfaceAugmentationBuilder vppInterfaceAugmentationBuilder = new VppInterfaceAugmentationBuilder();
-        vppInterfaceAugmentationBuilder.setVxlan(vxlanBuilder.build());
-
-        // Set L2 bridgedomain, is it required?
-        final L2Builder l2Builder = new L2Builder();
-        final BridgeBasedBuilder bridgeBasedBuilder = new BridgeBasedBuilder();
-        bridgeBasedBuilder.setBridgedVirtualInterface(false);
-        bridgeBasedBuilder.setSplitHorizonGroup(Short.valueOf("1"));
-        bridgeBasedBuilder.setBridgeDomain(bridgeDomainName);
-        l2Builder.setInterconnection(bridgeBasedBuilder.build());
-        vppInterfaceAugmentationBuilder.setL2(l2Builder.build());
-
-        interfaceBuilder.addAugmentation(VppInterfaceAugmentation.class, vppInterfaceAugmentationBuilder.build());
-        interfaceBuilder.setEnabled(true);
-
-        final DataBroker vppDataBroker = dataBroker;
-        final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceBuilder.getName()));
-        wTx.put(LogicalDatastoreType.CONFIGURATION, interfaceIid, interfaceBuilder.build());
-        addFuturesCallback(wTx);
-    }
-
-    private static void removeVxlanPort(final DataBroker dataBroker, final IpAddress srcIp, final IpAddress dstIp, Long vni, String vppNode) {
-        final DataBroker vppDataBroker = dataBroker;
-        final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(buildVxlanPortKey(dstIp)));
         wTx.delete(LogicalDatastoreType.CONFIGURATION, interfaceIid);
         addFuturesCallback(wTx);
     }
@@ -684,27 +611,6 @@ public class SfcVppUtils {
         removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
         removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
 
-        return true;
-    }
-
-    public static boolean configureVxlanNsh(final DataBroker dataBroker, final SffName sffName, String bridgeDomainName, final IpAddress srcIp, final IpAddress dstIp, final Long nsp, final Short nsi) {
-        Long vni = 0L; // SFC classifier set it to 0, so always use 0
-
-        addVxlanPort(dataBroker, srcIp, dstIp, vni, sffName.getValue(), bridgeDomainName); //SFF<->SF
-        addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
-        addNshMap(dataBroker, nsp, nsi, nsp, nsi, buildVxlanPortKey(dstIp), sffName.getValue());
-
-        return true;
-    }
-
-    public static boolean removeVxlanNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress srcIp, final IpAddress dstIp, final Long nsp, final Short nsi) {
-        Short nextNsi = nsi;
-        nextNsi--;
-        Long vni = 0L; // SFC classifier set it to 0, so always use 0
-        removeVxlanPort(dataBroker, srcIp, dstIp, vni, sffName.getValue()); //SFF<->SF
-        removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
-        removeNshEntry(dataBroker, nsp, nextNsi, sffName.getValue()); //From SF
-        removeNshMap(dataBroker, nsp, nsi, nsp, nextNsi, sffName.getValue());
         return true;
     }
 

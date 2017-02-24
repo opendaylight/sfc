@@ -18,7 +18,6 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.util.vpp.SfcVppUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.SfLocatorProxyAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -100,32 +99,14 @@ public class VppRspProcessor {
                 bridgeDomainCreated.put(currentSffName.getValue(), SFC_BD_NAME);
             }
 
-            SfLocatorProxyAugmentation sfDplProxyAug = SfcVppUtils.getSfDplProxyAugmentation(serviceFunction, currentSffName);
-            if (sfDplProxyAug == null) {
-                /* NSH-aware SF */
-                ret = SfcVppUtils.configureVxlanGpeNsh(currentMountpoint, currentSffName, SFC_BD_NAME, localIp, remoteIp, pathId, serviceIndex);
-                if (!ret) {
-                    LOG.error("failed to configure VxLAN-gpe and NSH for RSP {} in SFF {} for SF hop", renderedServicePath.getName().getValue(), currentSffName.getValue());
-                    return;
-                }
-            } else {
-                /* SF has NSH Proxy, i.e. NSH-unaware SF,
-                 * so create VxLAN port for NSH proxy.
-                 */
-                remoteIp = SfcVppUtils.getSfProxyDplIp(sfDplProxyAug);
-                if (remoteIp == null) {
-                    LOG.error("failed to get IP for SF DPL for SF {} in RSP {}", sfName.getValue(), renderedServicePath.getName().getValue());
-                    return;
-                }
-                ret = SfcVppUtils.configureVxlanNsh(currentMountpoint, currentSffName, SFC_BD_NAME, localIp, remoteIp, pathId, serviceIndex);
-                if (!ret) {
-                    LOG.error("failed to configure VxLAN and NSH for RSP {} in SFF {} for SF hop", renderedServicePath.getName().getValue(), currentSffName.getValue());
-                    return;
-                }
+            ret = SfcVppUtils.configureVxlanGpeNsh(currentMountpoint, currentSffName, SFC_BD_NAME, localIp, remoteIp, pathId, serviceIndex);
+            if (!ret) {
+                LOG.error("failed to configure VxLAN-gpe and NSH for RSP {} in SFF {} for SF hop", renderedServicePath.getName().getValue(), currentSffName.getValue());
+                return;
             }
 
+            //previous SFF <-> current SFF
             if (previousSffName != null && !previousSffName.equals(currentSffName)) {
-                //previous SFF <-> current SFF
                 ret = SfcVppUtils.configureVxlanGpeNsh(previousMountPoint, previousSffName, SFC_BD_NAME, preLocalIp, localIp, pathId, serviceIndex);
                 if (!ret) {
                     LOG.error("failed to configure VxLAN-gpe and NSH for RSP {} in SFF {} for SFF hop", renderedServicePath.getName().getValue(), previousSffName.getValue());
@@ -134,7 +115,7 @@ public class VppRspProcessor {
             }
         }
 
-        /* TODO: Configure VxlanGpeNsh for last hop to classifier */
+        /* vpp classifier will configure VxlanGpeNsh for last hop to classifier */
     }
 
     public void deleteRsp(RenderedServicePath renderedServicePath) {
@@ -188,26 +169,13 @@ public class VppRspProcessor {
             localIp = ipList.get(0);
             remoteIp = ipList.get(1);
 
-            SfLocatorProxyAugmentation sfDplProxyAug = SfcVppUtils.getSfDplProxyAugmentation(serviceFunction, currentSffName);
-            if (sfDplProxyAug == null) {
-                ret = SfcVppUtils.removeVxlanGpeNsh(currentMountpoint, currentSffName, localIp, remoteIp, pathId, serviceIndex);
-                if (!ret) {
-                    LOG.error("failed to remove VxLAN-gpe and NSH for RSP {} in SFF {}", renderedServicePath.getName().getValue(), currentSffName.getValue());
-                    return;
-                }
-            } else {
-                remoteIp = SfcVppUtils.getSfProxyDplIp(sfDplProxyAug);
-                if (remoteIp == null) {
-                    LOG.error("failed to get IP for SF DPL for SFF {} in RSP {}", currentSffName.getValue(), renderedServicePath.getName().getValue());
-                    return;
-                }
-                ret = SfcVppUtils.removeVxlanNsh(currentMountpoint, currentSffName, localIp, remoteIp, pathId, serviceIndex);
-                if (!ret) {
-                    LOG.error("failed to remove VxLAN and NSH for RSP {} in SFF {}", renderedServicePath.getName().getValue(), currentSffName.getValue());
-                    return;
-                }
+            ret = SfcVppUtils.removeVxlanGpeNsh(currentMountpoint, currentSffName, localIp, remoteIp, pathId, serviceIndex);
+            if (!ret) {
+                LOG.error("failed to remove VxLAN-gpe and NSH for RSP {} in SFF {}", renderedServicePath.getName().getValue(), currentSffName.getValue());
+                return;
             }
 
+            //previous SFF <-> current SFF
             if (previousSffName != null && !previousSffName.equals(currentSffName)) {
                 ret = SfcVppUtils.removeVxlanGpeNsh(previousMountPoint, previousSffName, preLocalIp, localIp, pathId, serviceIndex);
                 if (!ret) {
@@ -216,6 +184,7 @@ public class VppRspProcessor {
                 }
             }
         }
+        /* vpp classifier will remove VxlanGpeNsh for last hop to classifier */
     }
 
 }

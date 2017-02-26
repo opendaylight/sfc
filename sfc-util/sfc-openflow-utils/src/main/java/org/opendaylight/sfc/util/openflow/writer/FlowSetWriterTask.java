@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,8 +8,9 @@
 
 package org.opendaylight.sfc.util.openflow.writer;
 
-
 import com.google.common.util.concurrent.CheckedFuture;
+import java.util.HashSet;
+import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -25,17 +26,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * A thread class used to write the flows to the data store.
- * It receives the list of flows to create at object instantiation time - AKA constructor.
- * The flows are written together in a single data store transaction
+ * A thread class used to write the flows to the data store. It receives the
+ * list of flows to create at object instantiation time - AKA constructor. The
+ * flows are written together in a single data store transaction
  */
 public class FlowSetWriterTask implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowSetWriterTask.class);
-    private Set<FlowDetails> flowsToWrite = new HashSet<>();
+    private final Set<FlowDetails> flowsToWrite = new HashSet<>();
     private WriteTransaction tx;
     private DataBroker dataProvider = null;
 
@@ -51,21 +49,17 @@ public class FlowSetWriterTask implements Runnable {
     }
 
     @Override
-    public void run(){
-        WriteTransaction trans = tx == null ?
-                dataProvider.newWriteOnlyTransaction() : tx;
+    public void run() {
+        WriteTransaction trans = tx == null ? dataProvider.newWriteOnlyTransaction() : tx;
 
         LOG.debug("FlowSetWriterTask: starting addition of {} flows", flowsToWrite.size());
 
-        for (FlowDetails f: flowsToWrite) {
+        for (FlowDetails f : flowsToWrite) {
             NodeKey theKey = new NodeKey(new NodeId(f.getSffNodeName()));
 
-            InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class)
-                    .child(Node.class, theKey)
-                    .augmentation(FlowCapableNode.class)
-                    .child(Table.class, f.getTableKey())
-                    .child(Flow.class, f.getFlowKey())
-                    .build();
+            InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class).child(Node.class, theKey)
+                    .augmentation(FlowCapableNode.class).child(Table.class, f.getTableKey())
+                    .child(Flow.class, f.getFlowKey()).build();
 
             trans.put(LogicalDatastoreType.CONFIGURATION, iidFlow, f.getFlow(), true);
         }

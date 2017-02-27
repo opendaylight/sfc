@@ -10,15 +10,15 @@ package org.opendaylight.sfc.tacker.dto;
 
 public class Vnf {
 
-    private String status;
-    private String name;
-    private String tenant_id;
-    private String description;
-    private String instance_id;
-    private String mgmt_url;
-    private Attributes attributes;
-    private String id;
-    private String vnfd_id;
+    public String status;
+    public String name;
+    public String tenant_id;
+    public String description;
+    public String instance_id;
+    public String mgmt_url;
+    public Attributes attributes;
+    public String id;
+    public String vnfd_id;
 
     // used by GSON
     private Vnf() {}

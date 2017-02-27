@@ -8,14 +8,16 @@
 
 package org.opendaylight.sfc.tacker.api;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import java.util.Date;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientProperties;
 import org.opendaylight.sfc.tacker.dto.Attributes;
 import org.opendaylight.sfc.tacker.dto.Auth;
 import org.opendaylight.sfc.tacker.dto.KeystoneRequest;
@@ -31,6 +33,11 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class TackerManager implements SfcVnfManager, AutoCloseable {
 
@@ -57,9 +64,10 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
         this.keystonePort = builder.getKeystonePort();
         this.auth = builder.getAuth();
 
-        client = Client.create();
-        client.setReadTimeout(READ_TIMEOUT_MILLISEC);
-        client.setConnectTimeout(CONNECT_TIMEOUT_MILLISEC);
+        client = ClientBuilder.newBuilder()
+                .property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT_MILLISEC)
+                .property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT_MILLISEC)
+                .build();
     }
 
     @Override
@@ -71,7 +79,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
             return false;
         }
 
-        WebResource webResource = client.resource(baseUri + ":" + tackerPort).path("/v1.0/vnfs");
+        WebTarget webTarget = client.target(baseUri + ":" + tackerPort).path("/v1.0/vnfs");
         TackerRequest tackerRequest = TackerRequest.builder()
             .setVnf(Vnf.builder()
                 .setName(sfType.getType().getValue())
@@ -79,16 +87,15 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
                 .build())
             .build();
 
-        ClientResponse response = (webResource.type(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-            .header("X-Auth-Token", authToken.getId())
-            .header("X-Auth-Project-Id", authToken.getTenant().getName())).post(ClientResponse.class,
-                    GSON.toJson(tackerRequest));
+        Response response = webTarget.request(MediaType.APPLICATION_JSON)
+                .header("X-Auth-Token", authToken.getId())
+                .header("X-Auth-Project-Id", authToken.getTenant().getName())
+                .post(Entity.json(tackerRequest));
 
         if (response != null) {
             switch (response.getStatus()) {
                 case 201:
-                    String json = response.getEntity(String.class);
-                    TackerResponse tackerResponse = GSON.fromJson(json, TackerResponse.class);
+                    TackerResponse tackerResponse = response.readEntity(TackerResponse.class);
                     LOG.info("VNF successfully created.");
                     LOG.debug(GSON.toJson(tackerResponse));
                     return true;
@@ -96,7 +103,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
                     LOG.debug("Unauthorized! Wrong username or password.");
                     break;
                 default:
-                    TackerError error = GSON.fromJson(response.getEntity(String.class), TackerError.class);
+                    TackerError error = GSON.fromJson(response.readEntity(String.class), TackerError.class);
                     LOG.debug(error.toString());
                     break;
             }
@@ -114,11 +121,11 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
         }
 
         String vnfId = sf.getName().getValue();
-        WebResource webResource = client.resource(baseUri + ":" + tackerPort).path("/v1.0/vnfs/" + vnfId);
-        ClientResponse response = webResource.type(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+        WebTarget webTarget = client.target(baseUri + ":" + tackerPort).path("/v1.0/vnfs/" + vnfId);
+        Response response = webTarget.request(MediaType.APPLICATION_JSON)
             .header("X-Auth-Token", authToken.getId())
             .header("X-Auth-Project-Id", authToken.getTenant().getName())
-            .delete(ClientResponse.class);
+            .delete();
 
         if (response != null) {
             switch (response.getStatus()) {
@@ -132,7 +139,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
                     LOG.debug("405 - Method not found: " + response.toString());
                     return false;
                 default:
-                    TackerError error = GSON.fromJson(response.getEntity(String.class), TackerError.class);
+                    TackerError error = GSON.fromJson(response.readEntity(String.class), TackerError.class);
                     LOG.debug(error.toString());
                     break;
             }
@@ -148,7 +155,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        this.client.destroy();
+        this.client.close();
     }
 
     private Token getToken() {
@@ -166,16 +173,16 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
     }
 
     private Token requestToken() {
-        WebResource webResource = client.resource(baseUri + ":" + keystonePort).path("/v2.0/tokens");
+        WebTarget target = client.target(baseUri + ":" + keystonePort).path("/v2.0/tokens");
         KeystoneRequest keystoneRequest = new KeystoneRequest(this.auth);
 
-        ClientResponse response = webResource.type(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-            .post(ClientResponse.class, GSON.toJson(keystoneRequest));
+        Response response = target.request()
+            .post(Entity.json(keystoneRequest));
 
         if (response != null) {
             switch (response.getStatus()) {
                 case 200:
-                    String json = response.getEntity(String.class);
+                    String json = response.readEntity(String.class);
                     JsonObject jsonObject =
                             GSON.fromJson(json, JsonObject.class).getAsJsonObject("access").getAsJsonObject("token");
 
@@ -183,7 +190,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
                     LOG.debug("Authentication token successfully created.");
                     return token;
                 default:
-                    LOG.debug(response.getEntity(String.class));
+                    LOG.debug(response.readEntity(String.class));
                     break;
             }
         }

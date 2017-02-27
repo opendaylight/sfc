@@ -15,7 +15,7 @@
  * @since 2015-04-01
  */
 
-package org.opendaylight.sfc.sfc_ovs.provider;
+package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
@@ -26,9 +26,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
+import org.opendaylight.sfc.ovs.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
-import org.opendaylight.sfc.sfc_ovs.provider.api.SfcOvsDataStoreAPI;
-import org.opendaylight.sfc.sfc_ovs.provider.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;

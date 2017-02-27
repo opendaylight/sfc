@@ -15,7 +15,7 @@
  * @since 2015-04-01
  */
 
-package org.opendaylight.sfc.sfc_ovs.provider;
+package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import java.util.List;

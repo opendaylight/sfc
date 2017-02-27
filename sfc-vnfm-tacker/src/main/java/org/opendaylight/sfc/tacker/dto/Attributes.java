@@ -10,10 +10,10 @@ package org.opendaylight.sfc.tacker.dto;
 
 public class Attributes {
 
-    private String service_type;
-    private String heat_template;
-    private String monitoring_policy;
-    private String failure_policy;
+    public String service_type;
+    public String heat_template;
+    public String monitoring_policy;
+    public String failure_policy;
 
     // used by GSON
     private Attributes() {}

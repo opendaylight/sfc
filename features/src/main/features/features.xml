@@ -106,9 +106,8 @@
     <feature name="odl-sfc-sb-rest" version="${project.version}" description="OpenDaylight :: sfc-sb-rest ">
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-sb-rest/{{VERSION}}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
         <bundle>wrap:mvn:org.json/json/{{VERSION}}</bundle>
+        <bundle>wrap:mvn:com.eclipsesource.jaxrs/jersey-all/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/{{VERSION}}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/{{VERSION}}</bundle>
@@ -156,8 +155,7 @@
         <feature version="${project.version}">odl-sfc-model</feature>
         <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-spi/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
-        <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
+        <bundle>wrap:mvn:com.eclipsesource.jaxrs/jersey-all/{{VERSION}}</bundle>
         <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
     </feature>

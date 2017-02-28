@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Pantheon Technologies s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -80,7 +80,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * this class contains junit tests for SfcOvsUtil class
+ * This class contains junit tests for SfcOvsUtil class.
  *
  * @author Vladimir Lavor
  * @version 0.1
@@ -92,21 +92,20 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/"; // copy of private String from
                                                                   // SfcOvsUtil.class
-    private static final String ipv4Address = "170.0.0.1";
-    private static final String ipv6Address = "0F:ED:CB:A9:87:65:43:21";
-    private static final String testBridgeName = "Bridge Name";
-    private static final String testString = "Test string";
-    private static final SffDataPlaneLocatorName sffDataPlaneLocator =
-            new SffDataPlaneLocatorName("sffDataPlaneLocator test");
-    private static final String testDataPath = "12:34:56:78:9A:BC:DE:F0";
-    private static final Long  testPort = 1L;
-    private static final SffDataPlaneLocatorName dplName = new SffDataPlaneLocatorName("sffdpl");
-    private static final String testIpAddress = "170.0.0.1";
-    private final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
+    private static final String IP_ADDRESS = "170.0.0.1";
+    private static final String IPV6_ADDRESS = "0F:ED:CB:A9:87:65:43:21";
+    private static final String TEST_BRIDGE_NAME = "Bridge Name";
+    private static final String TEST_STRING = "Test string";
+    private static final SffDataPlaneLocatorName SFF_DATA_PLANE_LOCATOR =
+            new SffDataPlaneLocatorName("SFF_DATA_PLANE_LOCATOR test");
+    private static final String TEST_DATA_PATH = "12:34:56:78:9A:BC:DE:F0";
+    private static final Long  TEST_PORT = 1L;
+    private static final SffDataPlaneLocatorName DPL_NAME = new SffDataPlaneLocatorName("sffdpl");
+    private static final String TEST_IP_ADDRESS = "170.0.0.1";
+    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
-    private InstanceIdentifier<OvsdbBridgeAugmentation> testBridgeIID;
 
     @Before
     public void init() {
@@ -142,7 +141,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
             @Override
             public String call() throws Exception {
-                return testString;
+                return TEST_STRING;
             }
         }
 
@@ -155,12 +154,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
             }
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-
         Object object = SfcOvsUtil.submitCallable(new CallableTestSuccess(), executorService);
 
         assertNotNull("Must not be null", object);
-        assertEquals("Must be equal", object, testString);
+        assertEquals("Must be equal", object, TEST_STRING);
 
         object = SfcOvsUtil.submitCallable(new CallableTestException(), executorService);
 
@@ -180,7 +177,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetManagedByNodeId() throws Exception {
         OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
 
-        ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(testBridgeName))
+        ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(TEST_BRIDGE_NAME))
             .setManagedBy(new OvsdbNodeRef(nodeIID));
 
         // TODO remove reflection for "getManagedByNodeId"
@@ -189,7 +186,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         assertNotNull("Must not be null", nodeId);
         assertFalse("Must be false", nodeId.getValue().isEmpty());
-        assertEquals("Must be equal", nodeId.getValue(), testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
+        assertEquals("Must be equal", nodeId.getValue(), TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
     }
 
     @Test
@@ -200,34 +197,34 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsNodeBuilder ovsNodeBuilder = new OvsNodeBuilder();
 
         ovsNodeBuilder.setNodeId(new OvsdbNodeRef(nodeIID));
-        ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(testBridgeName))
+        ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(TEST_BRIDGE_NAME))
             .setManagedBy(new OvsdbNodeRef(nodeIID));
 
         InstanceIdentifier<Node> testNodeIID = SfcOvsUtil.buildOvsdbNodeIID(ovsdbBridgeAugmentationBuilder.build());
 
         assertNotNull("Must not be null", testNodeIID);
         assertEquals("Must be equal", InstanceIdentifier.keyOf(testNodeIID).getNodeId().getValue(),
-                testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
+                TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
     }
 
     @Test
     // whether the ovsdb node IID is successfully created when sff name is available
     public void testBuildOvsdbNodeIIDFromString() {
-        InstanceIdentifier<Node> testNodeIID = SfcOvsUtil.buildOvsdbNodeIID(testString);
+        InstanceIdentifier<Node> testNodeIID = SfcOvsUtil.buildOvsdbNodeIID(TEST_STRING);
 
         assertNotNull("Must not be null", testNodeIID);
-        assertEquals("Must be equal", InstanceIdentifier.keyOf(testNodeIID).getNodeId().getValue(), testString);
+        assertEquals("Must be equal", InstanceIdentifier.keyOf(testNodeIID).getNodeId().getValue(), TEST_STRING);
     }
 
     @Test
     // whether the ovsdb node IID is successfully created when node id is available
     public void testBuildOvsdbNodeIIDFromNodeId() {
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(NodeId.getDefaultInstance(testString));
+        nodeBuilder.setNodeId(NodeId.getDefaultInstance(TEST_STRING));
         InstanceIdentifier<Node> testNodeIID = SfcOvsUtil.buildOvsdbNodeIID(nodeBuilder.build().getNodeId());
 
         assertNotNull("Must not be null", testNodeIID);
-        assertEquals("Must be equal", InstanceIdentifier.keyOf(testNodeIID).getNodeId().getValue(), testString);
+        assertEquals("Must be equal", InstanceIdentifier.keyOf(testNodeIID).getNodeId().getValue(), TEST_STRING);
     }
 
     @Test
@@ -240,27 +237,27 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", bridgeIID.getTargetType(), OvsdbBridgeAugmentation.class);
         assertEquals("Must be equal",
                 InstanceIdentifier.keyOf(bridgeIID.firstIdentifierOf(Node.class)).getNodeId().getValue(),
-                testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
+                TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
     }
 
     @Test
     // whether the ovsdb bridge IID is successfully created when node id is available
     public void testBuildOvsdbBridgeIIDFromNodeId() {
-        bridgeIID = SfcOvsUtil.buildOvsdbBridgeIID(new NodeId(testString));
+        bridgeIID = SfcOvsUtil.buildOvsdbBridgeIID(new NodeId(TEST_STRING));
 
         assertNotNull("Must not be null", bridgeIID);
         assertEquals("Must be equal",
-                InstanceIdentifier.keyOf(bridgeIID.firstIdentifierOf(Node.class)).getNodeId().getValue(), testString);
+                InstanceIdentifier.keyOf(bridgeIID.firstIdentifierOf(Node.class)).getNodeId().getValue(), TEST_STRING);
     }
 
     @Test
     // whether the ovsdb bridge IID is successfully created when sff name is available
     public void testBuildOvsdbBridgeIIDFromString() {
-        bridgeIID = SfcOvsUtil.buildOvsdbBridgeIID(testString);
+        bridgeIID = SfcOvsUtil.buildOvsdbBridgeIID(TEST_STRING);
 
         assertNotNull("Must not be null", bridgeIID);
         assertEquals("Must be equal",
-                InstanceIdentifier.keyOf(bridgeIID.firstIdentifierOf(Node.class)).getNodeId().getValue(), testString);
+                InstanceIdentifier.keyOf(bridgeIID.firstIdentifierOf(Node.class)).getNodeId().getValue(), TEST_STRING);
     }
 
     @Test
@@ -271,7 +268,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         // create ovsdb termination point augmentation with name
         OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
                 new OvsdbTerminationPointAugmentationBuilder();
-        ovsdbTerminationPointAugmentationBuilder.setName(testString);
+        ovsdbTerminationPointAugmentationBuilder.setName(TEST_STRING);
 
         InstanceIdentifier<OvsdbTerminationPointAugmentation> terminationPointAugmentationIID =
                 SfcOvsUtil.buildOvsdbTerminationPointAugmentationIID(createOvsdbBridgeAugmentation(),
@@ -282,10 +279,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 OvsdbTerminationPointAugmentation.class);
         assertEquals("Must be equal", InstanceIdentifier
             .keyOf(terminationPointAugmentationIID.firstIdentifierOf(Node.class)).getNodeId().getValue(),
-                testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
+                TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
         assertEquals("Must be equal", InstanceIdentifier
             .keyOf(terminationPointAugmentationIID.firstIdentifierOf(TerminationPoint.class)).getTpId().getValue(),
-                testString);
+                TEST_STRING);
     }
 
     @Test
@@ -293,10 +290,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // locator name are available
     public void testBuildOvsdbTerminationPointIIDFromStrings() {
         InstanceIdentifier<TerminationPoint> terminationPointIID =
-                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(testString), sffDataPlaneLocator.getValue());
+                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(TEST_STRING), SFF_DATA_PLANE_LOCATOR.getValue());
 
         assertEquals(InstanceIdentifier.keyOf(terminationPointIID).getTpId().getValue(),
-                sffDataPlaneLocator.getValue());
+                SFF_DATA_PLANE_LOCATOR.getValue());
     }
 
     @Test
@@ -306,27 +303,27 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertNull("Must be null", ipAddress);
 
         // set ipv4 address
-        ipAddress = SfcOvsUtil.convertStringToIpAddress(ipv4Address);
+        ipAddress = SfcOvsUtil.convertStringToIpAddress(IP_ADDRESS);
         assertNotNull("Must not be null", ipAddress);
-        assertEquals("Must be equal", ipAddress.getIpv4Address().getValue(), ipv4Address);
+        assertEquals("Must be equal", ipAddress.getIpv4Address().getValue(), IP_ADDRESS);
 
         // ser ipv6 address
-        ipAddress = SfcOvsUtil.convertStringToIpAddress(ipv6Address);
+        ipAddress = SfcOvsUtil.convertStringToIpAddress(IPV6_ADDRESS);
         assertNotNull("Must not be null", ipAddress);
-        assertEquals("Must be equal", ipAddress.getIpv6Address().getValue(), ipv6Address);
+        assertEquals("Must be equal", ipAddress.getIpv6Address().getValue(), IPV6_ADDRESS);
     }
 
     @Test
     public void testConvertIpAddressToString() {
         // set ipv4 string address
-        String convertedIpAddress = SfcOvsUtil.convertIpAddressToString(new IpAddress(new Ipv4Address(ipv4Address)));
+        String convertedIpAddress = SfcOvsUtil.convertIpAddressToString(new IpAddress(new Ipv4Address(IP_ADDRESS)));
         assertNotNull("Must not be null", convertedIpAddress);
-        assertEquals("Must be equal", convertedIpAddress, ipv4Address);
+        assertEquals("Must be equal", convertedIpAddress, IP_ADDRESS);
 
         // set ipv6 string address
-        convertedIpAddress = SfcOvsUtil.convertIpAddressToString(new IpAddress(new Ipv6Address(ipv6Address)));
+        convertedIpAddress = SfcOvsUtil.convertIpAddressToString(new IpAddress(new Ipv6Address(IPV6_ADDRESS)));
         assertNotNull("Must not be null", convertedIpAddress);
-        assertEquals("Must be equal", convertedIpAddress, ipv6Address);
+        assertEquals("Must be equal", convertedIpAddress, IPV6_ADDRESS);
     }
 
     @Test
@@ -340,7 +337,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
 
-        SffName sffName = new SffName(testIpAddress + OVSDB_BRIDGE_PREFIX + testBridgeName);
+        SffName sffName = new SffName(TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
 
         // delete created ovsdb termination point
         result = SfcOvsUtil.deleteOvsdbTerminationPoint(
@@ -390,8 +387,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         IpBuilder ipBuilder = new IpBuilder();
         NodeBuilder nodeBuilder = new NodeBuilder();
 
-        nodeBuilder.setNodeId(new NodeId(ipv4Address));
-        ipBuilder.setIp(new IpAddress(new Ipv4Address(ipv4Address)));
+        nodeBuilder.setNodeId(new NodeId(IP_ADDRESS));
+        ipBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS)));
 
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()));
@@ -400,16 +397,14 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // ip address assigned to data plane locator, we can recover it from node
         assertNotNull("Must not be null", node);
-        assertEquals("Must be equal", node.getNodeId().getValue(), ipv4Address);
+        assertEquals("Must be equal", node.getNodeId().getValue(), IP_ADDRESS);
     }
 
     @Test
     // existing sff should be augmented with openflow node id
     public void testAugmentSffWithOpenFlowNodeId() throws Exception {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(new SffName(testString));
-        SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
-        OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
+        serviceFunctionForwarderBuilder.setName(new SffName(TEST_STRING));
         IpBuilder ipBuilder = new IpBuilder();
 
         // sff has got no node id, so it's returned without changes
@@ -417,26 +412,28 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getName().getValue(), testString);
+        assertEquals("Must be equal", serviceFunctionForwarder.getName().getValue(), TEST_STRING);
 
         // create sff data plane locator
-        ipBuilder.setIp(new IpAddress(new Ipv4Address(testIpAddress)));
+        ipBuilder.setIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 
         // create sffOvsBridgeAugmentation
-        ovsBridgeBuilder.setBridgeName(testBridgeName);
+        SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
+        OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
+        ovsBridgeBuilder.setBridgeName(TEST_BRIDGE_NAME);
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
         // create sff with all parameters
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()))
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(new SffName(testIpAddress)));
+            .setKey(new ServiceFunctionForwarderKey(new SffName(TEST_IP_ADDRESS)));
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), testIpAddress);
+        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_IP_ADDRESS);
         assertEquals("Must be equal", serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getKey().getName(),
-                dplName);
+                DPL_NAME);
         assertEquals("Must be equal", serviceFunctionForwarder.getSffDataPlaneLocator()
             .get(0)
             .getDataPlaneLocator()
@@ -448,13 +445,13 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // rest of the cases of this method are tested here
     public void testAugmentSffWithOpenFlowNodeId1() throws Exception {
         final String ofNodeId = "openflow:95075992133360";
-        ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
 
         // create and write node
         OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
         org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress ipAddress =
                 new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress(
-                        new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(testIpAddress));
+                        new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns
+                        .yang.ietf.inet.types.rev130715.Ipv4Address(TEST_IP_ADDRESS));
 
         ovsdbNodeAugmentationBuilder.setConnectionInfo(
                 new ConnectionInfoBuilder().setRemoteIp(ipAddress).build());
@@ -472,23 +469,25 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertTrue("Must be true", transactionSuccessful);
 
         // create service function forwarder
-        serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(new SffName(testString)))
-            .setIpMgmtAddress(new IpAddress(new Ipv4Address(testIpAddress)));
+        ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder =
+                new ServiceFunctionForwarderBuilder();
+        serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 
         ServiceFunctionForwarder serviceFunctionForwarder = serviceFunctionForwarderBuilder.build();
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), testString);
+        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_STRING);
         assertEquals("Must be equal", serviceFunctionForwarder.getIpMgmtAddress().getIpv4Address().getValue(),
-                testIpAddress);
+                TEST_IP_ADDRESS);
 
         // create and write ovs db bridge augmentation
         OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        ovsdbBridgeAugmentationBuilder.setDatapathId(new DatapathId(testDataPath));
+        ovsdbBridgeAugmentationBuilder.setDatapathId(new DatapathId(TEST_DATA_PATH));
 
         InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-            .child(Node.class, new NodeKey(new NodeId(testIpAddress + "/bridge/" + testBridgeName)))
+            .child(Node.class, new NodeKey(new NodeId(TEST_IP_ADDRESS + "/bridge/" + TEST_BRIDGE_NAME)))
             .augmentation(OvsdbBridgeAugmentation.class);
 
         transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(bridgeEntryIID,
@@ -497,7 +496,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // create sff data plane locator
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(new IpAddress(new Ipv4Address(ipv4Address))).setPort(new PortNumber(5000));
+        ipBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS))).setPort(new PortNumber(5000));
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
         dataPlaneLocatorBuilder.setTransport(VxlanGpe.class).setLocatorType(ipBuilder.build());
@@ -512,14 +511,14 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // set sff bridge augmentation
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
-        ovsBridgeBuilder.setBridgeName(testBridgeName);
+        ovsBridgeBuilder.setBridgeName(TEST_BRIDGE_NAME);
 
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(new SffName(testString)))
+            .setKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
             .setSffDataPlaneLocator(sffDataPlaneLocators);
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
@@ -528,7 +527,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertEquals("Must be equal", serviceFunctionForwarder.getAugmentation(SffOvsBridgeAugmentation.class)
             .getOvsBridge()
             .getOpenflowNodeId(), ofNodeId);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), testString);
+        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_STRING);
     }
 
     @Test
@@ -546,18 +545,18 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
                 InstanceIdentifier.keyOf(nodeIID).getNodeId());
 
         assertNotNull("Must not be null", datapathId);
-        assertEquals(datapathId.getValue(), testDataPath);
+        assertEquals(datapathId.getValue(), TEST_DATA_PATH);
     }
 
     @Test
     public void testGetLongFromDpid() throws Exception {
         Long result;
-        // expected result of decoding based on testDataPath string, when you change that string,
+        // expected result of decoding based on TEST_DATA_PATH string, when you change that string,
         // this test will not pass!
         Long expectedResult = 95075992133360L;
 
         // TODO remove reflection for "getLongFromDpid"
-        result = Whitebox.invokeMethod(SfcOvsUtil.class, "getLongFromDpid", testDataPath);
+        result = Whitebox.invokeMethod(SfcOvsUtil.class, "getLongFromDpid", TEST_DATA_PATH);
 
         assertNotNull("Must not be null", result);
         assertEquals("Must be equal", result, expectedResult);
@@ -572,7 +571,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         assertNull("Must be null", node);
 
-        node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(ipv6Address)), executorService);
+        node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)), executorService);
 
         assertNull("Must be null", node);
     }
@@ -582,10 +581,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetManagerNodeByIpV4() {
 
         // ipv4 address
-        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv4Address(testIpAddress)), executorService);
+        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)), executorService);
 
         assertNotNull("Must be not null", node);
-        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), testIpAddress);
+        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), TEST_IP_ADDRESS);
     }
 
     @Test
@@ -596,26 +595,27 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
         org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress ipAddress =
                 new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress(
-                        new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address(ipv6Address));
+                        new org.opendaylight.yang.gen.v1.urn.ietf.params
+                        .xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address(IPV6_ADDRESS));
 
         ovsdbNodeAugmentationBuilder.setConnectionInfo(
                 new ConnectionInfoBuilder().setRemoteIp(ipAddress).build());
 
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(ipv6Address)).addAugmentation(OvsdbNodeAugmentation.class,
+        nodeBuilder.setNodeId(new NodeId(IPV6_ADDRESS)).addAugmentation(OvsdbNodeAugmentation.class,
                 ovsdbNodeAugmentationBuilder.build());
 
-        InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(ipv6Address);
+        InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(IPV6_ADDRESS);
 
         boolean transactionSuccessful =
                 SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
         assertTrue("Must be true", transactionSuccessful);
 
         // ipv6 address
-        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(ipv6Address)), executorService);
+        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)), executorService);
 
         assertNotNull("Must be not null", node);
-        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), ipv6Address);
+        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), IPV6_ADDRESS);
     }
 
     @Test
@@ -646,7 +646,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     @Test
     // null test
     public void testGetOvsdbNodeAugmentationNull1() {
-        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(createOvsdbBridgeIID(new NodeId(testString)));
+        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(createOvsdbBridgeIID(new NodeId(TEST_STRING)));
 
         OvsdbNodeAugmentation ovsdbNodeAugmentation =
                 SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executorService);
@@ -692,7 +692,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
 
-        ovsBridgeBuilder.setBridgeName(testBridgeName);
+        ovsBridgeBuilder.setBridgeName(TEST_BRIDGE_NAME);
         sffOvsBridgeAugmentationBuilder.setOvsBridge(ovsBridgeBuilder.build());
 
         serviceFunctionForwarderBuilder.addAugmentation(SffOvsBridgeAugmentation.class,
@@ -711,7 +711,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      */
     public void getOfPortByNameTest1() {
         final String ofNodeId = "openflow:95075992133360";
-        assertEquals("Must be equal", SfcOvsUtil.getOfPortByName(ofNodeId, testString), testPort);
+        assertEquals("Must be equal", SfcOvsUtil.getOfPortByName(ofNodeId, TEST_STRING), TEST_PORT);
     }
 
     @Test
@@ -721,7 +721,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      */
     public void getVxlanOfPortTest1() {
         final String ofNodeId = "openflow:95075992133360";
-        assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), testPort);
+        assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), TEST_PORT);
     }
 
     /*
@@ -730,7 +730,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static InstanceIdentifier<Node> createNodeIID() {
         return InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-            .child(Node.class, new NodeKey(new NodeId(testIpAddress)));
+            .child(Node.class, new NodeKey(new NodeId(TEST_IP_ADDRESS)));
 
     }
 
@@ -743,11 +743,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
          */
 
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(testIpAddress))
-            .setTerminationPoint(createTerminationPointList())
-            .addAugmentation(OvsdbNodeAugmentation.class, SfcOvsDataStoreAPITest.createOvsdbNodeAugmentation(testIpAddress))
-            .addAugmentation(OvsdbBridgeAugmentation.class, createOvsdbBridgeAugmentation())
-            .setKey(new NodeKey(new NodeId(testIpAddress)));
+        nodeBuilder.setNodeId(new NodeId(TEST_IP_ADDRESS)).setTerminationPoint(createTerminationPointList())
+                .addAugmentation(OvsdbNodeAugmentation.class,
+                        SfcOvsDataStoreAPITest.createOvsdbNodeAugmentation(TEST_IP_ADDRESS))
+                .addAugmentation(OvsdbBridgeAugmentation.class, createOvsdbBridgeAugmentation())
+                .setKey(new NodeKey(new NodeId(TEST_IP_ADDRESS)));
         isCreated =
                 SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
         if (isCreated) {
@@ -780,7 +780,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         List<TerminationPoint> terminationPointList = new ArrayList<>();
         TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
         terminationPointBuilder.setTpId(new TpId("tp_id"));
-        terminationPointBuilder.addAugmentation(OvsdbTerminationPointAugmentation.class, createOvsdbTerminationPointAugmentation());
+        terminationPointBuilder.addAugmentation(OvsdbTerminationPointAugmentation.class,
+                createOvsdbTerminationPointAugmentation());
         terminationPointList.add(terminationPointBuilder.build());
         return terminationPointList;
     }
@@ -792,7 +793,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 //    private OvsdbNodeAugmentation createOvsdbNodeAugmentation() {
 //        OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder = new OvsdbNodeAugmentationBuilder();
 //        ConnectionInfoBuilder connectionInfoBuilder = new ConnectionInfoBuilder();
-//        connectionInfoBuilder.setRemoteIp(new IpAddress(new Ipv4Address(testIpAddress)));
+//        connectionInfoBuilder.setRemoteIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 //        ovsdbNodeAugmentationBuilder.setDbVersion("DbVersion_")
 //            .setOvsVersion("OvsVersion_")
 //            .setConnectionInfo(connectionInfoBuilder.build());
@@ -803,12 +804,12 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      * build ovsdb termination point augmentation
      *
      */
-     private OvsdbTerminationPointAugmentation createOvsdbTerminationPointAugmentation() {
+    private OvsdbTerminationPointAugmentation createOvsdbTerminationPointAugmentation() {
         OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
                 new OvsdbTerminationPointAugmentationBuilder();
-        ovsdbTerminationPointAugmentationBuilder.setName(testString);
+        ovsdbTerminationPointAugmentationBuilder.setName(TEST_STRING);
         ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
-        ovsdbTerminationPointAugmentationBuilder.setOfport(testPort);
+        ovsdbTerminationPointAugmentationBuilder.setOfport(TEST_PORT);
 
         return ovsdbTerminationPointAugmentationBuilder.build();
     }
@@ -819,9 +820,9 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
      */
     private OvsdbBridgeAugmentation createOvsdbBridgeAugmentation() {
         OvsdbBridgeAugmentationBuilder ovsdbBridgeAugmentationBuilder = new OvsdbBridgeAugmentationBuilder();
-        ovsdbBridgeAugmentationBuilder.setBridgeName(new OvsdbBridgeName(testBridgeName))
+        ovsdbBridgeAugmentationBuilder.setBridgeName(new OvsdbBridgeName(TEST_BRIDGE_NAME))
             .setManagedBy(new OvsdbNodeRef(nodeIID))
-            .setDatapathId(new DatapathId(testDataPath));
+            .setDatapathId(new DatapathId(TEST_DATA_PATH));
         return ovsdbBridgeAugmentationBuilder.build();
     }
 
@@ -842,8 +843,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private List<SffDataPlaneLocator> createSffDataPlaneLocatorList(Class transportType, LocatorType locatorType) {
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
-        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
         SffOvsLocatorOptionsAugmentationBuilder sffOvsLocatorOptionsAugmentationBuilder =
                 new SffOvsLocatorOptionsAugmentationBuilder();
 
@@ -862,7 +861,9 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         dataPlaneLocatorBuilder.setLocatorType(locatorType);
 
         // set sff data plane locator
-        sffDataPlaneLocatorBuilder.setName(dplName)
+        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
+        List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
+        sffDataPlaneLocatorBuilder.setName(DPL_NAME)
             .setDataPlaneLocator(dataPlaneLocatorBuilder.build())
             .addAugmentation(SffOvsLocatorOptionsAugmentation.class, sffOvsLocatorOptionsAugmentationBuilder.build());
 

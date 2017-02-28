@@ -39,13 +39,15 @@ import org.opendaylight.yangtools.yang.binding.YangModuleInfo;
 import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
 
 /**
+ * Abstract datastore for testing purposes.
+ *
  * @author ebrjohn
  *
  */
 public class AbstractDataStoreManager extends AbstractDataBrokerTest {
     protected DataBroker dataBroker;
     protected SfcInstanceIdentifiers sfcIids;
-    protected static ExecutorService executor =  Executors.newFixedThreadPool(5);
+    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     protected void setupSfc() {
         dataBroker = getDataBroker();
@@ -55,14 +57,15 @@ public class AbstractDataStoreManager extends AbstractDataBrokerTest {
     }
 
     protected void close() throws ExecutionException, InterruptedException {
-        if(sfcIids != null) {
+        if (sfcIids != null) {
             // Deletes everything from SFC that was created in the datastore
             sfcIids.close();
         }
     }
+
     /*
-     * loads only SFC YANG modules needed for these tests - increased performance
-     * Specify a class from YANG which should be loaded
+     * loads only SFC YANG modules needed for these tests - increased
+     * performance Specify a class from YANG which should be loaded
      */
     @Override
     protected Iterable<YangModuleInfo> getModuleInfos() throws Exception {

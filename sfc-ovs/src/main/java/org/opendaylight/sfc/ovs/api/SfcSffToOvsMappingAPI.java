@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -49,12 +49,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has the APIs to map SFC Service Function Forwarder to OVS Bridge
+ * This class has the APIs to map SFC Service Function Forwarder to OVS Bridge.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @see SfcSffToOvsMappingAPI
- *      <p>
  * @since 2015-03-23
  */
 public class SfcSffToOvsMappingAPI {
@@ -66,8 +65,8 @@ public class SfcSffToOvsMappingAPI {
      * Builds OvsdbBridgeAugmentation from ServiceFunctionForwarder object. Built augmentation is
      * intended to be written
      * into Configuration Ovsdb DataStore (network-topology/topology/ovsdb:1).
-     * <p>
      *
+     * <p>
      * @param serviceFunctionForwarder {@link ServiceFunctionForwarder}
      * @param executor - {@link ExecutorService}
      * @return {@link OvsdbBridgeAugmentation}
@@ -150,11 +149,12 @@ public class SfcSffToOvsMappingAPI {
     /**
      * Builds a list of OvsdbTerminationPointAugmentation from a list of SffDataPlanLocators.
      * In other words, it transforms ServiceForwarder DataPlane locators to OVS TerminationPoints.
+     *
      * <p>
      * Built list of augmentations is intended to be written into Configuration Ovsdb DataStore
      * (network-topology/topology/ovsdb:1).
-     * <p>
      *
+     * <p>
      * @param sffDataPlaneLocatorList List&lt;SffDataPlaneLocator&gt;
      * @return List&lt;OvsdbTerminationPointAugmentation&gt;
      */
@@ -186,11 +186,12 @@ public class SfcSffToOvsMappingAPI {
 
     /**
      * Get SFF dataplane Locator options such as remote_ip and local_ip.
+     *
      * <p>
      * Returns the list of all options associated with a data plane locator. The caller needs
      * to check array is empty and only then add to the associated builder object.
-     * <p>
      *
+     * <p>
      * @param sffDataPlaneLocator SffDataPlaneLocator
      * @return List&lt;Options&gt; if there are any or null otherwise
      */
@@ -350,8 +351,10 @@ public class SfcSffToOvsMappingAPI {
                 "Cannot determine DataPlaneLocator transport type, dataPlaneLocator is null.");
 
         if (dataPlaneLocator.getTransport() == Other.class) {
-            org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Other otherLocatorType =
-                    (org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Other) dataPlaneLocator
+            org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701
+                .data.plane.locator.locator.type.Other otherLocatorType =
+                    (org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl
+                            .rev140701.data.plane.locator.locator.type.Other) dataPlaneLocator
                         .getLocatorType();
             if (otherLocatorType != null) {
                 if (otherLocatorType.getOtherName().equals(SfcOvsUtil.DPL_NAME_DPDK)) {

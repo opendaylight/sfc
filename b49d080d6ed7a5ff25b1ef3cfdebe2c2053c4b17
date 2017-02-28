@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_dbb3384b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 575,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-02-28T13:40:29Z",
+      "side": 1,
+      "message": "Using the \"copy\" constructor makes the second clause unnecessary: \n\nList\u003cRenderedServicePathHop\u003e revRenderedServicePathHopArrayList \u003d new ArrayList\u003c\u003e(renderedServicePathHopList);",
+      "range": {
+        "startLine": 574,
+        "startChar": 8,
+        "endLine": 575,
+        "endChar": 78
+      },
+      "revId": "b49d080d6ed7a5ff25b1ef3cfdebe2c2053c4b17",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_1b3e608c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-02-28T13:40:29Z",
+      "side": 1,
+      "message": "couldn\u0027t you just reverse the original list, then apply the new hop number and service index to the entire collection?",
+      "range": {
+        "startLine": 580,
+        "startChar": 0,
+        "endLine": 591,
+        "endChar": 9
+      },
+      "revId": "b49d080d6ed7a5ff25b1ef3cfdebe2c2053c4b17",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_1b0ca0ec",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 868,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-02-28T13:40:29Z",
+      "side": 1,
+      "message": "couln\u0027t you forget the index and iterate the collection, for each style? \n\nex: for(ServiceFunctionType sfType : serviceFunctionTypeList) {...}",
+      "range": {
+        "startLine": 867,
+        "startChar": 0,
+        "endLine": 868,
+        "endChar": 120
+      },
+      "revId": "b49d080d6ed7a5ff25b1ef3cfdebe2c2053c4b17",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_1b0b008f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 1205,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-02-28T13:40:29Z",
+      "side": 1,
+      "message": "This code is duplicated from lines [1307 - 1317].",
+      "range": {
+        "startLine": 1196,
+        "startChar": 6,
+        "endLine": 1205,
+        "endChar": 9
+      },
+      "revId": "b49d080d6ed7a5ff25b1ef3cfdebe2c2053c4b17",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

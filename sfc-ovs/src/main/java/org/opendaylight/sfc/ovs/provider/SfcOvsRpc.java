@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,9 +20,9 @@ package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
-import java.util.concurrent.Future;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
@@ -53,15 +53,16 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
      * This method writes a new OVS Bridge into OVSDB Config DataStore. This write event triggers
      * creation of the OVS Bridge in running OpenVSwitch instance identified by OVS Node ip:port
      * locator.
-     * <p>
      *
+     * <p>
      * @param input RPC input including a OVS Bridge name and parent OVS Node ip:port locator
      * @return RPC output: true if write to OVSDB Config DataStore was successful, otherwise false.
      */
     @Override
     public Future<RpcResult<CreateOvsBridgeOutput>> createOvsBridge(CreateOvsBridgeInput input) {
         Preconditions.checkNotNull(input, "create-ovs-bridge RPC input must be not null!");
-        Preconditions.checkNotNull(input.getOvsNode(), "create-ovs-bridge RPC input container ovs-node must be not null!");
+        Preconditions.checkNotNull(input.getOvsNode(),
+                "create-ovs-bridge RPC input container ovs-node must be not null!");
 
         RpcResultBuilder<CreateOvsBridgeOutput> rpcResultBuilder;
         NodeId nodeId = null;
@@ -99,14 +100,15 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             if ((boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, executor)) {
                 rpcResultBuilder = RpcResultBuilder.success(new CreateOvsBridgeOutputBuilder().setResult(true).build());
             } else {
-                String message = "Error writing OVS Bridge: '" + input.getName() + "' into OVSDB Configuration DataStore.";
+                String message = "Error writing OVS Bridge: '" + input.getName()
+                        + "' into OVSDB Configuration DataStore.";
                 rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
                         .withError(RpcError.ErrorType.APPLICATION, message);
             }
 
         } else {
-            String message = "Error writing OVS Bridge: '" + input.getName() +
-                    "' into OVSDB Configuration DataStore (cannot determine parent NodeId).";
+            String message = "Error writing OVS Bridge: '" + input.getName()
+                    + "' into OVSDB Configuration DataStore (cannot determine parent NodeId).";
             rpcResultBuilder = RpcResultBuilder.<CreateOvsBridgeOutput>failed()
                     .withError(RpcError.ErrorType.APPLICATION, message);
         }

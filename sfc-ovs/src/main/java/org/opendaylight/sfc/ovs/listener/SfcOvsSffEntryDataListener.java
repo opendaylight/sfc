@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -45,7 +45,6 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
     // TODO is this necessary????
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
-
     public SfcOvsSffEntryDataListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
     }
@@ -69,6 +68,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
             listenerRegistration.close();
         }
     }
+
     @Override
     protected void add(ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.info("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
@@ -80,17 +80,20 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
     protected void remove(ServiceFunctionForwarder deletedServiceFunctionForwarder) {
         LOG.info("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
 
-        // Since in most cases, the OvsdbNode was not created by SFC, lets not delete it
+        // Since in most cases, the OvsdbNode was not created by SFC, lets not
+        // delete it
 
         // Delete the VXGPE port
 
         // Iterate the SFF DPLs
         NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(deletedServiceFunctionForwarder);
-        for(SffDataPlaneLocator sffDpl : deletedServiceFunctionForwarder.getSffDataPlaneLocator()) {
+        for (SffDataPlaneLocator sffDpl : deletedServiceFunctionForwarder.getSffDataPlaneLocator()) {
 
-            // Only delete the port if this SFF is OVS augmented and the transport is VxGpe
-            SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
-            if(sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
+            // Only delete the port if this SFF is OVS augmented and the
+            // transport is VxGpe
+            SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl
+                    .getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+            if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
                 // delete OvsdbTerminationPoint
                 SfcOvsUtil.deleteOvsdbTerminationPoint(
                         SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()),
@@ -102,21 +105,29 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
     @Override
     protected void update(ServiceFunctionForwarder originalServiceFunctionForwarder,
             ServiceFunctionForwarder updatedServiceFunctionForwarder) {
-        // Notice: Adding an SffDpl to an existing SFF will trigger this listener, not a separate SffDplListener
-        //         which means 2 different listeners are not needed. This was tested with the following command for an existing SFF:
-        // curl -i -H "Content-Type: application/json" --data '{ "sff-data-plane-locator": [ { "name": "vxgpe1", "data-plane-locator":
-        //                 { "ip": "192.168.1.54", "port": 6633, "transport": "service-locator:vxlan-gpe" } } ] }'
-        //      -X PUT --user admin:admin http://localhost:${PORT}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/sff1/sff-data-plane-locator/vxgpe1
+        // Notice: Adding an SffDpl to an existing SFF will trigger this
+        // listener, not a separate SffDplListener
+        // which means 2 different listeners are not needed. This was tested
+        // with the following command for an existing SFF:
+        // curl -i -H "Content-Type: application/json" --data '{
+        // "sff-data-plane-locator": [ { "name": "vxgpe1", "data-plane-locator":
+        // { "ip": "192.168.1.54", "port": 6633, "transport":
+        // "service-locator:vxlan-gpe" } } ] }'
+        // -X PUT --user admin:admin
+        // http://localhost:${PORT}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/sff1/sff-data-plane-locator/vxgpe1
 
         LOG.info("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
         // rewrite augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(updatedServiceFunctionForwarder);
     }
 
-
     /**
-     * @param sff ServiceFunctionForwarder Object
-     * @param executor ExecutorService Object
+     * Add OVSDB augmentations.
+     *
+     * @param sff
+     *            ServiceFunctionForwarder Object.
+     * @param executor
+     *            ExecutorService Object
      */
     static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
 

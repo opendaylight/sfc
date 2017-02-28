@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -46,7 +46,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node> {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
     private final DataBroker dataBroker;
@@ -65,11 +64,10 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
     }
 
     private void registerListeners() {
-        final DataTreeIdentifier<Node> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL,
+        final DataTreeIdentifier<Node> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class));
+                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                        .child(Node.class));
         listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
@@ -83,11 +81,12 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
 
     @Override
     protected void add(Node createdNode) {
-        /* NODE CREATION
-         * When user puts SFF into config DS, reading from topology is involved to
-         * write OVSDB bridge and termination point augmentations into config DS.
-         * Created data are handled because user might put SFF into config DS
-         * before topology in operational DS gets populated.
+        /*
+         * NODE CREATION When user puts SFF into config DS, reading from
+         * topology is involved to write OVSDB bridge and termination point
+         * augmentations into config DS. Created data are handled because user
+         * might put SFF into config DS before topology in operational DS gets
+         * populated.
          */
 
         LOG.debug("\nCreated OVS Node: {}", createdNode.toString());
@@ -96,22 +95,25 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
         if (ovsdbNodeAugmentation != null) {
             final ConnectionInfo connectionInfo = ovsdbNodeAugmentation.getConnectionInfo();
             if (connectionInfo != null) {
-                CheckedFuture<Optional<ServiceFunctionForwarders>, ReadFailedException> exitsingSffs = readServiceFunctionForwarders();
+                CheckedFuture<Optional<ServiceFunctionForwarders>, ReadFailedException>
+                    exitsingSffs = readServiceFunctionForwarders();
                 Futures.addCallback(exitsingSffs, new FutureCallback<Optional<ServiceFunctionForwarders>>() {
 
                     @Override
                     public void onSuccess(Optional<ServiceFunctionForwarders> optionalSffs) {
                         if (optionalSffs.isPresent()) {
-                            ServiceFunctionForwarder sff = SfcOvsUtil.findSffByIp(optionalSffs.get(), connectionInfo.getRemoteIp());
-                            if(sff != null) {
-                                LOG.info("SfcOvsNodeDataListener will create the necessary entities for SFF [{}]", sff.getName().getValue());
+                            ServiceFunctionForwarder sff = SfcOvsUtil.findSffByIp(optionalSffs.get(),
+                                    connectionInfo.getRemoteIp());
+                            if (sff != null) {
+                                LOG.info("SfcOvsNodeDataListener will create the necessary entities for SFF [{}]",
+                                        sff.getName().getValue());
                                 SfcOvsSffEntryDataListener.addOvsdbAugmentations(sff);
                             }
                         }
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Throwable throwable) {
                         LOG.error("Failed to read SFFs from data store.");
                     }
                 });
@@ -121,27 +123,27 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
 
     @Override
     protected void remove(Node deletedNode) {
-        /* NODE UPDATE and NODE DELETE
-         * This case would mean, that user has modified vSwitch state
-         * directly by ovs command, which is not handled yet.
-         * Other modifications should be done in config DS.
+        /*
+         * NODE UPDATE and NODE DELETE This case would mean, that user has
+         * modified vSwitch state directly by ovs command, which is not handled
+         * yet. Other modifications should be done in config DS.
          */
     }
 
     @Override
     protected void update(Node originalNode, Node updatedNode) {
-        /* NODE UPDATE and NODE DELETE
-         * This case would mean, that user has modified vSwitch state
-         * directly by ovs command, which is not handled yet.
-         * Other modifications should be done in config DS.
+        /*
+         * NODE UPDATE and NODE DELETE This case would mean, that user has
+         * modified vSwitch state directly by ovs command, which is not handled
+         * yet. Other modifications should be done in config DS.
          */
     }
 
     private CheckedFuture<Optional<ServiceFunctionForwarders>, ReadFailedException> readServiceFunctionForwarders() {
-        ReadTransaction rTx = dataBroker.newReadOnlyTransaction();
-        InstanceIdentifier<ServiceFunctionForwarders> sffIid = InstanceIdentifier.builder(
-                ServiceFunctionForwarders.class).build();
-        return rTx.read(LogicalDatastoreType.CONFIGURATION, sffIid);
+        ReadTransaction transaction = dataBroker.newReadOnlyTransaction();
+        InstanceIdentifier<ServiceFunctionForwarders> sffIid = InstanceIdentifier
+                .builder(ServiceFunctionForwarders.class).build();
+        return transaction.read(LogicalDatastoreType.CONFIGURATION, sffIid);
     }
 
 }

@@ -20,10 +20,9 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.listener.SfcOvsNodeDataListener;
@@ -68,6 +67,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
+ * Sfc OVS node data listener test suite.
+ *
  * @author ebrjohn
  *
  */
@@ -78,35 +79,33 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
     private static IpAddress testIpAddress = new IpAddress(new Ipv4Address("10.1.1.101"));
     private static PortNumber testPort = new PortNumber(6633);
 
-
     // class under test
     SfcOvsNodeDataListener sfcOvsNodeDataListener;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void before() throws Exception {
         setupSfc();
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         sfcOvsNodeDataListener = new SfcOvsNodeDataListener(getDataBroker());
-        // Dont initialize it since the listener may launch when we're not ready yet
-        //sfcOvsNodeDataListener.init();
+        // Dont initialize it since the listener may launch when we're not ready
+        // yet
+        // sfcOvsNodeDataListener.init();
     }
 
     @After
     public void after() throws Exception {
         // The listener wasnt initialized on purpose, so dont close it
-        //sfcOvsNodeDataListener.close();
+        // sfcOvsNodeDataListener.close();
         close();
     }
 
     /**
-     * testAddNode
-     * If the SFF is added before the OVS node is added, then the
+     * testAddNode If the SFF is added before the OVS node is added, then the
      * bridge and/or the termination point may not be created. The
-     * SfcOvsNodeDataListener add method will make sure the bridge
-     * and/or termination point (VXGPE port) is added if the OVS
-     * node is created AFTER the SFF is created.
+     * SfcOvsNodeDataListener add method will make sure the bridge and/or
+     * termination point (VXGPE port) is added if the OVS node is created AFTER
+     * the SFF is created.
      */
     @Test
     public void testAddNode() {
@@ -116,8 +115,10 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         assertNull(ovsdbBridgeId);
         assertNull(getSffTerminationPoint(ovsdbBridgeId, sff));
 
-        // For this test, If there's a DPL, there will only ever be just 1 SffDpl
-        IpPortLocator ipLocator = (IpPortLocator) sff.getSffDataPlaneLocator().get(0).getDataPlaneLocator().getLocatorType();
+        // For this test, If there's a DPL, there will only ever be just 1
+        // SffDpl
+        IpPortLocator ipLocator = (IpPortLocator) sff.getSffDataPlaneLocator().get(0).getDataPlaneLocator()
+                .getLocatorType();
         Node node = createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
@@ -133,7 +134,6 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         assertNotNull(ovsdbBridgeId);
         assertNotNull(getSffTerminationPoint(ovsdbBridgeId, sff));
     }
-
 
     private Node createOvsdbNodeForSff(IpAddress remoteIp, PortNumber remotePort) {
         ConnectionInfoBuilder connInfoBuilder = new ConnectionInfoBuilder();
@@ -163,7 +163,8 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         ovsOptionsBuilder.setKey("flow");
         ovsOptionsBuilder.setDstPort("6633");
         ovsOptionsBuilder.setRemoteIp("flow");
-        SffOvsLocatorOptionsAugmentationBuilder sffOvsLocatorOptionsBuilder = new SffOvsLocatorOptionsAugmentationBuilder();
+        SffOvsLocatorOptionsAugmentationBuilder sffOvsLocatorOptionsBuilder =
+                new SffOvsLocatorOptionsAugmentationBuilder();
         sffOvsLocatorOptionsBuilder.setOvsOptions(ovsOptionsBuilder.build());
 
         IpBuilder ipBuilder = new IpBuilder();
@@ -202,19 +203,22 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         return sff;
     }
 
-    private OvsdbTerminationPointAugmentation getSffTerminationPoint(NodeId ovsdbBridgeId, ServiceFunctionForwarder sff) {
-        if(ovsdbBridgeId == null) {
+    private OvsdbTerminationPointAugmentation getSffTerminationPoint(NodeId ovsdbBridgeId,
+            ServiceFunctionForwarder sff) {
+        if (ovsdbBridgeId == null) {
             return null;
         }
 
-        if(sff.getSffDataPlaneLocator() == null) {
+        if (sff.getSffDataPlaneLocator() == null) {
             return null;
         }
 
-        InstanceIdentifier<TerminationPoint> termPointIID = SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeId, sff.getSffDataPlaneLocator().get(0).getName().getValue());
-        TerminationPoint termPoint = SfcDataStoreAPI.readTransactionAPI(termPointIID, LogicalDatastoreType.CONFIGURATION);
+        InstanceIdentifier<TerminationPoint> termPointIID = SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeId,
+                sff.getSffDataPlaneLocator().get(0).getName().getValue());
+        TerminationPoint termPoint = SfcDataStoreAPI.readTransactionAPI(termPointIID,
+                LogicalDatastoreType.CONFIGURATION);
 
-        if(termPoint == null) {
+        if (termPoint == null) {
             return null;
         }
 

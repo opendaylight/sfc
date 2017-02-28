@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,7 +36,13 @@ import org.slf4j.LoggerFactory;
 public class SfcOvsDataStoreAPI implements Callable {
 
     public enum Method {
-        READ_OVSDB_BRIDGE, PUT_OVSDB_BRIDGE, PUT_OVSDB_TERMINATION_POINT, DELETE_OVSDB_TERMINATION_POINT, DELETE_OVSDB_NODE, READ_OVSDB_NODE_BY_IP, READ_OVSDB_NODE_BY_REF
+        READ_OVSDB_BRIDGE,
+        PUT_OVSDB_BRIDGE,
+        PUT_OVSDB_TERMINATION_POINT,
+        DELETE_OVSDB_TERMINATION_POINT,
+        DELETE_OVSDB_NODE,
+        READ_OVSDB_NODE_BY_IP,
+        READ_OVSDB_NODE_BY_REF
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
@@ -99,7 +105,8 @@ public class SfcOvsDataStoreAPI implements Callable {
                 } catch (ClassCastException e) {
                     LOG.error(
                             "Cannot call putOvsdbTerminationPoint, passed method arguments "
-                                    + "are not instances of OvsdbBridgeAugmentation{} and OvsdbTerminationPointAugmentation: {}",
+                                    + "are not instances of OvsdbBridgeAugmentation{} and"
+                                    + "OvsdbTerminationPointAugmentation: {}",
                             methodParameters[0].toString(), methodParameters[1].toString());
                 }
                 break;
@@ -131,6 +138,9 @@ public class SfcOvsDataStoreAPI implements Callable {
                     LOG.error("Cannot call readOvsdbNodeByIp, passed method argument "
                             + "is not instance of OvsdbNodeRef: {}", methodParameters[0]);
                 }
+                break;
+            default:
+                break;
         }
 
         return result;
@@ -154,7 +164,8 @@ public class SfcOvsDataStoreAPI implements Callable {
     private boolean putOvsdbTerminationPoint(OvsdbBridgeAugmentation ovsdbBridge,
             OvsdbTerminationPointAugmentation ovsdbTerminationPoint) {
         Preconditions.checkNotNull(ovsdbTerminationPoint,
-                "Cannot PUT Termination Point into OVS configuration store, OvsdbTerminationPointAugmentation is null.");
+                "Cannot PUT Termination Point into OVS configuration store,"
+                + "OvsdbTerminationPointAugmentation is null.");
 
         return SfcDataStoreAPI.writePutTransactionAPI(
                 SfcOvsUtil.buildOvsdbTerminationPointAugmentationIID(ovsdbBridge, ovsdbTerminationPoint),
@@ -163,7 +174,8 @@ public class SfcOvsDataStoreAPI implements Callable {
 
     private boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
         Preconditions.checkNotNull(ovsdbTerminationPointIID,
-                "Cannot DELETE Termination Point from OVS configuration store, InstanceIdentifier<TerminationPoint> is null.");
+                "Cannot DELETE Termination Point from OVS configuration store,"
+                + "InstanceIdentifier<TerminationPoint> is null.");
 
         return SfcDataStoreAPI.deleteTransactionAPI(ovsdbTerminationPointIID, LogicalDatastoreType.CONFIGURATION);
     }
@@ -175,15 +187,14 @@ public class SfcOvsDataStoreAPI implements Callable {
         Topology topology = SfcDataStoreAPI.readTransactionAPI(SfcOvsUtil.buildOvsdbTopologyIID(),
                 LogicalDatastoreType.OPERATIONAL);
 
-        if(topology == null) {
+        if (topology == null) {
             LOG.warn("Cannot READ the Topology from the operational store");
             return null;
         }
 
         if (topology.getNode() == null) {
-            LOG.warn("Cannot READ Node for ipAddress [{}] from OVS operational store," +
-                     "Topology does not contain any Node.",
-                     ipAddress);
+            LOG.warn("Cannot READ Node for ipAddress [{}] from OVS operational store,"
+                    + "Topology does not contain any Node.", ipAddress);
             return null;
         }
 
@@ -209,7 +220,8 @@ public class SfcOvsDataStoreAPI implements Callable {
 
     private OvsdbBridgeAugmentation readOvsdbBridge(InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID) {
         Preconditions.checkNotNull(bridgeIID,
-                "Cannot READ OVS Bridge from OVS operational store, InstanceIdentifier<OvsdbBridgeAugmentation> is null.");
+                "Cannot READ OVS Bridge from OVS operational store, "
+                + "InstanceIdentifier<OvsdbBridgeAugmentation> is null.");
 
         return SfcDataStoreAPI.readTransactionAPI(bridgeIID, LogicalDatastoreType.OPERATIONAL);
     }

@@ -26,6 +26,7 @@ def put(host, port, uri, data, debug=False):
     r = requests.put(url, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
     if debug == True:
         print r.text
+    print "HTTP PUT %s\nresult: %s" % (uri, r.status_code)
     r.raise_for_status()
     time.sleep(5)
 
@@ -41,6 +42,7 @@ def post(host, port, uri, data, debug=False):
     r = requests.post(url, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
     if debug == True:
         print r.text
+    print "HTTP POST %s\nresult: %s" % (uri, r.status_code)
     r.raise_for_status()
     time.sleep(5)
 
@@ -105,7 +107,6 @@ def get_service_functions_data():
                 "ip-mgmt-address": "192.168.1.30",
                 "rest-uri": "http://192.168.1.30:5000",
                 "type": "dpi",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "dpi-1-dpl",
@@ -121,7 +122,6 @@ def get_service_functions_data():
                 "ip-mgmt-address": "192.168.1.40",
                 "rest-uri": "http://192.168.1.40:5000",
                 "type": "firewall",
-                "nsh-aware": "true",
                 "sf-data-plane-locator": [
                     {
                         "name": "firewall-1-dpl",
@@ -290,7 +290,6 @@ def get_service_function_chains_data():
         "service-function-chain": [
             {
                 "name": "SFC1",
-                "symmetric": "true",
                 "sfc-service-function": [
                     {
                         "name": "dpi-abstract1",
@@ -378,8 +377,7 @@ def get_rendered_service_path_data():
     return {
     "input": {
         "name": "RSP1",
-        "parent-service-function-path": "SFP1",
-        "symmetric": "true"
+        "parent-service-function-path": "SFP1"
     }
 }
 

@@ -452,20 +452,25 @@ public class SfcProviderServiceForwarderAPI {
     public static List<SffDataPlaneLocator> getNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
         List<SffDataPlaneLocator> nonSfDpls = new ArrayList<>();
 
+        LOG.error("getNonSfDataPlaneLocators sff.getSffDataPlaneLocator().size() [{}]",
+                sff.getSffDataPlaneLocator().size());
+
         for (SffDataPlaneLocator sffDpl : sff.getSffDataPlaneLocator()) {
             boolean dplInSf = false;
             if (sff.getServiceFunctionDictionary() == null) {
+                LOG.error("getNonSfDataPlaneLocators NULL getServiceFunctionDictionary");
                 continue;
             }
 
             for (ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {
                 if (sffDict.getSffSfDataPlaneLocator() == null
                         || sffDict.getSffSfDataPlaneLocator().getSffDplName() == null) {
+                    LOG.error("getNonSfDataPlaneLocators NULL getSffSfDataPlaneLocator or SffDplName");
                     continue;
                 }
                 if (sffDpl.getName().toString().equals(sffDict.getSffSfDataPlaneLocator().getSffDplName().toString())) {
                     dplInSf = true;
-                    continue;
+                    break;
                 }
             }
 

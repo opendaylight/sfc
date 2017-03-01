@@ -387,10 +387,17 @@ public class SfcProviderRenderedPathAPI {
         ServiceFunctionForwarder serviceFunctionForwarder = SfcProviderServiceForwarderAPI
                 .readServiceFunctionForwarder(serviceFunctionForwarderName);
         if (serviceFunctionForwarder != null && serviceFunctionForwarder.getSffDataPlaneLocator() != null) {
-            List<SffDataPlaneLocator> sffNonSfDplList = SfcProviderServiceForwarderAPI
-                    .getNonSfDataPlaneLocators(serviceFunctionForwarder);
-            if (sffNonSfDplList.size() == 1) {
-                renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(sffNonSfDplList.get(0).getName());
+            if (serviceFunctionForwarder.getSffDataPlaneLocator().size() == 1) {
+                renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(
+                        serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getName());
+            } else {
+                // If there is more than one SFF DPL, then find
+                // the one that is not associated with an SF
+                List<SffDataPlaneLocator> sffNonSfDplList =
+                        SfcProviderServiceForwarderAPI.getNonSfDataPlaneLocators(serviceFunctionForwarder);
+                if (sffNonSfDplList.size() == 1) {
+                    renderedServicePathHopBuilder.setServiceFunctionForwarderLocator(sffNonSfDplList.get(0).getName());
+                }
             }
         }
 

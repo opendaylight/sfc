@@ -100,7 +100,7 @@ public interface SfcOfFlowProgrammerInterface {
 
     void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId, String groupName);
 
-    void configureNshVxgpeNextHopFlow(String sffNodeName, String dstIp, long nsp, short nsi);
+    void configureNshVxgpeNextHopFlow(String sffNodeName, String dstIp, String nshProxyIp, long nsp, short nsi);
 
     /**
      * Configure nsh next hop flow.

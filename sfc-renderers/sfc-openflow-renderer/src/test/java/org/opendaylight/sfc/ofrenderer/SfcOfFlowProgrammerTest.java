@@ -479,7 +479,7 @@ public class SfcOfFlowProgrammerTest {
      */
     @Test
     public void configureNshVxgpeNextHopFlow() {
-        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
+        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, null, NSP, NSI);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
@@ -1086,7 +1086,7 @@ public class SfcOfFlowProgrammerTest {
 
         // Check that configureNshVxgpeNextHopFlow() is written to the correct
         // table
-        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
+        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, null, NSP, NSI);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);

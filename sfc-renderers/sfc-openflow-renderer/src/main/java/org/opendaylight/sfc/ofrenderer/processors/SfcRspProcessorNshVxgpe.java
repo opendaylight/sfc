@@ -24,6 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.rev160107.SfDplOvsAugmentation;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.SfLocatorProxyAugmentation;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.proxy.ProxyDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 
 /**
@@ -224,8 +226,20 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
             return;
         }
 
-        IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
-        this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSfLocator.getIp().getValue()));
+        IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
+        String dstIp = new String(locator.getIp().getValue());
+        String nshProxyIp = null;
+        SfLocatorProxyAugmentation augment = dstSfDpl.getAugmentation(SfLocatorProxyAugmentation.class);
+        if (augment != null) {
+            ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
+            if (proxyDpl == null) {
+                LOG.error("SfcRspProcessorNshVxgpe::configureNextHopFlow: proxyDpl is null");
+                return;
+            }
+            locator = (IpPortLocator) proxyDpl.getLocatorType();
+            nshProxyIp = new String(locator.getIp().getValue());
+        }
+        this.configureNextHopFlow(entry, entry.getDstSff(), dstIp, nshProxyIp);
     }
 
     /**
@@ -245,7 +259,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         // can be used by other transports. For Nsh, just skip it.
         if (dstSffDpl != null) {
             IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
-            this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSffLocator.getIp().getValue()));
+            this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSffLocator.getIp().getValue()), null);
         }
     }
 
@@ -273,8 +287,20 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
             return;
         }
 
-        IpPortLocator dstSfLocator = (IpPortLocator) dstSfDpl.getLocatorType();
-        this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSfLocator.getIp().getValue()));
+        IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
+        String dstIp = new String(locator.getIp().getValue());
+        String nshProxyIp = null;
+        SfLocatorProxyAugmentation augment = dstSfDpl.getAugmentation(SfLocatorProxyAugmentation.class);
+        if (augment != null) {
+            ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
+            if (proxyDpl == null) {
+                LOG.error("SfcRspProcessorNshVxgpe::configureNextHopFlow: proxyDpl is null");
+                return;
+            }
+            locator = (IpPortLocator) proxyDpl.getLocatorType();
+            nshProxyIp = new String(locator.getIp().getValue());
+        }
+        this.configureNextHopFlow(entry, entry.getSrcSff(), dstIp, nshProxyIp);
     }
 
     /**
@@ -291,7 +317,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SffDataPlaneLocator dstSffDpl) {
         IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
-        this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSffLocator.getIp().getValue()));
+        this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSffLocator.getIp().getValue()), null);
     }
 
     /**
@@ -302,10 +328,11 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
      * @param dstIp
      *            - VxLan Next Hop Dest IP
      */
-    private void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffName sffName, final String dstIp) {
+    private void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffName sffName, final String dstIp,
+        final String nshProxyIp) {
         this.sfcFlowProgrammer.configureNshVxgpeNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(sffName, entry.getPathId(), entry.getDstDpnId()), dstIp,
-                entry.getPathId(), entry.getServiceIndex());
+                nshProxyIp, entry.getPathId(), entry.getServiceIndex());
     }
 
     //

@@ -18,7 +18,7 @@ import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppRspProcessor;
 import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppSffManager;
 
 /**
- * Initialize all necessary vpp renderer components
+ * Initialize all necessary vpp renderer components.
  */
 public class SfcVppRenderer {
     private final RenderedPathListener rspListener;

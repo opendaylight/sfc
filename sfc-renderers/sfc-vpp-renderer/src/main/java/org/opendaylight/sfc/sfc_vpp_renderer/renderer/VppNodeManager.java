@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,6 +10,7 @@ package org.opendaylight.sfc.sfc_vpp_renderer.renderer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,26 +26,26 @@ import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderCo
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.available.capabilities.AvailableCapability;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.Credentials;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.credentials.credentials.LoginPasswordBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +57,9 @@ public class VppNodeManager implements BindingAwareProvider {
     private MountPointService mountService = null;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
-    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
-            .builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName()))).build();
+    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier.builder(
+        NetworkTopology.class).child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME
+        .getLocalName()))).build();
 
     // Data
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
@@ -104,40 +105,39 @@ public class VppNodeManager implements BindingAwareProvider {
         NodeId netconfNodeId = node.getNodeId();
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
         switch (connectionStatus) {
-        case Connected:
-            connectedNodes.remove(netconfNodeId);
-            activeMountPoints.remove(netconfNodeId);
-            LOG.info("Netconf node {} removed", netconfNodeId.getValue());
-            break;
-        case Connecting:
-        case UnableToConnect:
-        default:
-            break;
+            case Connected:
+                connectedNodes.remove(netconfNodeId);
+                activeMountPoints.remove(netconfNodeId);
+                LOG.info("Netconf node {} removed", netconfNodeId.getValue());
+                break;
+            case Connecting:
+            case UnableToConnect:
+            default:
+                break;
         }
     }
 
-    public boolean mountNode(final String deviceId, final String deviceIp, final String devicePort,
-            final String username, final String password, final boolean isTcpOnly) {
+    public boolean mountNode(final String deviceId, final String deviceIp, final String devicePort,  final String
+        username, final String password, final boolean isTcpOnly) {
         final Credentials credentials = new LoginPasswordBuilder().setPassword(password).setUsername(username).build();
 
-        final NetconfNode netconfNode = new NetconfNodeBuilder()
-                .setHost(new Host(new IpAddress(new Ipv4Address(deviceIp))))
-                .setPort(new PortNumber(Integer.decode(devicePort))).setTcpOnly(isTcpOnly).setCredentials(credentials)
-                .build();
+        final NetconfNode netconfNode = new NetconfNodeBuilder().setHost(new Host(new IpAddress(
+            new Ipv4Address(deviceIp)))).setPort(new PortNumber(Integer.decode(devicePort))).setTcpOnly(isTcpOnly)
+            .setCredentials(credentials).build();
 
         final NodeId nodeId = new NodeId(deviceId);
-        final Node node = new NodeBuilder().setKey(new NodeKey(nodeId)).setNodeId(nodeId)
-                .addAugmentation(NetconfNode.class, netconfNode).build();
-        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class,
-                new NodeKey(new NodeId(nodeId)));
+        final Node node = new NodeBuilder().setKey(new NodeKey(nodeId)).setNodeId(nodeId).addAugmentation(
+            NetconfNode.class, netconfNode).build();
+        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(
+            new NodeId(nodeId)));
 
         return SfcDataStoreAPI.writeMergeTransactionAPI(netconfNodeIid, node, LogicalDatastoreType.CONFIGURATION);
     }
 
     public boolean unmountNode(final String deviceId) {
         final NodeId nodeId = new NodeId(deviceId);
-        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class,
-                new NodeKey(new NodeId(nodeId)));
+        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(
+            new NodeId(nodeId)));
 
         return SfcDataStoreAPI.deleteTransactionAPI(netconfNodeIid, LogicalDatastoreType.CONFIGURATION);
     }
@@ -151,7 +151,7 @@ public class VppNodeManager implements BindingAwareProvider {
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
         if (capabilities != null) {
             List<String> availCapabilities = capabilities.getAvailableCapability().stream()
-                    .map(AvailableCapability::getCapability).collect(Collectors.toList());
+                .map(AvailableCapability::getCapability).collect(Collectors.toList());
             return availCapabilities.containsAll(requiredCapabilities);
         }
         LOG.debug("Node {} hasn't capabilities vpp node requires", node.getNodeId().getValue());
@@ -179,15 +179,17 @@ public class VppNodeManager implements BindingAwareProvider {
 
     private InstanceIdentifier<Node> getMountPointIid(NodeId nodeId) {
         return InstanceIdentifier.builder(NetworkTopology.class).child(Topology.class, new TopologyKey(topologyId))
-                .child(Node.class, new NodeKey(nodeId)).build();
+            .child(Node.class, new NodeKey(nodeId)).build();
     }
 
     private List<String> initializeRequiredCapabilities() {
-        final String netconfTcp = "(urn:opendaylight:params:xml:ns:yang:controller:netconf:northbound:tcp?revision=2015-04-23)netconf-northbound-tcp";
+        final String netconfTcp = "(urn:opendaylight:params:xml:ns:yang:controller:netconf:northbound:tcp?"
+            + "revision=2015-04-23)netconf-northbound-tcp";
         final String vppNsh = "(urn:opendaylight:params:xml:ns:yang:vpp:nsh?revision=2016-12-14)vpp-nsh";
         final String v3po = "(urn:opendaylight:params:xml:ns:yang:v3po?revision=2016-12-14)v3po";
-        final String ietfInterfaces = "(urn:ietf:params:xml:ns:yang:ietf-interfaces?revision=2014-05-08)ietf-interfaces";
-        String capabilityEntries[] = { netconfTcp, vppNsh, v3po, ietfInterfaces };
+        final String ietfInterfaces = "(urn:ietf:params:xml:ns:yang:ietf-interfaces?revision=2014-05-08)"
+            + "ietf-interfaces";
+        String[] capabilityEntries = {netconfTcp, vppNsh, v3po, ietfInterfaces};
         return Arrays.asList(capabilityEntries);
     }
 

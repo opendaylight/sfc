@@ -14,7 +14,7 @@ __version__ = "0.2"
 __email__ = "yi.y.yang@intel.com, rapenno@gmail.com"
 __status__ = "beta"
 
-import socket, sys
+import socket, sys, os
 import argparse
 from struct import *
 from ctypes import Structure, c_ubyte, c_ushort, c_uint
@@ -36,6 +36,10 @@ IPV4_TOS = 0
 IPV4_IHL_VER = (IPV4_VERSION << 4) + IP_HEADER_LEN
 
 UDP_HEADER_LEN_BYTES = 8
+
+VXLAN_DPORT = 4789
+VXLAN_GPE_DPORT = 4790
+OLD_VXLAN_GPE_DPORT = 6633
 
 class bcolors:
     HEADER = '\033[95m'
@@ -449,6 +453,15 @@ def getmac(interface):
     mac = None
   return mac
 
+def getmacbyip(ip):
+    os.popen('ping -c 1 %s' % ip)
+    fields = os.popen('grep "%s " /proc/net/arp' % ip).read().split()
+    if len(fields) == 6 and fields[3] != "00:00:00:00:00:00":
+        mac = fields[3]
+    else:
+        mac = None
+    return mac
+
 def print_ethheader(ethheader):
     print("Eth Dst MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Src MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x, Ethertype: 0x%.4x" % (ethheader.dmac0, ethheader.dmac1, ethheader.dmac2, ethheader.dmac3, ethheader.dmac4, ethheader.dmac5, ethheader.smac0, ethheader.smac1, ethheader.smac2, ethheader.smac3, ethheader.smac4, ethheader.smac5, (ethheader.ethertype0<<8) | ethheader.ethertype1))
 
@@ -471,7 +484,7 @@ def main():
     parser = argparse.ArgumentParser(description='This is a VxLAN/VxLAN-gpe + NSH dump and forward tool, you can use it to dump and forward VxLAN/VxLAN-gpe + NSH packets, it can also act as an NSH-aware SF for SFC test when you use --forward option, in that case, it will automatically decrease nsi by one.', prog='vxlan_tool.py')
     parser.add_argument('-i', '--interface',
                         help='Specify the interface to listen')
-    parser.add_argument('-d', '--do', choices=['dump', 'forward', 'send'],
+    parser.add_argument('-d', '--do', choices=['dump', 'forward', 'nsh_proxy', 'send'],
                         help='dump/foward/send VxLAN/VxLAN-gpe + NSH or Eth + NSH packet')
     parser.add_argument('-t', '--type', choices=['eth_nsh', 'vxlan_gpe_nsh'], default='vxlan_gpe_nsh',
                         help='Specify packet type for send: eth_nsh or vxlan_gpe_nsh')
@@ -516,7 +529,7 @@ def main():
         s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
         if args.interface is not None:
             s.bind((args.interface, 0))
-        if ((args.do == "forward") or (args.do == "send")):
+        if ((args.do == "forward") or (args.do == "nsh_proxy") or (args.do == "send")):
             if args.interface is None:
                 print("Error: you must specify the interface by -i or --interface for forward and send")
                 sys.exit(-1)
@@ -558,8 +571,8 @@ def main():
 
     do_print = ((args.do != "forward") or (args.verbose == "on"))
 
-    vxlan_gpe_udp_ports = [4790, 6633]
-    vxlan_udp_ports = [4789] + vxlan_gpe_udp_ports
+    vxlan_gpe_udp_ports = [VXLAN_GPE_DPORT, OLD_VXLAN_GPE_DPORT]
+    vxlan_udp_ports = [VXLAN_DPORT] + vxlan_gpe_udp_ports
 
     #header len
     eth_length = 14
@@ -568,6 +581,13 @@ def main():
     vxlan_length = 8
     nshbase_length = 8
     nshcontext_length = 16
+
+    """ For NSH proxy """
+    vni = 0;
+    # NSP+NSI to VNI Mapper
+    nsh_to_vni_mapper = {}
+    # VNI to NSH Mapper
+    vni_to_nsh_mapper = {}
 
     """ Send VxLAN/VxLAN-gpe + NSH packet """
     if (args.do == "send"):
@@ -615,12 +635,12 @@ def main():
         """ Set NSH context header """
         mynshcontextheader.network_platform = int_from_bytes(socket.inet_aton(args.outer_destination_ip))
         mynshcontextheader.network_shared = 0x1234
-        mynshcontextheader.service_platform = 0x12345678
+        mynshcontextheader.service_platform = 0xc0a83c28
         mynshcontextheader.service_shared = 0x87654321
 
         innerippack = build_udp_packet(args.inner_source_ip, args.inner_destination_ip, args.inner_source_udp_port, args.inner_destination_udp_port, "Hellow, World!!!".encode('utf-8'), False)
         if (args.type == "vxlan_gpe_nsh"):
-            outerippack = build_udp_packet(args.outer_source_ip, args.outer_destination_ip, args.outer_source_udp_port, 4790, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + myethheader.build() + innerippack, False)
+            outerippack = build_udp_packet(args.outer_source_ip, args.outer_destination_ip, args.outer_source_udp_port, VXLAN_GPE_DPORT, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + myethheader.build() + innerippack, False)
         elif (args.type == "eth_nsh"):
             outerippack = mynshbaseheader.build() + mynshcontextheader.build() + myethheader.build() + innerippack
             myethheader.ethertype0 = 0x89
@@ -655,7 +675,7 @@ def main():
                 pkt = pkt[sent:]
             pktnum += 1
             if (do_print):
-                print("\n\nPacket #%d" % pktnum)
+                print("\n\nSent Packet #%d" % pktnum)
 
             """ Print ethernet header """
             if (do_print):
@@ -682,7 +702,118 @@ def main():
             if (do_print):
                 print_nsh_contextheader(mynshcontextheader)
 
+            while True:
+                """ Receive the packet returning back from SF """
+                packet = s.recvfrom(65565)
+
+                #packet string from tuple
+                packet = packet[0]
+
+                myethheader2 = ETHHEADER()
+                myinsertedethheader2 = ETHHEADER()
+                has_inserted_eth = False
+
+                """ Decode ethernet header """
+                decode_eth(packet, 0, myethheader2)
+
+                if ((myethheader2.ethertype0 != 0x08) or (myethheader2.ethertype1 != 0x00)):
+                    if ((myethheader2.ethertype0 != 0x89) or (myethheader2.ethertype1 != 0x4f)):
+                        continue
+                if (macaddr is not None):
+                    if ((myethheader2.dmac4 != int(macaddr[4], 16)) or (myethheader2.dmac5 != int(macaddr[5], 16))):
+                        continue
+
+                """ Check if the received packet was ETH + NSH """
+                if ((myethheader2.ethertype0 == 0x89) or (myethheader2.ethertype1 == 0x4f)):
+                    print("\n\nReceived Packet #%d" % pktnum)
+
+                    """ Eth + NSH """
+                    mynshbaseheader2 = BASEHEADER()
+                    mynshcontextheader2 = CONTEXTHEADER()
+                    offset = eth_length
+                    decode_nsh_baseheader(packet, offset, mynshbaseheader2)
+                    decode_nsh_contextheader(packet, offset + nshbase_length, mynshcontextheader2)
+
+                    """ Print ethernet header """
+                    print_ethheader(myethheader2)
+
+                    """ Print NSH base header """
+                    print_nsh_baseheader(mynshbaseheader2)
+
+                    """ Print NSH context header """
+                    print_nsh_contextheader(mynshcontextheader2)
+                    break
+
+                myipheader2 = IP4HEADER()
+
+                """ Decode IP header """
+                decode_ip(packet, myipheader2)
+
+                if (myipheader2.ip_proto != 17):
+                    continue
+
+                myudpheader2 = UDPHEADER()
+
+                """ Decode UDP header """
+                decode_udp(packet, myudpheader2)
+
+                if (myudpheader2.udp_dport not in vxlan_udp_ports):
+                    continue
+
+                myvxlanheader2 = VXLAN()
+
+                """ Decode VxLAN/VxLAN-gpe header """
+                decode_vxlan(packet, myvxlanheader2)
+
+                if (do_print):
+                    print("\n\nReceived Packet #%d" % pktnum)
+
+                """ Print ethernet header """
+                if (do_print):
+                    print_ethheader(myethheader2)
+
+                """ Print IP header """
+                if (do_print):
+                    print_ipheader(myipheader2)
+
+                """ Print UDP header """
+                if (do_print):
+                    print_udpheader(myudpheader2)
+
+                """ Print VxLAN/VxLAN-gpe header """
+                if (do_print):
+                    print_vxlanheader(myvxlanheader2)
+
+                mynshbaseheader2 = BASEHEADER()
+
+                mynshcontextheader2 = CONTEXTHEADER()
+
+                if (myudpheader2.udp_dport in vxlan_gpe_udp_ports):
+                    offset = eth_length + ip_length + udp_length + vxlan_length
+                    """ Decode inserted ethernet header before NSH """
+                    decode_eth(packet, offset, myinsertedethheader2)
+
+                    """ Parse NSH header """
+                    if ((myinsertedethheader2.ethertype0 == 0x89) and (myinsertedethheader2.ethertype1 == 0x4f)):
+                        has_inserted_eth = True
+                        offset += eth_length
+
+                    decode_nsh_baseheader(packet, offset, mynshbaseheader2)
+                    offset += nshbase_length
+                    decode_nsh_contextheader(packet, offset, mynshcontextheader2)
+                    offset += nshcontext_length
+
+                    """ Print NSH base header """
+                    if (do_print):
+                        print_nsh_baseheader(mynshbaseheader2)
+
+                    """ Print NSH context header """
+                    if (do_print):
+                        print_nsh_contextheader(mynshcontextheader2)
+                    break
+
             args.number -= 1
+
         sys.exit(0)
 
     # receive a packet
@@ -752,22 +883,10 @@ def main():
                     pkt = pkt[sent:]
                 continue
 
-        pktnum = pktnum + 1
-        if (do_print):
-            print("\n\nPacket #%d" % pktnum)
-
-        """ Print ethernet header """
-        if (do_print):
-           print_ethheader(myethheader)
-
         myipheader = IP4HEADER()
 
         """ Decode IP header """
         decode_ip(packet, myipheader)
-
-        """ Print IP header """
-        if (do_print):
-            print_ipheader(myipheader)
 
         if (myipheader.ip_proto != 17):
             continue
@@ -777,10 +896,6 @@ def main():
         """ Decode UDP header """
         decode_udp(packet, myudpheader)
 
-        """ Print UDP header """
-        if (do_print):
-            print_udpheader(myudpheader)
-
         if (myudpheader.udp_dport not in vxlan_udp_ports):
             continue
 
@@ -788,6 +903,22 @@ def main():
 
         """ Decode VxLAN/VxLAN-gpe header """
         decode_vxlan(packet, myvxlanheader)
+
+        pktnum = pktnum + 1
+        if (do_print):
+            print("\n\nReceived Packet #%d" % pktnum)
+
+        """ Print ethernet header """
+        if (do_print):
+           print_ethheader(myethheader)
+
+        """ Print IP header """
+        if (do_print):
+            print_ipheader(myipheader)
+
+        """ Print UDP header """
+        if (do_print):
+            print_udpheader(myudpheader)
 
         """ Print VxLAN/VxLAN-gpe header """
         if (do_print):
@@ -797,11 +928,114 @@ def main():
 
         mynshcontextheader = CONTEXTHEADER()
 
-        """ Print NSH header """
-        if (myudpheader.udp_dport in vxlan_gpe_udp_ports):
+        if (myudpheader.udp_dport in vxlan_udp_ports):
             offset = eth_length + ip_length + udp_length + vxlan_length
             """ Decode inserted ethernet header before NSH """
             decode_eth(packet, offset, myinsertedethheader)
+
+            """ Support NSH-unaware Service Function and NSH proxy """
+            if ((myinsertedethheader.ethertype0 == 0x08) and (myinsertedethheader.ethertype1 == 0x00)):
+                if ((args.do == "forward") and (args.interface is not None)):
+                    """ Build Ethernet header """
+                    newethheader = build_ethernet_header_swap(myethheader)
+
+                    ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + packet[offset:], True)
+
+                    """ Build Ethernet packet """
+                    pkt = newethheader.build() + ippack
+
+                    """ Decode IP header """
+                    decode_ip(pkt, myipheader)
+
+                    """ Print IP header """
+                    print("\n\nSent Packet #%d" % pktnum)
+                    if (do_print):
+                        print_ipheader(myipheader)
+
+                    """ Send it and make sure all the data is sent out """
+                    while pkt:
+                        sent = send_s.send(pkt)
+                        pkt = pkt[sent:]
+                    continue
+                elif ((args.do == "nsh_proxy") and (args.interface is not None)):
+                    """ The packet returned back from NSH-unaware SF """
+                    encap_vni = myvxlanheader.vni
+                    if encap_vni not in vni_to_nsh_mapper.keys():
+                        continue
+                    vxlangpe_pkt = vni_to_nsh_mapper[encap_vni] + packet[offset:]
+                    """ Decode ethernet header """
+                    decode_eth(vxlangpe_pkt, 0, myethheader)
+
+                    """ Decode IP header """
+                    decode_ip(vxlangpe_pkt, myipheader)
+
+                    """ Decode UDP header """
+                    decode_udp(vxlangpe_pkt, myudpheader)
+
+                    """ Decode VxLAN/VxLAN-gpe header """
+                    decode_vxlan(vxlangpe_pkt, myvxlanheader)
+
+                    """ Decode inserted ethernet header before NSH """
+                    decode_eth(vxlangpe_pkt, offset, myinsertedethheader)
+
+                    """ Parse NSH header """
+                    if ((myinsertedethheader.ethertype0 == 0x89) and (myinsertedethheader.ethertype1 == 0x4f)):
+                        has_inserted_eth = True
+                        offset += eth_length
+
+                    decode_nsh_baseheader(vxlangpe_pkt, offset, mynshbaseheader)
+                    offset += nshbase_length
+                    decode_nsh_contextheader(vxlangpe_pkt, offset, mynshcontextheader)
+                    offset += nshcontext_length
+
+                    """ nsi minus one """
+                    mynshbaseheader.service_index = mynshbaseheader.service_index - 1
+
+                    if (do_print):
+                        print("\n\nSent Packet #%d" % pktnum)
+
+                    """ Print ethernet header """
+                    if (do_print):
+                        print_ethheader(myethheader)
+
+                    """ Print IP header """
+                    if (do_print):
+                        print_ipheader(myipheader)
+
+                    """ Print UDP header """
+                    if (do_print):
+                        print_udpheader(myudpheader)
+
+                    """ Print VxLAN/VxLAN-gpe header """
+                    if (do_print):
+                        print_vxlanheader(myvxlanheader)
+
+                    """ Print NSH base header """
+                    if (do_print):
+                        print_nsh_baseheader(mynshbaseheader)
+
+                    """ Print NSH context header """
+                    if (do_print):
+                        print_nsh_contextheader(mynshcontextheader)
+
+                    if (has_inserted_eth is True):
+                        ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + myinsertedethheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + vxlangpe_pkt[offset:], True)
+                    else:
+                        ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_saddr))), str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), myudpheader.udp_sport, myudpheader.udp_dport, myvxlanheader.build() + mynshbaseheader.build() + mynshcontextheader.build() + vxlangpe_pkt[offset:], True)
+
+                    """ Build New Ethernet header """
+                    newethheader = build_ethernet_header_swap(myethheader)
+
+                    """ Build Ethernet packet """
+                    pkt = newethheader.build() + ippack
+
+                    """ Send it and make sure all the data is sent out """
+                    while pkt:
+                        sent = send_s.send(pkt)
+                        pkt = pkt[sent:]
+                    continue
+
+            """ Parse NSH header """
             if ((myinsertedethheader.ethertype0 == 0x89) and (myinsertedethheader.ethertype1 == 0x4f)):
                 has_inserted_eth = True
                 offset += eth_length
@@ -869,6 +1103,56 @@ def main():
                 while pkt:
                     sent = send_s.send(pkt)
                     pkt = pkt[sent:]
+                continue
+
+            """ Map VxLAN-gpe + NSH to VxLAN """
+            if ((args.do == "nsh_proxy") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):
+                nsp_nsi = ( mynshbaseheader.service_path << 8 ) | mynshbaseheader.service_index
+                """ SF IP is from NSH C3 """
+                sf_ip = str(socket.inet_ntoa(pack('!I', mynshcontextheader.service_platform)))
+                print("sf_ip = %s" % sf_ip)
+                destmac = getmacbyip(sf_ip).split(":")
+                if nsp_nsi not in nsh_to_vni_mapper.keys():
+                    vni = vni + 1
+                    nsh_to_vni_mapper[nsp_nsi] = vni
+                    vni_to_nsh_mapper[vni] = packet[0:offset]
+                    if (do_print):
+                        print("Save packet[0:%d] to vni_to_nsh_mapper[%d]" % (offset, vni))
+                        print("assigned vni %s for SF %s" % (vni, sf_ip))
+                else:
+                    vni = nsh_to_vni_mapper[nsp_nsi]
+                mynewvxlanheader = VXLAN()
+                mynewvxlanheader.vni = vni
+                ippack = build_udp_packet(str(socket.inet_ntoa(pack('!I', myipheader.ip_daddr))), sf_ip, myudpheader.udp_sport, VXLAN_DPORT, mynewvxlanheader.build() + packet[offset:], False)
+
+                """ Build Ethernet header """
+                newethheader = ETHHEADER()
+                newethheader.smac0 = int(macaddr[0], 16)
+                newethheader.smac1 = int(macaddr[1], 16)
+                newethheader.smac2 = int(macaddr[2], 16)
+                newethheader.smac3 = int(macaddr[3], 16)
+                newethheader.smac4 = int(macaddr[4], 16)
+                newethheader.smac5 = int(macaddr[5], 16)
+
+                newethheader.dmac0 = int(destmac[0], 16)
+                newethheader.dmac1 = int(destmac[1], 16)
+                newethheader.dmac2 = int(destmac[2], 16)
+                newethheader.dmac3 = int(destmac[3], 16)
+                newethheader.dmac4 = int(destmac[4], 16)
+                newethheader.dmac5 = int(destmac[5], 16)
+
+                newethheader.ethertype0 = myethheader.ethertype0
+                newethheader.ethertype1 = myethheader.ethertype1
+
+                """ Build Ethernet packet """
+                pkt = newethheader.build() + ippack
+
+                """ Send it and make sure all the data is sent out """
+                while pkt:
+                    sent = send_s.send(pkt)
+                    pkt = pkt[sent:]
+                continue
+
 
 if __name__ == "__main__":
     main()

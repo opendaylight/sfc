@@ -259,10 +259,10 @@ public class SfcOfRspProcessorTest {
                 anyShort());
 
         // Verify calls to configureNshVxgpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(eq("SFF_0"), anyString(), anyLong(),
-                anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(eq("SFF_1"), anyString(), anyLong(),
-                anyShort());
+        verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(eq("SFF_0"), anyString(),
+                anyString(), anyLong(), anyShort());
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(eq("SFF_1"), anyString(),
+                anyString(), anyLong(), anyShort());
 
         // Verify calls to configureNshVxgpeTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(eq("SFF_0"), anyLong(),
@@ -310,7 +310,7 @@ public class SfcOfRspProcessorTest {
                 anyShort());
 
         // Verify calls to configureNshVxgpeNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow("SFF_0", "192.168.0.1", 0,
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow("SFF_0", "192.168.0.1", null, 0,
                 (short) 255);
 
         // Verify calls to configureNshVxgpeTransportEgressFlow

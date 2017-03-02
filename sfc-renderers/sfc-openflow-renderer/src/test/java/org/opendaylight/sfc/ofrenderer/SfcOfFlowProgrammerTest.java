@@ -54,6 +54,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshNpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1Case;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc3Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc4Case;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNsiCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNspCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCase;
@@ -479,7 +481,7 @@ public class SfcOfFlowProgrammerTest {
      */
     @Test
     public void configureNshVxgpeNextHopFlow() {
-        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
+        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, null, NSP, NSI);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
@@ -773,16 +775,28 @@ public class SfcOfFlowProgrammerTest {
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
                                 .getAction();
+                DstNxNshc3Case nshC3dst = (DstNxNshc3Case) regMove4.getNxRegMove().getDst().getDstChoice();
+                assertTrue(nshC3dst.isNxNshc3Dst());
+
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 =
+                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
+                                .getAction();
+                DstNxNshc4Case nshC4dst = (DstNxNshc4Case) regMove5.getNxRegMove().getDst().getDstChoice();
+                assertTrue(nshC4dst.isNxNshc4Dst());
+
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove6 =
+                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6)
+                                .getAction();
                 DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove4.getNxRegMove().getDst().getDstChoice();
                 assertTrue(tunIdDst.isNxTunId());
 
                 NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
+                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(7)
                                 .getAction();
                 DstNxTunGpeNpCase gpeNp = (DstNxTunGpeNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
                 assertTrue(gpeNp.isNxTunGpeNp());
 
-                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(6).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(8).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
                 LOG.info("configureNshVxgpeTransportEgressFlow() Action OutputPort: [{}]",
                         output.getOutputAction().getOutputNodeConnector());
@@ -1086,7 +1100,7 @@ public class SfcOfFlowProgrammerTest {
 
         // Check that configureNshVxgpeNextHopFlow() is written to the correct
         // table
-        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, NSP, NSI);
+        sfcOfFlowProgrammer.configureNshVxgpeNextHopFlow(SFF_NAME, IP_DST, null, NSP, NSI);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(),
                 SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);

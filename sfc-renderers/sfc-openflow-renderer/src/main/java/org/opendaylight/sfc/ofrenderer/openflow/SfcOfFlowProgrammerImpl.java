@@ -877,12 +877,22 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *            - NSH Index to match on
      */
     @Override
-    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final long nshNsp,
+    public void configureNshVxgpeNextHopFlow(final String sffNodeName, final String dstIp, final String nshProxyIp,
+            final long nshNsp,
             final short nshNsi) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
 
         List<Action> actionList = new ArrayList<>();
-        if (dstIp != null) {
+        if (nshProxyIp != null) {
+            Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(nshProxyIp, actionList.size());
+            actionList.add(actionSetNwDst);
+            if (dstIp != null) {
+                int ip = InetAddresses.coerceToInteger(InetAddresses.forString(dstIp));
+                long ipl = ip & 0xffffffffL;
+                Action actionSetNshC3 = SfcOpenflowUtils.createActionNxLoadNshc3(ipl, actionList.size());
+                actionList.add(actionSetNshC3);
+            }
+        } else if (dstIp != null) {
             Action actionSetNwDst = SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, actionList.size());
             actionList.add(actionSetNwDst);
         }
@@ -1339,6 +1349,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxMoveNshNp(actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc3(actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc4(actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxMoveTunIdRegister(actionList.size()));
 
         /* Need to set TUN_GPE_NP for VxLAN-gpe port */

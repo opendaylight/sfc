@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  *
  */
-public class ServiceFunctionClassifierListener
-        extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
+public class ServiceFunctionClassifierListener extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionClassifierListener.class);
 
     private final DataBroker dataBroker;
@@ -84,7 +83,7 @@ public class ServiceFunctionClassifierListener
             ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         // TODO: literally copied from the existing code. It should be
         // optimized
-        if ( originalServiceFunctionClassifier != null && originalServiceFunctionClassifier.getAcl() != null
+        if (originalServiceFunctionClassifier != null && originalServiceFunctionClassifier.getAcl() != null
                 && updatedServiceFunctionClassifier.getAcl() != null
                 && !originalServiceFunctionClassifier.getAcl().equals(updatedServiceFunctionClassifier.getAcl())) {
 
@@ -95,11 +94,9 @@ public class ServiceFunctionClassifierListener
                         updatedServiceFunctionClassifier.getAcl().getType(),
                         updatedServiceFunctionClassifier.getName());
             }
-            // Remove old  <ACL, Classifier> entry from ACL
-            SfcProviderAclAPI.deleteClassifierFromAccessListState(
-                    originalServiceFunctionClassifier.getAcl().getName(),
-                    originalServiceFunctionClassifier.getAcl().getType(),
-                    originalServiceFunctionClassifier.getName());
+            // Remove old <ACL, Classifier> entry from ACL
+            SfcProviderAclAPI.deleteClassifierFromAccessListState(originalServiceFunctionClassifier.getAcl().getName(),
+                    originalServiceFunctionClassifier.getAcl().getType(), originalServiceFunctionClassifier.getName());
         }
     }
 

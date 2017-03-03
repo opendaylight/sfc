@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * then once again test-consumer-impl (on next level) -&gt; Operations, and there they
  * are, all RPC from consumer YANG, mapped to their Java implementations. When you
  * select one, on the right panel there is a button to invoke that function.
+ *
  * <p>
  *
  * @author Konstantin Blagov (blagov.sk@hotmail.com)
@@ -80,6 +81,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      *
      * @return Boolean
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private Boolean putSf(SfName name, SftTypeName type, String ipMgmt, String ipLocator, int portLocator) {
         // printTraceStart(LOG);
 
@@ -126,12 +128,13 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     }
 
     /**
-     * Puts an SFChain
+     * Puts an SFChain.
      *
      * @param name Name for new service function chain
      * @param sfList List of references to service functions (by names)
      * @return Boolean
      */
+    @SuppressWarnings("checkstyle:IllegalCatch")
     private Boolean putChain(SfcName name, List<SfcServiceFunction> sfList) {
         // printTraceStart(LOG);
         PutServiceFunctionChainsInputBuilder input = new PutServiceFunctionChainsInputBuilder();
@@ -184,6 +187,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public Boolean testAReadSf() {
         // printTraceStart(LOG);
         ReadServiceFunctionInputBuilder input = new ReadServiceFunctionInputBuilder();
@@ -210,6 +214,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public Boolean testADeleteSf() {
         // printTraceStart(LOG);
         DeleteServiceFunctionInputBuilder input = new DeleteServiceFunctionInputBuilder();
@@ -244,7 +249,8 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     public Boolean testBPutSfs() {
         // printTraceStart(LOG);
 
-        Boolean res = putSf(new SfName("firewall-testB"), new SftTypeName("firewall"), "10.0.0.101", "192.168.0.101", 5050);
+        Boolean res = putSf(new SfName("firewall-testB"), new SftTypeName("firewall"), "10.0.0.101", "192.168.0.101",
+            5050);
         res = putSf(new SfName("dpi-testB"), new SftTypeName("dpi"), "10.0.0.102", "192.168.0.102", 5050) && res;
         res = putSf(new SfName("napt44-testB"), new SftTypeName("napt44"), "10.0.0.103", "192.168.0.102", 5050) && res;
 
@@ -258,15 +264,10 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
      * @return Boolean
      */
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public Boolean testBPutSfc() {
         // printTraceStart(LOG);
 
-        // Put a service chain. We need to build a list of lists.
-        PutServiceFunctionChainsInputBuilder putServiceFunctionChainsInputBuilder =
-                new PutServiceFunctionChainsInputBuilder();
-        ServiceFunctionChainBuilder sfcbuilder = new ServiceFunctionChainBuilder();
-
-        List<ServiceFunctionChain> sfclist = new ArrayList<>();
         List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
 
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
@@ -278,9 +279,14 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
             .add(sfcServiceFunctionBuilder.setName("dpi-testB").setType(new SftTypeName("dpi")).build());
 
         // Now we add list function type list to Service Chain list.
+        ServiceFunctionChainBuilder sfcbuilder = new ServiceFunctionChainBuilder();
+        List<ServiceFunctionChain> sfclist = new ArrayList<>();
         sfclist
             .add(sfcbuilder.setName(new SfcName("Chain-1")).setSfcServiceFunction(sfcServiceFunctionArrayList).build());
 
+        // Put a service chain. We need to build a list of lists.
+        PutServiceFunctionChainsInputBuilder putServiceFunctionChainsInputBuilder =
+            new PutServiceFunctionChainsInputBuilder();
         putServiceFunctionChainsInputBuilder = putServiceFunctionChainsInputBuilder.setServiceFunctionChain(sfclist);
 
         try {
@@ -324,8 +330,10 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         // printTraceStart(LOG);
 
         // Service Functions (real, not abstract)
-        Boolean res = putSf(new SfName("firewall-101-1"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101", 10001);
-        res = putSf(new SfName("firewall-101-2"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101", 10002) && res;
+        Boolean res = putSf(new SfName("firewall-101-1"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101",
+            10001);
+        res = putSf(new SfName("firewall-101-2"), new SftTypeName("firewall"), "10.3.1.101", "10.3.1.101", 10002)
+            && res;
         res = putSf(new SfName("dpi-102-1"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10001) && res;
         res = putSf(new SfName("dpi-102-2"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10002) && res;
         res = putSf(new SfName("dpi-102-3"), new SftTypeName("dpi"), "10.3.1.102", "10.3.1.102", 10003) && res;
@@ -352,9 +360,9 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
         res = putChain(new SfcName("SFC2"), sfRefList) && res;
 
         // Nodes
-        List<String> iList = new ArrayList<>();
-        iList.add("firewall-101-1");
-        iList.add("firewall-101-2");
+        List<String> nodeList = new ArrayList<>();
+        nodeList.add("firewall-101-1");
+        nodeList.add("firewall-101-2");
 
         return res;
     }

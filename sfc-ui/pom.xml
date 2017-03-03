@@ -14,9 +14,10 @@
     <version>0.5.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-
+  <!-- <name> formatting is used by autorelease to parse and notify projects on
+       build failure. Please do not modify this unless you have a good reason. -->
+  <name>ODL :: sfc :: ${project.artifactId}</name>
   <artifactId>sfc-ui</artifactId>
-  <name>sfc-ui</name>
   <description>Resources</description>
   <packaging>pom</packaging>
   <prerequisites>
@@ -30,4 +31,3 @@
 
 
 </project>
-

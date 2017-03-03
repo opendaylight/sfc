@@ -11,6 +11,9 @@
 
     <artifactId>sfc-renderers</artifactId>
     <packaging>pom</packaging>
+    <!-- <name> formatting is used by autorelease to parse and notify projects on
+         build failure. Please do not modify this unless you have a good reason. -->
+    <name>ODL :: sfc :: ${project.artifactId}</name>
 
     <description>This module groups together the RSP renderers.</description>
 

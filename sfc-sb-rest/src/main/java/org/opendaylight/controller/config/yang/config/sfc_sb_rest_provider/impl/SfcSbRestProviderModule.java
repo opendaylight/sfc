@@ -7,17 +7,11 @@
  */
 package org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl;
 
-
-import org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket;
 
 public class SfcSbRestProviderModule {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SfcSbRestProviderModule.class);
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public void startSbRestKeepAliveSocket() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.task;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,11 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
- * This class contains unit tests for SbRestSfTask
+ * This class contains unit tests for SbRestSfTask.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -56,8 +57,8 @@ public class SbRestSfTaskTest {
 
     @Test
     public void testSbRestSfTask1() throws IOException {
-        SbRestSfTask sbRestSfTask =
-                new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(), executorService);
+        SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionObjectNode1()));
@@ -66,8 +67,8 @@ public class SbRestSfTaskTest {
 
     @Test
     public void testSbRestSfTaskEmpty() throws IOException {
-        SbRestSfTask sbRestSfTask =
-                new SbRestSfTask(RestOperation.PUT, new ServiceFunctionBuilder().build(), executorService);
+        SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.PUT, new ServiceFunctionBuilder().build(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionTopNode()));
@@ -85,16 +86,15 @@ public class SbRestSfTaskTest {
 
     // returns object node with name & rest uri, uses FullTest.json
     private ObjectNode buildServiceFunctionObjectNode() {
-        ObjectNode topNode = mapper.createObjectNode();
-
         ObjectNode sfNode = mapper.createObjectNode();
-        sfNode.put(SfExporterFactory._NAME, SF_NAME.getValue());
-        sfNode.put(SfExporterFactory._REST_URI, REST_URI);
+        sfNode.put(SfExporterFactory.NAME, SF_NAME.getValue());
+        sfNode.put(SfExporterFactory.REST_URI, REST_URI);
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfNode);
 
-        topNode.put(SfExporterFactory._SERVICE_FUNCTION, arrayNode);
+        ObjectNode topNode = mapper.createObjectNode();
+        topNode.put(SfExporterFactory.SERVICE_FUNCTION, arrayNode);
         return topNode;
     }
 
@@ -103,12 +103,12 @@ public class SbRestSfTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfNode = mapper.createObjectNode();
-        sfNode.put(SfExporterFactory._NAME, SF_NAME.getValue());
+        sfNode.put(SfExporterFactory.NAME, SF_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfNode);
 
-        topNode.put(SfExporterFactory._SERVICE_FUNCTION, arrayNode);
+        topNode.put(SfExporterFactory.SERVICE_FUNCTION, arrayNode);
         return topNode;
     }
 
@@ -118,7 +118,7 @@ public class SbRestSfTaskTest {
         ObjectNode sfNode = mapper.createObjectNode();
 
         arrayNode.add(sfNode);
-        topNode.put(SfExporterFactory._SERVICE_FUNCTION, arrayNode);
+        topNode.put(SfExporterFactory.SERVICE_FUNCTION, arrayNode);
         return topNode;
     }
 }

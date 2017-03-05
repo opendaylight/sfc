@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Corp. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Corp. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.task;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,11 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
- * This class contains unit tests for SbRestSfstateTaskTest
+ * This class contains unit tests for SbRestSfstateTaskTest.
  *
  * @author Hongli Chen (honglix.chen@intel.com)
  * @version 0.1
@@ -57,13 +58,13 @@ public class SbRestSfstateTaskTest {
         executorService = Executors.newFixedThreadPool(10);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
         Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
-            .thenReturn(this.buildServiceFunction());
+                .thenReturn(this.buildServiceFunction());
     }
 
     @Test
     public void testSbRestSfstateTask() throws IOException {
-        SbRestSfstateTask sbRestSfstateTask =
-                new SbRestSfstateTask(RestOperation.PUT, this.buildServiceFunctionState(), executorService);
+        SbRestSfstateTask sbRestSfstateTask = new SbRestSfstateTask(RestOperation.PUT, this.buildServiceFunctionState(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionStateObjectNode()));
@@ -72,8 +73,8 @@ public class SbRestSfstateTaskTest {
 
     @Test
     public void testSbRestSfstateTask1() throws IOException {
-        SbRestSfstateTask sbRestSfstateTask =
-                new SbRestSfstateTask(RestOperation.DELETE, this.buildServiceFunctionState(), executorService);
+        SbRestSfstateTask sbRestSfstateTask = new SbRestSfstateTask(RestOperation.DELETE,
+                this.buildServiceFunctionState(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionStateObjectNode1()));
@@ -82,11 +83,11 @@ public class SbRestSfstateTaskTest {
 
     @Test
     public void testSbRestSfstateTaskEmpty() throws IOException {
-        SbRestSfstateTask sbRestSfstateTask =
-                new SbRestSfstateTask(RestOperation.PUT, new ServiceFunctionStateBuilder().build(), executorService);
+        SbRestSfstateTask sbRestSfstateTask = new SbRestSfstateTask(RestOperation.PUT,
+                new ServiceFunctionStateBuilder().build(), executorService);
         PowerMockito.mockStatic(SfcProviderServiceFunctionAPI.class);
         Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
-            .thenReturn(new ServiceFunctionBuilder().build());
+                .thenReturn(new ServiceFunctionBuilder().build());
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionStateTopNode()));
@@ -100,7 +101,8 @@ public class SbRestSfstateTaskTest {
         return serviceFunctionBuilder.build();
     }
 
-    // build service function, which is needed to create SbRestSfstateTask object
+    // build service function, which is needed to create SbRestSfstateTask
+    // object
     private ServiceFunctionState buildServiceFunctionState() {
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         serviceFunctionStateBuilder.setName(SFSTATE_NAME);
@@ -113,12 +115,12 @@ public class SbRestSfstateTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfstateNode = mapper.createObjectNode();
-        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME.getValue());
+        sfstateNode.put(SfstateExporterFactory.NAME, SFSTATE_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfstateNode);
 
-        topNode.put(SfstateExporterFactory._SERVICE_FUNCTION_STATE, arrayNode);
+        topNode.put(SfstateExporterFactory.SERVICE_FUNCTION_STATE, arrayNode);
         return topNode;
     }
 
@@ -127,12 +129,12 @@ public class SbRestSfstateTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode sfstateNode = mapper.createObjectNode();
-        sfstateNode.put(SfstateExporterFactory._NAME, SFSTATE_NAME.getValue());
+        sfstateNode.put(SfstateExporterFactory.NAME, SFSTATE_NAME.getValue());
 
         ArrayNode arrayNode = mapper.createArrayNode();
         arrayNode.add(sfstateNode);
 
-        topNode.put(SfstateExporterFactory._SERVICE_FUNCTION_STATE, arrayNode);
+        topNode.put(SfstateExporterFactory.SERVICE_FUNCTION_STATE, arrayNode);
         return topNode;
     }
 
@@ -142,7 +144,7 @@ public class SbRestSfstateTaskTest {
         ObjectNode sfstateNode = mapper.createObjectNode();
 
         arrayNode.add(sfstateNode);
-        topNode.put(SfstateExporterFactory._SERVICE_FUNCTION_STATE, arrayNode);
+        topNode.put(SfstateExporterFactory.SERVICE_FUNCTION_STATE, arrayNode);
         return topNode;
     }
 }

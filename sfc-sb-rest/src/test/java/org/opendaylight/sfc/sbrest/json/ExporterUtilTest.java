@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,11 @@
  */
 
 package org.opendaylight.sfc.sbrest.json;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,13 +35,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class contains unit tests for SffExporter
+ * This class contains unit tests for SffExporter.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -53,6 +56,8 @@ public class ExporterUtilTest {
     private static final String GRE_TRANSPORT_JSON = "/UtilJsonStrings/GreTransportTest.json";
     private static final String OTHER_TRANSPORT_JSON = "/UtilJsonStrings/OtherTransportTest.json";
 
+    private static final Logger LOG = LoggerFactory.getLogger(ExporterUtilTest.class);
+
     @Test
     public void testExporterUtilObject() {
         ExporterUtil exporterUtil = new ExporterUtil();
@@ -67,7 +72,7 @@ public class ExporterUtilTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot get resource:", e);
         }
 
         for (UtilTestValues utilTestValue : UtilTestValues.values()) {
@@ -186,6 +191,8 @@ public class ExporterUtilTest {
                 functionBuilder.setFunctionName(UtilTestValues.FUNCTION_NAME.getValue());
                 locatorType = functionBuilder.build();
                 break;
+            default:
+                break;
         }
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
@@ -194,7 +201,8 @@ public class ExporterUtilTest {
         return dataPlaneLocatorBuilder.build();
     }
 
-    // build data plane locator transport with locator type depending on transport type name
+    // build data plane locator transport with locator type depending on
+    // transport type name
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private DataPlaneLocator buildDataPlaneLocatorTransport(String transportTypeName) {
         Class slTransportType = null;
@@ -208,6 +216,9 @@ public class ExporterUtilTest {
                 break;
             case ExporterUtil.OTHER:
                 slTransportType = UtilTestValues.OTHER.getIdentity();
+                break;
+            default:
+                break;
         }
 
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();

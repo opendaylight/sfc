@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.task;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,11 +47,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
- * This class contains unit tests for SbRestAclTask
+ * This class contains unit tests for SbRestAclTask.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -56,7 +57,8 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcProviderAclAPI.class, SfcProviderServiceClassifierAPI.class, SfcProviderServiceForwarderAPI.class})
+@PrepareForTest({ SfcProviderAclAPI.class, SfcProviderServiceClassifierAPI.class,
+        SfcProviderServiceForwarderAPI.class })
 public class SbRestAclTaskTest {
 
     private static final String ACL_NAME = "Dummy_ACL";
@@ -66,23 +68,23 @@ public class SbRestAclTaskTest {
     private static final String REST_URI = "http://localhost:5000";
 
     private ExecutorService executorService;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Before
     // some mocked methods are prepared here
     public void init() {
         executorService = Executors.newFixedThreadPool(10);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class, Class.class))
-            .toReturn(this.buildAccessListState());
+        PowerMockito
+                .stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessListState", String.class, Class.class))
+                .toReturn(this.buildAccessListState());
 
         PowerMockito
-            .stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifier", String.class))
-            .toReturn(this.buildServiceFunctionClassifier());
+                .stub(PowerMockito.method(SfcProviderServiceClassifierAPI.class, "readServiceClassifier", String.class))
+                .toReturn(this.buildServiceFunctionClassifier());
 
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder",
-                SffName.class))
-            .toReturn(this.buildServiceFunctionForwarder());
+                SffName.class)).toReturn(this.buildServiceFunctionForwarder());
     }
 
     @Test
@@ -107,7 +109,7 @@ public class SbRestAclTaskTest {
     public void testSbRestAclTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
-            .thenReturn(new ServiceFunctionForwarderBuilder().build());
+                .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
 
@@ -207,12 +209,12 @@ public class SbRestAclTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode accessListNode = mapper.createObjectNode();
-        accessListNode.put(AclExporterFactory._ACL_NAME, ACL_NAME);
+        accessListNode.put(AclExporterFactory.ACL_NAME, ACL_NAME);
 
         ArrayNode accessListArrayNode = mapper.createArrayNode();
         accessListArrayNode.add(accessListNode);
 
-        topNode.put(AclExporterFactory._ACL, accessListArrayNode);
+        topNode.put(AclExporterFactory.ACL, accessListArrayNode);
         return topNode;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,8 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.task;
+
+import static junit.framework.TestCase.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +22,9 @@ import org.junit.Test;
 import org.opendaylight.sfc.sbrest.json.SfstExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
-import static junit.framework.TestCase.assertTrue;
-
 
 /**
- * This class contains unit tests for SbRestSfstTaskTest
+ * This class contains unit tests for SbRestSfstTaskTest.
  *
  * @author Vladimir Lavor
  * @version 0.1
@@ -46,13 +46,14 @@ public class SbRestSfstTaskTest {
     }
 
     @Test
-    // SbRestAbstractClass creates string jsonObject from dataObject (service function scheduler
+    // SbRestAbstractClass creates string jsonObject from dataObject (service
+    // function scheduler
     // type) & set Rest uri list
     // contain of jsonObject also depends on rest operation
     // this jsonObject is then compared with object node created in this class
     public void testSbRestSfstTask() throws IOException {
-        SbRestSfstTask sbRestSfstTask =
-                new SbRestSfstTask(RestOperation.PUT, this.buildServiceFunctionSchedulerType(), executorService);
+        SbRestSfstTask sbRestSfstTask = new SbRestSfstTask(RestOperation.PUT, this.buildServiceFunctionSchedulerType(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionSchedulerTypeObjectNode()));
@@ -61,15 +62,16 @@ public class SbRestSfstTaskTest {
 
     @Test
     public void testSbRestSfstTask1() throws IOException {
-        SbRestSfstTask sbRestSfstTask =
-                new SbRestSfstTask(RestOperation.DELETE, this.buildServiceFunctionSchedulerType(), executorService);
+        SbRestSfstTask sbRestSfstTask = new SbRestSfstTask(RestOperation.DELETE,
+                this.buildServiceFunctionSchedulerType(), executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestSfstTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionSchedulerTypeObjectNode()));
         assertTrue("Must be true", sbRestSfstTask.restUriList.get(0).contains(SFST_REST_URI));
     }
 
-    // build service function scheduler type, which is needed to create SbRestSfstTask object
+    // build service function scheduler type, which is needed to create
+    // SbRestSfstTask object
     private ServiceFunctionSchedulerType buildServiceFunctionSchedulerType() {
         ServiceFunctionSchedulerTypeBuilder serviceFunctionSchedulerTypeBuilder =
                 new ServiceFunctionSchedulerTypeBuilder();
@@ -81,11 +83,11 @@ public class SbRestSfstTaskTest {
     private ObjectNode buildServiceFunctionSchedulerTypeObjectNode() {
         ObjectNode topNode = mapper.createObjectNode();
         ObjectNode sfstNode = mapper.createObjectNode();
-        sfstNode.put(SfstExporterFactory._NAME, SFST_NAME);
+        sfstNode.put(SfstExporterFactory.NAME, SFST_NAME);
         ArrayNode arrayNode = mapper.createArrayNode();
 
         arrayNode.add(sfstNode);
-        topNode.put(SfstExporterFactory._SERVICE_FUNCTION_SCHEDULE_TYPE, arrayNode);
+        topNode.put(SfstExporterFactory.SERVICE_FUNCTION_SCHEDULE_TYPE, arrayNode);
         return topNode;
     }
 }

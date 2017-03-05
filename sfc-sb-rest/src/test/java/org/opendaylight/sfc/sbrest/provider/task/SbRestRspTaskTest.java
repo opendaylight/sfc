@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.task;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,11 +38,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
- * This class contains unit tests for SbRestRspTask
+ * This class contains unit tests for SbRestRspTask.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -62,13 +63,13 @@ public class SbRestRspTaskTest {
 
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
-            .thenReturn(this.buildServiceFunctionForwarder());
+                .thenReturn(this.buildServiceFunctionForwarder());
     }
 
     @Test
     public void testSbRestRspTask() throws IOException {
-        SbRestRspTask sbRestRspTask =
-                new SbRestRspTask(RestOperation.PUT, this.buildRenderedServicePath(), executorService);
+        SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.PUT, this.buildRenderedServicePath(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode()));
@@ -77,8 +78,8 @@ public class SbRestRspTaskTest {
 
     @Test
     public void testSbRestRspTask1() throws IOException {
-        SbRestRspTask sbRestRspTask =
-                new SbRestRspTask(RestOperation.DELETE, this.buildRenderedServicePath(), executorService);
+        SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.DELETE, this.buildRenderedServicePath(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode1()));
@@ -89,17 +90,18 @@ public class SbRestRspTaskTest {
     public void testSbRestRspTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
         Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
-            .thenReturn(new ServiceFunctionForwarderBuilder().build());
+                .thenReturn(new ServiceFunctionForwarderBuilder().build());
 
-        SbRestRspTask sbRestRspTask =
-                new SbRestRspTask(RestOperation.PUT, new RenderedServicePathBuilder().build(), executorService);
+        SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.PUT, new RenderedServicePathBuilder().build(),
+                executorService);
 
         JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathTopNode()));
         assertNull("Must be null", sbRestRspTask.restUriList);
     }
 
-    // build rendered service path, which is needed to create SbRestRspTask object
+    // build rendered service path, which is needed to create SbRestRspTask
+    // object
     private RenderedServicePath buildRenderedServicePath() {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(RSP_NAME);
@@ -124,23 +126,22 @@ public class SbRestRspTaskTest {
     }
 
     private ObjectNode buildRenderedServicePathObjectNode() {
-        ObjectNode topNode = mapper.createObjectNode();
-
         ObjectNode rspNode = mapper.createObjectNode();
-        rspNode.put(RspExporterFactory._NAME, RSP_NAME.getValue());
+        rspNode.put(RspExporterFactory.NAME, RSP_NAME.getValue());
 
         ObjectNode hopNode = mapper.createObjectNode();
-        hopNode.put(RspExporterFactory._SERVICE_FUNCTION_FORWARDER, SFF_NAME.getValue());
+        hopNode.put(RspExporterFactory.SERVICE_FUNCTION_FORWARDER, SFF_NAME.getValue());
 
         ArrayNode hopArrayNode = mapper.createArrayNode();
         hopArrayNode.add(hopNode);
 
-        rspNode.put(RspExporterFactory._RENDERED_SERVICE_PATH_HOP, hopArrayNode);
+        rspNode.put(RspExporterFactory.RENDERED_SERVICE_PATH_HOP, hopArrayNode);
 
         ArrayNode rspArrayNode = mapper.createArrayNode();
         rspArrayNode.add(rspNode);
 
-        topNode.put(RspExporterFactory._RENDERED_SERVICE_PATH, rspArrayNode);
+        ObjectNode topNode = mapper.createObjectNode();
+        topNode.put(RspExporterFactory.RENDERED_SERVICE_PATH, rspArrayNode);
         return topNode;
     }
 
@@ -149,12 +150,12 @@ public class SbRestRspTaskTest {
         ObjectNode topNode = mapper.createObjectNode();
 
         ObjectNode rspNode = mapper.createObjectNode();
-        rspNode.put(RspExporterFactory._NAME, RSP_NAME.getValue());
+        rspNode.put(RspExporterFactory.NAME, RSP_NAME.getValue());
 
         ArrayNode rspArrayNode = mapper.createArrayNode();
         rspArrayNode.add(rspNode);
 
-        topNode.put(RspExporterFactory._RENDERED_SERVICE_PATH, rspArrayNode);
+        topNode.put(RspExporterFactory.RENDERED_SERVICE_PATH, rspArrayNode);
         return topNode;
     }
 
@@ -166,7 +167,7 @@ public class SbRestRspTaskTest {
         ArrayNode rspArrayNode = mapper.createArrayNode();
         rspArrayNode.add(rspNode);
 
-        topNode.put(RspExporterFactory._RENDERED_SERVICE_PATH, rspArrayNode);
+        topNode.put(RspExporterFactory.RENDERED_SERVICE_PATH, rspArrayNode);
         return topNode;
     }
 }

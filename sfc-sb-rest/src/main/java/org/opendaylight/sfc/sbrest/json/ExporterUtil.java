@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,21 +18,16 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 
-
 public class ExporterUtil {
 
-    public static final String _TRANSPORT = "transport";
-    public static final String _EID = "eid";
-    public static final String _IP = "ip";
-    public static final String _PORT = "port";
-    public static final String _MAC = "mac";
-    public static final String _VLAN_ID = "vlan-id";
-    public static final String _FUNCTION_NAME = "function-name";
-    public static final String _VXLAN_GPE = "vxlan-gpe";
-    public static final String _GRE = "gre";
-    public static final String _OTHER = "other";
-    public static final String _SF_DPL_NAME = "sf-dpl-name";
-    public static final String _SFF_DPL_NAME = "sff-dpl-name";
+    public static final String TRANSPORT = "transport";
+    public static final String EID = "eid";
+    public static final String PORT = "port";
+    public static final String VLAN_ID = "vlan-id";
+    public static final String FUNCTION_NAME = "function-name";
+    public static final String VXLAN_GPE_DPL = "vxlan-gpe";
+    public static final String SF_DPL_NAME = "sf-dpl-name";
+    public static final String SFF_DPL_NAME = "sff-dpl-name";
 
     public static final String FUNCTION = "function";
     public static final String IP = "ip";
@@ -64,12 +59,12 @@ public class ExporterUtil {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode sffSfDplNode = mapper.createObjectNode();
 
-        if(sffSfDpl.getSfDplName() != null) {
-            sffSfDplNode.put(_SF_DPL_NAME, sffSfDpl.getSfDplName().getValue());
+        if (sffSfDpl.getSfDplName() != null) {
+            sffSfDplNode.put(SF_DPL_NAME, sffSfDpl.getSfDplName().getValue());
         }
 
-        if(sffSfDpl.getSffDplName() != null) {
-            sffSfDplNode.put(_SFF_DPL_NAME, sffSfDpl.getSffDplName().getValue());
+        if (sffSfDpl.getSffDplName() != null) {
+            sffSfDplNode.put(SFF_DPL_NAME, sffSfDpl.getSffDplName().getValue());
         }
 
         return sffSfDplNode;
@@ -89,27 +84,32 @@ public class ExporterUtil {
             switch (type) {
                 case FUNCTION:
                     Function functionLocator = (Function) dataPlaneLocator.getLocatorType();
-                    locatorNode.put(_FUNCTION_NAME, functionLocator.getFunctionName());
+                    locatorNode.put(FUNCTION_NAME, functionLocator.getFunctionName());
                     break;
                 case IP:
                     Ip ipLocator = (Ip) dataPlaneLocator.getLocatorType();
                     if (ipLocator.getIp() != null) {
-                        locatorNode.put(_IP, convertIpAddress(ipLocator.getIp()));
+                        locatorNode.put(IP, convertIpAddress(ipLocator.getIp()));
                         if (ipLocator.getPort() != null) {
-                            locatorNode.put(_PORT, ipLocator.getPort().getValue());
+                            locatorNode.put(PORT, ipLocator.getPort().getValue());
                         }
                     }
                     break;
                 case LISP:
                     Lisp lispLocator = (Lisp) dataPlaneLocator.getLocatorType();
-                    if (lispLocator.getEid() != null)
-                        locatorNode.put(_EID, convertIpAddress(lispLocator.getEid()));
+                    if (lispLocator.getEid() != null) {
+                        locatorNode.put(EID, convertIpAddress(lispLocator.getEid()));
+                    }
                     break;
                 case MAC:
                     Mac macLocator = (Mac) dataPlaneLocator.getLocatorType();
-                    if (macLocator.getMac() != null)
-                        locatorNode.put(_MAC, macLocator.getMac().getValue());
-                    locatorNode.put(_VLAN_ID, macLocator.getVlanId());
+                    if (macLocator.getMac() != null) {
+                        locatorNode.put(MAC, macLocator.getMac().getValue());
+                    }
+                    locatorNode.put(VLAN_ID, macLocator.getVlanId());
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -117,7 +117,7 @@ public class ExporterUtil {
             if (locatorNode == null) {
                 locatorNode = mapper.createObjectNode();
             }
-            locatorNode.put(_TRANSPORT, getDataPlaneLocatorTransport(dataPlaneLocator));
+            locatorNode.put(TRANSPORT, getDataPlaneLocatorTransport(dataPlaneLocator));
         }
 
         return locatorNode;
@@ -131,16 +131,17 @@ public class ExporterUtil {
         String transport = null;
         switch (dataPlaneLocator.getTransport().getSimpleName().toLowerCase()) {
             case VXLAN_GPE:
-                transport = SERVICE_LOCATOR_PREFIX + _VXLAN_GPE;
+                transport = SERVICE_LOCATOR_PREFIX + VXLAN_GPE_DPL;
                 break;
             case GRE:
-                transport = SERVICE_LOCATOR_PREFIX + _GRE;
+                transport = SERVICE_LOCATOR_PREFIX + GRE;
                 break;
             case OTHER:
-                transport = SERVICE_LOCATOR_PREFIX + _OTHER;
+                transport = SERVICE_LOCATOR_PREFIX + OTHER;
                 break;
             default:
-                transport = SERVICE_LOCATOR_PREFIX + _OTHER;
+                transport = SERVICE_LOCATOR_PREFIX + OTHER;
+                break;
         }
 
         return transport;

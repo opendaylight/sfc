@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 public class SfcPotTimerWheel {
     private final Timer sfcPotTimerWheelObj;
-    public static final SfcPotTimerWheel sfcPotTimerWheelInstance = new SfcPotTimerWheel();
+    public static final SfcPotTimerWheel SFC_POT_TIMER_WHEEL_INSTANCE = new SfcPotTimerWheel();
 
     private SfcPotTimerWheel() {
         sfcPotTimerWheelObj = new HashedWheelTimer();
     }
 
     public static SfcPotTimerWheel getInstance() {
-        return sfcPotTimerWheelInstance;
+        return SFC_POT_TIMER_WHEEL_INSTANCE;
     }
 
     public Timeout setTimerContext(TimerTask task, long delay, TimeUnit unit) {

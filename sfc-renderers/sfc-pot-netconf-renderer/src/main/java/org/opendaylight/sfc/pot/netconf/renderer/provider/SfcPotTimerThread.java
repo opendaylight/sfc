@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,11 +20,11 @@ import org.slf4j.LoggerFactory;
 public class SfcPotTimerThread implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotTimerThread.class);
     private static final int SLEEP_TIME_MS = 1000;
-    private Thread configRefresher;
-    private SfcPotTimerQueue sfcPotTimerQueue;
+    private final Thread configRefresher;
+    private final SfcPotTimerQueue sfcPotTimerQueue;
     private SfcPotNetconfIoam sfcPotNetconfIoam;
     private boolean doLoop = true;
-    private static final SfcPotTimerThread sfcPotTimerThread = new SfcPotTimerThread();
+    private static final SfcPotTimerThread SFC_POT_TIMER_THREAD = new SfcPotTimerThread();
 
     private SfcPotTimerThread() {
         sfcPotTimerQueue = SfcPotTimerQueue.getInstance();
@@ -33,7 +33,7 @@ public class SfcPotTimerThread implements Runnable {
     }
 
     public static SfcPotTimerThread getInstance() {
-        return sfcPotTimerThread;
+        return SFC_POT_TIMER_THREAD;
     }
 
     public void setSfcPotRspProcessor(SfcPotNetconfIoam sfcPotNetconfIoam) {
@@ -58,7 +58,9 @@ public class SfcPotTimerThread implements Runnable {
                 RspName rspName = sfcPotTimerQueue.removeElement();
                 SfcPotTimerData potTimerData = SfcPotTimerData.getInstance();
                 Long refreshTimerValue;
-                int  currActiveIndex, newActiveIndex = 0, sfcSize;
+                int  currActiveIndex;
+                int newActiveIndex = 0;
+                int sfcSize;
                 /*
                  * Get stored RSP info,
                  * Do configuration regeneration for the non-active config

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,9 +11,12 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
@@ -21,42 +24,48 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.SfLocatorProxyAugmentation;
-import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.proxy.ProxyDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.IpPortLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.Interfaces;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.Interface;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.InterfaceKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.HexString;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.SfLocatorProxyAugmentation;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.proxy.ProxyDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.Vpp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeNextProtocol;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeTunnel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeVni;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.Acl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.L2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.RoutingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.VxlanGpeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.L2Builder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.Vpp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.acl.Ingress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.acl.IngressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.l2.base.attributes.interconnection.BridgeBasedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.vpp.BridgeDomains;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.vpp.BridgeDomainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.vpp.bridge.domains.BridgeDomain;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.vpp.bridge.domains.BridgeDomainBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.vpp.bridge.domains.BridgeDomainKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeNextProtocol;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeTunnel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VxlanGpeVni;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.VppInterfaceAugmentationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.l2.base.attributes.interconnection.BridgeBasedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classfier.acl.rev161214.acl.base.attributes.Ip4Acl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classfier.acl.rev161214.acl.base.attributes.Ip4AclBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.OpaqueIndex;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.PacketHandlingAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.VppClassifier;
@@ -71,60 +80,50 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.clas
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.vpp.classifier.ClassifyTableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.Ethernet;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.MdType1;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.None;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.NshMdType1Augment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.NshMdType1AugmentBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.Pop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.Push;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.Swap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.VppNsh;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.NshEntries;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.NshEntriesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.NshMaps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.NshMapsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.entries.NshEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.entries.NshEntryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.entries.NshEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.entries.NshEntryKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.maps.NshMap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.maps.NshMapKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.maps.NshMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.None;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.nsh.rev161214.vpp.nsh.nsh.maps.NshMapKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.Acl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.acl.Ingress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.v3po.rev161214.interfaces._interface.acl.IngressBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classfier.acl.rev161214.acl.base.attributes.Ip4Acl;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classfier.acl.rev161214.acl.base.attributes.Ip4AclBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SfcVppUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SfcVppUtils.class);
-    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier.builder(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
-            .build();
-    private static final Map<String, Integer> tableIndice = new HashMap<>();
-    private static final Map<String, String> firstTable = new HashMap<>();
-    private static Map<String, List<String>> rspTblIdList = new HashMap<String, List<String>>();
-    private static final HashMap<String, HashMap<String, AtomicInteger>> vxlanGpePortRefCnt = new HashMap<String, HashMap<String, AtomicInteger>>();
+    private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
+            .builder(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName()))).build();
+    private static final Map<String, Integer> TABLE_INDICE = new HashMap<>();
+    private static final Map<String, String> FIRST_TABLE = new HashMap<>();
+    private static Map<String, List<String>> rspTblIdList = new HashMap<>();
+    private static final HashMap<String, HashMap<String, AtomicInteger>> VXLAN_GPER_PORT_REF_CNT = new HashMap<>();
 
     public static DataBroker getSffMountpoint(MountPointService mountService, SffName sffName) {
         final NodeId nodeId = new NodeId(sffName.getValue());
-        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(new NodeId(nodeId)));
+        InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class,
+                new NodeKey(new NodeId(nodeId)));
         Optional<MountPoint> optionalObject = mountService.getMountPoint(netconfNodeIid);
         if (optionalObject.isPresent()) {
             MountPoint mountPoint = optionalObject.get();
@@ -159,7 +158,8 @@ public class SfcVppUtils {
 
     private static IpAddress getSffDplIp(SffName sffName, SffDataPlaneLocatorName sffDplName) {
         IpAddress ip = null;
-        SffDataPlaneLocator sffDpl = SfcProviderServiceForwarderAPI.readServiceFunctionForwarderDataPlaneLocator(sffName, sffDplName);
+        SffDataPlaneLocator sffDpl = SfcProviderServiceForwarderAPI
+                .readServiceFunctionForwarderDataPlaneLocator(sffName, sffDplName);
         if (sffDpl == null) {
             return null;
         }
@@ -229,7 +229,7 @@ public class SfcVppUtils {
 
         List<SfDataPlaneLocator> sdDplList = serviceFunction.getSfDataPlaneLocator();
         SfDataPlaneLocator sfDataPlaneLocator = null;
-        for (SfDataPlaneLocator sfDpl: sdDplList) {
+        for (SfDataPlaneLocator sfDpl : sdDplList) {
             if (sfDpl.getName().equals(sfDplName)) {
                 sfDataPlaneLocator = sfDpl;
                 break;
@@ -255,12 +255,8 @@ public class SfcVppUtils {
     }
 
     public static List<IpAddress> getSffSfIps(final SffName sffName, final SfName sfName) {
-        List<IpAddress> ipList = new ArrayList<>();
         ServiceFunctionDictionary sfDictionary;
         SfDataPlaneLocatorName sfDplName;
-        SffDataPlaneLocatorName sffDplName;
-        IpAddress localIp;
-        IpAddress remoteIp;
 
         sfDictionary = getSfDictionary(sffName, sfName);
         if (sfDictionary == null) {
@@ -268,14 +264,18 @@ public class SfcVppUtils {
         }
 
         sfDplName = sfDictionary.getSffSfDataPlaneLocator().getSfDplName();
+        SffDataPlaneLocatorName sffDplName;
         sffDplName = sfDictionary.getSffSfDataPlaneLocator().getSffDplName();
 
+        IpAddress localIp;
         localIp = getSffDplIp(sffName, sffDplName);
         if (localIp == null) {
             return null;
         }
+        List<IpAddress> ipList = new ArrayList<>();
         ipList.add(localIp);
 
+        IpAddress remoteIp;
         remoteIp = getSfDplIp(sfName, sfDplName);
         if (remoteIp == null) {
             return null;
@@ -284,24 +284,19 @@ public class SfcVppUtils {
         return ipList;
     }
 
-    private static void addFuturesCallback(final WriteTransaction wTx) {
-        Futures.addCallback(wTx.submit(), new FutureCallback<Void>() {
+    private static void addFuturesCallback(final WriteTransaction transaction) {
+        Futures.addCallback(transaction.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
             }
 
             @Override
-            public void onFailure(@Nonnull Throwable t) {
+            public void onFailure(@Nonnull Throwable throwable) {
             }
         });
     }
 
     public static void addDummyBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
-        InstanceIdentifier<BridgeDomains> bridgeDomainsIId =
-            InstanceIdentifier.create(Vpp.class)
-                .child(BridgeDomains.class);
-
-        BridgeDomainsBuilder bdsBuilder = new BridgeDomainsBuilder();
         BridgeDomainBuilder bdBuilder = new BridgeDomainBuilder();
         bdBuilder.setName(bridgeDomainName);
         bdBuilder.setFlood(true);
@@ -312,20 +307,18 @@ public class SfcVppUtils {
 
         List<BridgeDomain> bdList = new ArrayList<>();
         bdList.add(bdBuilder.build());
+        BridgeDomainsBuilder bdsBuilder = new BridgeDomainsBuilder();
         bdsBuilder.setBridgeDomain(bdList);
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
+        InstanceIdentifier<BridgeDomains> bridgeDomainsIId = InstanceIdentifier.create(Vpp.class)
+                .child(BridgeDomains.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainsIId, bdsBuilder.build());
         addFuturesCallback(wTx);
     }
 
     public static void addBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
-        InstanceIdentifier<BridgeDomain> bridgeDomainIId =
-            InstanceIdentifier.create(Vpp.class)
-                .child(BridgeDomains.class)
-                .child(BridgeDomain.class, new BridgeDomainKey(bridgeDomainName));
-
         BridgeDomainBuilder bdBuilder = new BridgeDomainBuilder();
         bdBuilder.setName(bridgeDomainName);
         bdBuilder.setFlood(true);
@@ -336,6 +329,8 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
+        InstanceIdentifier<BridgeDomain> bridgeDomainIId = InstanceIdentifier.create(Vpp.class)
+                .child(BridgeDomains.class).child(BridgeDomain.class, new BridgeDomainKey(bridgeDomainName));
         wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainIId, bdBuilder.build());
         addFuturesCallback(wTx);
     }
@@ -345,32 +340,32 @@ public class SfcVppUtils {
     }
 
     private static int incrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
-        if (vxlanGpePortRefCnt.get(vppNode) == null) {
-            vxlanGpePortRefCnt.put(vppNode, new HashMap<String, AtomicInteger>());
+        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode) == null) {
+            VXLAN_GPER_PORT_REF_CNT.put(vppNode, new HashMap<String, AtomicInteger>());
         }
-        if (vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey) == null) {
-            vxlanGpePortRefCnt.get(vppNode).put(vxlanGpePortKey, new AtomicInteger(1));
+        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey) == null) {
+            VXLAN_GPER_PORT_REF_CNT.get(vppNode).put(vxlanGpePortKey, new AtomicInteger(1));
             return 1;
         } else {
-            return vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey).incrementAndGet();
+            return VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey).incrementAndGet();
         }
     }
 
     private static int decrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
-        if (vxlanGpePortRefCnt.get(vppNode) == null) {
+        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode) == null) {
             return 0;
         }
-        if (vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey) == null) {
+        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey) == null) {
             return 0;
         }
-        return vxlanGpePortRefCnt.get(vppNode).get(vxlanGpePortKey).decrementAndGet();
+        return VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey).decrementAndGet();
     }
 
-    private static void addVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote, Long vni, String vppNode, String bridgeDomainName)
-    {
+    private static void addVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote,
+            Long vni, String vppNode, String bridgeDomainName) {
         String vxlanGpePortKey = buildVxlanGpePortKey(remote);
         LOG.info("addVxlanGpePort {} on vpp node {}", vxlanGpePortKey, vppNode);
-        /* do nothing if vxlanGpePortKey has been added on vppNode*/
+        /* do nothing if vxlanGpePortKey has been added on vppNode */
         if (incrementVxlanGpeRefCnt(vxlanGpePortKey, vppNode) > 1) {
             return;
         }
@@ -409,24 +404,25 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceBuilder.getName()));
+        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid = InstanceIdentifier
+                .create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceBuilder.getName()));
         wTx.put(LogicalDatastoreType.CONFIGURATION, interfaceIid, interfaceBuilder.build());
         addFuturesCallback(wTx);
     }
 
-    public static void removeVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote, Long vni, String vppNode) {
+    public static void removeVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote,
+            Long vni, String vppNode) {
         String interfaceKey = buildVxlanGpePortKey(remote);
         LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
-        /* do nothing if interfaceKey is still used by other RSPs on vppNode*/
+        /* do nothing if interfaceKey is still used by other RSPs on vppNode */
         if (decrementVxlanGpeRefCnt(interfaceKey, vppNode) > 0) {
             return;
         }
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceKey));
+        final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid = InstanceIdentifier
+                .create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceKey));
         LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, interfaceIid);
         addFuturesCallback(wTx);
@@ -436,8 +432,7 @@ public class SfcVppUtils {
         return new String("nsh_entry_" + nsp.toString() + "_" + nsi.toString());
     }
 
-    public static void addDummyNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode)
-    {
+    public static void addDummyNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
         NshEntryBuilder nshEntryBuilder = new NshEntryBuilder();
         nshEntryBuilder.setVersion(Short.valueOf("0"));
         nshEntryBuilder.setLength(Short.valueOf("6"));
@@ -465,14 +460,13 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<NshEntries> nshEntriesIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class);
+        final InstanceIdentifier<NshEntries> nshEntriesIid = InstanceIdentifier.create(VppNsh.class)
+                .child(NshEntries.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntriesIid, nshEntriesBuilder.build());
         addFuturesCallback(wTx);
     }
 
-    public static void addNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode)
-    {
+    public static void addNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
         NshEntryBuilder nshEntryBuilder = new NshEntryBuilder();
         nshEntryBuilder.setVersion(Short.valueOf("0"));
         nshEntryBuilder.setLength(Short.valueOf("6"));
@@ -496,8 +490,8 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<NshEntry> nshEntryIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class).child(NshEntry.class, nshEntry.getKey());
+        final InstanceIdentifier<NshEntry> nshEntryIid = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class)
+                .child(NshEntry.class, nshEntry.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntryIid, nshEntry);
         addFuturesCallback(wTx);
     }
@@ -506,18 +500,20 @@ public class SfcVppUtils {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         String nshEntryKey = buildNshEntryKey(nsp, nsi);
-        final InstanceIdentifier<NshEntry> nshEntryIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class).child(NshEntry.class, new NshEntryKey(nshEntryKey));
+        final InstanceIdentifier<NshEntry> nshEntryIid = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class)
+                .child(NshEntry.class, new NshEntryKey(nshEntryKey));
         LOG.info("removeNshEntry {} on vpp node {}", nshEntryKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshEntryIid);
         addFuturesCallback(wTx);
     }
 
     private static String buildNshMapKey(final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi) {
-        return new String("nsh_map_" + nsp.toString() + "_" + nsi.toString() + "_to_" + mappedNsp.toString() + "_" + mappedNsi.toString());
+        return new String("nsh_map_" + nsp.toString() + "_" + nsi.toString() + "_to_" + mappedNsp.toString() + "_"
+                + mappedNsi.toString());
     }
 
-    private static NshMapBuilder buildNshMapBuilder(final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName) {
+    private static NshMapBuilder buildNshMapBuilder(final Long nsp, final Short nsi, final Long mappedNsp,
+            final Short mappedNsi, String encapIfName) {
         NshMapBuilder nshMapBuilder = new NshMapBuilder();
         nshMapBuilder.setNsp(nsp);
         nshMapBuilder.setNsi(nsi);
@@ -537,14 +533,14 @@ public class SfcVppUtils {
     private static void writeNshMap(final DataBroker dataBroker, NshMap nshMap, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<NshMap> nshMapIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class).child(NshMap.class, nshMap.getKey());
+        final InstanceIdentifier<NshMap> nshMapIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class)
+                .child(NshMap.class, nshMap.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapIid, nshMap);
         addFuturesCallback(wTx);
     }
 
-    public static void addDummyNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode)
-    {
+    public static void addDummyNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi,
+            final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode) {
         NshMapBuilder nshMapBuilder = buildNshMapBuilder(nsp, nsi, mappedNsp, mappedNsi, encapIfName);
         nshMapBuilder.setNshAction(Swap.class);
 
@@ -556,84 +552,87 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<NshMaps> nshMapsIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class);
+        final InstanceIdentifier<NshMaps> nshMapsIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapsIid, nshMapsBuilder.build());
         addFuturesCallback(wTx);
     }
 
-    private static void addNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode)
-    {
+    private static void addNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp,
+            final Short mappedNsi, String encapIfName, String vppNode) {
         NshMapBuilder nshMapBuilder = buildNshMapBuilder(nsp, nsi, mappedNsp, mappedNsi, encapIfName);
         nshMapBuilder.setNshAction(Swap.class);
         writeNshMap(dataBroker, nshMapBuilder.build(), vppNode);
     }
 
-    private static void addNshMapWithPush(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode)
-    {
+    private static void addNshMapWithPush(final DataBroker dataBroker, final Long nsp, final Short nsi,
+            final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode) {
         NshMapBuilder nshMapBuilder = buildNshMapBuilder(nsp, nsi, mappedNsp, mappedNsi, encapIfName);
         nshMapBuilder.setNshAction(Push.class);
         writeNshMap(dataBroker, nshMapBuilder.build(), vppNode);
     }
 
-    public static void addNshMapWithPop(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode)
-    {
+    public static void addNshMapWithPop(final DataBroker dataBroker, final Long nsp, final Short nsi,
+            final Long mappedNsp, final Short mappedNsi, String encapIfName, String vppNode) {
         NshMapBuilder nshMapBuilder = buildNshMapBuilder(nsp, nsi, mappedNsp, mappedNsi, encapIfName);
         nshMapBuilder.setNshAction(Pop.class);
         writeNshMap(dataBroker, nshMapBuilder.build(), vppNode);
     }
 
-    public static void removeNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi, String vppNode) {
+    public static void removeNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp,
+            final Short mappedNsi, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         String nshMapKey = buildNshMapKey(nsp, nsi, mappedNsp, mappedNsi);
-        final InstanceIdentifier<NshMap> nshMapIid
-                    = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class).child(NshMap.class, new NshMapKey(nshMapKey));
+        final InstanceIdentifier<NshMap> nshMapIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class)
+                .child(NshMap.class, new NshMapKey(nshMapKey));
         LOG.info("removeNshMap {} on vpp node {}", nshMapKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshMapIid);
         addFuturesCallback(wTx);
     }
 
-    public static boolean configureVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
+    public static boolean configureVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName,
+            String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp,
+            final Short nsi) {
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
-        addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue(), bridgeDomainName); //SFF<->SF
-        addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
+        addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue(), bridgeDomainName); // SFF<->SF
+        addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); // To Next Hop
         addNshMap(dataBroker, nsp, nsi, nsp, nsi, buildVxlanGpePortKey(remoteIp), sffName.getValue());
 
         return true;
     }
 
-    public static boolean removeVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
+    public static boolean removeVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, final IpAddress localIp,
+            final IpAddress remoteIp, final Long nsp, final Short nsi) {
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
         removeNshMap(dataBroker, nsp, nsi, nsp, nsi, sffName.getValue());
-        removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SF
-        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //SFF<->SF
+        removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); // To SF
+        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); // SFF<->SF
 
         return true;
     }
 
     private static Integer getNextTableIndex(String vppNode) {
-        if (tableIndice.get(vppNode) == null) {
-            tableIndice.put(vppNode, new Integer(0));
+        if (TABLE_INDICE.get(vppNode) == null) {
+            TABLE_INDICE.put(vppNode, new Integer(0));
         }
-        Integer index = tableIndice.get(vppNode);
+        Integer index = TABLE_INDICE.get(vppNode);
         return index;
     }
 
     public static Integer increaseNextTableIndex(String vppNode) {
         Integer index = getNextTableIndex(vppNode);
-        tableIndice.put(vppNode, index + 1);
-        return tableIndice.get(vppNode);
+        TABLE_INDICE.put(vppNode, index + 1);
+        return TABLE_INDICE.get(vppNode);
     }
 
     public static String buildClassifyTableKey(final Integer tableIndex) {
         return new String("table" + tableIndex.toString());
     }
 
-    private static ClassifyTableBuilder buildClassifyTable(String classifyTableKey, String nextTableKey, final HexString mask)
-    {
+    private static ClassifyTableBuilder buildClassifyTable(String classifyTableKey, String nextTableKey,
+            final HexString mask) {
         ClassifyTableBuilder classifyTableBuilder = new ClassifyTableBuilder();
         classifyTableBuilder.setName(classifyTableKey);
         if (nextTableKey != null) {
@@ -647,73 +646,77 @@ public class SfcVppUtils {
         return classifyTableBuilder;
     }
 
-    public static void addClassifyTable(final DataBroker dataBroker, ClassifyTable classifyTable, String vppNode)
-    {
+    public static void addClassifyTable(final DataBroker dataBroker, ClassifyTable classifyTable, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
 
-        if (firstTable.get(vppNode) == null) {
-            firstTable.put(vppNode, classifyTable.getName());
+        if (FIRST_TABLE.get(vppNode) == null) {
+            FIRST_TABLE.put(vppNode, classifyTable.getName());
             VppClassifierBuilder vppClassifierBuilder = new VppClassifierBuilder();
             List<ClassifyTable> classifyTableList = new ArrayList<>();
             classifyTableList.add(classifyTable);
             vppClassifierBuilder.setClassifyTable(classifyTableList);
             LOG.info("addClassifyTable: {}", vppClassifierBuilder.build());
 
-            final InstanceIdentifier<VppClassifier> vppClassifierIid
-                      = InstanceIdentifier.create(VppClassifier.class);
+            final InstanceIdentifier<VppClassifier> vppClassifierIid = InstanceIdentifier.create(VppClassifier.class);
             wTx.put(LogicalDatastoreType.CONFIGURATION, vppClassifierIid, vppClassifierBuilder.build());
         } else {
-            final InstanceIdentifier<ClassifyTable> classifyTableIid
-                      = InstanceIdentifier.create(VppClassifier.class).child(ClassifyTable.class, classifyTable.getKey());
+            final InstanceIdentifier<ClassifyTable> classifyTableIid = InstanceIdentifier.create(VppClassifier.class)
+                    .child(ClassifyTable.class, classifyTable.getKey());
             wTx.put(LogicalDatastoreType.CONFIGURATION, classifyTableIid, classifyTable);
             LOG.info("addClassifyTable: {}", classifyTable);
         }
         addFuturesCallback(wTx);
     }
 
-    private static void removeClassifyTable(final DataBroker dataBroker, final String classifyTableKey, String vppNode) {
+    private static void removeClassifyTable(final DataBroker dataBroker, final String classifyTableKey,
+            String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<ClassifyTable> classifyTableIid = InstanceIdentifier.create(VppClassifier.class).child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey));
+        final InstanceIdentifier<ClassifyTable> classifyTableIid = InstanceIdentifier.create(VppClassifier.class)
+                .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey));
         LOG.info("removeClassifyTable on vpp node {}: table: {}", vppNode, classifyTableKey);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, classifyTableIid);
         addFuturesCallback(wTx);
     }
 
-    private static ClassifySessionBuilder buildClassifySession(final String classifyTableKey, Long nsp, Short nsi, final HexString match)
-    {
+    private static ClassifySessionBuilder buildClassifySession(final String classifyTableKey, Long nsp, Short nsi,
+            final HexString match) {
         ClassifySessionBuilder classifySessionBuilder = new ClassifySessionBuilder();
         classifySessionBuilder.setMatch(match);
         classifySessionBuilder.setHitNext(new VppNode(new VppNodeName("nsh-classifier")));
-        Long opaqueIndexValue = new Long((nsp.longValue() << 8) | nsi.intValue());
+        Long opaqueIndexValue = new Long(nsp.longValue() << 8 | nsi.intValue());
         classifySessionBuilder.setOpaqueIndex(new OpaqueIndex(opaqueIndexValue));
         return classifySessionBuilder;
     }
 
-    private static void addClassifySession(final DataBroker dataBroker, String classifyTableKey, ClassifySession classifySession, String vppNode)
-    {
+    private static void addClassifySession(final DataBroker dataBroker, String classifyTableKey,
+            ClassifySession classifySession, String vppNode) {
         LOG.info("addClassifySession: {}", classifySession);
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<ClassifySession> classifySessionIid
-                    = InstanceIdentifier.create(VppClassifier.class).child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey)).child(ClassifySession.class, classifySession.getKey());
+        final InstanceIdentifier<ClassifySession> classifySessionIid = InstanceIdentifier.create(VppClassifier.class)
+                .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey))
+                .child(ClassifySession.class, classifySession.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, classifySessionIid, classifySession);
         addFuturesCallback(wTx);
     }
 
-    private static void removeClassifySession(final DataBroker dataBroker, final String classifyTableKey, HexString match, String vppNode) {
+    private static void removeClassifySession(final DataBroker dataBroker, final String classifyTableKey,
+            HexString match, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<ClassifySession> classifySessionIid = InstanceIdentifier.create(VppClassifier.class).child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey)).child(ClassifySession.class, new ClassifySessionKey(match));
+        final InstanceIdentifier<ClassifySession> classifySessionIid = InstanceIdentifier.create(VppClassifier.class)
+                .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey))
+                .child(ClassifySession.class, new ClassifySessionKey(match));
         LOG.info("removeClassifySession on vpp node {}: table: {}, session: {}", vppNode, classifyTableKey, match);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, classifySessionIid);
         addFuturesCallback(wTx);
     }
 
-    public static void enableIngressAcl(final DataBroker dataBroker, final String interfaceName, final String classifyTableKey, String vppNode)
-    {
+    public static void enableIngressAcl(final DataBroker dataBroker, final String interfaceName,
+            final String classifyTableKey, String vppNode) {
         IngressBuilder ingressBuilder = new IngressBuilder();
         Ip4Acl acl = new Ip4AclBuilder().setClassifyTable(classifyTableKey).build();
         ingressBuilder.setIp4Acl(acl);
@@ -721,16 +724,20 @@ public class SfcVppUtils {
 
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<Ingress> ingressIid
-                    = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class).child(Acl.class).child(Ingress.class);
+        final InstanceIdentifier<Ingress> ingressIid = InstanceIdentifier.create(Interfaces.class)
+                .child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class)
+                .child(Acl.class).child(Ingress.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, ingressIid, ingress);
         addFuturesCallback(wTx);
     }
 
-    public static void disableIngressAcl(final DataBroker dataBroker, final String interfaceName, final String classifyTableKey, String vppNode) {
+    public static void disableIngressAcl(final DataBroker dataBroker, final String interfaceName,
+            final String classifyTableKey, String vppNode) {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<Ingress> ingressIid = InstanceIdentifier.create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class).child(Acl.class).child(Ingress.class);
+        final InstanceIdentifier<Ingress> ingressIid = InstanceIdentifier.create(Interfaces.class)
+                .child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class)
+                .child(Acl.class).child(Ingress.class);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, ingressIid);
         addFuturesCallback(wTx);
     }
@@ -762,7 +769,8 @@ public class SfcVppUtils {
         return tblIdList.get(index);
     }
 
-    public static ClassifyTableBuilder buildVppClassifyTable(SffName sffName, String rsp, HexString mask, boolean hasNext) {
+    public static ClassifyTableBuilder buildVppClassifyTable(SffName sffName, String rsp, HexString mask,
+            boolean hasNext) {
         Integer index = getNextTableIndex(sffName.getValue());
         String classifyTableKey = buildClassifyTableKey(index);
         saveClassifyTableKey(sffName.getValue(), rsp, classifyTableKey);
@@ -773,11 +781,13 @@ public class SfcVppUtils {
         return buildClassifyTable(classifyTableKey, nextTableKey, mask);
     }
 
-    public static ClassifySessionBuilder buildVppClassifySession(ClassifyTableBuilder classifyTableBuilder, HexString match, Long nsp, Short nsi) {
+    public static ClassifySessionBuilder buildVppClassifySession(ClassifyTableBuilder classifyTableBuilder,
+            HexString match, Long nsp, Short nsi) {
         return buildClassifySession(classifyTableBuilder.getName(), nsp, nsi, match);
     }
 
-    public static boolean configureVppClassifier(DataBroker dataBroker, SffName sffName, List<ClassifyTableBuilder> classifyTableList, List<ClassifySessionBuilder> classifySessionList) {
+    public static boolean configureVppClassifier(DataBroker dataBroker, SffName sffName,
+            List<ClassifyTableBuilder> classifyTableList, List<ClassifySessionBuilder> classifySessionList) {
         for (int i = classifyTableList.size() - 1; i >= 0; i--) {
             ClassifyTableBuilder classifyTableBuilder = classifyTableList.get(i);
             ClassifySessionBuilder classifySessionBuilder = classifySessionList.get(i);
@@ -789,7 +799,8 @@ public class SfcVppUtils {
         return true;
     }
 
-    public static boolean removeVppClassifier(DataBroker dataBroker, SffName sffName, List<String> tableKeyList, List<HexString> matchList) {
+    public static boolean removeVppClassifier(DataBroker dataBroker, SffName sffName, List<String> tableKeyList,
+            List<HexString> matchList) {
         for (int i = 0; i < tableKeyList.size(); i++) {
             removeClassifySession(dataBroker, tableKeyList.get(i), matchList.get(i), sffName.getValue());
             removeClassifyTable(dataBroker, tableKeyList.get(i), sffName.getValue());
@@ -797,22 +808,26 @@ public class SfcVppUtils {
         return true;
     }
 
-    public static boolean configureClassifierVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
+    public static boolean configureClassifierVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName,
+            String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp,
+            final Short nsi) {
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
-        addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue(), bridgeDomainName); //SFF<->SF
-        addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To Next Hop
+        addVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue(), bridgeDomainName); // SFF<->SF
+        addNshEntry(dataBroker, nsp, nsi, sffName.getValue()); // To Next Hop
         addNshMapWithPush(dataBroker, nsp, nsi, nsp, nsi, buildVxlanGpePortKey(remoteIp), sffName.getValue());
 
         return true;
     }
 
-    public static boolean removeClassifierVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName, String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp, final Short nsi) {
+    public static boolean removeClassifierVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName,
+            String bridgeDomainName, final IpAddress localIp, final IpAddress remoteIp, final Long nsp,
+            final Short nsi) {
         Long vni = 0L; // SFC classifier set it to 0, so always use 0
 
         removeNshMap(dataBroker, nsp, nsi, nsp, nsi, sffName.getValue());
-        removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); //To SFF
-        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); //Classifier<->SFF
+        removeNshEntry(dataBroker, nsp, nsi, sffName.getValue()); // To SFF
+        removeVxlanGpePort(dataBroker, localIp, remoteIp, vni, sffName.getValue()); // Classifier<->SFF
 
         return true;
     }

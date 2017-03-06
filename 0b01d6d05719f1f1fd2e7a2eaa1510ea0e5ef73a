@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_b26107d5",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/util/DateDeserializer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:12:22Z",
+      "side": 1,
+      "message": "I think we should log the exception.",
+      "range": {
+        "startLine": 36,
+        "startChar": 15,
+        "endLine": 36,
+        "endChar": 47
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_f29eefb7",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/util/DateDeserializer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:12:22Z",
+      "side": 1,
+      "message": "I think we should log the exception.",
+      "range": {
+        "startLine": 44,
+        "startChar": 16,
+        "endLine": 44,
+        "endChar": 80
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_12a8d3d9",
+        "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/api/TackerManagerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:12:22Z",
+      "side": 1,
+      "message": "What is the checkstyle issue you are suppressing?",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 56
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_52ad3be8",
+        "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/api/TackerManagerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:12:22Z",
+      "side": 1,
+      "message": "What is the checkstyle issue you are suppressing?",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 56
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_92b3234c",
+        "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/dto/TokenTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:12:22Z",
+      "side": 1,
+      "message": "What is the checkstyle issue you are suppressing?",
+      "range": {
+        "startLine": 40,
+        "startChar": 4,
+        "endLine": 40,
+        "endChar": 56
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

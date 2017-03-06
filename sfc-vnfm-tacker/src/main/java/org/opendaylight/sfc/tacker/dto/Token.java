@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,29 +12,29 @@ import java.util.Date;
 
 public class Token {
 
-    private Date issued_at;
+    private Date issuedAt;
     private Date expires;
     private String id;
     private Tenant tenant;
-    private String[] audit_ids;
+    private String[] auditIds;
 
     // used by GSON
     private Token() {}
 
     private Token(TokenBuilder builder) {
-        this.issued_at = builder.getIssued_at();
+        this.issuedAt = builder.getIssuedAt();
         this.expires = builder.getExpires();
         this.id = builder.getId();
         this.tenant = builder.getTenant();
-        this.audit_ids = builder.getAudit_ids();
+        this.auditIds = builder.getAuditIds();
     }
 
     public static TokenBuilder builder() {
         return new TokenBuilder();
     }
 
-    public Date getIssued_at() {
-        return issued_at;
+    public Date getIssuedAt() {
+        return issuedAt;
     }
 
     public Date getExpires() {
@@ -49,24 +49,24 @@ public class Token {
         return tenant;
     }
 
-    public String[] getAudit_ids() {
-        return audit_ids;
+    public String[] getAuditIds() {
+        return auditIds;
     }
 
     public static class TokenBuilder {
 
-        private Date issued_at;
+        private Date issuedAt;
         private Date expires;
         private String id;
         private Tenant tenant;
-        private String[] audit_ids;
+        private String[] auditIds;
 
-        public Date getIssued_at() {
-            return issued_at;
+        public Date getIssuedAt() {
+            return issuedAt;
         }
 
-        public TokenBuilder setIssued_at(Date issued_at) {
-            this.issued_at = issued_at;
+        public TokenBuilder setIssuedAt(Date issuedAt) {
+            this.issuedAt = issuedAt;
             return this;
         }
 
@@ -97,12 +97,12 @@ public class Token {
             return this;
         }
 
-        public String[] getAudit_ids() {
-            return audit_ids;
+        public String[] getAuditIds() {
+            return auditIds;
         }
 
-        public TokenBuilder setAudit_ids(String[] audit_ids) {
-            this.audit_ids = audit_ids;
+        public TokenBuilder setAuditIds(String[] auditIds) {
+            this.auditIds = auditIds;
             return this;
         }
 

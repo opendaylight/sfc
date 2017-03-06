@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -69,7 +69,7 @@ public class TackerManagerTest extends JerseyTest {
     private static final int KEYSTONE_PORT = 4321;
     private static final DateSerializer DATE_SERIALIZER = new DateSerializer();
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, DATE_SERIALIZER).create();
-    private static final List<String> vnfs = new ArrayList<>();
+    private static final List<String> VNFS = new ArrayList<>();
     private static TackerManager tackerManager;
     private static HttpServer server;
     private static HttpServer keystoneServer;
@@ -78,8 +78,9 @@ public class TackerManagerTest extends JerseyTest {
     private static TackerError notFoundError;
     private static Token token;
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private static HttpServer startServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(tackerServer.class);
+        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(TackerServer.class);
         HttpServer httpServer = null;
         try {
             httpServer = GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + BASE_PORT), resourceConfig);
@@ -90,8 +91,9 @@ public class TackerManagerTest extends JerseyTest {
         return httpServer;
     }
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private static HttpServer startKeystoneServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(keystoneServer.class);
+        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(KeystoneServer.class);
         HttpServer httpServer = null;
         try {
             httpServer =
@@ -153,10 +155,12 @@ public class TackerManagerTest extends JerseyTest {
 
     @AfterClass
     public static void tearDownClass() {
-        if (server != null && server.isStarted())
+        if (server != null && server.isStarted()) {
             server.shutdownNow();
-        if (keystoneServer != null && keystoneServer.isStarted())
+        }
+        if (keystoneServer != null && keystoneServer.isStarted()) {
             keystoneServer.shutdownNow();
+        }
     }
 
     @Test
@@ -207,7 +211,7 @@ public class TackerManagerTest extends JerseyTest {
     @Test
     public void deleteSfTest() {
         // manualy add one vnf to list for deletion
-        vnfs.add("Dpi");
+        VNFS.add("Dpi");
 
         ServiceFunction sf =
                 new ServiceFunctionBuilder().setName(new SfName("Dpi")).setType(new SftTypeName("firewall")).build();
@@ -237,20 +241,18 @@ public class TackerManagerTest extends JerseyTest {
         return new WebAppDescriptor.Builder().build();
     }
 
-    @Path("/v1.0/vnfs")
+    @Path("/v1.0/VNFS")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public static class tackerServer {
+    public static class TackerServer {
 
         @POST
         public Response postVnf(@HeaderParam("X-Auth-Token") String authToken,
                 @HeaderParam("X-Auth-Project-Id") String authProject, String json) {
-            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty())
-                return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GSON.toJson(badRequestError))
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .build();
-
+            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError))
+                    .type(MediaType.APPLICATION_JSON_TYPE).build();
+            }
             if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
             }
@@ -261,22 +263,21 @@ public class TackerManagerTest extends JerseyTest {
                 return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError)).build();
             }
 
-            vnfs.add(testRequest.getVnf().getName());
+            VNFS.add(testRequest.getVnf().getName());
             return Response.status(Response.Status.CREATED).entity(GSON.toJson(tackerResponse)).build();
         }
 
+        @SuppressWarnings("checkstyle:ParameterName")
         @DELETE
         @Path("/{vnf_id}")
         public Response deleteVnf(@HeaderParam("X-Auth-Token") String authToken,
                 @HeaderParam("X-Auth-Project-Id") String authProject,
                 @PathParam("vnf_id") @DefaultValue("") String vnf_id) {
 
-            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty())
-                return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GSON.toJson(badRequestError))
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .build();
-
+            if (authToken == null || authProject == null || authToken.isEmpty() || authProject.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError))
+                    .type(MediaType.APPLICATION_JSON_TYPE).build();
+            }
             if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
             }
@@ -288,7 +289,7 @@ public class TackerManagerTest extends JerseyTest {
                     .build();
             }
 
-            if (vnfs.remove(vnf_id)) {
+            if (VNFS.remove(vnf_id)) {
                 return Response.status(Response.Status.OK)
                     .entity("resource " + vnf_id + " successfully deleted.")
                     .build();
@@ -304,7 +305,7 @@ public class TackerManagerTest extends JerseyTest {
     @Path("/v2.0/tokens")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public static class keystoneServer {
+    public static class KeystoneServer {
 
         @POST
         public Response postVnf(String json) {
@@ -320,12 +321,11 @@ public class TackerManagerTest extends JerseyTest {
                 Date expire = DateUtils.addHours(new Date(now.getTime()), 1);
 
                 token = Token.builder()
-                    .setIssued_at(now)
+                    .setIssuedAt(now)
                     .setExpires(expire)
                     .setId("7a17dc67ba284ab2beeccc21ce198626")
-                    .setTenant(Tenant.builder().setDescription(null).setEnabled(true).setId("").setName("admin").build())
-                    .setAudit_ids(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
-                    .build();
+                    .setTenant(Tenant.builder().setDescription(null).setEnabled(true).setId("")
+                        .setName("admin").build()).setAuditIds(new String[] {"LUMVW2kmQU29kwkZv8VCZg"}).build();
 
                 String response = "{\"access\":{\"token\":" + GSON.toJson(token) + "}}";
 

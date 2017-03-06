@@ -37,6 +37,7 @@ public class TokenTest {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, DATE_DESERIALIZER).create();
     private static Token token;
 
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Before
     public void init() {
         Date issuedAt = new Date();
@@ -57,7 +58,7 @@ public class TokenTest {
         }
 
         token = Token.builder()
-            .setIssued_at(issuedAt)
+            .setIssuedAt(issuedAt)
             .setExpires(expires)
             .setId("7a17dc67ba284ab2beeccc21ce198626")
             .setTenant(Tenant.builder()
@@ -66,7 +67,7 @@ public class TokenTest {
                 .setId("f3a250db7c374654854f56ad60caea66")
                 .setName("admin")
                 .build())
-            .setAudit_ids(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
+            .setAuditIds(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
             .build();
 
     }
@@ -100,8 +101,8 @@ public class TokenTest {
 
         // check Token data
         Assert.assertTrue(jsonFileToken.getId().equals(token.getId()));
-        Assert.assertTrue(jsonFileToken.getAudit_ids()[0].equals(token.getAudit_ids()[0]));
+        Assert.assertTrue(jsonFileToken.getAuditIds()[0].equals(token.getAuditIds()[0]));
         Assert.assertTrue(jsonFileToken.getExpires().compareTo((token.getExpires())) == 0);
-        Assert.assertTrue(jsonFileToken.getIssued_at().compareTo((token.getIssued_at())) == 0);
+        Assert.assertTrue(jsonFileToken.getIssuedAt().compareTo((token.getIssuedAt())) == 0);
     }
 }

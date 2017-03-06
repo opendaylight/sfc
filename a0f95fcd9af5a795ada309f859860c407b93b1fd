@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_52941b8a",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:17:01Z",
+      "side": 1,
+      "message": "Let\u0027s avoid underscores in method\u0027s name.",
+      "range": {
+        "startLine": 357,
+        "startChar": 16,
+        "endLine": 357,
+        "endChar": 68
+      },
+      "revId": "a0f95fcd9af5a795ada309f859860c407b93b1fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_b28f4774",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 390,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-03-06T17:17:01Z",
+      "side": 1,
+      "message": "Ditto",
+      "range": {
+        "startLine": 390,
+        "startChar": 16,
+        "endLine": 390,
+        "endChar": 69
+      },
+      "revId": "a0f95fcd9af5a795ada309f859860c407b93b1fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

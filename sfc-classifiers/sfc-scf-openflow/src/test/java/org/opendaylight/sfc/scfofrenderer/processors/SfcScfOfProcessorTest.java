@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -39,20 +38,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
-
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({
-        SfcProviderAclAPI.class,
-        SfcProviderServiceForwarderAPI.class,
-        SfcProviderRenderedPathAPI.class,
-        SfcOvsUtil.class,
-        SfcScfOfUtils.class,
-        OpenflowClassifierProcessor.class,
-        SfcNshHeader.class})
+@PrepareForTest({ SfcProviderAclAPI.class, SfcProviderServiceForwarderAPI.class, SfcProviderRenderedPathAPI.class,
+        SfcOvsUtil.class, SfcScfOfUtils.class, OpenflowClassifierProcessor.class, SfcNshHeader.class })
 public class SfcScfOfProcessorTest {
 
     private SfcScfOfProcessor sfcScfProcessor;
@@ -63,7 +55,6 @@ public class SfcScfOfProcessorTest {
     private List<SclServiceFunctionForwarder> sfflist;
     private ServiceFunctionForwarder sff;
     private DataBroker dataBroker;
-
 
     private void initTest() {
         ReadWriteTransaction readWriteTransaction = mock(ReadWriteTransaction.class);
@@ -76,8 +67,8 @@ public class SfcScfOfProcessorTest {
         Mockito.doNothing().when(openflowWriter).flushFlows();
 
         OpenflowClassifierProcessor classifierProcessor = mock(OpenflowClassifierProcessor.class);
-        when(classifierProcessor.processClassifier(any(SclServiceFunctionForwarder.class), any(Acl.class), anyBoolean()))
-                .thenReturn(Collections.emptyList());
+        when(classifierProcessor.processClassifier(any(SclServiceFunctionForwarder.class), any(Acl.class),
+                anyBoolean())).thenReturn(Collections.emptyList());
 
         sfcScfProcessor = new SfcScfOfProcessor(openflowWriter, classifierProcessor);
 
@@ -85,7 +76,11 @@ public class SfcScfOfProcessorTest {
         acl = mock(Acl.class);
 
         // must mock the ACE object (the ACL *must* figure at least one ACE)
-        acesList = new ArrayList<Ace>() {{ add(mock(Ace.class)); }};
+        acesList = new ArrayList<Ace>() {
+            {
+                add(mock(Ace.class));
+            }
+        };
         accessListEntries = mock(AccessListEntries.class);
 
         sfflist = new ArrayList<>();
@@ -95,27 +90,25 @@ public class SfcScfOfProcessorTest {
         // mock the classifier
         when(sclSff.getName()).thenReturn("sffName");
         when(scf.getSclServiceFunctionForwarder()).thenReturn(sfflist);
-        when(scf.getAcl()).thenReturn(mock(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.Acl.class));
+        when(scf.getAcl()).thenReturn(mock(
+                org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang
+                .sfc.scf.rev140701.service.function.classifiers.service.function.classifier.Acl.class));
         when(acl.getAclName()).thenReturn("aclName");
         when(acl.getAccessListEntries()).thenReturn(accessListEntries);
         when(accessListEntries.getAce()).thenReturn(acesList);
 
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList"))
-            .toReturn(acl);
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList")).toReturn(acl);
 
         sff = mock(ServiceFunctionForwarder.class);
 
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder"))
-            .toReturn(sff);
+                .toReturn(sff);
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff"))
-            .toReturn("sff");
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff")).toReturn("sff");
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsPort"))
-                .toReturn(2L);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsPort")).toReturn(2L);
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort"))
-            .toReturn(0L);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(0L);
     }
 
     @Test
@@ -135,18 +128,15 @@ public class SfcScfOfProcessorTest {
         assertFalse(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList")).toReturn(null);
         assertFalse(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff")).toReturn(null);
         assertTrue(sfcScfProcessor.createdServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(null);
         assertTrue(sfcScfProcessor.createdServiceFunctionClassifier(scf));
     }
 
@@ -167,18 +157,15 @@ public class SfcScfOfProcessorTest {
         assertFalse(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList")).toReturn(null);
         assertFalse(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOpenFlowNodeIdForSff")).toReturn(null);
         assertTrue(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
 
         initTest();
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort"))
-            .toReturn(null);
+        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getVxlanOfPort")).toReturn(null);
         assertTrue(sfcScfProcessor.deletedServiceFunctionClassifier(scf));
     }
 }

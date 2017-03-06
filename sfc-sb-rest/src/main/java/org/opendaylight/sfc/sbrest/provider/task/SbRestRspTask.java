@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,10 +20,10 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestRspTask extends SbRestAbstractTask {
 
-    private static final String RSP_REST_URI = "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/";
+    private static final String RSP_REST_URI =
+            "/operational/rendered-service-path:rendered-service-paths/rendered-service-path/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspTask.class);
 
     public SbRestRspTask(RestOperation restOperation, RenderedServicePath dataObject, ExecutorService odlExecutor) {
@@ -47,9 +47,8 @@ public class SbRestRspTask extends SbRestAbstractTask {
 
         if (hopList != null) {
             for (RenderedServicePathHop hop : hopList) {
-                ServiceFunctionForwarder sff =
-                        SfcProviderServiceForwarderAPI
-                                .readServiceFunctionForwarder(hop.getServiceFunctionForwarder());
+                ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI
+                        .readServiceFunctionForwarder(hop.getServiceFunctionForwarder());
                 if (sff != null && sff.getRestUri() != null) {
                     RspName rspName = obj.getName();
                     if (rspName != null) {

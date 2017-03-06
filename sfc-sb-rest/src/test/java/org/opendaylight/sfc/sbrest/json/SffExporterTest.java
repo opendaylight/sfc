@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -42,9 +42,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class contains unit tests for SffExporter
+ * This class contains unit tests for SffExporter.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -52,9 +54,10 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
  */
 
 public class SffExporterTest {
-
     private static final String FULL_JSON = "/SffJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SffJsonStrings/NameOnly.json";
+
+    private static final Logger LOG = LoggerFactory.getLogger(SffExporterTest.class);
 
     // create string, that represents .json file
     private String gatherServiceFunctionForwardersJsonStringFromFile(String testFileName) {
@@ -64,7 +67,7 @@ public class SffExporterTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot open file", e);
         }
 
         for (SffTestValues sffTestValue : SffTestValues.values()) {
@@ -86,6 +89,7 @@ public class SffExporterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     // put wrong parameter, illegal argument exception expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
@@ -121,9 +125,6 @@ public class SffExporterTest {
         JsonNode expectedSffJson =
                 objectMapper.readTree(this.gatherServiceFunctionForwardersJsonStringFromFile(expectedResultFile));
         JsonNode exportedSffJson = objectMapper.readTree(exportedSffString);
-
-        System.out.println("EXPECTED: " + expectedSffJson);
-        System.out.println("CREATED:  " + exportedSffJson);
 
         return expectedSffJson.equals(exportedSffJson);
     }
@@ -204,10 +205,11 @@ public class SffExporterTest {
                                 "http://localhost:5000/"), IP_MGMT_ADDRESS("10.0.0.1"), SERVICE_NODE("SN1");
 
         private final String value;
-        private SftTypeName sftType;
+        private final SftTypeName sftType;
 
         SffTestValues(String value) {
             this.value = value;
+            this.sftType = null;
         }
 
         SffTestValues(String value, SftTypeName sftType) {

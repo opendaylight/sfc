@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel .Ltd, and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Intel .Ltd, and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,12 +15,13 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestSfstTask extends SbRestAbstractTask {
-    private static final String SFST_REST_URI = "/config/service-function-scheduler-type:service-function-scheduler-types/service-function-scheduler-type/";
+    private static final String SFST_REST_URI =
+            "/config/service-function-scheduler-type:service-function-scheduler-types/service-function-scheduler-type/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstTask.class);
 
-    public SbRestSfstTask(RestOperation restOperation, ServiceFunctionSchedulerType dataObject, ExecutorService odlExecutor) {
+    public SbRestSfstTask(RestOperation restOperation, ServiceFunctionSchedulerType dataObject,
+            ExecutorService odlExecutor) {
         super(restOperation, odlExecutor);
         this.exporterFactory = new SfstExporterFactory();
         if (restOperation.equals(RestOperation.DELETE)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,8 @@
  */
 
 package org.opendaylight.sfc.sbrest.json;
+
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,11 +50,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fiel
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.SourcePortRange;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.SourcePortRangeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import static org.junit.Assert.assertTrue;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class contains unit tests for AclExporterFactory
+ * This class contains unit tests for AclExporterFactory.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
@@ -65,6 +67,8 @@ public class AclExporterTest {
     public static final String ETH_TEST_JSON = "/AclJsonStrings/EthTest.json";
     public static final String NAME_ONLY_JSON = "/AclJsonStrings/NameOnly.json";
 
+    private static final Logger LOG = LoggerFactory.getLogger(AclExporterTest.class);
+
     public enum AclTestValues {
         ACL_NAME("ACL1"), RULE_NAME("ACE1"), DESTINATION_IPV4_NETWORK("127.0.0.1/0"), SOURCE_IPV4_NETWORK(
                 "127.0.0.1/0"), DESTINATION_IPV6_NETWORK("abcd:abcd::2222/0"), SOURCE_IPV6_NETWORK(
@@ -73,10 +77,11 @@ public class AclExporterTest {
                                         "00:11:22:33:44:55"), DESTINATION_MAC_ADDRESS_MASK(
                                                 "00:11:22:33:44:55"), SOURCE_MAC_ADDRESS(
                                                         "00:11:22:33:44:55"), SOURCE_MAC_ADDRESS_MASK(
-                                                                "00:11:22:33:44:55"), SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH(
+                                                                "00:11:22:33:44:55"),
+                                                                SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH(
                                                                         "SFC1-SFP1");
 
-        private String value;
+        private final String value;
 
         AclTestValues(String value) {
             this.value = value;
@@ -94,7 +99,7 @@ public class AclExporterTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot open file", e);
         }
 
         for (AclTestValues aclTestValue : AclTestValues.values()) {
@@ -183,7 +188,7 @@ public class AclExporterTest {
         AclRenderedServicePathBuilder aclRenderedServicePathBuilder = new AclRenderedServicePathBuilder();
 
         aclRenderedServicePathBuilder
-            .setRenderedServicePath(AclTestValues.SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH.getValue());
+                .setRenderedServicePath(AclTestValues.SERVICE_FUNCTION_ACL_RENDERED_SERVICE_PATH.getValue());
         actions1Builder.setSfcAction(aclRenderedServicePathBuilder.build());
         actionsBuilder.addAugmentation(Actions1.class, actions1Builder.build());
 
@@ -204,6 +209,8 @@ public class AclExporterTest {
                 break;
             case AclExporter.ACE_IPV6:
                 aceIpBuilder.setAceIpVersion(this.buildAceIpv6());
+                break;
+            default:
                 break;
         }
 
@@ -231,7 +238,7 @@ public class AclExporterTest {
         AceEthBuilder aceEthBuilder = new AceEthBuilder();
         aceEthBuilder.setDestinationMacAddress(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS.getValue()));
         aceEthBuilder
-            .setDestinationMacAddressMask(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS_MASK.getValue()));
+                .setDestinationMacAddressMask(new MacAddress(AclTestValues.DESTINATION_MAC_ADDRESS_MASK.getValue()));
         aceEthBuilder.setSourceMacAddress(new MacAddress(AclTestValues.SOURCE_MAC_ADDRESS.getValue()));
         aceEthBuilder.setSourceMacAddressMask(new MacAddress(AclTestValues.SOURCE_MAC_ADDRESS_MASK.getValue()));
 
@@ -250,6 +257,8 @@ public class AclExporterTest {
                 break;
             case AclExporter.ACE_IPV6:
                 matchesBuilder.setAceType(this.buildAceIp(accessListTestType));
+                break;
+            default:
                 break;
         }
 
@@ -274,5 +283,4 @@ public class AclExporterTest {
 
         return accessListEntriesBuilder.build();
     }
-
 }

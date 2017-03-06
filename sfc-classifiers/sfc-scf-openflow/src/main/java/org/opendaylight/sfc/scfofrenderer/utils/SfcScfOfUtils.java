@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.scfofrenderer.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -22,13 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class SfcScfOfUtils {
-    // TODO this must be defined somewhere else; link to 'it' rather than have it here
+    // TODO this must be defined somewhere else; link to 'it' rather than have
+    // it here
     private static final short TABLE_INDEX_CLASSIFIER = 0;
     private static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;
 
@@ -36,30 +34,32 @@ public class SfcScfOfUtils {
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
     public static final short NSH_MDTYPE_ONE = 0x1;
     public static final short NSH_NP_ETH = 0x3;
+
     /**
-    * Get a FlowBuilder object that install the table-miss in the classifier table.
-    *
-    * @return          the FlowBuilder object, with a MatchAny match,
-    *                   and a single GotoTable (transport ingress) instruction
-    */
+     * Get a FlowBuilder object that install the table-miss in the classifier
+     * table.
+     *
+     * @return the FlowBuilder object, with a MatchAny match, and a single
+     *         GotoTable (transport ingress) instruction
+     */
     public static FlowBuilder initClassifierTable() {
         MatchBuilder match = new MatchBuilder();
 
-        InstructionsBuilder isb = SfcOpenflowUtils
-                .appendGotoTableInstruction(new InstructionsBuilder(), TABLE_INDEX_INGRESS_TRANSPORT);
+        InstructionsBuilder isb = SfcOpenflowUtils.appendGotoTableInstruction(new InstructionsBuilder(),
+                TABLE_INDEX_INGRESS_TRANSPORT);
 
-        return SfcOpenflowUtils.createFlowBuilder(
-                TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        return SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match,
+                isb);
     }
 
-   /**
-    * create classifier DPDK output flow.
-    *
-    * @param  outPort  flow out port
-    * @return the {@link FlowBuilder} object
-    */
-    public static FlowBuilder initClassifierDpdkOutputFlow(Long outPort)
-    {
+    /**
+     * create classifier DPDK output flow.
+     *
+     * @param outPort
+     *            flow out port
+     * @return the {@link FlowBuilder} object
+     */
+    public static FlowBuilder initClassifierDpdkOutputFlow(Long outPort) {
         // Create the match criteria
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(OutputPortValues.LOCAL.toString()));
@@ -72,23 +72,20 @@ public class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
-        return SfcOpenflowUtils.createFlowBuilder(
-                TABLE_INDEX_CLASSIFIER,
-                FLOW_PRIORITY_CLASSIFIER,
-                "classifier_dpdk_output",
-                match,
-                isb);
+        return SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_CLASSIFIER,
+                "classifier_dpdk_output", match, isb);
     }
 
-   /**
-    * create classifier DPDK input flow.
-    *
-    * @param  nodeName flow table node name
-    * @param  inPort  flow in port
-    * @return the {@link FlowBuilder} object
-    */
-    public static FlowBuilder initClassifierDpdkInputFlow(String nodeName, Long inPort)
-    {
+    /**
+     * create classifier DPDK input flow.
+     *
+     * @param nodeName
+     *            flow table node name
+     * @param inPort
+     *            flow in port
+     * @return the {@link FlowBuilder} object
+     */
+    public static FlowBuilder initClassifierDpdkInputFlow(String nodeName, Long inPort) {
         // Create the match criteria
         MatchBuilder match = new MatchBuilder();
         SfcOpenflowUtils.addMatchInPort(match, new NodeId(nodeName), inPort);
@@ -100,30 +97,29 @@ public class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
-        return SfcOpenflowUtils.createFlowBuilder(
-                TABLE_INDEX_CLASSIFIER,
-                FLOW_PRIORITY_CLASSIFIER,
-                "classifier_dpdk_input",
-                match,
-                isb);
+        return SfcOpenflowUtils.createFlowBuilder(TABLE_INDEX_CLASSIFIER, FLOW_PRIORITY_CLASSIFIER,
+                "classifier_dpdk_input", match, isb);
     }
 
-   /**
-    * create classifier out flow.
-    * The function returns true if successful.
-    * The function returns false if unsuccessful.
-    * Get a FlowBuilder object w/ the classifier 'out' flow.
-    *
-    * @param  flowKey  flow key
-    * @param  match    flow match
-    * @param  sfcNshHeader nsh header
-    * @param  outPort  flow out port
-    * @return          create flow result
-    */
+    /**
+     * create classifier out flow. The function returns true if successful. The
+     * function returns false if unsuccessful. Get a FlowBuilder object w/ the
+     * classifier 'out' flow.
+     *
+     * @param flowKey
+     *            flow key
+     * @param match
+     *            flow match
+     * @param sfcNshHeader
+     *            nsh header
+     * @param outPort
+     *            flow out port
+     * @return create flow result
+     */
     public static FlowBuilder createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
-                                                  Long outPort) {
+            Long outPort) {
 
-        if ((flowKey == null) || (sfcNshHeader == null) || (sfcNshHeader.getVxlanIpDst()==null)) {
+        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
             return null;
         }
 
@@ -139,34 +135,34 @@ public class SfcScfOfUtils {
         theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC2(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC3(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC4(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        theActions
+                .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
-        theActions.add( outPort == null ?
-                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()) :
-                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
+        theActions.add(outPort == null
+                ? SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size())
+                : SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey))
-            .setTableId(TABLE_INDEX_CLASSIFIER)
-            .setKey(new FlowKey(new FlowId(flowKey)))
-            .setPriority(FLOW_PRIORITY_CLASSIFIER)
-            .setMatch(match)
-            .setInstructions(isb.build());
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(match).setInstructions(isb.build());
         return flowb;
     }
 
-   /**
-    * Get a FlowBuilder object w/ the classifier 'in' flow.
-    *
-    * @param  flowKey  flow key
-    * @param  sfcNshHeader nsh header
-    * @param  outPort  flow out port
-    * @return          create in result
-    */
+    /**
+     * Get a FlowBuilder object w/ the classifier 'in' flow.
+     *
+     * @param flowKey
+     *            flow key
+     * @param sfcNshHeader
+     *            nsh header
+     * @param outPort
+     *            flow out port
+     * @return create in result
+     */
     public static FlowBuilder createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort) {
-        if ((flowKey == null) || (sfcNshHeader == null) || (sfcNshHeader.getVxlanIpDst()==null)) {
+        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
             return null;
         }
 
@@ -174,40 +170,36 @@ public class SfcScfOfUtils {
 
         List<Action> theActions = new ArrayList<>();
         theActions.add(SfcOpenflowUtils.createActionNxPopNsh(theActions.size()));
-        theActions.add(outPort == null ?
-                    SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()) :
-                    SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
+        theActions.add(outPort == null
+                ? SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size())
+                : SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey))
-            .setTableId(TABLE_INDEX_CLASSIFIER)
-            .setKey(new FlowKey(new FlowId(flowKey)))
-            .setPriority(FLOW_PRIORITY_CLASSIFIER)
-            .setMatch(mb.build())
-            .setInstructions(isb.build());
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(mb.build()).setInstructions(isb.build());
 
         return flowb;
     }
 
-   /**
-    * Get a FlowBuilder object w/ the classifier relay flow.
-    *
-    * @param  flowKey  flow key
-    * @param  sfcNshHeader nsh header
-    * @return          the FlowBuilder containing the classifier relay flow
-    */
+    /**
+     * Get a FlowBuilder object w/ the classifier relay flow.
+     *
+     * @param flowKey
+     *            flow key
+     * @param sfcNshHeader
+     *            nsh header
+     * @return the FlowBuilder containing the classifier relay flow
+     */
     public static FlowBuilder createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader) {
-        if ((flowKey == null) || (sfcNshHeader == null) || (sfcNshHeader.getVxlanIpDst()==null)) {
+        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
             return null;
         }
-
-        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
-
         String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
         List<Action> theActions = new ArrayList<>();
-        theActions.add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        theActions
+                .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxMoveNsp(theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxMoveNsi(theActions.size()));
@@ -217,32 +209,29 @@ public class SfcScfOfUtils {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey))
-            .setTableId(TABLE_INDEX_CLASSIFIER)
-            .setKey(new FlowKey(new FlowId(flowKey)))
-            .setPriority(FLOW_PRIORITY_CLASSIFIER)
-            .setMatch(mb.build())
-            .setInstructions(isb.build());
+        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(mb.build()).setInstructions(isb.build());
         return flowb;
     }
 
-   /**
-    * delete classifier flow.
-    * The function returns true if successful.
-    * The function returns false if unsuccessful.
-    *
-    * @param  nodeName flow table node name
-    * @param  flowKey  flow key
-    * @return          delete result
-    */
+    /**
+     * delete classifier flow. The function returns true if successful. The
+     * function returns false if unsuccessful.
+     *
+     * @param nodeName
+     *            flow table node name
+     * @param flowKey
+     *            flow key
+     * @return delete result
+     */
     public static boolean deleteClassifierFlow(String nodeName, String flowKey) {
 
-       if ((nodeName == null) || (flowKey == null)) {
-           return false;
-       }
+        if (nodeName == null || flowKey == null) {
+            return false;
+        }
 
-       return SfcOpenflowUtils.removeFlowFromDataStore(nodeName,
-               new TableKey(TABLE_INDEX_CLASSIFIER),
-               new FlowKey(new FlowId(flowKey)));
-   }
+        return SfcOpenflowUtils.removeFlowFromDataStore(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
+                new FlowKey(new FlowId(flowKey)));
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,8 +13,7 @@ import java.util.concurrent.Executors;
 import org.opendaylight.sfc.sbrest.json.ExporterFactory;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
-
-abstract public class SbRestAbstractTask implements Runnable {
+public abstract class SbRestAbstractTask implements Runnable {
 
     protected static final int THREAD_POOL_SIZE = 50;
     protected ExecutorService taskExecutor;
@@ -47,6 +46,5 @@ abstract public class SbRestAbstractTask implements Runnable {
         }
     }
 
-    abstract protected void setRestUriList(DataObject o);
-
+    protected abstract void setRestUriList(DataObject dataObject);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Corp. and others. All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Corp. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.json;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,20 +62,21 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev1
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilization;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.sf.monitoring.info.resource.utilization.sf.ports.bandwidth.utilization.PortBandwidthUtilizationKey;
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class contains unit tests for SfstateExporter
+ * This class contains unit tests for SfstateExporter.
  *
  * @author Hongli Chen (honglix.chen@intel.com)
  * @version 0.1
  * @since 2015-09-21
  */
 public class SfstateExporterTest {
-
     private static final String FULL_JSON = "/SfstateJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SfstateJsonStrings/NameOnly.json";
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfstateExporterTest.class);
 
     // create string, that represents .json file
     private String gatherServiceFunctionStateJsonStringFromFile(String testFileName) {
@@ -82,14 +86,14 @@ public class SfstateExporterTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot open file", e);
         }
 
         for (SfstateTestValues sfstateTestValue : SfstateTestValues.values()) {
-            jsonString = jsonString != null ? jsonString.replaceAll("\\b" + sfstateTestValue.name() + "\\b",
-                    sfstateTestValue.getValue()) : null;
+            jsonString = jsonString != null
+                    ? jsonString.replaceAll("\\b" + sfstateTestValue.name() + "\\b", sfstateTestValue.getValue())
+                    : null;
         }
-
         return jsonString;
     }
 
@@ -107,12 +111,9 @@ public class SfstateExporterTest {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode expectedSfstateJson =
-                objectMapper.readTree(this.gatherServiceFunctionStateJsonStringFromFile(expectedResultFile));
+        JsonNode expectedSfstateJson = objectMapper
+                .readTree(this.gatherServiceFunctionStateJsonStringFromFile(expectedResultFile));
         JsonNode exportedSfstateJson = objectMapper.readTree(exportedSfstateString);
-
-        System.out.println("EXPECTED: " + expectedSfstateJson);
-        System.out.println("CREATED:  " + exportedSfstateJson);
 
         return expectedSfstateJson.equals(exportedSfstateJson);
     }
@@ -128,6 +129,7 @@ public class SfstateExporterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     // put wrong parameter, illegal argument exception expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
@@ -156,58 +158,49 @@ public class SfstateExporterTest {
     private ServiceFunctionState buildServiceFunctionState() {
         DescriptionInfo descriptionInfo = buildSfDescriptionInfo();
         MonitoringInfo monitoringInfo = buildSfMonitoringInfo();
-        SfcSfDescMon sfDescMon =
-                new SfcSfDescMonBuilder().setMonitoringInfo(monitoringInfo).setDescriptionInfo(descriptionInfo).build();
+        SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monitoringInfo)
+                .setDescriptionInfo(descriptionInfo).build();
 
-        ServiceStatistic serviceStatistics =
-                new ServiceStatisticBuilder()
-                    .setBytesIn(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.BYTES_IN.getValue()))))
-                    .setBytesOut(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.BYTES_OUT.getValue()))))
-                    .setPacketsOut(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PACKETS_OUT.getValue()))))
-                    .setPacketsIn(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
-                    .build();
+        ServiceStatistic serviceStatistics = new ServiceStatisticBuilder()
+                .setBytesIn(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.BYTES_IN.getValue()))))
+                .setBytesOut(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.BYTES_OUT.getValue()))))
+                .setPacketsOut(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.PACKETS_OUT.getValue()))))
+                .setPacketsIn(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
+                .build();
 
         List<SfServicePath> sfServicePaths = new ArrayList<>();
-        ServiceStatistic pathserviceStatistics =
-                new ServiceStatisticBuilder()
-                    .setBytesIn(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_IN.getValue()))))
-                    .setBytesOut(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_OUT.getValue()))))
-                    .setPacketsOut(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PATH_PACKETS_OUT.getValue()))))
-                    .setPacketsIn(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
-                    .build();
+        ServiceStatistic pathserviceStatistics = new ServiceStatisticBuilder()
+                .setBytesIn(new ZeroBasedCounter64(
+                        new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_IN.getValue()))))
+                .setBytesOut(new ZeroBasedCounter64(
+                        new Counter64(new BigInteger(SfstateTestValues.PATH_BYTES_OUT.getValue()))))
+                .setPacketsOut(new ZeroBasedCounter64(
+                        new Counter64(new BigInteger(SfstateTestValues.PATH_PACKETS_OUT.getValue()))))
+                .setPacketsIn(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.PACKETS_IN.getValue()))))
+                .build();
         SfServicePathKey servicePathKey = new SfServicePathKey(new SfpName(SfstateTestValues.PATH_NAME.getValue()));
 
-        StatisticByTimestamp pathStat = new StatisticByTimestampBuilder()
-                .setTimestamp(BigInteger.valueOf(123456789l))
-                .setServiceStatistic(pathserviceStatistics)
-                .build();
+        StatisticByTimestamp pathStat = new StatisticByTimestampBuilder().setTimestamp(BigInteger.valueOf(123456789L))
+                .setServiceStatistic(pathserviceStatistics).build();
 
         SfServicePath sfServicePath = new SfServicePathBuilder().setKey(servicePathKey)
-            .setName(new SfpName(SfstateTestValues.PATH_NAME.getValue()))
-            .setStatisticByTimestamp(Collections.singletonList(pathStat))
-            .build();
+                .setName(new SfpName(SfstateTestValues.PATH_NAME.getValue()))
+                .setStatisticByTimestamp(Collections.singletonList(pathStat)).build();
         sfServicePaths.add(sfServicePath);
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-        ServiceFunctionStateKey serviceFunctionStateKey =
-                new ServiceFunctionStateKey(new SfName(SfstateTestValues.NAME.getValue()));
+        ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(
+                new SfName(SfstateTestValues.NAME.getValue()));
 
         StatisticByTimestamp sfStateStat = new StatisticByTimestampBuilder()
-                .setTimestamp(BigInteger.valueOf(123456789l))
-                .setServiceStatistic(serviceStatistics)
-                .build();
+                .setTimestamp(BigInteger.valueOf(123456789L)).setServiceStatistic(serviceStatistics).build();
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
-            .setStatisticByTimestamp(Collections.singletonList(sfStateStat))
-            .setSfServicePath(sfServicePaths)
-            .addAugmentation(ServiceFunctionState1.class, sfState1)
-            .build();
+                .setStatisticByTimestamp(Collections.singletonList(sfStateStat)).setSfServicePath(sfServicePaths)
+                .addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
         return serviceFunctionState;
     }
@@ -218,21 +211,17 @@ public class SfstateExporterTest {
         PortBandwidthKey portBandwidthKey1 = new PortBandwidthKey(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()));
         PortBandwidthKey portBandwidthKey2 = new PortBandwidthKey(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()));
 
-        PortBandwidth portBandwidth1 =
-                new PortBandwidthBuilder().setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS1.getValue()))
-                    .setKey(portBandwidthKey1)
-                    .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS1.getValue()))
-                    .setPortId(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()))
-                    .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH1.getValue()))
-                    .build();
+        PortBandwidth portBandwidth1 = new PortBandwidthBuilder()
+                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS1.getValue())).setKey(portBandwidthKey1)
+                .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS1.getValue()))
+                .setPortId(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()))
+                .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH1.getValue())).build();
 
-        PortBandwidth portBandwidth2 =
-                new PortBandwidthBuilder().setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS2.getValue()))
-                    .setKey(portBandwidthKey2)
-                    .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS2.getValue()))
-                    .setPortId(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()))
-                    .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH2.getValue()))
-                    .build();
+        PortBandwidth portBandwidth2 = new PortBandwidthBuilder()
+                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS2.getValue())).setKey(portBandwidthKey2)
+                .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS2.getValue()))
+                .setPortId(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()))
+                .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH2.getValue())).build();
 
         portBandwidthList.add(portBandwidth1);
         portBandwidthList.add(portBandwidth2);
@@ -240,90 +229,82 @@ public class SfstateExporterTest {
         PortsBandwidth portsBandwidth = new PortsBandwidthBuilder().setPortBandwidth(portBandwidthList).build();
 
         Capabilities cap = new CapabilitiesBuilder().setPortsBandwidth(portsBandwidth)
-            .setFIBSize(Long.valueOf(SfstateTestValues.FIB_SIZE.getValue()))
-            .setRIBSize(Long.valueOf(SfstateTestValues.RIB_SIZE.getValue()))
-            .setSupportedACLNumber(Long.valueOf(SfstateTestValues.SUPPORTED_ACL_NUMBER.getValue()))
-            .setSupportedBandwidth(Long.valueOf(SfstateTestValues.WHOLE_SUPPORTED_BANDWIDTH.getValue()))
-            .setSupportedPacketRate(Long.valueOf(SfstateTestValues.SUPPORTED_PACKET_RATE.getValue()))
-            .build();
+                .setFIBSize(Long.valueOf(SfstateTestValues.FIB_SIZE.getValue()))
+                .setRIBSize(Long.valueOf(SfstateTestValues.RIB_SIZE.getValue()))
+                .setSupportedACLNumber(Long.valueOf(SfstateTestValues.SUPPORTED_ACL_NUMBER.getValue()))
+                .setSupportedBandwidth(Long.valueOf(SfstateTestValues.WHOLE_SUPPORTED_BANDWIDTH.getValue()))
+                .setSupportedPacketRate(Long.valueOf(SfstateTestValues.SUPPORTED_PACKET_RATE.getValue())).build();
 
         DescriptionInfo descInfo = new DescriptionInfoBuilder().setCapabilities(cap)
-            .setType(SfstateTestValues.TYPE.getValue())
-            .setDataPlaneIp(new IpAddress(new Ipv4Address(SfstateTestValues.DATA_PLANE_IP.getValue())))
-            .setDataPlanePort(new PortNumber(Integer.valueOf(SfstateTestValues.DATA_PLANE_PORT.getValue())))
-            .setNumberOfDataports(Long.valueOf(SfstateTestValues.NUMBER_OF_DATAPORTS.getValue()))
-            .build();
+                .setType(SfstateTestValues.TYPE.getValue())
+                .setDataPlaneIp(new IpAddress(new Ipv4Address(SfstateTestValues.DATA_PLANE_IP.getValue())))
+                .setDataPlanePort(new PortNumber(Integer.valueOf(SfstateTestValues.DATA_PLANE_PORT.getValue())))
+                .setNumberOfDataports(Long.valueOf(SfstateTestValues.NUMBER_OF_DATAPORTS.getValue())).build();
         return descInfo;
     }
 
     private MonitoringInfo buildSfMonitoringInfo() {
         List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<>();
 
-        PortBandwidthUtilizationKey portBandwidthUtilKey1 =
-                new PortBandwidthUtilizationKey(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()));
-        PortBandwidthUtilizationKey portBandwidthUtilKey2 =
-                new PortBandwidthUtilizationKey(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()));
+        PortBandwidthUtilizationKey portBandwidthUtilKey1 = new PortBandwidthUtilizationKey(
+                Long.valueOf(SfstateTestValues.PORT_ID1.getValue()));
+        PortBandwidthUtilizationKey portBandwidthUtilKey2 = new PortBandwidthUtilizationKey(
+                Long.valueOf(SfstateTestValues.PORT_ID2.getValue()));
 
-        PortBandwidthUtilization portBandwidthUtil1 =
-                new PortBandwidthUtilizationBuilder()
-                    .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL1.getValue()))
-                    .setKey(portBandwidthUtilKey1)
-                    .setRxBytes(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.RX_BYTES1.getValue()))))
-                    .setRxPacket(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.RX_PACKET1.getValue()))))
-                    .setRxPacketRate(Long.valueOf(SfstateTestValues.RX_PACKET_RATE1.getValue()))
-                    .setRxBytesRate(Long.valueOf(SfstateTestValues.RX_BYTES_RATE1.getValue()))
-                    .setTxBytes(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.TX_BYTES1.getValue()))))
-                    .setTxPacket(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.TX_PACKET1.getValue()))))
-                    .setTxPacketRate(Long.valueOf(SfstateTestValues.TX_PACKET_RATE1.getValue()))
-                    .setTxBytesRate(Long.valueOf(SfstateTestValues.TX_BYTES_RATE1.getValue()))
-                    .setPortId(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()))
-                    .build();
+        PortBandwidthUtilization portBandwidthUtil1 = new PortBandwidthUtilizationBuilder()
+                .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL1.getValue()))
+                .setKey(portBandwidthUtilKey1)
+                .setRxBytes(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_BYTES1.getValue()))))
+                .setRxPacket(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_PACKET1.getValue()))))
+                .setRxPacketRate(Long.valueOf(SfstateTestValues.RX_PACKET_RATE1.getValue()))
+                .setRxBytesRate(Long.valueOf(SfstateTestValues.RX_BYTES_RATE1.getValue()))
+                .setTxBytes(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.TX_BYTES1.getValue()))))
+                .setTxPacket(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.TX_PACKET1.getValue()))))
+                .setTxPacketRate(Long.valueOf(SfstateTestValues.TX_PACKET_RATE1.getValue()))
+                .setTxBytesRate(Long.valueOf(SfstateTestValues.TX_BYTES_RATE1.getValue()))
+                .setPortId(Long.valueOf(SfstateTestValues.PORT_ID1.getValue())).build();
 
-        PortBandwidthUtilization portBandwidthUtil2 =
-                new PortBandwidthUtilizationBuilder()
-                    .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL2.getValue()))
-                    .setKey(portBandwidthUtilKey2)
-                    .setRxBytes(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.RX_BYTES2.getValue()))))
-                    .setRxPacket(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.RX_PACKET2.getValue()))))
-                    .setRxPacketRate(Long.valueOf(SfstateTestValues.RX_PACKET_RATE2.getValue()))
-                    .setRxBytesRate(Long.valueOf(SfstateTestValues.RX_BYTES_RATE2.getValue()))
-                    .setTxBytes(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.TX_BYTES2.getValue()))))
-                    .setTxPacket(new ZeroBasedCounter64(
-                            new Counter64(new BigInteger(SfstateTestValues.TX_PACKET2.getValue()))))
-                    .setTxPacketRate(Long.valueOf(SfstateTestValues.TX_PACKET_RATE2.getValue()))
-                    .setTxBytesRate(Long.valueOf(SfstateTestValues.TX_BYTES_RATE2.getValue()))
-                    .setPortId(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()))
-                    .build();
+        PortBandwidthUtilization portBandwidthUtil2 = new PortBandwidthUtilizationBuilder()
+                .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL2.getValue()))
+                .setKey(portBandwidthUtilKey2)
+                .setRxBytes(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_BYTES2.getValue()))))
+                .setRxPacket(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_PACKET2.getValue()))))
+                .setRxPacketRate(Long.valueOf(SfstateTestValues.RX_PACKET_RATE2.getValue()))
+                .setRxBytesRate(Long.valueOf(SfstateTestValues.RX_BYTES_RATE2.getValue()))
+                .setTxBytes(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.TX_BYTES2.getValue()))))
+                .setTxPacket(
+                        new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.TX_PACKET2.getValue()))))
+                .setTxPacketRate(Long.valueOf(SfstateTestValues.TX_PACKET_RATE2.getValue()))
+                .setTxBytesRate(Long.valueOf(SfstateTestValues.TX_BYTES_RATE2.getValue()))
+                .setPortId(Long.valueOf(SfstateTestValues.PORT_ID2.getValue())).build();
 
         portBandwidthUtilList.add(portBandwidthUtil1);
         portBandwidthUtilList.add(portBandwidthUtil2);
 
-        SFPortsBandwidthUtilization sfPortsBandwidthUtil =
-                new SFPortsBandwidthUtilizationBuilder().setPortBandwidthUtilization(portBandwidthUtilList).build();
+        SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
+                .setPortBandwidthUtilization(portBandwidthUtilList).build();
 
         ResourceUtilization resrcUtil = new ResourceUtilizationBuilder()
-            .setAvailableMemory(Long.valueOf(SfstateTestValues.AVAILABLE_MEMORY.getValue()))
-            .setBandwidthUtilization(Long.valueOf(SfstateTestValues.BANDWIDTH_UTIL.getValue()))
-            .setCPUUtilization(Long.valueOf(SfstateTestValues.CPU_UTIL.getValue()))
-            .setFIBUtilization(Long.valueOf(SfstateTestValues.FIB_UTIL.getValue()))
-            .setRIBUtilization(Long.valueOf(SfstateTestValues.RIB_UTIL.getValue()))
-            .setMemoryUtilization(Long.valueOf(SfstateTestValues.MEMORY_UTIL.getValue()))
-            .setPacketRateUtilization(Long.valueOf(SfstateTestValues.PACKET_RATE_UTIL.getValue()))
-            .setPowerUtilization(Long.valueOf(SfstateTestValues.POWER_UTIL.getValue()))
-            .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil)
-            .build();
+                .setAvailableMemory(Long.valueOf(SfstateTestValues.AVAILABLE_MEMORY.getValue()))
+                .setBandwidthUtilization(Long.valueOf(SfstateTestValues.BANDWIDTH_UTIL.getValue()))
+                .setCPUUtilization(Long.valueOf(SfstateTestValues.CPU_UTIL.getValue()))
+                .setFIBUtilization(Long.valueOf(SfstateTestValues.FIB_UTIL.getValue()))
+                .setRIBUtilization(Long.valueOf(SfstateTestValues.RIB_UTIL.getValue()))
+                .setMemoryUtilization(Long.valueOf(SfstateTestValues.MEMORY_UTIL.getValue()))
+                .setPacketRateUtilization(Long.valueOf(SfstateTestValues.PACKET_RATE_UTIL.getValue()))
+                .setPowerUtilization(Long.valueOf(SfstateTestValues.POWER_UTIL.getValue()))
+                .setSFPortsBandwidthUtilization(sfPortsBandwidthUtil).build();
 
         // sf monitor data
         MonitoringInfo monInfo = new MonitoringInfoBuilder().setResourceUtilization(resrcUtil)
-            .setLiveness(Boolean.parseBoolean(SfstateTestValues.LIVENESS.getValue()))
-            .build();
+                .setLiveness(Boolean.parseBoolean(SfstateTestValues.LIVENESS.getValue())).build();
 
         return monInfo;
     }
@@ -333,34 +314,36 @@ public class SfstateExporterTest {
                 "sfp1"), PATH_BYTES_IN("800"), PATH_BYTES_OUT("1600"), PATH_PACKETS_IN("100"), PATH_PACKETS_OUT(
                         "200"), LIVENESS("true"), PACKET_RATE_UTIL("35"), CPU_UTIL("15"), FIB_UTIL("25"), POWER_UTIL(
                                 "20"), BANDWIDTH_UTIL("43"), RIB_UTIL("30"), MEMORY_UTIL("35"), AVAILABLE_MEMORY(
-                                        "500"), PORT_ID1("1"), PORT_ID2("2"), TX_BYTES1("1600"), TX_BYTES2(
-                                                "2400"), TX_BYTES_RATE1("30"), TX_BYTES_RATE2("35"), TX_PACKET1(
-                                                        "200"), TX_PACKET2("300"), TX_PACKET_RATE1(
+                                        "500"), PORT_ID1("1"), PORT_ID2("2"), TX_BYTES1(
+                                                "1600"), TX_BYTES2("2400"), TX_BYTES_RATE1("30"), TX_BYTES_RATE2(
+                                                        "35"), TX_PACKET1("200"), TX_PACKET2("300"), TX_PACKET_RATE1(
                                                                 "32"), TX_PACKET_RATE2("36"), RX_PACKET1(
                                                                         "100"), RX_PACKET2("200"), RX_BYTES1(
                                                                                 "800"), RX_BYTES2(
                                                                                         "1600"), RX_BYTES_RATE1(
-                                                                                                "25"), RX_BYTES_RATE2(
-                                                                                                        "35"), RX_PACKET_RATE1(
-                                                                                                                "37"), RX_PACKET_RATE2(
-                                                                                                                        "40"), PORT_BANDWIDTH_UTIL1(
-                                                                                                                                "33"), PORT_BANDWIDTH_UTIL2(
-                                                                                                                                        "30"), TYPE(
-                                                                                                                                                "dpi"), DATA_PLANE_PORT(
-                                                                                                                                                        "500"), DATA_PLANE_IP(
-                                                                                                                                                                "192.168.1.1"), IPADDRESS1(
-                                                                                                                                                                        "10.0.0.1"), IPADDRESS2(
-                                                                                                                                                                                "10.0.0.2"), MACADDRESS1(
-                                                                                                                                                                                        "01:1e:67:a2:5f:f6"), MACADDRESS2(
-                                                                                                                                                                                                "01:1e:67:a2:5f:f7"), SUPPORTED_BANDWIDTH1(
-                                                                                                                                                                                                        "10"), SUPPORTED_BANDWIDTH2(
-                                                                                                                                                                                                                "20"), NUMBER_OF_DATAPORTS(
-                                                                                                                                                                                                                        "2"), RIB_SIZE(
-                                                                                                                                                                                                                                "200"), SUPPORTED_PACKET_RATE(
-                                                                                                                                                                                                                                        "40"), SUPPORTED_ACL_NUMBER(
-                                                                                                                                                                                                                                                "1000"), FIB_SIZE(
-                                                                                                                                                                                                                                                        "300"), WHOLE_SUPPORTED_BANDWIDTH(
-                                                                                                                                                                                                                                                                "30");
+                                                                                                "25"),
+        RX_BYTES_RATE2("35"),
+        RX_PACKET_RATE1("37"),
+        RX_PACKET_RATE2("40"),
+        PORT_BANDWIDTH_UTIL1("33"),
+        PORT_BANDWIDTH_UTIL2(
+                "30"), TYPE(
+                        "dpi"), DATA_PLANE_PORT(
+                                "500"), DATA_PLANE_IP(
+                                        "192.168.1.1"), IPADDRESS1(
+                                                "10.0.0.1"), IPADDRESS2(
+                                                        "10.0.0.2"), MACADDRESS1(
+                                                                "01:1e:67:a2:5f:f6"), MACADDRESS2(
+                                                                        "01:1e:67:a2:5f:f7"), SUPPORTED_BANDWIDTH1(
+                                                                                "10"), SUPPORTED_BANDWIDTH2(
+                                                                                        "20"), NUMBER_OF_DATAPORTS(
+                                                                                                "2"), RIB_SIZE(
+                                                                                                        "200"),
+        SUPPORTED_PACKET_RATE(
+                "40"), SUPPORTED_ACL_NUMBER(
+                        "1000"), FIB_SIZE(
+                                "300"), WHOLE_SUPPORTED_BANDWIDTH(
+                                        "30");
 
         private final String value;
         private final Class<?> identity;

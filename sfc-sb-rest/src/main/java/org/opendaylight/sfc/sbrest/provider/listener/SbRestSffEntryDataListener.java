@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +24,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffEntryDataListener.class);
@@ -32,15 +33,13 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
         setInstanceIdentifier(SfcInstanceIdentifiers.SFF_ENTRY_IID);
     }
 
-    public void setDataProvider(DataBroker r){
-       setDataBroker(r);
-       registerAsDataChangeListener();
+    public void setDataProvider(DataBroker dataBroker) {
+        setDataBroker(dataBroker);
+        registerAsDataChangeListener();
     }
 
-
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         printTraceStart(LOG);
 
@@ -49,14 +48,12 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
                 ServiceFunctionForwarder originalServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
-                LOG.debug("\n########## Original Sff: {}",
-                        originalServiceFunctionForwarder.getName());
+                LOG.debug("\n########## Original Sff: {}", originalServiceFunctionForwarder.getName());
             }
         }
 
         // SFF CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionForwarder) {
@@ -71,8 +68,8 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
         // SFF UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionForwarder)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
+            if (entry.getValue() instanceof ServiceFunctionForwarder
+                    && !dataCreatedObject.containsKey(entry.getKey())) {
                 ServiceFunctionForwarder updatedServiceFunctionForwarder = (ServiceFunctionForwarder) entry.getValue();
                 LOG.debug("\nModified Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
 
@@ -90,13 +87,11 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener {
                 ServiceFunctionForwarder originalServiceFunctionForwarder = (ServiceFunctionForwarder) dataObject;
                 LOG.debug("\nDeleted Service Function Forwarder Name: {}", originalServiceFunctionForwarder.getName());
 
-                Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
-                        executor);
+                Runnable task = new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder, executor);
                 executor.submit(task);
             }
         }
         printTraceStop(LOG);
     }
-
 
 }

@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,8 +25,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
@@ -33,16 +34,14 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         setInstanceIdentifier(SfcInstanceIdentifiers.RSP_ENTRY_IID);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
     }
-    public void setDataProvider(DataBroker r){
-       setDataBroker(r);
-       registerAsDataChangeListener();
+
+    public void setDataProvider(DataBroker dataBroker) {
+        setDataBroker(dataBroker);
+        registerAsDataChangeListener();
     }
 
-
-
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
 
         printTraceStart(LOG);
 
@@ -71,8 +70,7 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         // RSP UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof RenderedServicePath)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
+            if (entry.getValue() instanceof RenderedServicePath && !dataCreatedObject.containsKey(entry.getKey())) {
                 RenderedServicePath updatedRenderedServicePath = (RenderedServicePath) entry.getValue();
                 LOG.debug("\nModified Rendered Service Path Name: {}", updatedRenderedServicePath.getName());
 
@@ -80,7 +78,6 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
                 executor.submit(task);
             }
         }
-
 
         // RSP DELETION
         Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
@@ -97,6 +94,5 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener {
         }
         printTraceStop(LOG);
     }
-
 
 }

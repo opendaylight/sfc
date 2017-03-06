@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Intel Corp. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Intel Corp. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,12 +18,13 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestSfstateTask extends SbRestAbstractTask {
-    private static final String SFSTATE_REST_URI = "/operational/service-function:service-functions-state/service-function-state/";
+    private static final String SFSTATE_REST_URI =
+            "/operational/service-function:service-functions-state/service-function-state/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstateTask.class);
 
-    public SbRestSfstateTask(RestOperation restOperation, ServiceFunctionState dataObject, ExecutorService odlExecutor) {
+    public SbRestSfstateTask(RestOperation restOperation, ServiceFunctionState dataObject,
+            ExecutorService odlExecutor) {
         super(restOperation, odlExecutor);
         this.exporterFactory = new SfstateExporterFactory();
         if (restOperation.equals(RestOperation.DELETE)) {
@@ -40,7 +41,7 @@ public class SbRestSfstateTask extends SbRestAbstractTask {
 
         this.restUriList = new ArrayList<>();
 
-        if (SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName())!=null) {
+        if (SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName()) != null) {
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName());
             if (serviceFunction.getRestUri() != null) {
                 SfName sfName = obj.getName();
@@ -57,5 +58,4 @@ public class SbRestSfstateTask extends SbRestAbstractTask {
         }
 
     }
-
 }

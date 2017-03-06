@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -15,10 +15,10 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestSfgTask extends SbRestAbstractTask {
 
-    private static final String SFG_REST_URI = "/config/service-function-group:service-function-groups/service-function-group/";
+    private static final String SFG_REST_URI =
+            "/config/service-function-group:service-function-groups/service-function-group/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgTask.class);
 
     public SbRestSfgTask(RestOperation restOperation, ServiceFunctionGroup dataObject, ExecutorService odlExecutor) {

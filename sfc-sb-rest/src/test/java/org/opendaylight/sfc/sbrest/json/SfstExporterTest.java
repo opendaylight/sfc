@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.sfc.sbrest.json;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,12 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- * This class contains unit tests for SfstExporter
+ * This class contains unit tests for SfstExporter.
  *
  * @author Vladimir Lavor
  * @version 0.1
@@ -34,10 +37,11 @@ import static junit.framework.TestCase.assertTrue;
  */
 
 public class SfstExporterTest {
-
     private static final String SERVICE_FUNCTION_SCHEDULE_TYPE_PREFIX = "service-function-schedule-type:";
     private static final String FULL_JSON = "/SfstJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SfstJsonStrings/NameOnly.json";
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfstExporterTest.class);
 
     // read .json in resources/SfstJsonStrings and create a string
     private String gatherServiceFunctionSchedulerTypeJsonStringFromFile(String testFileName) {
@@ -47,7 +51,7 @@ public class SfstExporterTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot open file", e);
         }
 
         for (SfstTestValues sfstTestValue : SfstTestValues.values()) {
@@ -55,7 +59,6 @@ public class SfstExporterTest {
                 jsonString = jsonString.replaceAll("\\b" + sfstTestValue.name() + "\\b", sfstTestValue.getValue());
             }
         }
-
         return jsonString;
     }
 
@@ -70,6 +73,7 @@ public class SfstExporterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     // put wrong argument, illegal argument exception is expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();

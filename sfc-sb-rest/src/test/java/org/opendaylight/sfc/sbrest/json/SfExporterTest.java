@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -35,18 +35,21 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class contains unit tests for SfExporter
+ * This class contains unit tests for SfExporter.
  *
  * @author Andrej Kincel (andrej.kincel@gmail.com)
  * @version 0.1
  * @since 2015-02-13
  */
 public class SfExporterTest {
-
     private static final String FULL_JSON = "/SfJsonStrings/FullTest.json";
     private static final String NAME_ONLY_JSON = "/SfJsonStrings/NameOnly.json";
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfExporterTest.class);
 
     // create string, that represents .json file
     private String gatherServiceFunctionJsonStringFromFile(String testFileName) {
@@ -56,7 +59,7 @@ public class SfExporterTest {
             URL fileURL = getClass().getResource(testFileName);
             jsonString = TestUtil.readFile(fileURL.toURI(), StandardCharsets.UTF_8);
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error("Cannot open file", e);
         }
 
         for (SfTestValues sfTestValue : SfTestValues.values()) {
@@ -99,6 +102,7 @@ public class SfExporterTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
     // put wrong parameter, illegal argument exception expected
     public void testExportJsonException() throws Exception {
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
@@ -137,7 +141,7 @@ public class SfExporterTest {
     }
 
     private List<SfDataPlaneLocator> buildSfDataPlaneLocator() {
-        List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<>();
+        final List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<>();
 
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder.setIp(new IpAddress(new Ipv4Address(SfTestValues.IP_V4_ADDRESS.getValue())));

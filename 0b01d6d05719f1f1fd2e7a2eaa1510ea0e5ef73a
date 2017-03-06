@@ -94,6 +94,47 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_32b4f7f0",
+        "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/api/TackerManagerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-03-06T18:08:47Z",
+      "side": 1,
+      "message": "printStackTrace() is not allowed..I was not sure whether I can remove it, so added, let me know if this can be removed",
+      "parentUuid": "fafc7978_52ad3be8",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 56
+      },
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_12b733f6",
+        "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/api/TackerManagerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2017-03-06T18:08:47Z",
+      "side": 1,
+      "message": "can i rename vnf_id, will that cause any issue?",
+      "revId": "0b01d6d05719f1f1fd2e7a2eaa1510ea0e5ef73a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_92b3234c",
         "filename": "sfc-vnfm-tacker/src/test/java/org/opendaylight/sfc/tacker/dto/TokenTest.java",
         "patchSetId": 2

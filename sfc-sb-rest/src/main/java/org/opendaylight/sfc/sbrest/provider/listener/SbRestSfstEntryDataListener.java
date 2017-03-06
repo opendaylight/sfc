@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2015 Intel .Ltd, and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Intel .Ltd, and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +24,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstEntryDataListener.class);
@@ -32,21 +33,22 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
         setInstanceIdentifier(SfcInstanceIdentifiers.SFST_ENTRY_IID);
     }
 
-    public void setDataProvider(DataBroker r){
-       setDataBroker(r);
-       registerAsDataChangeListener();
+    public void setDataProvider(DataBroker dataBroker) {
+        setDataBroker(dataBroker);
+        registerAsDataChangeListener();
     }
 
     @Override
-    public void onDataChanged(
-            final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         printTraceStart(LOG);
 
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionSchedulerType) {
-                ServiceFunctionSchedulerType originalServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry.getValue();
-                LOG.debug("\nOriginal Service Function Schedule Type Name: {}", originalServiceFunctionScheduleType.getName());
+                ServiceFunctionSchedulerType originalServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry
+                        .getValue();
+                LOG.debug("\nOriginal Service Function Schedule Type Name: {}",
+                        originalServiceFunctionScheduleType.getName());
             }
         }
 
@@ -54,8 +56,10 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof ServiceFunctionSchedulerType) {
-                ServiceFunctionSchedulerType createdServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry.getValue();
-                LOG.debug("\nCreated Service Function Schedule Type Name: {}", createdServiceFunctionScheduleType.getName());
+                ServiceFunctionSchedulerType createdServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry
+                        .getValue();
+                LOG.debug("\nCreated Service Function Schedule Type Name: {}",
+                        createdServiceFunctionScheduleType.getName());
 
                 Runnable task = new SbRestSfstTask(RestOperation.PUT, createdServiceFunctionScheduleType, executor);
                 executor.submit(task);
@@ -65,10 +69,12 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
         // SF Schedule Type UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionSchedulerType)
-                    && (!dataCreatedObject.containsKey(entry.getKey()))) {
-                ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) entry.getValue();
-                LOG.debug("\nModified Service Function Schedule Type Name: {}", updatedServiceFunctionSchedulerType.getName());
+            if (entry.getValue() instanceof ServiceFunctionSchedulerType
+                    && !dataCreatedObject.containsKey(entry.getKey())) {
+                ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) entry
+                        .getValue();
+                LOG.debug("\nModified Service Function Schedule Type Name: {}",
+                        updatedServiceFunctionSchedulerType.getName());
 
                 Runnable task = new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executor);
                 executor.submit(task);
@@ -81,14 +87,16 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
             DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
             if (dataObject instanceof ServiceFunctionSchedulerType) {
 
-                ServiceFunctionSchedulerType originalServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) dataObject;
-                LOG.debug("\nDeleted Service Function Schedule Type Name: {}", originalServiceFunctionSchedulerType.getName());
+                ServiceFunctionSchedulerType originalServiceFunctionSchedulerType =
+                        (ServiceFunctionSchedulerType) dataObject;
+                LOG.debug("\nDeleted Service Function Schedule Type Name: {}",
+                        originalServiceFunctionSchedulerType.getName());
 
-                Runnable task = new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType, executor);
+                Runnable task = new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
+                        executor);
                 executor.submit(task);
             }
         }
-
         printTraceStop(LOG);
     }
 }

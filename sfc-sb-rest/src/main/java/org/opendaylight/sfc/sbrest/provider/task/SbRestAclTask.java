@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class SbRestAclTask extends SbRestAbstractTask {
 
@@ -67,30 +66,33 @@ public class SbRestAclTask extends SbRestAbstractTask {
         java.lang.Class<? extends AclBase> aclType = null;
 
         if (accessList != null) {
-            aclName =  accessList.getAclName();
-            aclType =  accessList.getAclType();
+            aclName = accessList.getAclName();
+            aclType = accessList.getAclType();
         }
 
-        // rest uri list should be created from Classifier SFFs. Classifier will be taken from ACL
+        // rest uri list should be created from Classifier SFFs. Classifier will
+        // be taken from ACL
         // operational data store <ACL, Classifier>
-        // this prevents from looping through all classifiers and looking from ACL.
+        // this prevents from looping through all classifiers and looking from
+        // ACL.
         AccessListState accessListState = SfcProviderAclAPI.readAccessListState(aclName, aclType);
         if (accessListState != null) {
-            List<AclServiceFunctionClassifier> serviceClassifierList =
-                    accessListState.getAclServiceFunctionClassifier();
+            List<AclServiceFunctionClassifier> serviceClassifierList = accessListState
+                    .getAclServiceFunctionClassifier();
 
-            // loop through all classifiers listed in ACL State and get REST URIs from the
+            // loop through all classifiers listed in ACL State and get REST
+            // URIs from the
             // Classifier's SFFs
             if (serviceClassifierList != null) {
                 for (AclServiceFunctionClassifier aclServiceClassifier : serviceClassifierList) {
-                    ServiceFunctionClassifier serviceClassifier =
-                            SfcProviderServiceClassifierAPI.readServiceClassifier(aclServiceClassifier.getName());
+                    ServiceFunctionClassifier serviceClassifier = SfcProviderServiceClassifierAPI
+                            .readServiceClassifier(aclServiceClassifier.getName());
 
                     if (serviceClassifier != null) {
-                        List<SclServiceFunctionForwarder> sclServiceForwarderList =
-                                serviceClassifier.getSclServiceFunctionForwarder();
-                        this.restUriList =
-                                this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, aclName, aclType);
+                        List<SclServiceFunctionForwarder> sclServiceForwarderList = serviceClassifier
+                                .getSclServiceFunctionForwarder();
+                        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList,
+                                aclName, aclType);
                     }
                 }
             }
@@ -101,30 +103,28 @@ public class SbRestAclTask extends SbRestAbstractTask {
         Acl accessList = (Acl) dataObject;
 
         if (accessList != null) {
-            this.restUriList =
-                    this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, accessList.getAclName(), accessList.getAclType());
+            this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList,
+                    accessList.getAclName(), accessList.getAclType());
         }
     }
 
     protected void setRestUriList(String aclName, java.lang.Class<? extends AclBase> aclType,
-        List<SclServiceFunctionForwarder> sclServiceForwarderList) {
+            List<SclServiceFunctionForwarder> sclServiceForwarderList) {
         this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, aclName, aclType);
     }
 
     private ArrayList<String> getRestUriListFromSclServiceForwarderList(
-            List<SclServiceFunctionForwarder> sclServiceForwarderList,
-            String aclName, java.lang.Class<? extends AclBase> aclType) {
+            List<SclServiceFunctionForwarder> sclServiceForwarderList, String aclName,
+            java.lang.Class<? extends AclBase> aclType) {
 
-        // rest uri list should be created from Classifier SFFs. Classifier will be taken from ACL
-
-
+        // rest uri list should be created from Classifier SFFs. Classifier will
+        // be taken from ACL
         ArrayList<String> sffRestUriList = new ArrayList<>();
-
-        if (sclServiceForwarderList != null && aclName != null && aclType != null ) {
+        if (sclServiceForwarderList != null && aclName != null && aclType != null) {
             for (SclServiceFunctionForwarder sclServiceForwarder : sclServiceForwarderList) {
                 SffName sffName = new SffName(sclServiceForwarder.getName());
-                ServiceFunctionForwarder serviceForwarder =
-                        SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
+                ServiceFunctionForwarder serviceForwarder = SfcProviderServiceForwarderAPI
+                        .readServiceFunctionForwarder(sffName);
 
                 if (serviceForwarder != null && serviceForwarder.getRestUri() != null
                         && !serviceForwarder.getRestUri().getValue().isEmpty()) {
@@ -134,7 +134,6 @@ public class SbRestAclTask extends SbRestAbstractTask {
                 }
             }
         }
-
         return sffRestUriList.isEmpty() ? null : sffRestUriList;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,13 +16,13 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestSffTask extends SbRestAbstractTask {
-
-    private static final String SFF_REST_URI = "/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/";
+    private static final String SFF_REST_URI =
+            "/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/";
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffTask.class);
 
-    public SbRestSffTask(RestOperation restOperation, ServiceFunctionForwarder dataObject, ExecutorService odlExecutor) {
+    public SbRestSffTask(RestOperation restOperation, ServiceFunctionForwarder dataObject,
+            ExecutorService odlExecutor) {
 
         super(restOperation, odlExecutor);
 
@@ -51,5 +51,4 @@ public class SbRestSffTask extends SbRestAbstractTask {
             this.restUriList = null;
         }
     }
-
 }

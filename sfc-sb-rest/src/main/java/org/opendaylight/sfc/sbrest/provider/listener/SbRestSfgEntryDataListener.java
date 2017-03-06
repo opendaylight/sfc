@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2014, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
+
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
+import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +24,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgEntryDataListener.class);
@@ -32,9 +33,9 @@ public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener {
         setInstanceIdentifier(SfcInstanceIdentifiers.SFG_ENTRY_IID);
     }
 
-    public void setDataProvider(DataBroker r){
-       setDataBroker(r);
-       registerAsDataChangeListener();
+    public void setDataProvider(DataBroker dataBroker) {
+        setDataBroker(dataBroker);
+        registerAsDataChangeListener();
     }
 
     @SuppressWarnings("rawtypes")
@@ -68,7 +69,7 @@ public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener {
         // SFG UPDATE
         Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if ((entry.getValue() instanceof ServiceFunctionGroup) && (!dataCreatedObject.containsKey(entry.getKey()))) {
+            if (entry.getValue() instanceof ServiceFunctionGroup && !dataCreatedObject.containsKey(entry.getKey())) {
                 ServiceFunctionGroup updatedServiceFunctionGroup = (ServiceFunctionGroup) entry.getValue();
                 LOG.debug("\nModified Service Function Name: {}", updatedServiceFunctionGroup.getName());
 
@@ -92,5 +93,4 @@ public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener {
         }
         printTraceStop(LOG);
     }
-
 }

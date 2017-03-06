@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,7 +7,6 @@
  */
 
 package org.opendaylight.sfc.sbrest.provider.keepalive;
-
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,15 +16,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This class creates Keep Alive Socket which is used by SFC_AGENT
- * or other REST clients to track status of ODL (e.g. signalize restarts)
+ * This class creates Keep Alive Socket which is used by SFC_AGENT or other REST
+ * clients to track status of ODL (e.g. signalize restarts)
  *
  * @author Andrej Kincel (akincel@cisco.com)
  * @version 0.1
  * @see org.opendaylight.sfc.sbrest.provider.keepalive.SbRestKeepAliveSocket
- * <p>
  * @since 2015-03-09
  */
 
@@ -39,7 +36,7 @@ public class SbRestKeepAliveSocket implements Runnable {
 
         List<Socket> clientSocketList = new ArrayList<>();
 
-        //try-resource block closes the serverSocket automatically
+        // try-resource block closes the serverSocket automatically
         try (ServerSocket serverSocket = new ServerSocket(KEEP_ALIVE_LISTENER_PORT)) {
             LOG.info("Created Keep Alive Socket on port {}", KEEP_ALIVE_LISTENER_PORT);
             while (true) {
@@ -54,7 +51,7 @@ public class SbRestKeepAliveSocket implements Runnable {
                 try {
                     clientSocket.close();
                 } catch (IOException e) {
-                   LOG.error("Cannot close Client connection: {} to Keep Alive Socket", clientSocket.toString());
+                    LOG.error("Cannot close Client connection: {} to Keep Alive Socket", clientSocket.toString());
                 }
             }
         }

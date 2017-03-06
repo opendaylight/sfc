@@ -79,6 +79,10 @@ module service-function-type {
         description "This leaf determines whether SF can request
           reclassification by the SFF";
     }
+    leaf l2-transparent {
+        type boolean;
+        description "This leaf determines whether SF is L2 transparent i.e. do not change L2 addresses";
+    }
     list supported-dataplanelocator-types {
       key "dataplanelocator-type";
       leaf dataplanelocator-type {

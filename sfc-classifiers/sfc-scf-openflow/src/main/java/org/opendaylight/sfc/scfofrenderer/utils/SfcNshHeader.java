@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -170,15 +170,14 @@ public class SfcNshHeader {
             return null;
         }
 
-        RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(theRsp.getName());
+        RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI
+                .readRenderedServicePathFirstHop(theRsp.getName());
         if (rspFirstHop == null) {
             LOG.error("getSfcNshHeader: rsp first hop is null\n");
             return null;
         }
 
-        SfcNshHeader sfcNshHeader = new SfcNshHeader()
-                .setRsp(theRsp)
-                .setNshNsp(theRsp.getPathId())
+        SfcNshHeader sfcNshHeader = new SfcNshHeader().setRsp(theRsp).setNshNsp(theRsp.getPathId())
                 .setNshStartNsi(theRsp.getStartingIndex())
                 .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
                 .setSffName(lastRspHop.getServiceFunctionForwarder())
@@ -197,10 +196,8 @@ public class SfcNshHeader {
         if (md == null) {
             LOG.error("getSfcNshHeader: metadata is null\n");
         } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1())
-                    .setNshMetaC2(md.getContextHeader2())
-                    .setNshMetaC3(md.getContextHeader3())
-                    .setNshMetaC4(md.getContextHeader4());
+            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
+                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
         }
 
         return sfcNshHeader;
@@ -239,10 +236,8 @@ public class SfcNshHeader {
 
         RenderedServicePathHop theFirstHop = renderedServicePath.getRenderedServicePathHop().get(0);
 
-        SfcNshHeader sfcNshHeader = new SfcNshHeader()
-                .setRsp(renderedServicePath)
-                .setNshNsp(renderedServicePath.getPathId())
-                .setNshStartNsi(rspFirstHop.getStartingIndex())
+        SfcNshHeader sfcNshHeader = new SfcNshHeader().setRsp(renderedServicePath)
+                .setNshNsp(renderedServicePath.getPathId()).setNshStartNsi(rspFirstHop.getStartingIndex())
                 .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
                 .setSffName(lastRspHop.getServiceFunctionForwarder())
                 .setFirstSfName(theFirstHop.getServiceFunctionName());
@@ -260,10 +255,8 @@ public class SfcNshHeader {
         if (md == null) {
             LOG.error("getSfcNshHeader: metadata is null\n");
         } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1())
-                .setNshMetaC2(md.getContextHeader2())
-                .setNshMetaC3(md.getContextHeader3())
-                .setNshMetaC4(md.getContextHeader4());
+            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
+                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
         }
 
         return sfcNshHeader;

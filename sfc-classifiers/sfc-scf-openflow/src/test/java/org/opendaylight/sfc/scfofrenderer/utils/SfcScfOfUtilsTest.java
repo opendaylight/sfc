@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,12 @@
  */
 
 package org.opendaylight.sfc.scfofrenderer.utils;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,27 +27,19 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcOpenflowUtils.class)
 
 public class SfcScfOfUtilsTest {
     private FlowBuilder fb;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void init() {
         fb = mock(FlowBuilder.class);
-        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "createFlowBuilder",
-                short.class, int.class, String.class, MatchBuilder.class, InstructionsBuilder.class))
-            .toReturn(fb);
-        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "writeFlowToDataStore"))
-            .toReturn(true);
-        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "removeFlowFromDataStore"))
-            .toReturn(true);
+        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "createFlowBuilder", short.class, int.class,
+                String.class, MatchBuilder.class, InstructionsBuilder.class)).toReturn(fb);
+        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "writeFlowToDataStore")).toReturn(true);
+        PowerMockito.stub(PowerMockito.method(SfcOpenflowUtils.class, "removeFlowFromDataStore")).toReturn(true);
     }
 
     @Test
@@ -51,7 +49,6 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testCreateClassifierOutFlow() {
-        Match match = mock(Match.class);
         SfcNshHeader nsh = mock(SfcNshHeader.class);
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
@@ -59,6 +56,7 @@ public class SfcScfOfUtilsTest {
         assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, null, 0L));
         assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, null, 0L));
         assertNull(SfcScfOfUtils.createClassifierOutFlow("flow", null, null, 0L));
+        Match match = mock(Match.class);
         assertNull(SfcScfOfUtils.createClassifierOutFlow(null, match, null, 0L));
         assertNull(SfcScfOfUtils.createClassifierOutFlow(null, null, nsh, 0L));
     }

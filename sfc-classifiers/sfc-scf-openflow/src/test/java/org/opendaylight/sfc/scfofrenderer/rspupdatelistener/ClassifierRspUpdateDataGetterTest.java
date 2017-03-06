@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,12 +8,18 @@
 
 package org.opendaylight.sfc.scfofrenderer.rspupdatelistener;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
@@ -29,14 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcDataStoreAPI.class)
@@ -72,18 +70,19 @@ public class ClassifierRspUpdateDataGetterTest {
     AclRenderedServicePath aclRsp;
 
     @Mock
-    org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.Acl classifierAcl;
+    org.opendaylight.yang.gen.v1.urn.cisco.params.xml
+        .ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.Acl classifierAcl;
 
     @Mock
     SclServiceFunctionForwarder sclForwarder;
 
-    private List<Acl> aclList = new ArrayList<>();
+    private final List<Acl> aclList = new ArrayList<>();
 
-    private List<Ace> aceList = new ArrayList<>();
+    private final List<Ace> aceList = new ArrayList<>();
 
-    private List<ServiceFunctionClassifier> classifierList = new ArrayList<>();
+    private final List<ServiceFunctionClassifier> classifierList = new ArrayList<>();
 
-    private List<SclServiceFunctionForwarder> sclClassifierList = new ArrayList<>();
+    private final List<SclServiceFunctionForwarder> sclClassifierList = new ArrayList<>();
 
     public ClassifierRspUpdateDataGetterTest() {
         initMocks(this);

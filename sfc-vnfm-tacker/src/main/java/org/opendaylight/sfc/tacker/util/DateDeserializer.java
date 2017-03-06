@@ -33,6 +33,7 @@ public class DateDeserializer implements JsonDeserializer<Date> {
                 return new SimpleDateFormat(DATE_FORMAT_ZULU, Locale.US)
                     .parse(jsonElement.getAsString().replace("Z", "+0000"));
             } catch (ParseException ignored) {
+                // ignoring the parse exception
             }
         } else {
             try {
@@ -40,6 +41,7 @@ public class DateDeserializer implements JsonDeserializer<Date> {
                 return new SimpleDateFormat(DATE_FORMAT_STANDARD, Locale.US)
                     .parse(jsonElement.getAsString().substring(0, jsonElement.getAsString().length() - 3) + "+0000");
             } catch (ParseException ignored) {
+                // ignoring the parse exception to cut off microsecond precision
             }
         }
 

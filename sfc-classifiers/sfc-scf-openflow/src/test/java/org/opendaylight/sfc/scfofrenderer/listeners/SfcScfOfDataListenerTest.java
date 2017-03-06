@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,12 @@
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.AclBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
-import java.util.ArrayList;
-import java.util.Collection;
-import static org.mockito.Mockito.*;
-
-
 
 /**
  * Test Suite to test the SfcScfOfDataListener class.
@@ -43,10 +44,10 @@ public class SfcScfOfDataListenerTest {
     private DataBroker dataProvider;
     private SfcScfOfProcessor sfcScfOfProcessor;
 
-    private final String SFC_NAME = "listernerSFC";
-    private final String ACL_NAME = "aclName";
-    private final String ACL_NAME2 = "aclName2";
-    private final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
+    private static final String SFC_NAME = "listernerSFC";
+    private static final String ACL_NAME = "aclName";
+    private static final String ACL_NAME2 = "aclName2";
+    private static final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
 
     // Class under test
     private SfcScfOfDataListener sfcScfOfDataListener;
@@ -57,10 +58,9 @@ public class SfcScfOfDataListenerTest {
         dataProvider = mock(DataBroker.class);
         sfcScfOfProcessor = mock(SfcScfOfProcessor.class);
 
-
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
-        sfcScfOfDataListener = new SfcScfOfDataListener(dataProvider,sfcScfOfProcessor);
+        sfcScfOfDataListener = new SfcScfOfDataListener(dataProvider, sfcScfOfProcessor);
         sfcScfOfDataListener.init();
     }
 
@@ -70,7 +70,8 @@ public class SfcScfOfDataListenerTest {
     }
 
     /**
-     * Test that creates a Service Function Classifier, calls listener explicitly
+     * Test that creates a Service Function Classifier, calls listener
+     * explicitly.
      */
     @Test
     public void testOnSfcScfOfDataCreated() throws Exception {
@@ -94,7 +95,8 @@ public class SfcScfOfDataListenerTest {
     }
 
     /**
-     * Test that deletes a Service Function Classifier, calls listener explicitly
+     * Test that deletes a Service Function Classifier, calls listener
+     * explicitly.
      */
     @Test
     public void testOnSfcScfOfDataRemoved() throws Exception {
@@ -117,20 +119,23 @@ public class SfcScfOfDataListenerTest {
     }
 
     /**
-     * Test that updates a Service Function Classifier, calls listener explicitly
+     * Test that updates a Service Function Classifier, calls listener
+     * explicitly.
      */
     @Test
     public void testOnSfcScfOfDataUpdated() throws Exception {
         ServiceFunctionClassifier originalServiceFunctionClassifier = buildServiceFunctionClassifier();
         sfcScfOfProcessor.createdServiceFunctionClassifier(originalServiceFunctionClassifier);
 
-        // Now we prepare the Updated ServiceFunctionClassifier. We change the original ACL name
-        ServiceFunctionClassifierBuilder updatedServiceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder(originalServiceFunctionClassifier);
+        // Now we prepare the Updated ServiceFunctionClassifier. We change the
+        // original ACL name
+        ServiceFunctionClassifierBuilder updatedServiceFunctionClassifierBuilder = new ServiceFunctionClassifierBuilder(
+                originalServiceFunctionClassifier);
         AclBuilder aclBuilder2 = new AclBuilder();
         aclBuilder2.setName(ACL_NAME2);
         aclBuilder2.setType(ACL_TYPE);
-        Acl acl_dummy2 = aclBuilder2.build();
-        updatedServiceFunctionClassifierBuilder.setAcl(acl_dummy2);
+        Acl aclDummy2 = aclBuilder2.build();
+        updatedServiceFunctionClassifierBuilder.setAcl(aclDummy2);
         ServiceFunctionClassifier updatedServiceFunctionClassifier = updatedServiceFunctionClassifierBuilder.build();
 
         // We trigger the updating of a Service Function Classifier
@@ -144,14 +149,15 @@ public class SfcScfOfDataListenerTest {
 
         Thread.sleep(500);
 
-        // We verify createdServiceFunctionClassifier and deletedServiceFunctionClassifier have been called
+        // We verify createdServiceFunctionClassifier and
+        // deletedServiceFunctionClassifier have been called
         verify(sfcScfOfProcessor).deletedServiceFunctionClassifier(originalServiceFunctionClassifier);
         verify(sfcScfOfProcessor).createdServiceFunctionClassifier(updatedServiceFunctionClassifier);
 
     }
 
     /**
-     * Builds a complete Service Function Classifier Object
+     * Builds a complete Service Function Classifier Object.
      *
      * @return ServiceFunctionClassifier object
      */
@@ -159,13 +165,11 @@ public class SfcScfOfDataListenerTest {
         AclBuilder aclBuilder = new AclBuilder();
         aclBuilder.setName(ACL_NAME);
         aclBuilder.setType(ACL_TYPE);
-        Acl acl_dummy = aclBuilder.build();
+        Acl aclDummy = aclBuilder.build();
         ServiceFunctionClassifierBuilder sfcBuilder = new ServiceFunctionClassifierBuilder();
         sfcBuilder.setName(SFC_NAME);
-        sfcBuilder.setAcl(acl_dummy);
+        sfcBuilder.setAcl(aclDummy);
 
         return sfcBuilder.build();
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,12 @@
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -24,13 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ClassifierRspsUpdateListenerTest {
 
@@ -50,7 +49,10 @@ public class ClassifierRspsUpdateListenerTest {
     LogicalClassifierDataGetter theDataGetter;
 
     @Mock
-    RenderedServicePath oldRsp, newRsp;
+    RenderedServicePath oldRsp;
+
+    @Mock
+    RenderedServicePath newRsp;
 
     @Mock
     SclServiceFunctionForwarder theClassifier;
@@ -59,7 +61,10 @@ public class ClassifierRspsUpdateListenerTest {
     Acl theAcl;
 
     @Mock
-    RenderedServicePathHop oldHop, newHop;
+    RenderedServicePathHop oldHop;
+
+    @Mock
+    RenderedServicePathHop newHop;
 
     @InjectMocks
     ClassifierRspsUpdateListener theUpdateListener;
@@ -79,13 +84,20 @@ public class ClassifierRspsUpdateListenerTest {
         Mockito.doNothing().when(theOpenflowWriter).deleteFlowSet();
         Mockito.doNothing().when(theOpenflowWriter).flushFlows();
 
-        List<Acl> aclList = new ArrayList<Acl>() {{ add(theAcl); }};
+        List<Acl> aclList = new ArrayList<Acl>() {
+            {
+                add(theAcl);
+            }
+        };
         Mockito.when(theUpdateDataGetter.filterAclsByRspName(Mockito.any(RspName.class))).thenReturn(aclList);
 
-        List<SclServiceFunctionForwarder> classifierList = new ArrayList<SclServiceFunctionForwarder>() {{
-            add(theClassifier);
-        }};
-        Mockito.when(theUpdateDataGetter.filterClassifierNodesByAclName(Mockito.any(String.class))).thenReturn(classifierList);
+        List<SclServiceFunctionForwarder> classifierList = new ArrayList<SclServiceFunctionForwarder>() {
+            {
+                add(theClassifier);
+            }
+        };
+        Mockito.when(theUpdateDataGetter.filterClassifierNodesByAclName(Mockito.any(String.class)))
+                .thenReturn(classifierList);
 
         Mockito.when(theDataGetter.getFirstHopDataplaneId(oldRsp)).thenReturn(Optional.of(oldDataplaneId));
         Mockito.when(theDataGetter.getFirstHopDataplaneId(newRsp)).thenReturn(Optional.of(newDataplaneId));
@@ -111,10 +123,10 @@ public class ClassifierRspsUpdateListenerTest {
     public void testDeleteRsp() {
         theUpdateListener.remove(oldRsp);
 
-/*
-        Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
-        Mockito.verify(theOpenflowWriter).deleteFlowSet();
-        Mockito.verifyZeroInteractions(theClassifierProcessor);
-*/
+        /*
+         * Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
+         * Mockito.verify(theOpenflowWriter).deleteFlowSet();
+         * Mockito.verifyZeroInteractions(theClassifierProcessor);
+         */
     }
 }

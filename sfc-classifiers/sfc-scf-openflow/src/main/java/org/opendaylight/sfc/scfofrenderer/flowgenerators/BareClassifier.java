@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,10 @@
 
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
@@ -18,17 +22,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 public class BareClassifier implements ClassifierInterface {
     private ServiceFunctionForwarder sff;
 
     private final ClassifierHandler classifierHandler;
 
-    public BareClassifier() {classifierHandler = new ClassifierHandler();}
+    public BareClassifier() {
+        classifierHandler = new ClassifierHandler();
+    }
 
     public BareClassifier(ServiceFunctionForwarder theSff) {
         this();
@@ -42,34 +43,28 @@ public class BareClassifier implements ClassifierInterface {
 
     @Override
     public FlowDetails initClassifierTable(String nodeName) {
-        return classifierHandler.addRspRelatedFlowIntoNode(nodeName,
-                SfcScfOfUtils.initClassifierTable(),
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeName, SfcScfOfUtils.initClassifierTable(),
                 OpenflowConstants.SFC_FLOWS);
     }
 
     @Override
-    public FlowDetails createClassifierOutFlow(String flowKey,
-                                               Match match,
-                                               SfcNshHeader sfcNshHeader,
-                                               String classifierNodeName) {
+    public FlowDetails createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
+            String classifierNodeName) {
         Long outPort = SfcOvsUtil.getVxlanGpeOfPort(classifierNodeName);
         return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName,
-                SfcScfOfUtils.createClassifierOutFlow(flowKey, match, sfcNshHeader, outPort),
-                sfcNshHeader.getNshNsp());
+                SfcScfOfUtils.createClassifierOutFlow(flowKey, match, sfcNshHeader, outPort), sfcNshHeader.getNshNsp());
     }
 
     @Override
     public FlowDetails createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long port, String nodeName) {
         return classifierHandler.addRspRelatedFlowIntoNode(nodeName,
-                SfcScfOfUtils.createClassifierInFlow(flowKey, sfcNshHeader, port),
-                sfcNshHeader.getNshNsp());
+                SfcScfOfUtils.createClassifierInFlow(flowKey, sfcNshHeader, port), sfcNshHeader.getNshNsp());
     }
 
     @Override
     public FlowDetails createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader, String nodeName) {
         return classifierHandler.addRspRelatedFlowIntoNode(nodeName,
-                SfcScfOfUtils.createClassifierRelayFlow(flowKey, sfcNshHeader),
-                sfcNshHeader.getNshNsp());
+                SfcScfOfUtils.createClassifierRelayFlow(flowKey, sfcNshHeader), sfcNshHeader.getNshNsp());
     }
 
     @Override
@@ -80,19 +75,16 @@ public class BareClassifier implements ClassifierInterface {
             return Collections.emptyList();
         }
         List<FlowDetails> theFlows = new ArrayList<>();
-        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
-                nodeName,
+        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName,
                 SfcScfOfUtils.initClassifierDpdkOutputFlow(dpdkPort), rspPathId));
-        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(
-                nodeName,
+        theFlows.add(classifierHandler.addRspRelatedFlowIntoNode(nodeName,
                 SfcScfOfUtils.initClassifierDpdkInputFlow(nodeName, dpdkPort), rspPathId));
         return theFlows;
     }
 
     @Override
     public Optional<String> getNodeName(String theInterfaceName) {
-        return Optional.ofNullable(sff)
-                .filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
+        return Optional.ofNullable(sff).filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
                 .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }
 

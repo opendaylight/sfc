@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
@@ -31,7 +30,7 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfDataListener.class);
 
-    private SfcScfOfProcessor sfcScfProcessor;
+    private final SfcScfOfProcessor sfcScfProcessor;
 
     private final DataBroker dataBroker;
     private ListenerRegistration<SfcScfOfDataListener> listenerRegistration;
@@ -54,13 +53,11 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
         listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
-
     // Classifier CREATION
     @Override
     protected void add(ServiceFunctionClassifier serviceFunctionClassifier) {
         if (serviceFunctionClassifier != null) {
-            LOG.debug("Created ServiceFunctionClassifier name: {}\n",
-                    serviceFunctionClassifier.getName());
+            LOG.debug("Created ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
             this.sfcScfProcessor.createdServiceFunctionClassifier(serviceFunctionClassifier);
 
         }
@@ -69,10 +66,10 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
     // Classifier UPDATE
     @Override
     protected void update(ServiceFunctionClassifier originalServiceFunctionClassifier,
-                          ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+            ServiceFunctionClassifier updatedServiceFunctionClassifier) {
 
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
-                && !(originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier))) {
+                && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
             LOG.debug("Updated ServiceFunctionClassifier name: {}\n", updatedServiceFunctionClassifier.getName());
             this.sfcScfProcessor.deletedServiceFunctionClassifier(originalServiceFunctionClassifier);
             this.sfcScfProcessor.createdServiceFunctionClassifier(updatedServiceFunctionClassifier);
@@ -81,7 +78,7 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
 
     // Classifier DELETION
     @Override
-    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier){
+    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier) {
         if (serviceFunctionClassifier != null) {
             LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
             this.sfcScfProcessor.deletedServiceFunctionClassifier(serviceFunctionClassifier);

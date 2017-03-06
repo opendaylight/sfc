@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,16 @@
 
 package org.opendaylight.sfc.scfofrenderer.logicalclassifier;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,19 +35,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({SfcGeniusDataUtils.class})
+@PrepareForTest({ SfcGeniusDataUtils.class })
 public class LogicalClassifierDataGetterTest {
 
     @Mock
@@ -79,16 +78,22 @@ public class LogicalClassifierDataGetterTest {
         when(logicalSffAugmentation.getDpnId()).thenReturn(DATAPLANE_ID);
 
         PowerMockito.mockStatic(SfcGeniusDataUtils.class);
-        List<String> theInterfaces = new ArrayList<String>() {{
-            add("openflow:1234567890:2");
-        }} ;
+        List<String> theInterfaces = new ArrayList<String>() {
+            {
+                add("openflow:1234567890:2");
+            }
+        };
         PowerMockito.when(SfcGeniusDataUtils.getInterfaceLowerLayerIf(anyString())).thenReturn(theInterfaces);
 
         when(geniusRpc.getDpnIdFromInterfaceNameFromGeniusRPC(anyString()))
                 .thenReturn(Optional.of(new DpnIdType(new BigInteger(FIRST_SF_DPN_ID))));
 
         when(geniusRpc.getEgressActionsFromGeniusRPC(anyString(), any(Boolean.class), any(Integer.class)))
-                .thenReturn(Optional.of(new ArrayList<Action>() {{ add(new ActionBuilder().build()) ;}}));
+                .thenReturn(Optional.of(new ArrayList<Action>() {
+                    {
+                        add(new ActionBuilder().build());
+                    }
+                }));
 
         when(geniusRpc.getTargetInterfaceFromGeniusRPC(any(DpnIdType.class), any(DpnIdType.class)))
                 .thenReturn(Optional.of(FIRST_SF_NEUTRON_PORT));
@@ -96,9 +101,7 @@ public class LogicalClassifierDataGetterTest {
 
     @Test
     public void testFetchingFirstHopDataplaneId() {
-        Assert.assertEquals(
-                FIRST_SF_DPN_ID,
-                dataGetter.getFirstHopDataplaneId(rsp).get().getValue().toString());
+        Assert.assertEquals(FIRST_SF_DPN_ID, dataGetter.getFirstHopDataplaneId(rsp).get().getValue().toString());
     }
 
     @Test
@@ -145,7 +148,7 @@ public class LogicalClassifierDataGetterTest {
     }
 
     @Test
-    public void getNodeNameNegative () {
+    public void getNodeNameNegative() {
         when(geniusRpc.getDpnIdFromInterfaceNameFromGeniusRPC(anyString())).thenReturn(Optional.empty());
         Optional<String> theNodeName = dataGetter.getNodeName(FIRST_SF_NEUTRON_PORT);
         Assert.assertFalse(theNodeName.isPresent());
@@ -169,9 +172,11 @@ public class LogicalClassifierDataGetterTest {
 
     @Test
     public void getOpenflowPortNegative() {
-        List<String> theInterfaces = new ArrayList<String>() {{
-            add("openflow:1234567890");
-        }} ;
+        List<String> theInterfaces = new ArrayList<String>() {
+            {
+                add("openflow:1234567890");
+            }
+        };
         PowerMockito.when(SfcGeniusDataUtils.getInterfaceLowerLayerIf(anyString())).thenReturn(theInterfaces);
         Assert.assertFalse(LogicalClassifierDataGetter.getOpenflowPort(FIRST_SF_NEUTRON_PORT).isPresent());
     }

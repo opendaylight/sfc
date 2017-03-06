@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -26,17 +26,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
  */
 
 public class SfcScfMatch {
-    private MatchBuilder mb;
+    private final MatchBuilder mb;
 
-    public SfcScfMatch () {
+    public SfcScfMatch() {
         mb = new MatchBuilder();
     }
 
-   /**
-    * set port match
-    * @param port ovs port
-    * @return scf match
-    */
+    /**
+     * set port match.
+     *
+     * @param port
+     *            ovs port
+     * @return scf match
+     */
     public SfcScfMatch setPortMatch(NodeConnectorId port) {
         if (port != null) {
             mb.setInPort(port);
@@ -44,11 +46,13 @@ public class SfcScfMatch {
         return this;
     }
 
-   /**
-    * set IETF Acl matches
-    * @param matches IETF ACL matches
-    * @return scf match
-    */
+    /**
+     * set IETF Acl matches.
+     *
+     * @param matches
+     *            IETF ACL matches
+     * @return scf match
+     */
     public SfcScfMatch setAclMatch(Matches matches) {
         if (matches == null) {
             return this;
@@ -79,23 +83,20 @@ public class SfcScfMatch {
                 Integer srcPort = null;
                 Integer dstPort = null;
 
-                if (aceip.getSourcePortRange() != null &&
-                    aceip.getSourcePortRange().getLowerPort() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
+                if (aceip.getSourcePortRange() != null && aceip.getSourcePortRange().getLowerPort() != null
+                        && aceip.getSourcePortRange().getLowerPort().getValue() != null
+                        && aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
                     srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
                 }
-                if (aceip.getDestinationPortRange() != null &&
-                    aceip.getDestinationPortRange().getLowerPort() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
+                if (aceip.getDestinationPortRange() != null && aceip.getDestinationPortRange().getLowerPort() != null
+                        && aceip.getDestinationPortRange().getLowerPort().getValue() != null
+                        && aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
                     dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
                 }
 
                 // don't support port range
                 switch (aceip.getProtocol()) {
                     case SfcOpenflowUtils.IP_PROTOCOL_UDP:
-
                         if (srcPort != null) {
                             SfcOpenflowUtils.addMatchSrcUdpPort(mb, srcPort);
                         }
@@ -103,9 +104,7 @@ public class SfcScfMatch {
                             SfcOpenflowUtils.addMatchDstUdpPort(mb, dstPort);
                         }
                         break;
-
                     case SfcOpenflowUtils.IP_PROTOCOL_TCP:
-
                         if (srcPort != null) {
                             SfcOpenflowUtils.addMatchSrcTcpPort(mb, srcPort);
                         }
@@ -113,7 +112,6 @@ public class SfcScfMatch {
                             SfcOpenflowUtils.addMatchDstTcpPort(mb, dstPort);
                         }
                         break;
-
                     case SfcOpenflowUtils.IP_PROTOCOL_SCTP:
                         if (srcPort != null) {
                             SfcOpenflowUtils.addMatchSrcSctpPort(mb, srcPort);
@@ -121,6 +119,8 @@ public class SfcScfMatch {
                         if (dstPort != null) {
                             SfcOpenflowUtils.addMatchDstSctpPort(mb, dstPort);
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -131,14 +131,14 @@ public class SfcScfMatch {
 
                 Ipv4Prefix src = ipv4.getSourceIpv4Network();
                 if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv4(mb, s[0], Integer.valueOf(s[1]));
+                    String[] source = src.getValue().split("/");
+                    SfcOpenflowUtils.addMatchSrcIpv4(mb, source[0], Integer.valueOf(source[1]));
                 }
 
                 Ipv4Prefix dst = ipv4.getDestinationIpv4Network();
                 if (dst != null) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv4(mb, d[0], Integer.valueOf(d[1]));
+                    String[] destination = dst.getValue().split("/");
+                    SfcOpenflowUtils.addMatchDstIpv4(mb, destination[0], Integer.valueOf(destination[1]));
                 }
             }
             if (aceip.getAceIpVersion() instanceof AceIpv6) {
@@ -147,24 +147,25 @@ public class SfcScfMatch {
 
                 Ipv6Prefix src = ipv6.getSourceIpv6Network();
                 if (src != null) {
-                    String s[] = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv6(mb, s[0], Integer.valueOf(s[1]));
+                    String[] source = src.getValue().split("/");
+                    SfcOpenflowUtils.addMatchSrcIpv6(mb, source[0], Integer.valueOf(source[1]));
                 }
 
                 Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
-                if (dst != null ) {
-                    String d[] = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv6(mb, d[0], Integer.valueOf(d[1]));
+                if (dst != null) {
+                    String[] destination = dst.getValue().split("/");
+                    SfcOpenflowUtils.addMatchDstIpv6(mb, destination[0], Integer.valueOf(destination[1]));
                 }
             }
         }
         return this;
     }
 
-   /**
-    * build openflow match
-    * @return flow match
-    */
+    /**
+     * Build openflow match.
+     *
+     * @return flow match
+     */
     public Match build() {
         return mb.build();
     }

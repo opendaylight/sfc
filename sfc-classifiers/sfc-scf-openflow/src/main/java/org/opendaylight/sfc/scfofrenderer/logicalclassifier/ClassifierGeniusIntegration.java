@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,62 +19,67 @@ public class ClassifierGeniusIntegration {
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;
 
-    private static final SfcTableIndexMapper tableIndexMapper =
-            new SfcTableIndexMapperBuilder()
-                    .setClassifierTable(TABLE_INDEX_CLASSIFIER)
-                    .setTransportIngressTable(TABLE_INDEX_INGRESS_TRANSPORT)
-                    .build();
+    private static final SfcTableIndexMapper TABLE_INDEX_MAPPER = new SfcTableIndexMapperBuilder()
+            .setClassifierTable(TABLE_INDEX_CLASSIFIER).setTransportIngressTable(TABLE_INDEX_INGRESS_TRANSPORT).build();
 
     // hide the default constructor
-    private ClassifierGeniusIntegration() {}
+    private ClassifierGeniusIntegration() {
+    }
 
     /**
-     * Bind a logical interface, which we want to classify, to genius
-     * @param theTx     a transaction object, in which the service binding will be attempted
-     * @param ifName    the name of the logical interface
+     * Bind a logical interface, which we want to classify, to genius.
+     *
+     * @param theTx
+     *            a transaction object, in which the service binding will be
+     *            attempted
+     * @param ifName
+     *            the name of the logical interface
      */
     public static void performGeniusServiceBinding(WriteTransaction theTx, String ifName) {
         GeniusServiceBinder geniusBinder = new GeniusServiceBinder();
-        geniusBinder.bindService(
-                theTx,
-                ifName,
-                NwConstants.SFC_SERVICE_INDEX,
-                getClassifierTable(),
-                GeniusServiceBinder.getSfcIngressCookie(),
-                GeniusServiceBinder.getSfcServicePriority(),
+        geniusBinder.bindService(theTx, ifName, NwConstants.SFC_SERVICE_INDEX, getClassifierTable(),
+                GeniusServiceBinder.getSfcIngressCookie(), GeniusServiceBinder.getSfcServicePriority(),
                 NwConstants.SFC_SERVICE_NAME);
     }
 
     /**
-     * Unbind a logical interface from genius
-     * @param theTx     a transaction object, in which the service binding will be attempted
-     * @param ifName    the name of the logical interface
+     * Unbind a logical interface from genius.
+     *
+     * @param theTx
+     *            a transaction object, in which the service binding will be
+     *            attempted
+     * @param ifName
+     *            the name of the logical interface
      */
     public static void performGeniusServiceUnbinding(WriteTransaction theTx, String ifName) {
         GeniusServiceBinder geniusBinder = new GeniusServiceBinder();
-        geniusBinder.unbindService(
-                theTx,
-                ifName,
-                NwConstants.SFC_SERVICE_INDEX);
+        geniusBinder.unbindService(theTx, ifName, NwConstants.SFC_SERVICE_INDEX);
     }
 
     /**
-     * Get the number of the openflow table used by the SFC classifier from genius
-     * @return  the number of the openflow table used by the SFC classifier
+     * Get the number of the openflow table used by the SFC classifier from
+     * genius.
+     *
+     * @return the number of the openflow table used by the SFC classifier
      */
     public static short getClassifierTable() {
-        // get the genius offset table, or go w/ the default classifier table (0)
-        return tableIndexMapper.getTableIndex(TABLE_INDEX_CLASSIFIER).isPresent() ?
-                tableIndexMapper.getTableIndex(TABLE_INDEX_CLASSIFIER).get() : TABLE_INDEX_CLASSIFIER;
+        // get the genius offset table, or go w/ the default classifier table
+        // (0)
+        return TABLE_INDEX_MAPPER.getTableIndex(TABLE_INDEX_CLASSIFIER).isPresent()
+                ? TABLE_INDEX_MAPPER.getTableIndex(TABLE_INDEX_CLASSIFIER).get() : TABLE_INDEX_CLASSIFIER;
     }
 
     /**
-     * Get the number of the openflow table used by SFC transport ingress from genius
-     * @return  the number of the openflow table used by the SFC transport ingress table
+     * Get the number of the openflow table used by SFC transport ingress from
+     * genius.
+     *
+     * @return the number of the openflow table used by the SFC transport
+     *         ingress table
      */
     public static short getTransportIngressTable() {
-        // get the genius offset table, or go w/ the default classifier table (0)
-        return tableIndexMapper.getTableIndex(TABLE_INDEX_INGRESS_TRANSPORT).isPresent() ?
-                tableIndexMapper.getTableIndex(TABLE_INDEX_INGRESS_TRANSPORT).get() : TABLE_INDEX_INGRESS_TRANSPORT;
+        // get the genius offset table, or go w/ the default classifier table
+        // (0)
+        return TABLE_INDEX_MAPPER.getTableIndex(TABLE_INDEX_INGRESS_TRANSPORT).isPresent()
+                ? TABLE_INDEX_MAPPER.getTableIndex(TABLE_INDEX_INGRESS_TRANSPORT).get() : TABLE_INDEX_INGRESS_TRANSPORT;
     }
 }

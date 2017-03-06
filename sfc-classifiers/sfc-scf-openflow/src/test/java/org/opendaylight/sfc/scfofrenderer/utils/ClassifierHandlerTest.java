@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,11 @@
 
 package org.opendaylight.sfc.scfofrenderer.utils;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.util.ArrayList;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,12 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ClassifierHandlerTest {
     @Mock
@@ -36,7 +35,7 @@ public class ClassifierHandlerTest {
 
     private final ClassifierHandler handler;
 
-    private final String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
+    private static final String INTERFACE_TO_CLASSIFY = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
 
     public ClassifierHandlerTest() {
         initMocks(this);
@@ -47,11 +46,12 @@ public class ClassifierHandlerTest {
     public void setUp() {
         when(sffClassifier.getName()).thenReturn("sffName");
         when(sffClassifier.getAttachmentPointType())
-            .thenReturn(new InterfaceBuilder()
-                        .setInterface(INTERFACE_TO_CLASSIFY)
-                        .build());
-        when(scf.getSclServiceFunctionForwarder())
-            .thenReturn(new ArrayList<SclServiceFunctionForwarder>(){{ add(sffClassifier); }});
+                .thenReturn(new InterfaceBuilder().setInterface(INTERFACE_TO_CLASSIFY).build());
+        when(scf.getSclServiceFunctionForwarder()).thenReturn(new ArrayList<SclServiceFunctionForwarder>() {
+            {
+                add(sffClassifier);
+            }
+        });
     }
 
     @Test

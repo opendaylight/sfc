@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is used to build active mount points and connected Nodes based on
  * Netconf node listener handlers.
- * <p>
  *
+ * <p>
  * @version 0.1
  */
 public class SfcPotNetconfNodeManager implements BindingAwareProvider {
@@ -105,7 +105,6 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
     }
 
     private DataBroker getNetconfNodeDataBroker(InstanceIdentifier mountPointIid) {
-
         DataBroker dataBroker = mountService.getMountPoint(mountPointIid)
                 .transform(mp -> mp.getService(DataBroker.class).orNull())
                 .orNull();

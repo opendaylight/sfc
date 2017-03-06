@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,19 +13,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 
 public class SfcPotTimerQueue {
-    private ConcurrentLinkedQueue<RspName> sfcPotTimerQueueObj;
-    private static final SfcPotTimerQueue sfcPotTimerQueueInstance = new SfcPotTimerQueue();
+    private final ConcurrentLinkedQueue<RspName> sfcPotTimerQueueObj;
+    private static final SfcPotTimerQueue SFC_POT_TIMER_QUEUE_INSTANCE = new SfcPotTimerQueue();
 
     private SfcPotTimerQueue() {
-        sfcPotTimerQueueObj = new ConcurrentLinkedQueue<RspName>();
+        sfcPotTimerQueueObj = new ConcurrentLinkedQueue<>();
     }
 
     public static SfcPotTimerQueue getInstance() {
-        return sfcPotTimerQueueInstance;
+        return SFC_POT_TIMER_QUEUE_INSTANCE;
     }
 
     public boolean addElement(RspName rspName) {
-        return (sfcPotTimerQueueObj.add(rspName));
+        return sfcPotTimerQueueObj.add(rspName);
     }
 
     public RspName removeElement() {
@@ -37,6 +37,6 @@ public class SfcPotTimerQueue {
     }
 
     public boolean hasElements() {
-        return (!sfcPotTimerQueueObj.isEmpty());
+        return !sfcPotTimerQueueObj.isEmpty();
     }
 }

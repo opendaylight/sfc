@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,26 +10,22 @@ package org.opendaylight.sfc.pot.netconf.renderer.provider.api;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot.rev161122.BitMaskOptions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot.rev161122.TimeResolution;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.hop.params.rev161205.PolySecrets;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.hop.params.rev161205.PolySecretsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.hop.params.rev161205.poly.secrets.PolySecret;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.hop.params.rev161205.poly.secrets.PolySecretBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.hop.params.rev161205.poly.secrets.PolySecretKey;
-
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParameters;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParametersBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameter;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameterBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameterKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.Coeffs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.CoeffsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.Lpcs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.LpcsBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParameters;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParametersBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameter;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameterKey;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.PolyParameterBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,33 +48,31 @@ public class SfcPotPolyAPI {
 
     private List<SfcPotPolyClass> polyClassList;
 
-    private static final SfcPotPolyAPI sfcPotPolyAPIInstance = new SfcPotPolyAPI();
+    private static final SfcPotPolyAPI SFC_POT_POLY_API_INSTANCE = new SfcPotPolyAPI();
 
     private SfcPotPolyAPI() {
         sfcPotPolyClassAPI = new SfcPotPolyClassAPI();
     }
 
     public static SfcPotPolyAPI getInstance() {
-        return sfcPotPolyAPIInstance;
+        return SFC_POT_POLY_API_INSTANCE;
     }
 
     /* Utility function to return the next index to use */
-    private int getNewActiveIndex (int currActiveIndex) {
+    private int getNewActiveIndex(int currActiveIndex) {
         int numProfiles = ioamPotNumProfiles.intValue();
 
-        return ((currActiveIndex + 1) % numProfiles);
+        return (currActiveIndex + 1) % numProfiles;
     }
 
     /*
-     * This function is used for initial configuration generation for a specified number
-     * of profiles.
+     * This function is used for initial configuration generation for a
+     * specified number of profiles.
      */
-    public boolean init(String rspName, int sfSize,
-            final Class<? extends TimeResolution> refreshPeriodTimeUnits,
-            Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask,
-            Long ioamPotNumProfiles) {
-        long  prime;
-        long  secret;
+    public boolean init(String rspName, int sfSize, final Class<? extends TimeResolution> refreshPeriodTimeUnits,
+            Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
+        long prime;
+        long secret;
         List<Coeffs> coeffs = new ArrayList<>();
         List<Long> shares = new ArrayList<>();
         List<Lpcs> lpcs = new ArrayList<>();
@@ -109,14 +103,12 @@ public class SfcPotPolyAPI {
             secret = configGenerator.getSecret();
             for (int i = 1; i < sfSize; i++) {
                 coeffs.add(new CoeffsBuilder().setCoeff(configGenerator.getCoeff(i)).build());
-                lpcs.add(new LpcsBuilder().setLpc((configGenerator.getLpc(i)).
-                    longValue()).build());
+                lpcs.add(new LpcsBuilder().setLpc(configGenerator.getLpc(i).longValue()).build());
             }
             for (int i = 0; i < sfSize; i++) {
                 shares.add(configGenerator.getSecretShare(i));
             }
-            polyClassList.add(new SfcPotPolyClass(prime, secret, coeffs, shares,
-                lpcs, (long)sfSize));
+            polyClassList.add(new SfcPotPolyClass(prime, secret, coeffs, shares, lpcs, sfSize));
 
             /* Re-Initialize containers.... */
             coeffs = new ArrayList<>();
@@ -131,12 +123,10 @@ public class SfcPotPolyAPI {
 
     /*
      * This function is used to re-generate configuration AT the next index,
-     * given the current index.  This is used to update the unused profile and
+     * given the current index. This is used to update the unused profile and
      * then make the nodes use the updated configuration.
      */
     public int initRenew(String rspName, int sfSize, int currActiveIndex) {
-        long  prime;
-        long  secret;
         List<Coeffs> coeffs = new ArrayList<>();
         List<Long> shares = new ArrayList<>();
         List<Lpcs> lpcs = new ArrayList<>();
@@ -145,8 +135,7 @@ public class SfcPotPolyAPI {
         if (polyClassList == null) {
             polyClassList = sfcPotPolyClassAPI.getPolyClassList(rspName);
             if (polyClassList == null) {
-                LOG.warn ("iOAM:PoT:SB:initRenew:Error in getting parameters for renew:RSP:{}",
-                    rspName);
+                LOG.warn("iOAM:PoT:SB:initRenew:Error in getting parameters for renew:RSP:{}", rspName);
                 return -1;
             }
         }
@@ -160,15 +149,18 @@ public class SfcPotPolyAPI {
             return -1;
         }
 
-        /* Get the index that needs the config renew. Odd if current is even etc., */
+        /*
+         * Get the index that needs the config renew. Odd if current is even
+         * etc.,
+         */
         int newActiveIndex = getNewActiveIndex(currActiveIndex);
 
         /* Generate the cfg at the renew index */
-        prime = configGenerator.getPrime();
-        secret = configGenerator.getSecret();
+        long prime = configGenerator.getPrime();
+        long secret = configGenerator.getSecret();
         for (int i = 1; i < sfSize; i++) {
             coeffs.add(new CoeffsBuilder().setCoeff(configGenerator.getCoeff(i)).build());
-            lpcs.add(new LpcsBuilder().setLpc ((configGenerator.getLpc(i)).longValue()).build());
+            lpcs.add(new LpcsBuilder().setLpc(configGenerator.getLpc(i).longValue()).build());
         }
         for (int i = 0; i < sfSize; i++) {
             shares.add(configGenerator.getSecretShare(i));
@@ -176,8 +168,7 @@ public class SfcPotPolyAPI {
 
         /* set: overwrites the existing element */
         try {
-            polyClassListCopy.set(newActiveIndex, (new SfcPotPolyClass(prime, secret, coeffs,
-                shares, lpcs, (long)sfSize)));
+            polyClassListCopy.set(newActiveIndex, new SfcPotPolyClass(prime, secret, coeffs, shares, lpcs, sfSize));
         } catch (IndexOutOfBoundsException err) {
             LOG.warn("iOAM:PoT:SB:Index out of bounds: {} ", newActiveIndex, err);
         }
@@ -210,13 +201,11 @@ public class SfcPotPolyAPI {
         for (long j = 0; j < numProfiles; j++) {
             PolySecretBuilder polySecretBuilder = new PolySecretBuilder();
 
-            shares = polyClassList.get((int)j).getShares();
-            secret = polyClassList.get((int)j).getSecret();
+            shares = polyClassList.get((int) j).getShares();
+            secret = polyClassList.get((int) j).getSecret();
 
-            polySecretBuilder.setSecretShare(shares.get(posIndex))
-                             .setPindex(j)
-                             .setKey(new PolySecretKey(j));
-            if (posIndex == (shares.size() - 1)) {
+            polySecretBuilder.setSecretShare(shares.get(posIndex)).setPindex(j).setKey(new PolySecretKey(j));
+            if (posIndex == shares.size() - 1) {
                 polySecretBuilder.setSecret(secret);
             }
             polySecretList.add(polySecretBuilder.build());
@@ -224,9 +213,8 @@ public class SfcPotPolyAPI {
 
         polySecretsBuilder.setPolySecret(polySecretList);
 
-        return (polySecretsBuilder.build());
+        return polySecretsBuilder.build();
     }
-
 
     public PolyParameters getIoamPotParameters() {
         List<Coeffs> coeffs;
@@ -241,28 +229,23 @@ public class SfcPotPolyAPI {
 
         PolyParametersBuilder polyParamsBuilder = new PolyParametersBuilder();
         polyParamsBuilder.setRefreshPeriodTimeUnits(refreshPeriodTimeUnits)
-            .setRefreshPeriodValue(this.refreshPeriodValue)
-            .setProfileBitMaskValue(this.ioamPotProfileBitMask);
+                .setRefreshPeriodValue(this.refreshPeriodValue).setProfileBitMaskValue(this.ioamPotProfileBitMask);
         ArrayList<PolyParameter> polyParameterList = new ArrayList<>();
 
         for (long j = 0; j < numProfiles; j++) {
+            coeffs = polyClassList.get((int) j).getCoeffs();
+            lpcs = polyClassList.get((int) j).getLpcs();
+            prime = polyClassList.get((int) j).getPrime();
+
             PolyParameterBuilder polyParameterBuilder = new PolyParameterBuilder();
-
-            coeffs  = polyClassList.get((int)j).getCoeffs();
-            lpcs    = polyClassList.get((int)j).getLpcs();
-            prime   = polyClassList.get((int)j).getPrime();
-
-            polyParameterBuilder.setPrime(prime)
-                .setCoeffs(coeffs)
-                .setLpcs(lpcs)
-                .setPindex(j)
-                .setKey(new PolyParameterKey(j));
+            polyParameterBuilder.setPrime(prime).setCoeffs(coeffs).setLpcs(lpcs).setPindex(j)
+                    .setKey(new PolyParameterKey(j));
 
             polyParameterList.add(polyParameterBuilder.build());
         }
 
         polyParamsBuilder.setPolyParameter(polyParameterList);
 
-        return (polyParamsBuilder.build());
+        return polyParamsBuilder.build();
     }
 }

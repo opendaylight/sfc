@@ -10,15 +10,12 @@ package org.opendaylight.sfc.pot.netconf.renderer;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-
 import org.opendaylight.sfc.pot.netconf.renderer.listener.SfcPotNetconfNodeListener;
 import org.opendaylight.sfc.pot.netconf.renderer.listener.SfcPotNetconfRSPListener;
-
-import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfIoam;
-import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotTimerThread;
+import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotTimerQueue;
-
+import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotTimerThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

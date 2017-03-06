@@ -6,35 +6,35 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_pot_netconf.provider;
+package org.opendaylight.sfc.pot.netconf.provider;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.concurrent.Future;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-
-import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfIoam;
-
+import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.api.SfcPotPolyAPI;
-
+import org.opendaylight.sfc.pot.provider.SfcPotRspProcessor;
+import org.opendaylight.sfc.provider.SfcProviderRpc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
-import org.opendaylight.sfc.provider.SfcProviderRpc;
-
-import org.opendaylight.sfc.pot.provider.SfcPotRspProcessor;
-
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParameters;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.PolyParameters;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
@@ -85,34 +86,21 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
-
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /* Note: Based on IosXeRspProcessorTest */
 public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
@@ -121,12 +109,12 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     private DataBroker dataBroker;
     private final String mgmtIp = "10.0.0.1";
     private final String nodeIdString = "nodeId";
-    private final long REFRESH_VALUE = 1000;
-    private final long POT_NUM_PROFILES = 2;
+    private static final long REFRESH_VALUE = 1000;
+    private static final long POT_NUM_PROFILES = 2;
 
     /* Note: following finals from SfcProviderRpcTest */
     @SuppressWarnings("serial")
-    private final List<SffName> sffNames = new ArrayList<SffName>() {
+    private static final List<SffName> SFF_NAMES_A = new ArrayList<SffName>() {
         {
             add(new SffName("sff1"));
             add(new SffName("sff2"));
@@ -136,8 +124,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
-
+    private static final List<SffName> SFF_NAMES_B = new ArrayList<SffName>() {
         {
             add(new SffName("SFF1"));
             add(new SffName("SFF2"));
@@ -147,11 +134,10 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         }
     };
 
-    private final String[][] TO_SFF_NAMES =
-            {{"SFF2", "SFF5"}, {"SFF3", "SFF1"}, {"SFF4", "SFF2"}, {"SFF5", "SFF3"}, {"SFF1", "SFF4"}};
+    private static final String[][] TO_SFF_NAMES = { { "SFF2", "SFF5" }, { "SFF3", "SFF1" }, { "SFF4", "SFF2" },
+                                                     { "SFF5", "SFF3" }, { "SFF1", "SFF4" } };
 
-    List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
-
+    private static final List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
         {
             add("196.168.66.101");
             add("196.168.66.102");
@@ -162,8 +148,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SffDataPlaneLocatorName> sffDplNames = new ArrayList<SffDataPlaneLocatorName>() {
-
+    private static final List<SffDataPlaneLocatorName> SFF_DPL_NAMES = new ArrayList<SffDataPlaneLocatorName>() {
         {
             add(new SffDataPlaneLocatorName("sffDpl1"));
             add(new SffDataPlaneLocatorName("sffDpl2"));
@@ -173,23 +158,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SfName> sfNames = new ArrayList<SfName>() {
-
-        {
-            add(new SfName("sf1"));
-            add(new SfName("sf2"));
-            add(new SfName("sf3"));
-            add(new SfName("sf4"));
-            add(new SfName("sf5"));
-            add(new SfName("sf6"));
-            add(new SfName("sf7"));
-            add(new SfName("sf8"));
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final List<SfName> sfNames2 = new ArrayList<SfName>() {
-
+    private static final List<SfName> SF_NAMES = new ArrayList<SfName>() {
         {
             add(new SfName("unittest-fw-1"));
             add(new SfName("unittest-dpi-1"));
@@ -200,8 +169,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SfDataPlaneLocatorName> sfDplNames = new ArrayList<SfDataPlaneLocatorName>() {
-
+    private static final List<SfDataPlaneLocatorName> SF_DPL_NAMES = new ArrayList<SfDataPlaneLocatorName>() {
         {
             add(new SfDataPlaneLocatorName("sfDpl1"));
             add(new SfDataPlaneLocatorName("sfDpl2"));
@@ -215,8 +183,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SfcName> chainNames = new ArrayList<SfcName>() {
-
+    private static final List<SfcName> CHAIN_NAMES = new ArrayList<SfcName>() {
         {
             add(new SfcName("chain1"));
             add(new SfcName("chain2"));
@@ -225,8 +192,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private final List<SfpName> pathNames = new ArrayList<SfpName>() {
-
+    private static final List<SfpName> PATH_NAMES = new ArrayList<SfpName>() {
         {
             add(new SfpName("path1"));
             add(new SfpName("path2"));
@@ -236,7 +202,6 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
     @SuppressWarnings("serial")
     private static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
-
         {
             add("196.168.55.1");
             add("196.168.55.2");
@@ -248,7 +213,6 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
     @SuppressWarnings("serial")
     private static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
-
         {
             add("196.168.55.101");
             add("196.168.55.102");
@@ -259,8 +223,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     };
 
     @SuppressWarnings("serial")
-    private static final List<Integer> PORT = new ArrayList<Integer>() {
-
+    private static final List<Integer> PORTS = new ArrayList<Integer>() {
         {
             add(1111);
             add(2222);
@@ -272,7 +235,6 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
     @SuppressWarnings("serial")
     List<SftTypeName> sfTypes = new ArrayList<SftTypeName>() {
-
         {
             add(new SftTypeName("firewall"));
             add(new SftTypeName("dpi"));
@@ -285,13 +247,10 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
     @SuppressWarnings("serial")
     private static final List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
-
         {
             add("firewall");
             add("dpi");
             add("napt44");
-            //add("http-header-enrichment");
-            //add("qos");
         }
     };
 
@@ -319,8 +278,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
         netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(mgmtIp))));
-        nodeBuilder.setNodeId(nodeId)
-                .addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
+        nodeBuilder.setNodeId(nodeId).addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();
 
         Map<NodeId, DataBroker> nodeWithDataBrokerMap = new HashMap<>();
@@ -353,24 +311,19 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     }
 
     private RenderedServicePath enableSfcPot() {
-        boolean ret;
         RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(RSP_NAME);
         RenderedServicePath renderedServicePath = createTestRenderedServicePath();
 
         InstanceIdentifier<RenderedServicePath> rspIID;
         rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePathKey)
-                .build();
+                .child(RenderedServicePath.class, renderedServicePathKey).build();
 
-        SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePath,
-                                                 LogicalDatastoreType.OPERATIONAL);
+        SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePath, LogicalDatastoreType.OPERATIONAL);
 
-        SfcPotRspProcessor.enableSfcPot(renderedServicePath,
-                                        null, REFRESH_VALUE, null, POT_NUM_PROFILES);
+        SfcPotRspProcessor.enableSfcPot(renderedServicePath, null, REFRESH_VALUE, null, POT_NUM_PROFILES);
 
-        return (SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL));
+        return SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
     }
-
 
     private RenderedServicePath createTestRenderedServicePath() {
         prepareSfcEntities();
@@ -379,9 +332,8 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         assertNotNull("Must be not null", serviceFunctionPath);
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME.getValue())
-            .setParentServiceFunctionPath(SFP_NAME.getValue())
-            .setSymmetric(true);
+        createRenderedPathInputBuilder.setName(RSP_NAME.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue())
+                .setSymmetric(true);
         CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
 
         SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
@@ -394,46 +346,41 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         InstanceIdentifier<ServiceFunctionClassifier> sclIID;
         ServiceFunctionClassifierKey serviceFunctionKey = new ServiceFunctionClassifierKey(SFP_NAME.getValue());
         sclIID = InstanceIdentifier.builder(ServiceFunctionClassifiers.class)
-            .child(ServiceFunctionClassifier.class, serviceFunctionKey)
-            .build();
+                .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sclIID, serviceFunctionClassifier, LogicalDatastoreType.CONFIGURATION);
 
         Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(createRenderedPathInput);
         assertNotNull(result);
 
-        return (SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME));
+        return SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME);
     }
 
     /* From SfcProviderRpcTest */
     private void prepareSfcEntities() {
         // Create Service Functions
-        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames2.size()];
-        final IpAddress[] locatorIpAddress = new IpAddress[sfNames2.size()];
-        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames2.size()];
-        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames2.size()];
-        for (int i = 0; i < sfNames2.size(); i++) {
+        final IpAddress[] ipMgmtAddress = new IpAddress[SF_NAMES.size()];
+        final IpAddress[] locatorIpAddress = new IpAddress[SF_NAMES.size()];
+        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[SF_NAMES.size()];
+        ServiceFunctionKey[] key = new ServiceFunctionKey[SF_NAMES.size()];
+        for (int i = 0; i < SF_NAMES.size(); i++) {
             ipMgmtAddress[i] = new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0)));
             locatorIpAddress[i] = new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0)));
-            PortNumber portNumber = new PortNumber(PORT.get(i));
-            key[i] = new ServiceFunctionKey(sfNames2.get(i));
+            PortNumber portNumber = new PortNumber(PORTS.get(i));
+            key[i] = new ServiceFunctionKey(SF_NAMES.get(i));
 
             IpBuilder ipBuilder = new IpBuilder();
             ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
             SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
-                .setLocatorType(ipBuilder.build())
-                .setServiceFunctionForwarder(SFF_NAMES.get(i));
+                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(SFF_NAMES_B.get(i));
             sfDataPlaneLocator[i] = locatorBuilder.build();
 
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(sfNames2.get(i))
-                .setKey(key[i])
-                .setType(sfTypes.get(i))
-                .setIpMgmtAddress(ipMgmtAddress[i])
-                .setSfDataPlaneLocator(dataPlaneLocatorList);
+            sfBuilder.setName(SF_NAMES.get(i)).setKey(key[i]).setType(sfTypes.get(i)).setIpMgmtAddress(ipMgmtAddress[i])
+                    .setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
 
@@ -451,16 +398,16 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         }
 
         // Create Service Function Forwarders
-        for (int i = 0; i < SFF_NAMES.size(); i++) {
-            // ServiceFunctionForwarders connected to SFF_NAMES[i]
+        for (int i = 0; i < SFF_NAMES_B.size(); i++) {
+            // ServiceFunctionForwarders connected to SFF_NAMES_B[i]
             List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
                 ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry =
-                        sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j])).build();
+                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(TO_SFF_NAMES[i][j]))
+                        .build();
                 sffDictionaryList.add(sffDictEntry);
             }
-            // ServiceFunctions attached to SFF_NAMES[i]
+            // ServiceFunctions attached to SFF_NAMES_B[i]
             List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
             ServiceFunction serviceFunction = sfList.get(i);
             SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
@@ -468,36 +415,31 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
-                .setFailmode(Open.class)
-                .setSffInterfaces(null);
+                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
 
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
+            final List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i)))).setPort(new PortNumber(PORT.get(i)));
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i))))
+                    .setPort(new PortNumber(PORTS.get(i)));
             DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
-                .setDataPlaneLocator(sffLocatorBuilder.build());
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+                    .setDataPlaneLocator(sffLocatorBuilder.build());
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(SFF_NAMES.get(i))
-                .setKey(new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
-                .setSffDataPlaneLocator(locatorList)
-                .setServiceFunctionDictionary(sfDictionaryList)
-                .setConnectedSffDictionary(sffDictionaryList)
-                .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp)))
-                .setServiceNode(null);
+            sffBuilder.setName(SFF_NAMES_B.get(i)).setKey(new ServiceFunctionForwarderKey(SFF_NAMES_B.get(i)))
+                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
+                    .setConnectedSffDictionary(sffDictionaryList)
+                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp))).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
-                .builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, new ServiceFunctionForwarderKey(SFF_NAMES.get(i)))
-                .build();
+                    .builder(ServiceFunctionForwarders.class)
+                    .child(ServiceFunctionForwarder.class, new ServiceFunctionForwarderKey(SFF_NAMES_B.get(i))).build();
             SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
         }
 
@@ -508,9 +450,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i)))
-                .setType(sfTypes.get(i))
-                .build();
+                    .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(sfTypes.get(i)).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
 
@@ -518,8 +458,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
 
         InstanceIdentifier<ServiceFunctionChain> sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-            .child(ServiceFunctionChain.class, sfcKey)
-            .build();
+                .child(ServiceFunctionChain.class, sfcKey).build();
         SfcDataStoreAPI.writePutTransactionAPI(sfcIID, sfcBuilder.build(), LogicalDatastoreType.CONFIGURATION);
 
         // Check if Service Function Chain was created

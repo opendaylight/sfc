@@ -34,7 +34,7 @@ public class SfcPotNetconfReaderWriterAPI {
             future.checkedGet();
 
             return true;
-        } catch (Exception e) {
+        } catch (TransactionCommitFailedException e) {
             LOG.warn("iOAM:PoT:SB:Netconf put to nodeid: failed:", e);
             return false;
         }
@@ -50,7 +50,7 @@ public class SfcPotNetconfReaderWriterAPI {
             future.checkedGet();
 
             return true;
-        } catch (Exception e) {
+        } catch (TransactionCommitFailedException e) {
             LOG.warn("iOAM:PoT:SB:Netconf delete to nodeid failed:", e);
             return false;
         }

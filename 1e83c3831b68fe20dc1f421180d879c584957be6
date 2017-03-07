@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_b670d4a4",
+        "filename": "sfc-demo/sfc104/common/setup_sf_proxy.sh",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-07T14:27:40Z",
+      "side": 1,
+      "message": "I think this needs to be done with sudo. Or is this script run as root?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 6
+      },
+      "revId": "1e83c3831b68fe20dc1f421180d879c584957be6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

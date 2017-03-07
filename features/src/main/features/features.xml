@@ -141,12 +141,6 @@
     <feature name="odl-sfc-test-consumer" version="${project.version}" description="OpenDaylight :: sfc :: Test :: Consumer ">
         <feature version="${project.version}">odl-sfc-provider</feature>
         <feature version="${project.version}">odl-sfc-model</feature>
-        <configfile finalname="configuration/startup/sfc_provider_config.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config</configfile>
-        <configfile finalname="configuration/startup/bootstrap/service-function-forwarders.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sff</configfile>
-        <configfile finalname="configuration/startup/bootstrap/service-functions.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sf</configfile>
-        <configfile finalname="configuration/startup/bootstrap/service-function-chains.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sfc</configfile>
-        <configfile finalname="configuration/startup/bootstrap/service-nodes.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-sn</configfile>
-        <configfile finalname="configuration/startup/bootstrap/ipfix-class-id.json">mvn:org.opendaylight.sfc/sfc-jsonconfig/{{VERSION}}/xml/config-ipfix-class-id</configfile>
         <bundle>mvn:org.opendaylight.sfc/sfc-test-consumer/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml">mvn:org.opendaylight.sfc/sfc-test-consumer/{{VERSION}}/xml/config</configfile>
     </feature>

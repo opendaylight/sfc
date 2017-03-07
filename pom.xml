@@ -206,7 +206,6 @@
         <module>sfc-classifiers</module>
         <module>sfc-ovs</module>
         <module>sfc-netconf</module>
-        <module>sfc-jsonconfig</module>
         <module>sfc-vnfm-spi</module>
         <module>sfc-vnfm-tacker</module>
         <module>sfc-pot</module>

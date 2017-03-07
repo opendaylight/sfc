@@ -43,7 +43,7 @@ do
     i=$((i+1))
 done
 
-$DPDK_DIR/tools/dpdk_nic_bind.py --bind=e1000 ${picaddr[1]}
-$DPDK_DIR/tools/dpdk_nic_bind.py --bind=e1000 ${picaddr[2]}
+$DPDK_DIR/tools/dpdk-devbind.py --bind=e1000 ${picaddr[1]}
+$DPDK_DIR/tools/dpdk-devbind.py --bind=e1000 ${picaddr[2]}
 ifconfig eth1 up
 ifconfig eth2 0 down

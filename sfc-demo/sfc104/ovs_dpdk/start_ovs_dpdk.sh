@@ -72,7 +72,7 @@ done
 
 INTFACE="eth${INTFACENO}"
 ifconfig $INTFACE 0 down
-$DPDK_DIR/tools/dpdk_nic_bind.py --bind=igb_uio ${picaddr[$INTFACENO]}
+$DPDK_DIR/tools/dpdk-devbind.py --bind=igb_uio ${picaddr[$INTFACENO]}
 sleep 1
 
 mkdir -p $(dirname $OVS_CONF_DB)
@@ -84,7 +84,9 @@ ovsdb-tool create $OVS_CONF_DB $OVS_SCHEMA
 /etc/init.d/openvswitch-switch start
 pkill ovs-vswitchd
 ovs-vsctl --no-wait --db=unix:$DB_SOCK init
-/usr/lib/openvswitch-switch-dpdk/ovs-vswitchd --dpdk -c 0x1 -n 4 --socket-mem 1024,0 -- unix:$DB_SOCK --pidfile=$VSD_PIDFILE --detach --log-file=$OVS_LOG
+sudo ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+sudo ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem="1024,0"
+/usr/lib/openvswitch-switch-dpdk/ovs-vswitchd unix:$DB_SOCK --pidfile=$VSD_PIDFILE --detach --log-file=$OVS_LOG
 
 ovs-vsctl add-br br-sfc -- set bridge br-sfc datapath_type=netdev protocols=OpenFlow10,OpenFlow12,OpenFlow13
 ovs-vsctl add-port br-sfc dpdk0 -- set Interface dpdk0 type=dpdk

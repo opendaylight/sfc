@@ -86,4 +86,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['CLASSIFIER2_VPP_VAGRANT_MAC']}"]
     end
   end
+
+  config.vm.define "#{ENV['SF2_PROXY_NAME']}" do | h |
+    h.vm.host_name = "#{ENV['SF2_PROXY_NAME']}"
+    h.vm.network :private_network, ip: "#{ENV['SF2_PROXY_IP']}"
+    h.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--macaddress2", "#{ENV['SF2_PROXY_VAGRANT_MAC']}"]
+      v.customize ["modifyvm", :id, "--nic3", "intnet"]
+      v.customize ["modifyvm", :id, "--intnet3", "sfc-vpp"]
+      v.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+      v.customize ["modifyvm", :id, "--macaddress3", "#{ENV['SF2_VPP_PROXY_VAGRANT_MAC']}"]
+    end
+  end
 end

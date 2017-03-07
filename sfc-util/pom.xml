@@ -15,7 +15,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>sfc-openflow-utils</module>
-        <module>sfc-network-topology-utils</module>
         <module>sfc-vpp-utils</module>
     </modules>
 </project>

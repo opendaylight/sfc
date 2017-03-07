@@ -283,49 +283,7 @@
       Put dependencies for configfiles directly referenced in your features.xml file.
       For every <configfile> reference in your features.xml file, you need a corresponding dependency here.
     -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config</classifier>
-      </dependency>
     <!-- odl-sfc-bootstrap and odl-sfc-test-consumer config files -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config-sff</classifier>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config-sf</classifier>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config-sfc</classifier>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config-sn</classifier>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>sfc-jsonconfig</artifactId>
-        <version>${project.version}</version>
-        <type>xml</type>
-        <classifier>config-ipfix-class-id</classifier>
-      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>sfc-test-consumer</artifactId>
@@ -334,7 +292,6 @@
         <classifier>config</classifier>
       </dependency>
     <!--  END CONFIG FILES SECTION -->
-
 
     <!--  OTHER STUFF SECTION -->
     <dependency>

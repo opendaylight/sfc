@@ -5,8 +5,11 @@ if [ -x /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd -a -x /home/vagrant/ovs/vs
 fi
 
 rm -rf /home/vagrant/ovs
+rm -rf /home/vagrant/ovs_nsh_patches
 rm -rf /home/vagrant/dpdk-2.2.0
 rm -f /home/vagrant/dpdk-2.2.0.tar.gz
+rm -rf /home/vagrant/dpdk-16.07
+rm -f /home/vagrant/dpdk-16.07.tar.xz
 
 HTTP_PROXY=$1
 HTTPS_PROXY=$2
@@ -29,16 +32,16 @@ cat /etc/apt/apt.conf
 apt-get update
 apt-get install -y autoconf libtool git dh-autoreconf dh-systemd software-properties-common python-software-properties libssl-dev openssl build-essential fakeroot linux-image-extra-$(uname -r) graphviz python-all python-qt4 python-twisted-conch
 
-curl https://raw.githubusercontent.com/yyang13/ovs_nsh_patches/master/start-ovs-deb.sh | bash
+curl https://raw.githubusercontent.com/yyang13/ovs_nsh_patches/master/start-ovs-deb-2.6.1.sh | bash
 
 #Install OVS-DPDK
-wget http://dpdk.org/rel/dpdk-2.2.0.tar.gz
-tar xf dpdk-2.2.0.tar.gz
-export DPDK_DIR=$(pwd)/dpdk-2.2.0
+wget http://fast.dpdk.org/rel/dpdk-16.07.tar.xz
+tar xf dpdk-16.07.tar.xz
+export DPDK_DIR=$(pwd)/dpdk-16.07
+export DPDK_TARGET=x86_64-native-linuxapp-gcc
+export DPDK_BUILD=$DPDK_DIR/$DPDK_TARGET
 cd $DPDK_DIR
-sed -i 's/CONFIG_RTE_BUILD_COMBINE_LIBS=n/CONFIG_RTE_BUILD_COMBINE_LIBS=y/g' config/common_linuxapp
-make install T=x86_64-native-linuxapp-gcc DESTDIR=install
-export DPDK_BUILD=$DPDK_DIR/x86_64-native-linuxapp-gcc/
+make install T=$DPDK_TARGET DESTDIR=install
 cd ../ovs
 make clean
 ./boot.sh

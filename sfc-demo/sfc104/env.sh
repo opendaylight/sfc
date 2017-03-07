@@ -8,7 +8,7 @@ export OVS_SCHEMA=/home/vagrant/ovs/vswitchd/vswitch.ovsschema
 export DB_PIDFILE=/var/run/openvswitch/ovsdb-server.pid
 export VSD_PIDFILE=/var/run/openvswitch/ovs-vswitchd.pid
 
-export DPDK_DIR=/home/vagrant/dpdk-2.2.0
+export DPDK_DIR=/home/vagrant/dpdk-16.07
 export DPDK_BUILD=$DPDK_DIR/x86_64-native-linuxapp-gcc/
 
 export CLASSIFIER1_NAME=classifier1
@@ -64,3 +64,16 @@ export LOCALHOST=127.0.0.1
 
 export HC_CONFIG_DATA=/var/lib/honeycomb/persist/config/data.json
 export HC_CONTEXT_DATA=/var/lib/honeycomb/persist/context/data.json
+
+export CLASSIFIER1_NS_IP=192.168.2.1
+export CLASSIFIER1_NS_MAC=0000.1111.1111
+export CLASSIFIER2_NS_IP=192.168.2.2
+export CLASSIFIER2_NS_MAC=0000.2222.2222
+
+export SF2_PROXY_NAME=sf2proxy
+export SF2_PROXY_IP=192.168.60.70
+export SF2_PROXY_MAC=08:00:27:4c:60:70
+export SF2_PROXY_VAGRANT_MAC=${SF2_PROXY_MAC//:/}
+export SF2_VPP_PROXY_IP=192.168.70.70
+export SF2_VPP_PROXY_MAC=08:00:27:4c:70:70
+export SF2_VPP_PROXY_VAGRANT_MAC=${SF2_VPP_PROXY_MAC//:/}

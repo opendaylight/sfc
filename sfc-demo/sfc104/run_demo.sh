@@ -1,11 +1,48 @@
 #!/bin/bash
 
+root_dir=$(dirname $0)
+
+nshproxy=false
+optspec=":h-:"
+while getopts "$optspec" optchar
+do
+case "${optchar}" in
+-)
+    case "${OPTARG}" in
+        help)
+            echo "Usage: ./$(basename $0) [-h] [--nshproxy] ovs | ovs_dpdk | vpp" >&2
+            exit 0
+            ;;
+        nshproxy)
+            nshproxy=true
+            shift
+            ;;
+        *)
+            if [ "$OPTERR" != 1 ] || [ "${optspec:0:1}" = ":" ]; then
+                echo "Invalid option --${OPTARG}" >&2
+            fi
+            exit -1
+            ;;
+    esac
+    ;;
+h)
+    echo "Usage: ./$(basename $0) [-h] [--nshproxy] ovs | ovs_dpdk | vpp" >&2
+    exit 0
+    ;;
+*)
+    if [ "$OPTERR" != 1 ] || [ "${optspec:0:1}" = ":" ]; then
+        echo "Invalid: '-${OPTARG}'" >&2
+    fi
+    exit -1
+    ;;
+esac
+done
+
 if [ $# -ne 1 ] ; then
-    echo "Usage: ./$(basename $0) ovs | ovs_dpdk | vpp"
+    echo "Usage: ./$(basename $0) [-h] [--nshproxy] ovs | ovs_dpdk | vpp" >&2
     exit -1
 fi
 
-root_dir=$(dirname $0)
 if [ "${root_dir}" != "." ] ; then
     echo "Please run ./run_demo.sh $@"
     exit -1
@@ -191,15 +228,25 @@ fi
 ${demo} ${HTTPPROXY} ${HTTPSPROXY}
 
 if [ "${1}" == "vpp" ] ; then
-    ./common/setup_sfc_vpp.py
-    vagrant ssh ${CLASSIFIER1_NAME} -c "sudo /vagrant/vpp/setup_classifier_flows.sh"
-    vagrant ssh ${CLASSIFIER2_NAME} -c "sudo /vagrant/vpp/setup_classifier_flows.sh"
-    vagrant ssh ${SFF1_NAME} -c "sudo /vagrant/vpp/setup_sff_vxlangpe_nsh.sh"
-    vagrant ssh ${SFF2_NAME} -c "sudo /vagrant/vpp/setup_sff_vxlangpe_nsh.sh"
-    ### MAC learning firstly ###
+    if [ $nshproxy = true ] ; then
+        ./common/setup_sfc_vpp_proxy.py
+    else
+        ./common/setup_sfc_vpp.py
+    fi
+    vagrant ssh ${CLASSIFIER1_NAME} -c "sudo /vagrant/vpp/setup_classifier_interfaces.sh"
+    vagrant ssh ${CLASSIFIER2_NAME} -c "sudo /vagrant/vpp/setup_classifier_interfaces.sh"
+    if [ $nshproxy = true ] ; then
+        vagrant ssh ${SF2_PROXY_NAME} -c "sudo /vagrant/vpp/setup_sf_proxy_vpp.sh"
+    fi
+    ### MAC learning first ###
     vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ip netns exec app ping -c 5 192.168.2.2"
 else
-    ./common/setup_sfc.py
+    if [ $nshproxy = true ] ; then
+        ./common/setup_sfc_proxy.py
+        vagrant ssh ${SF2_PROXY_NAME} -c "sudo nohup /vagrant/common/setup_sf_proxy.sh & sleep 1"
+    else
+        ./common/setup_sfc.py
+    fi
 fi
 
 vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ip netns exec app ping -c 5 192.168.2.2"

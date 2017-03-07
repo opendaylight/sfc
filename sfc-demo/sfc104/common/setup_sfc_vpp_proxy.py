@@ -21,6 +21,7 @@ SFF2_CP_IP=Template("$SFF2_IP").substitute(os.environ)
 SFF1_DP_IP=Template("$SFF1_VPP_IP").substitute(os.environ)
 SF1_DP_IP=Template("$SF1_VPP_IP").substitute(os.environ)
 SF2_DP_IP=Template("$SF2_VPP_IP").substitute(os.environ)
+SF2_PROXY_DP_IP=Template("$SF2_VPP_PROXY_IP").substitute(os.environ)
 SFF2_DP_IP=Template("$SFF2_VPP_IP").substitute(os.environ)
 CLASSIFIER1_CP_IP=Template("$CLASSIFIER1_IP").substitute(os.environ)
 CLASSIFIER1_DP_IP=Template("$CLASSIFIER1_VPP_IP").substitute(os.environ)
@@ -140,10 +141,15 @@ def get_service_functions_data():
                 "sf-data-plane-locator": [
                     {
                         "name": "firewall-1-dpl",
-                        "port": 4790,
+                        "port": 4789,
                         "ip": SF2_DP_IP,
-                        "transport": "service-locator:vxlan-gpe",
-                        "service-function-forwarder": "SFF2"
+                        "transport": "service-locator:vxlan",
+                        "service-function-forwarder": "SFF2",
+                        "service-function-proxy:proxy-data-plane-locator": {
+                            "port": 4790,
+                            "ip": SF2_PROXY_DP_IP,
+                            "transport": "service-locator:vxlan-gpe"
+                        }
                     }
                 ]
             }

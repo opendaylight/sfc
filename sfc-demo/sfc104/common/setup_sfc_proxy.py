@@ -14,19 +14,13 @@ DEFAULT_PORT='8181'
 USERNAME='admin'
 PASSWORD='admin'
 
-SFF1_CP_IP=Template("$SFF1_IP").substitute(os.environ)
-SF1_CP_IP=Template("$SF1_IP").substitute(os.environ)
-SF2_CP_IP=Template("$SF2_IP").substitute(os.environ)
-SFF2_CP_IP=Template("$SFF2_IP").substitute(os.environ)
-SFF1_DP_IP=Template("$SFF1_VPP_IP").substitute(os.environ)
-SF1_DP_IP=Template("$SF1_VPP_IP").substitute(os.environ)
-SF2_DP_IP=Template("$SF2_VPP_IP").substitute(os.environ)
-SFF2_DP_IP=Template("$SFF2_VPP_IP").substitute(os.environ)
-CLASSIFIER1_CP_IP=Template("$CLASSIFIER1_IP").substitute(os.environ)
-CLASSIFIER1_DP_IP=Template("$CLASSIFIER1_VPP_IP").substitute(os.environ)
-CLASSIFIER2_CP_IP=Template("$CLASSIFIER2_IP").substitute(os.environ)
-CLASSIFIER2_DP_IP=Template("$CLASSIFIER2_VPP_IP").substitute(os.environ)
-
+CLASSIFIER1_IP=Template("$CLASSIFIER1_IP").substitute(os.environ)
+SFF1_IP=Template("$SFF1_IP").substitute(os.environ)
+SF1_IP=Template("$SF1_IP").substitute(os.environ)
+SF2_IP=Template("$SF2_IP").substitute(os.environ)
+SF2_PROXY_IP=Template("$SF2_PROXY_IP").substitute(os.environ)
+SFF2_IP=Template("$SFF2_IP").substitute(os.environ)
+CLASSIFIER2_IP=Template("$CLASSIFIER2_IP").substitute(os.environ)
 proxies = {
     "http": None,
     "https": None
@@ -74,39 +68,39 @@ def get_service_nodes_data():
                 "name": "classifier1",
                 "service-function": [
                 ],
-                "ip-mgmt-address": CLASSIFIER1_CP_IP
+                "ip-mgmt-address": CLASSIFIER1_IP
             },
             {
                 "name": "sff1",
                 "service-function": [
                 ],
-                "ip-mgmt-address": SFF1_CP_IP
+                "ip-mgmt-address": SFF1_IP
             },
             {
                 "name": "sf1",
                 "service-function": [
                     "dpi-1"
                 ],
-                "ip-mgmt-address": SF1_CP_IP
+                "ip-mgmt-address": SF1_IP
             },
             {
                 "name": "sf2",
                 "service-function": [
                     "firewall-1"
                 ],
-                "ip-mgmt-address": SF2_CP_IP
+                "ip-mgmt-address": SF2_IP
             },
             {
                 "name": "sff2",
                 "service-function": [
                 ],
-                "ip-mgmt-address": SFF2_CP_IP
+                "ip-mgmt-address": SFF2_IP
             },
             {
                 "name": "classifier2",
                 "service-function": [
                 ],
-                "ip-mgmt-address": CLASSIFIER2_CP_IP
+                "ip-mgmt-address": CLASSIFIER2_IP
             }
         ]
     }
@@ -121,13 +115,13 @@ def get_service_functions_data():
         "service-function": [
             {
                 "name": "dpi-1",
-                "ip-mgmt-address": SF1_CP_IP,
+                "ip-mgmt-address": SF1_IP,
                 "type": "dpi",
                 "sf-data-plane-locator": [
                     {
                         "name": "dpi-1-dpl",
                         "port": 4790,
-                        "ip": SF1_DP_IP,
+                        "ip": SF1_IP,
                         "transport": "service-locator:vxlan-gpe",
                         "service-function-forwarder": "SFF1"
                     }
@@ -135,15 +129,20 @@ def get_service_functions_data():
             },
             {
                 "name": "firewall-1",
-                "ip-mgmt-address": SF2_CP_IP,
+                "ip-mgmt-address": SF2_IP,
                 "type": "firewall",
                 "sf-data-plane-locator": [
                     {
                         "name": "firewall-1-dpl",
-                        "port": 4790,
-                        "ip": SF2_DP_IP,
-                        "transport": "service-locator:vxlan-gpe",
-                        "service-function-forwarder": "SFF2"
+                        "port": 4789,
+                        "ip": SF2_IP,
+                        "transport": "service-locator:vxlan",
+                        "service-function-forwarder": "SFF2",
+                        "service-function-proxy:proxy-data-plane-locator": {
+                            "port": 4790,
+                            "ip": SF2_PROXY_IP,
+                            "transport": "service-locator:vxlan-gpe"
+                        }
                     }
                 ]
             }
@@ -158,34 +157,48 @@ def get_service_function_forwarders_data():
     return {
     "service-function-forwarders": {
         "service-function-forwarder": [
-            {
-                "name": "CLASSIFIER1",
-                "ip-mgmt-address": CLASSIFIER1_CP_IP,
+           {
+                "name": "Classifier1",
                 "service-node": "classifier1",
-                "service-function-forwarder-vpp:sff-netconf-node-type": "netconf-node-type-honeycomb",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc",
+                },
                 "sff-data-plane-locator": [
                     {
-                        "name": "classifier1-dpl",
+                        "name": "sff0-dpl",
                         "data-plane-locator": {
                             "transport": "service-locator:vxlan-gpe",
                             "port": 4790,
-                            "ip": CLASSIFIER1_DP_IP
+                            "ip": CLASSIFIER1_IP
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "4790",
+                            "key": "flow",
+                            "exts": "gpe"
                         }
                     }
-                ]
+                ],
             },
             {
                 "name": "SFF1",
-                "ip-mgmt-address": SFF1_CP_IP,
                 "service-node": "sff1",
-                "service-function-forwarder-vpp:sff-netconf-node-type": "netconf-node-type-honeycomb",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc",
+                },
                 "sff-data-plane-locator": [
                     {
                         "name": "sff1-dpl",
                         "data-plane-locator": {
                             "transport": "service-locator:vxlan-gpe",
                             "port": 4790,
-                            "ip": SFF1_DP_IP
+                            "ip": SFF1_IP
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "4790",
+                            "key": "flow",
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -201,16 +214,23 @@ def get_service_function_forwarders_data():
             },
             {
                 "name": "SFF2",
-                "ip-mgmt-address": SFF2_CP_IP,
                 "service-node": "sff2",
-                "service-function-forwarder-vpp:sff-netconf-node-type": "netconf-node-type-honeycomb",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc",
+                },
                 "sff-data-plane-locator": [
                     {
                         "name": "sff2-dpl",
                         "data-plane-locator": {
                             "transport": "service-locator:vxlan-gpe",
                             "port": 4790,
-                            "ip": SFF2_DP_IP
+                            "ip": SFF2_IP
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "4790",
+                            "key": "flow",
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -225,20 +245,27 @@ def get_service_function_forwarders_data():
                 ]
             },
             {
-                "name": "CLASSIFIER2",
-                "ip-mgmt-address": CLASSIFIER2_CP_IP,
+                "name": "Classifier2",
                 "service-node": "classifier2",
-                "service-function-forwarder-vpp:sff-netconf-node-type": "netconf-node-type-honeycomb",
+                "service-function-forwarder-ovs:ovs-bridge": {
+                    "bridge-name": "br-sfc",
+                },
                 "sff-data-plane-locator": [
                     {
-                        "name": "classifier2-dpl",
+                        "name": "sff3-dpl",
                         "data-plane-locator": {
                             "transport": "service-locator:vxlan-gpe",
                             "port": 4790,
-                            "ip": CLASSIFIER2_DP_IP
+                            "ip": CLASSIFIER2_IP
+                        },
+                        "service-function-forwarder-ovs:ovs-options": {
+                            "remote-ip": "flow",
+                            "dst-port": "4790",
+                            "key": "flow",
+                            "exts": "gpe"
                         }
                     }
-                ]
+                ],
             }
         ]
     }
@@ -421,8 +448,8 @@ def get_service_function_classifiers_data():
         "name": "Classifier1",
         "scl-service-function-forwarder": [
           {
-            "name": "CLASSIFIER1",
-            "interface": "host-veth-br"
+            "name": "Classifier1",
+            "interface": "veth-br"
           }
         ],
         "acl": {
@@ -434,8 +461,8 @@ def get_service_function_classifiers_data():
         "name": "Classifier2",
         "scl-service-function-forwarder": [
           {
-            "name": "CLASSIFIER2",
-            "interface": "host-veth-br"
+            "name": "Classifier2",
+            "interface": "veth-br"
           }
         ],
         "acl": {
@@ -455,8 +482,6 @@ if __name__ == "__main__":
     put(controller, DEFAULT_PORT, get_service_functions_uri(), get_service_functions_data(), True)
     print "sending service function forwarders"
     put(controller, DEFAULT_PORT, get_service_function_forwarders_uri(), get_service_function_forwarders_data(), True)
-    print "waiting till SFFs are connected successfully..."
-    time.sleep(60)
     print "sending service function chains"
     put(controller, DEFAULT_PORT, get_service_function_chains_uri(), get_service_function_chains_data(), True)
     print "sending service function metadata"

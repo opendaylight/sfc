@@ -56,17 +56,54 @@ if [ "$nr_hugepages" != "1024" ] ; then
     echo "---"
 fi
 
-apt-get install -y linux-image-extra-$(uname -r) vpp vpp-dpdk-dkms vpp-nsh-plugin honeycomb
+apt-get install -y linux-image-extra-$(uname -r)
 
-mkdir -p vpp-local-debs
-cd vpp-local-debs
-wget https://github.com/yyang13/ovs_nsh_patches/raw/master/vpp-local-debs/vpp_16.09-1~g3958e7a_amd64.deb
-wget https://github.com/yyang13/ovs_nsh_patches/raw/master/vpp-local-debs/vpp-dpdk-dkms_16.09-1~g3958e7a_amd64.deb
-wget https://github.com/yyang13/ovs_nsh_patches/raw/master/vpp-local-debs/vpp-lib_16.09-1~g3958e7a_amd64.deb
-wget https://github.com/yyang13/ovs_nsh_patches/raw/master/vpp-local-debs/vpp-plugins_16.09-1~g3958e7a_amd64.deb
+#Remove the old installation
+dpkg -r honeycomb
+dpkg --purge honeycomb
+dpkg -r vpp-nsh-plugin
+dpkg --purge vpp-nsh-plugin
+dpkg -r vpp-plugins
+dpkg --purge vpp-plugins
+dpkg -r vpp-dpdk-dkms
+dpkg --purge vpp-dpdk-dkms
+dpkg -r vpp
+dpkg --purge vpp
+dpkg -r vpp-lib
+dpkg --purge vpp-lib
+
+rm -rf vpp-local-debs
+rm -rf FD.io.debs
+mkdir -p FD.io.debs/vpp-17.01
+cd FD.io.debs/vpp-17.01
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/vpp-17.01/vpp_17.01-release_amd64.deb
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/vpp-17.01/vpp-plugins_17.01-release_amd64.deb
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/vpp-17.01/vpp-lib_17.01-release_amd64.deb
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/vpp-17.01/vpp-dpdk-dkms_17.01-release_amd64.deb
+
 dpkg -i *.deb
 
+cd ../..
+mkdir -p FD.io.debs/nsh_sfc-17.01
+cd FD.io.debs/nsh_sfc-17.01
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/nsh_sfc-17.01/vpp-nsh-plugin_17.01-rc1~4-gdf80b87_amd64.deb
+
+dpkg -i vpp-nsh-plugin_17.01-rc1~4-gdf80b87_amd64.deb
+
+cd ../..
+mkdir -p FD.io.debs/hc2vpp-17.01
+cd FD.io.debs/hc2vpp-17.01
+wget https://github.com/yyang13/ovs_nsh_patches/raw/master/FD.io.debs/hc2vpp-17.01/honeycomb_1.17.01-2033_all.deb
+
+dpkg -i honeycomb_1.17.01-2033_all.deb
+
 sed -i 's/"127.0.0.1"/"0.0.0.0"/g' /opt/honeycomb/config/honeycomb.json
+rm -f /opt/honeycomb/config/vppnsh.json
+cat >> /opt/honeycomb/config/vppnsh.json << EOF
+{
+  "nsh-enabled": "true"
+}
+EOF
 sed -i 's/"false"/"true"/' /opt/honeycomb/config/vppnsh.json
 
 if [ -x /usr/bin/vpp -a -x /opt/honeycomb/honeycomb ] ; then

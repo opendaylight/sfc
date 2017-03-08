@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_70194c21",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-termination.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-08T09:04:44Z",
+      "side": 1,
+      "message": "specify",
+      "range": {
+        "startLine": 25,
+        "startChar": 40,
+        "endLine": 25,
+        "endChar": 48
+      },
+      "revId": "ded5dd6378c922db3679dd7e8bce435642774781",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_d0df5838",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder-termination.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-08T09:04:44Z",
+      "side": 1,
+      "message": "of the termination...",
+      "range": {
+        "startLine": 35,
+        "startChar": 33,
+        "endLine": 35,
+        "endChar": 47
+      },
+      "revId": "ded5dd6378c922db3679dd7e8bce435642774781",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -17,7 +17,7 @@ public class PasswordCredentials {
     private PasswordCredentials() {}
 
     /**
-     * Constructor for PasswordCredential class with two parameters
+     * Constructor for PasswordCredential class with two parameters.
      *
      * @param username is used to set the username for authentication
      * @param password is used to set the password for authentication

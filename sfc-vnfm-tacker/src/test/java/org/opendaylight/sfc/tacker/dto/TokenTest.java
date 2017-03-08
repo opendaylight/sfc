@@ -46,18 +46,18 @@ public class TokenTest {
             issuedAt = new SimpleDateFormat(DateDeserializer.DATE_FORMAT_STANDARD, Locale.US)
                 .parse("2016-01-14T12:45:47.035+0000");
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOG.error("Failed to parse the issued date due to {}", e);
         }
 
         try {
             expires = new SimpleDateFormat(DateDeserializer.DATE_FORMAT_ZULU, Locale.US)
                 .parse("2016-01-14T13:45:47+0000");
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOG.error("Failed to parse the expires date due to {}", e);
         }
 
         token = Token.builder()
-            .setIssued_at(issuedAt)
+            .setIssuedAt(issuedAt)
             .setExpires(expires)
             .setId("7a17dc67ba284ab2beeccc21ce198626")
             .setTenant(Tenant.builder()
@@ -66,7 +66,7 @@ public class TokenTest {
                 .setId("f3a250db7c374654854f56ad60caea66")
                 .setName("admin")
                 .build())
-            .setAudit_ids(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
+            .setAuditIds(new String[] {"LUMVW2kmQU29kwkZv8VCZg"})
             .build();
 
     }
@@ -100,8 +100,8 @@ public class TokenTest {
 
         // check Token data
         Assert.assertTrue(jsonFileToken.getId().equals(token.getId()));
-        Assert.assertTrue(jsonFileToken.getAudit_ids()[0].equals(token.getAudit_ids()[0]));
+        Assert.assertTrue(jsonFileToken.getAuditIds()[0].equals(token.getAuditIds()[0]));
         Assert.assertTrue(jsonFileToken.getExpires().compareTo((token.getExpires())) == 0);
-        Assert.assertTrue(jsonFileToken.getIssued_at().compareTo((token.getIssued_at())) == 0);
+        Assert.assertTrue(jsonFileToken.getIssuedAt().compareTo((token.getIssuedAt())) == 0);
     }
 }

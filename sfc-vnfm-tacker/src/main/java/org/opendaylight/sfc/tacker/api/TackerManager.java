@@ -158,7 +158,7 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
         if (this.token != null) {
             Date currentDate = new Date();
             if (!(currentDate.getTime() < token.getExpires().getTime()
-                    && currentDate.getTime() >= token.getIssued_at().getTime())) {
+                    && currentDate.getTime() >= token.getIssuedAt().getTime())) {
                 this.token = null;
             }
         }

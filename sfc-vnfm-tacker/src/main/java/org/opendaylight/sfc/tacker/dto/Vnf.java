@@ -8,17 +8,27 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Vnf {
 
     private String status;
     private String name;
-    private String tenant_id;
+
+    @SerializedName("tenant_id")
+    private String tenantId;
     private String description;
-    private String instance_id;
-    private String mgmt_url;
+
+    @SerializedName("instance_id")
+    private String instanceId;
+
+    @SerializedName("mgmt_url")
+    private String mgmtUrl;
     private Attributes attributes;
     private String id;
-    private String vnfd_id;
+
+    @SerializedName("vnfd_id")
+    private String vnfdId;
 
     // used by GSON
     private Vnf() {}
@@ -26,13 +36,13 @@ public class Vnf {
     private Vnf(VnfBuilder builder) {
         status = builder.getStatus();
         name = builder.getName();
-        tenant_id = builder.getTenantId();
+        tenantId = builder.getTenantId();
         description = builder.getDescription();
-        instance_id = builder.getInstanceId();
-        mgmt_url = builder.getMgmtUrl();
+        instanceId = builder.getInstanceId();
+        mgmtUrl = builder.getMgmtUrl();
         attributes = builder.getAttributes();
         id = builder.getId();
-        vnfd_id = builder.getVnfdId();
+        vnfdId = builder.getVnfdId();
     }
 
     public static VnfBuilder builder() {
@@ -48,7 +58,7 @@ public class Vnf {
     }
 
     public String getTenantId() {
-        return tenant_id;
+        return tenantId;
     }
 
     public String getDescription() {
@@ -56,11 +66,11 @@ public class Vnf {
     }
 
     public String getInstanceId() {
-        return instance_id;
+        return instanceId;
     }
 
     public String getMgmtUrl() {
-        return mgmt_url;
+        return mgmtUrl;
     }
 
     public Attributes getAttributes() {
@@ -72,20 +82,20 @@ public class Vnf {
     }
 
     public String getVnfdId() {
-        return vnfd_id;
+        return vnfdId;
     }
 
     public static class VnfBuilder {
 
         private String status;
         private String name;
-        private String tenant_id;
+        private String tenantId;
         private String description;
-        private String instance_id;
-        private String mgmt_url;
+        private String instanceId;
+        private String mgmtUrl;
         private Attributes attributes;
         private String id;
-        private String vnfd_id;
+        private String vnfdId;
 
         public String getStatus() {
             return status;
@@ -106,11 +116,11 @@ public class Vnf {
         }
 
         public String getTenantId() {
-            return tenant_id;
+            return tenantId;
         }
 
-        public VnfBuilder setTenantId(String tenant_id) {
-            this.tenant_id = tenant_id;
+        public VnfBuilder setTenantId(String tenantId) {
+            this.tenantId = tenantId;
             return this;
         }
 
@@ -124,20 +134,20 @@ public class Vnf {
         }
 
         public String getInstanceId() {
-            return instance_id;
+            return instanceId;
         }
 
-        public VnfBuilder setInstanceId(String instance_id) {
-            this.instance_id = instance_id;
+        public VnfBuilder setInstanceId(String instanceId) {
+            this.instanceId = instanceId;
             return this;
         }
 
         public String getMgmtUrl() {
-            return mgmt_url;
+            return mgmtUrl;
         }
 
-        public VnfBuilder setMgmtUrl(String mgmt_url) {
-            this.mgmt_url = mgmt_url;
+        public VnfBuilder setMgmtUrl(String mgmtUrl) {
+            this.mgmtUrl = mgmtUrl;
             return this;
         }
 
@@ -160,11 +170,11 @@ public class Vnf {
         }
 
         public String getVnfdId() {
-            return vnfd_id;
+            return vnfdId;
         }
 
-        public VnfBuilder setVnfdId(String vnfd_id) {
-            this.vnfd_id = vnfd_id;
+        public VnfBuilder setVnfdId(String vnfdId) {
+            this.vnfdId = vnfdId;
             return this;
         }
 

@@ -8,21 +8,30 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Attributes {
 
-    private String service_type;
-    private String heat_template;
-    private String monitoring_policy;
-    private String failure_policy;
+    @SerializedName("service_type")
+    private String serviceType;
+
+    @SerializedName("heat_template")
+    private String heatTemplate;
+
+    @SerializedName("monitoring_policy")
+    private String monitoringPolicy;
+
+    @SerializedName("failure_policy")
+    private String failurePolicy;
 
     // used by GSON
     private Attributes() {}
 
     private Attributes(AttributesBuilder attributesBuilder) {
-        this.service_type = attributesBuilder.getServiceType();
-        this.heat_template = attributesBuilder.getHeatTemplate();
-        this.monitoring_policy = attributesBuilder.getMonitoringPolicy();
-        this.failure_policy = attributesBuilder.getFailurePolicy();
+        this.serviceType = attributesBuilder.getServiceType();
+        this.heatTemplate = attributesBuilder.getHeatTemplate();
+        this.monitoringPolicy = attributesBuilder.getMonitoringPolicy();
+        this.failurePolicy = attributesBuilder.getFailurePolicy();
     }
 
     public static AttributesBuilder builder() {
@@ -30,61 +39,61 @@ public class Attributes {
     }
 
     public String getServiceType() {
-        return service_type;
+        return serviceType;
     }
 
     public String getHeatTemplate() {
-        return heat_template;
+        return heatTemplate;
     }
 
     public String getMonitoringPolicy() {
-        return monitoring_policy;
+        return monitoringPolicy;
     }
 
     public String getFailurePolicy() {
-        return failure_policy;
+        return failurePolicy;
     }
 
     public static class AttributesBuilder {
 
-        private String service_type;
-        private String heat_template;
-        private String monitoring_policy;
-        private String failure_policy;
+        private String serviceType;
+        private String heatTemplate;
+        private String monitoringPolicy;
+        private String failurePolicy;
 
         public String getServiceType() {
-            return service_type;
+            return serviceType;
         }
 
-        public AttributesBuilder setServiceType(String service_type) {
-            this.service_type = service_type;
+        public AttributesBuilder setServiceType(String serviceType) {
+            this.serviceType = serviceType;
             return this;
         }
 
         public String getHeatTemplate() {
-            return heat_template;
+            return heatTemplate;
         }
 
-        public AttributesBuilder setHeatTemplate(String heat_template) {
-            this.heat_template = heat_template;
+        public AttributesBuilder setHeatTemplate(String heatTemplate) {
+            this.heatTemplate = heatTemplate;
             return this;
         }
 
         public String getMonitoringPolicy() {
-            return monitoring_policy;
+            return monitoringPolicy;
         }
 
-        public AttributesBuilder setMonitoringPolicy(String monitoring_policy) {
-            this.monitoring_policy = monitoring_policy;
+        public AttributesBuilder setMonitoringPolicy(String monitoringPolicy) {
+            this.monitoringPolicy = monitoringPolicy;
             return this;
         }
 
         public String getFailurePolicy() {
-            return failure_policy;
+            return failurePolicy;
         }
 
-        public AttributesBuilder setFailurePolicy(String failure_policy) {
-            this.failure_policy = failure_policy;
+        public AttributesBuilder setFailurePolicy(String failurePolicy) {
+            this.failurePolicy = failurePolicy;
             return this;
         }
 

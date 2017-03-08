@@ -7,6 +7,9 @@
  */
 
 package org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl;
-public class SfcRspManagerModuleFactory extends org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl.AbstractSfcRspManagerModuleFactory {
+
+public class SfcRspManagerModuleFactory
+        extends org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl
+        .AbstractSfcRspManagerModuleFactory {
 
 }

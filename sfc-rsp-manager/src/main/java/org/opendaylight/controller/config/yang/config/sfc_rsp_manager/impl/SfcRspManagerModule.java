@@ -7,12 +7,18 @@
  */
 
 package org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl;
-public class SfcRspManagerModule extends org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl.AbstractSfcRspManagerModule {
-    public SfcRspManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
+
+public class SfcRspManagerModule
+        extends org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl.AbstractSfcRspManagerModule {
+    public SfcRspManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
+            org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }
 
-    public SfcRspManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver, org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl.SfcRspManagerModule oldModule, java.lang.AutoCloseable oldInstance) {
+    public SfcRspManagerModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier,
+            org.opendaylight.controller.config.api.DependencyResolver dependencyResolver,
+            org.opendaylight.controller.config.yang.config.sfc_rsp_manager.impl.SfcRspManagerModule oldModule,
+            java.lang.AutoCloseable oldInstance) {
         super(identifier, dependencyResolver, oldModule, oldInstance);
     }
 

@@ -8,38 +8,42 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class TackerError {
 
-    private Error TackerError;
+    @SerializedName("TackerError")
+    private Error tackerError;
 
     // used by GSON
     private TackerError() {}
 
     public TackerError(Error err) {
-        this.TackerError = err;
+        this.tackerError = err;
     }
 
     public String getMessage() {
-        return TackerError.getMessage();
+        return tackerError.getMessage();
     }
 
     public String getType() {
-        return TackerError.getType();
+        return tackerError.getType();
     }
 
     public String getDetail() {
-        return TackerError.getDetail();
+        return tackerError.getDetail();
     }
 
     public Error getError() {
-        return TackerError;
+        return tackerError;
     }
 
     @Override
     public String toString() {
-        if (this.TackerError != null)
+        if (this.tackerError != null) {
             return String.format("%s - %s: %s", getError().getType(), getError().getMessage(), getError().getDetail());
-        else
+        } else {
             return super.toString();
+        }
     }
 }

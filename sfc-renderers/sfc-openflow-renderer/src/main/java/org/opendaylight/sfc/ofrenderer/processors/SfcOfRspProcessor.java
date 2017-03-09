@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Vxlan;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
@@ -78,6 +79,8 @@ public class SfcOfRspProcessor {
 
         this.rspTransportProcessors.put(getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshVxgpe());
+        this.rspTransportProcessors.put(getTransportEncapName(Vxlan.class.getName(), Transport.class.getName()),
+                new SfcRspProcessorVxlan());
         this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshEth());
         this.rspTransportProcessors.put(getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),

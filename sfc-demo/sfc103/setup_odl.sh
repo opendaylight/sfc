@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup sfc from pre-build. If DIST_URL is null, build sfc from scratch
-DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.1-SNAPSHOT/
+DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.3-SNAPSHOT/
 
 function install_packages {
     sudo apt-get install npm vim git git-review diffstat bridge-utils -y

@@ -293,7 +293,7 @@ def create_sf(sfname):
     for data_plane_locator in data_plane_locator_list:
         if ("ip" in data_plane_locator) and ("port" in data_plane_locator):
             sf_port = data_plane_locator['port']
-            _, sf_type = (local_sf_topo[sfname]['type']).split(':')
+            _, _, sf_type = (local_sf_topo[sfname]['type']).split(':')
             sf_ip = data_plane_locator['ip']
             # TODO: We need more checks to make sure IP in locator actually
             # corresponds to one of the existing interfaces in the system

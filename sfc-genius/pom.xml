@@ -25,11 +25,6 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.genius</groupId>
-      <artifactId>itm-api</artifactId>
-      <version>${genius.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.genius</groupId>
       <artifactId>mdsalutil-api</artifactId>
       <version>${genius.version}</version>
     </dependency>

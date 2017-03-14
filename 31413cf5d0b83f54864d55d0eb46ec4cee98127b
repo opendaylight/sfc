@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_8f258a5e",
+        "filename": "sfc-model/src/main/yang/service-function-type.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2017-03-14T16:32:35Z",
+      "side": 1,
+      "message": "should this be lowercase?",
+      "revId": "31413cf5d0b83f54864d55d0eb46ec4cee98127b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

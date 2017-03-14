@@ -17,8 +17,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
@@ -33,7 +32,7 @@ public class SfcOfRendererDataListenerTest {
     private static final long SLEEP = 100; // milliseconds to sleep after
                                             // onDataChanged is called.
     private final SfcOfRendererDataListener sfcOfRendererDataListener;
-    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcFlowProgrammerBase sfcOfFlowProgrammer;
 
     public SfcOfRendererDataListenerTest() {
         LOG.info("SfcOfRendererDataListenerTest constructor");

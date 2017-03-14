@@ -17,13 +17,18 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcMplsFlowProgrammerImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcNshFlowProgrammerImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOpenFlowConfig;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcVlanFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -47,13 +52,13 @@ import org.slf4j.LoggerFactory;
 
 public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
-    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private final SfcOfBaseProviderUtils sfcOfProviderUtils;
     private final SfcSynchronizer sfcSynchronizer;
     private final Map<NodeId, Boolean> sffInitialized;
     private final OperDsUpdateHandlerInterface operDsHandler;
     private final Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
     private final SfcGeniusRpcClient theGeniusRpcClient;
+    private final SfcOfFlowWriterImpl sfcOfFlowWriterImpl;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /*
@@ -65,10 +70,10 @@ public class SfcOfRspProcessor {
     private static final String LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY = LogicalInterface.class.getName()
             + TRANSPORT_ENCAP_SEPARATOR_STRING + Nsh.class.getName();
 
-    public SfcOfRspProcessor(SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
+    public SfcOfRspProcessor(SfcOfFlowWriterImpl sfcOfFlowWriterImpl, SfcOpenFlowConfig sfcOfConfig,
             SfcOfBaseProviderUtils sfcOfProviderUtils, SfcSynchronizer sfcSynchronizer,
             RpcProviderRegistry rpcProviderRegistry, DataBroker dataBroker) {
-        this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
+        this.sfcOfFlowWriterImpl = sfcOfFlowWriterImpl;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<>();
@@ -76,17 +81,35 @@ public class SfcOfRspProcessor {
         this.operDsHandler = new OperDsUpdateHandlerLSFFImpl(dataBroker);
         this.rspTransportProcessors = new HashMap<>();
 
+        // Create the different RspProcessors and FlowProgrammers and connect them accordingly
+        SfcRspProcessorNshVxgpe nshVxgpeRspProcessor = new SfcRspProcessorNshVxgpe();
+        SfcRspProcessorNshEth nshEthRspProcessor = new SfcRspProcessorNshEth();
+        SfcRspProcessorLogicalSff logicalSffRspProcessor = new SfcRspProcessorLogicalSff(getGeniusRpcClient(),
+                getOperDsHandler());
+        SfcNshFlowProgrammerImpl  nshFlowProgrammer  = new SfcNshFlowProgrammerImpl(sfcOfFlowWriterImpl, sfcOfConfig);
+        nshVxgpeRspProcessor.setFlowProgrammer(nshFlowProgrammer);
+        nshEthRspProcessor.setFlowProgrammer(nshFlowProgrammer);
+        logicalSffRspProcessor.setFlowProgrammer(nshFlowProgrammer);
+
+        SfcVlanFlowProgrammerImpl vlanFlowProgrammer = new SfcVlanFlowProgrammerImpl(sfcOfFlowWriterImpl, sfcOfConfig);
+        SfcRspProcessorVlan vlanRspProcessor = new SfcRspProcessorVlan();
+        vlanRspProcessor.setFlowProgrammer(vlanFlowProgrammer);
+
+        SfcMplsFlowProgrammerImpl mplsFlowProgrammer = new SfcMplsFlowProgrammerImpl(sfcOfFlowWriterImpl, sfcOfConfig);
+        SfcRspProcessorMpls mplsRspProcessor = new SfcRspProcessorMpls();
+        mplsRspProcessor.setFlowProgrammer(mplsFlowProgrammer);
+        mplsRspProcessor.setVlanFlowProgrammer(vlanFlowProgrammer);
+
+        // Configure the RspTransportProcessors with their respective encap/transport keys
         this.rspTransportProcessors.put(getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
-                new SfcRspProcessorNshVxgpe());
+                nshVxgpeRspProcessor);
         this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Nsh.class.getName()),
-                new SfcRspProcessorNshEth());
+                nshEthRspProcessor);
         this.rspTransportProcessors.put(getTransportEncapName(Mpls.class.getName(), Transport.class.getName()),
-                new SfcRspProcessorMpls());
+                mplsRspProcessor);
         this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Transport.class.getName()),
-                new SfcRspProcessorVlan());
-        this.rspTransportProcessors.put(LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY,
-                new SfcRspProcessorLogicalSff(getGeniusRpcClient(), getOperDsHandler()));
-        rspTransportProcessors.forEach((key, value) -> value.setFlowProgrammer(sfcOfFlowProgrammer));
+                vlanRspProcessor);
+        this.rspTransportProcessors.put(LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY, logicalSffRspProcessor);
         rspTransportProcessors.forEach((key, value) -> value.setSfcProviderUtils(sfcOfProviderUtils));
     }
 
@@ -110,6 +133,7 @@ public class SfcOfRspProcessor {
             //
             SffGraph sffGraph = populateSffGraph(rsp);
             SfcRspTransportProcessorBase transportProcessor = getTransportProcessor(sffGraph, rsp);
+            SfcFlowProgrammerBase sfcFlowProgrammer = transportProcessor.getFlowProgrammer();
 
             //
             // Populate the SFF ingress and egress DPLs from the sffGraph
@@ -127,7 +151,7 @@ public class SfcOfRspProcessor {
             //
             SffGraph.SffGraphEntry entry = null;
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
-            sfcOfFlowProgrammer.setTableIndexMapper(transportProcessor.getTableIndexMapper().isPresent()
+            sfcFlowProgrammer.setTableIndexMapper(transportProcessor.getTableIndexMapper().isPresent()
                     ? transportProcessor.getTableIndexMapper().get()
                     : null);
             while (sffGraphIter.hasNext()) {
@@ -135,9 +159,9 @@ public class SfcOfRspProcessor {
                 LOG.debug("build flows of entry: {}", entry);
                 // The flows created by initializeSff dont belong to any
                 // particular RSP
-                sfcOfFlowProgrammer.setFlowRspId(OpenflowConstants.SFC_FLOWS);
+                sfcFlowProgrammer.setFlowRspId(OpenflowConstants.SFC_FLOWS);
                 initializeSff(entry, transportProcessor);
-                sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
+                sfcFlowProgrammer.setFlowRspId(rsp.getPathId());
                 configureTransportIngressFlows(entry, sffGraph, transportProcessor);
                 configurePathMapperFlows(entry, sffGraph, transportProcessor);
                 configureNextHopFlows(entry, sffGraph, transportProcessor);
@@ -145,7 +169,7 @@ public class SfcOfRspProcessor {
             }
 
             // Flush the flows to the data store
-            this.sfcOfFlowProgrammer.flushFlows();
+            this.sfcOfFlowWriterImpl.flushFlows();
 
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
@@ -157,7 +181,7 @@ public class SfcOfRspProcessor {
         } finally {
             // If there were any errors, purge any remaining flows so they're
             // not written
-            this.sfcOfFlowProgrammer.purgeFlows();
+            this.sfcOfFlowWriterImpl.purgeFlows();
             sfcSynchronizer.unlock();
             sfcOfProviderUtils.removeRsp(rsp.getPathId());
         }
@@ -170,14 +194,17 @@ public class SfcOfRspProcessor {
      *            - the Rendered Service Path to delete
      */
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
-        Set<NodeId> clearedSffNodeIDs = sfcOfFlowProgrammer.deleteRspFlows(rsp.getPathId());
+        sfcOfFlowWriterImpl.deleteRspFlows(rsp.getPathId());
+        Set<NodeId> clearedSffNodeIDs = sfcOfFlowWriterImpl.clearSffsIfNoRspExists();
+
         for (NodeId sffNodeId : clearedSffNodeIDs) {
             setSffInitialized(sffNodeId, false);
         }
 
+        sfcOfFlowWriterImpl.deleteFlowSet();
+
         // not necessary to build a transport processor; simply update SFF state
-        // if the RSP
-        // being deleted contains dpnid information (asynchronously)
+        // if the RSP being deleted contains dpnid information (asynchronously)
         getOperDsHandler().onRspDeletion(rsp);
     }
 
@@ -532,6 +559,8 @@ public class SfcOfRspProcessor {
             throw new SfcRenderingException("initializeSff SFF [" + entry.getDstSff().getValue() + "] does not exist");
         }
 
+        SfcFlowProgrammerBase flowProgrammerBase = transportProcessor.getFlowProgrammer();
+
         NodeId sffNodeId = new NodeId(sffNodeName);
         if (!getSffInitialized(sffNodeId)) {
             LOG.debug("Initializing SFF [{}] node [{}]", entry.getDstSff().getValue(), sffNodeName);
@@ -539,16 +568,16 @@ public class SfcOfRspProcessor {
             /* For OVS DPDK, add default NORMAL action flows */
             Long outputPort = SfcOvsUtil.getDpdkOfPort(sffNodeName, null);
             if (outputPort != null) {
-                this.sfcOfFlowProgrammer.configureClassifierTableDpdkOutput(sffNodeName, outputPort);
-                this.sfcOfFlowProgrammer.configureClassifierTableDpdkInput(sffNodeName, outputPort);
+                flowProgrammerBase.configureClassifierTableDpdkOutput(sffNodeName, outputPort);
+                flowProgrammerBase.configureClassifierTableDpdkInput(sffNodeName, outputPort);
             }
 
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureNextHopTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
+            flowProgrammerBase.configureTransportIngressTableMatchAny(sffNodeName);
+            flowProgrammerBase.configurePathMapperTableMatchAny(sffNodeName);
+            flowProgrammerBase.configurePathMapperAclTableMatchAny(sffNodeName);
+            flowProgrammerBase.configureNextHopTableMatchAny(sffNodeName);
+            flowProgrammerBase.configureTransportEgressTableMatchAny(sffNodeName);
 
             setSffInitialized(sffNodeId, true);
         }

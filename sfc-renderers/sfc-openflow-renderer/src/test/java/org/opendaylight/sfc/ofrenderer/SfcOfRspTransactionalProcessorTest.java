@@ -33,8 +33,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -78,7 +77,7 @@ public class SfcOfRspTransactionalProcessorTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspTransactionalProcessorTest.class);
     private final SfcOfRspProcessor sfcOfRspProcessor;
     private final RspBuilder rspBuilder;
-    private final SfcOfFlowProgrammerInterface flowProgrammerTestMock;
+    private final SfcFlowProgrammerBase flowProgrammerTestMock;
     private final SfcOfProviderUtilsTestMock sfcUtilsTestMock;
     private final List<SftTypeName> sfTypes;
     private final List<SftTypeName> serviceFunctionChain1;

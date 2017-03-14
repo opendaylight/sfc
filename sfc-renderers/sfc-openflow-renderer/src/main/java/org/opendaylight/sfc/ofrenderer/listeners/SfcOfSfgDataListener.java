@@ -15,13 +15,15 @@ import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOpenFlowConfig;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcSfgFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionGroupAlgAPI;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -43,8 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class has will be notified when changes are mad to Service function
- * group.
+ * This class will be notified when changes are mad to Service function group.
  *
  * @author Shlomi Alfasi (shlomi.alfasi@contextream.com)
  * @version 0.1
@@ -52,14 +53,14 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
 
-    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcSfgFlowProgrammerImpl sfcOfFlowProgrammer;
     private final SfcOfBaseProviderUtils sfcOfProviderUtils;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfSfgDataListener.class);
 
-    public SfcOfSfgDataListener(DataBroker dataBroker, SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
-            SfcOfBaseProviderUtils sfcOfProviderUtils) {
-        this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
+    public SfcOfSfgDataListener(DataBroker dataBroker, SfcOfFlowWriterImpl sfcOfFlowWriterImpl,
+            SfcOpenFlowConfig sfcOfConfig, SfcOfBaseProviderUtils sfcOfProviderUtils) {
+        this.sfcOfFlowProgrammer = new SfcSfgFlowProgrammerImpl(sfcOfFlowWriterImpl, sfcOfConfig);
         this.sfcOfProviderUtils = sfcOfProviderUtils;
 
         setDataBroker(dataBroker);

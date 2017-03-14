@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOpenFlowConfig;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
@@ -34,16 +34,16 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
     private static final int MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL = 2;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRendererDataListener.class);
-    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
+    private final SfcOpenFlowConfig sfcOfConfig;
     private final SfcSynchronizer sfcSynchronizer;
     private final ExecutorService threadExecutor;
 
-    public SfcOfRendererDataListener(DataBroker dataBroker, SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
+    public SfcOfRendererDataListener(DataBroker dataBroker, SfcOpenFlowConfig sfcOfConfig,
             SfcSynchronizer sfcSynchronizer) {
         setDataBroker(dataBroker);
         setIID(InstanceIdentifier.builder(SfcOfRendererConfig.class).build());
         registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
-        this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
+        this.sfcOfConfig = sfcOfConfig;
         this.sfcSynchronizer = sfcSynchronizer;
         threadExecutor = Executors.newSingleThreadExecutor();
     }
@@ -76,7 +76,7 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
      *            the configuration details
      */
     private void processConfig(SfcOfRendererConfig config) {
-        if (verifyMaxTableId(config.getSfcOfTableOffset(), this.sfcOfFlowProgrammer.getMaxTableOffset()) == null) {
+        if (verifyMaxTableId(config.getSfcOfTableOffset(), this.sfcOfConfig.getMaxTableOffset()) == null) {
             return;
         }
 
@@ -102,10 +102,10 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
         // would be invalid
         if (config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset()
                 && config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset()
-                        + this.sfcOfFlowProgrammer.getMaxTableOffset()) {
+                        + this.sfcOfConfig.getMaxTableOffset()) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}] cant be in the SFC table range [{}..{}]",
                     config.getSfcOfAppEgressTableOffset(), config.getSfcOfTableOffset(),
-                    config.getSfcOfTableOffset() + this.sfcOfFlowProgrammer.getMaxTableOffset());
+                    config.getSfcOfTableOffset() + this.sfcOfConfig.getMaxTableOffset());
 
             return;
         }
@@ -157,8 +157,8 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
         public void run() {
             try {
                 sfcSynchronizer.lock();
-                sfcOfFlowProgrammer.setTableBase(this.sfcOffsetTable);
-                sfcOfFlowProgrammer.setTableEgress(this.sfcAppEgressTable);
+                sfcOfConfig.setTableBase(this.sfcOffsetTable);
+                sfcOfConfig.setTableEgress(this.sfcAppEgressTable);
 
                 LOG.info("UpdateOpenFlowTableOffsets complete tableOffset [{}] egressTable [{}]", this.sfcOffsetTable,
                         this.sfcAppEgressTable);

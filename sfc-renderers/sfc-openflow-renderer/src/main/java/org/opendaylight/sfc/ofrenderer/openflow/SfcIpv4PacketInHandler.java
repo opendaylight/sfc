@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
@@ -51,18 +52,33 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
     private static final int DEFAULT_MAX_BUFFER_TIME = 60000; // 60 milliseconds
     private static final int DEFAULT_PACKET_COUNT_PURGE = 100;
 
-    private final SfcOfFlowProgrammerImpl flowProgrammer;
     private final Map<String, Long> pktInBuffer;
+    private SfcMacFlowProgrammerImpl flowProgrammer;
     private int maxBufferTime;
     private int packetCountPurge;
     private int packetCount;
 
-    public SfcIpv4PacketInHandler(SfcOfFlowProgrammerImpl flowProgrammer) {
+    public SfcIpv4PacketInHandler() {
+        this.flowProgrammer = null;
+        this.pktInBuffer = new HashMap<>();
+        this.maxBufferTime = DEFAULT_MAX_BUFFER_TIME;
+        this.packetCountPurge = DEFAULT_PACKET_COUNT_PURGE;
+        this.packetCount = 0;
+    }
+
+    public SfcIpv4PacketInHandler(SfcOfFlowWriterImpl sfcFlowWriter, SfcOpenFlowConfig sfcOfConfig) {
+        this.flowProgrammer = new SfcMacFlowProgrammerImpl(sfcFlowWriter, sfcOfConfig);
+        this.pktInBuffer = new HashMap<>();
+        this.maxBufferTime = DEFAULT_MAX_BUFFER_TIME;
+        this.packetCountPurge = DEFAULT_PACKET_COUNT_PURGE;
+        this.packetCount = 0;
+    }
+
+    public SfcMacFlowProgrammerImpl getFlowProgrammer() {
+        return flowProgrammer;
+    }
+    public void setFlowProgrammer(SfcMacFlowProgrammerImpl flowProgrammer) {
         this.flowProgrammer = flowProgrammer;
-        pktInBuffer = new HashMap<>();
-        maxBufferTime = DEFAULT_MAX_BUFFER_TIME;
-        packetCountPurge = DEFAULT_PACKET_COUNT_PURGE;
-        packetCount = 0;
     }
 
     public int getMaxBufferTime() {

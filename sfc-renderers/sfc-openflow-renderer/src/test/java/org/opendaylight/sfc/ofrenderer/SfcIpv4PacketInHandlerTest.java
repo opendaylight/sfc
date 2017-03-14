@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import org.junit.Test;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcMacFlowProgrammerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,13 +38,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public class SfcIpv4PacketInHandlerTest {
 
     SfcIpv4PacketInHandler pktInHandler;
-    SfcOfFlowProgrammerImpl flowProgrammerMock;
+    SfcMacFlowProgrammerImpl flowProgrammerMock;
 
     public SfcIpv4PacketInHandlerTest() {
-        this.flowProgrammerMock = mock(SfcOfFlowProgrammerImpl.class);
+        this.flowProgrammerMock = mock(SfcMacFlowProgrammerImpl.class);
         when(this.flowProgrammerMock.compareClassificationTableCookie((FlowCookie) anyObject())).thenReturn(true);
 
-        this.pktInHandler = new SfcIpv4PacketInHandler(this.flowProgrammerMock);
+        this.pktInHandler = new SfcIpv4PacketInHandler();
+        this.pktInHandler.setFlowProgrammer(this.flowProgrammerMock);
     }
 
     @Test

@@ -22,7 +22,6 @@ import com.google.common.net.InetAddresses;
 import java.util.List;
 
 import org.junit.Test;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;

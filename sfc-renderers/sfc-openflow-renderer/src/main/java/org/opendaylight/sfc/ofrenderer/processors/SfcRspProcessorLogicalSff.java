@@ -14,7 +14,8 @@ import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcNshFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
@@ -64,11 +65,11 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         // provides Genius mapping class with the tables it uses for each
         // function
         SfcTableIndexMapperBuilder builder = new SfcTableIndexMapperBuilder();
-        builder.setTransportIngressTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        builder.setPathMapperTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER);
-        builder.setPathMapperAclTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER_ACL);
-        builder.setNextHopTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        builder.setTransportEgressTable(SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        builder.setTransportIngressTable(SfcFlowProgrammerBase.TABLE_INDEX_TRANSPORT_INGRESS);
+        builder.setPathMapperTable(SfcFlowProgrammerBase.TABLE_INDEX_PATH_MAPPER);
+        builder.setPathMapperAclTable(SfcFlowProgrammerBase.TABLE_INDEX_PATH_MAPPER_ACL);
+        builder.setNextHopTable(SfcFlowProgrammerBase.TABLE_INDEX_NEXT_HOP);
+        builder.setTransportEgressTable(SfcFlowProgrammerBase.TABLE_INDEX_TRANSPORT_EGRESS);
 
         tableIndexMapper = builder.build();
         this.sfcGeniusRpcClient = sfcGeniusRpcClient;
@@ -97,7 +98,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
-        this.sfcFlowProgrammer.configureNshVxgpeTransportIngressFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshVxgpeTransportIngressFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
                 entry.getPathId(), entry.getServiceIndex());
     }
@@ -142,7 +143,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
         }
         LOG.debug("configureNextHopFlow from SFF to SF, SrcDpnId: {}, srcSfMac:{}, DstDpnId: {}, dstSfMac:{}, nsi:{}",
                 entry.getSrcDpnId(), srcSfMac, entry.getDstDpnId(), dstSfMac, entry.getServiceIndex());
-        this.sfcFlowProgrammer.configureNshEthNextHopFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
                 srcSfMac.get().getValue(), dstSfMac.get().getValue(), entry.getPathId(), entry.getServiceIndex());
     }
@@ -215,7 +216,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                     + " egress actions for logical interface [" + sfLogicalInterface + "] (sf:" + sfDst + ")");
         }
-        sfcFlowProgrammer.configureNshEthTransportEgressFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthTransportEgressFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
                 entry.getPathId(), entry.getServiceIndex(), actionList.get());
     }
@@ -250,7 +251,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]");
             }
 
-            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName, nsp, nsi, macAddress.get());
+            ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthLastHopTransportEgressFlow(
+                    sffNodeName, nsp, nsi, macAddress.get());
         } else {
             LOG.debug("configureSffTransportEgressFlow: called for non-final graph entry");
             if (entry.isIntraLogicalSFFEntry()) {
@@ -285,7 +287,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                         actionList.get().size()));
 
                 // 4, write those actions
-                this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(sffNodeName, nsp, nsi, actionList.get());
+                ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthTransportEgressFlow(
+                        sffNodeName, nsp, nsi, actionList.get());
             }
         }
     }

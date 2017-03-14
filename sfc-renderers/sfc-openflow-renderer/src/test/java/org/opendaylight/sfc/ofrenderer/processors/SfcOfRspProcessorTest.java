@@ -27,8 +27,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.sfc.ofrenderer.RspBuilder;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
@@ -65,7 +64,7 @@ public class SfcOfRspProcessorTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessorTest.class);
     SfcOfRspProcessor sfcOfRspProcessor;
     RspBuilder rspBuilder;
-    SfcOfFlowProgrammerInterface flowProgrammerTestMoc;
+    SfcFlowProgrammerBase flowProgrammerTestMoc;
     SfcOfProviderUtilsTestMock sfcUtilsTestMock;
     OperDsUpdateHandlerInterface operDsHandler;
     List<SftTypeName> sfTypes;

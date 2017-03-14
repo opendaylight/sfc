@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SfcRspTransportProcessorBase {
     protected static final Logger LOG = LoggerFactory.getLogger(SfcRspTransportProcessorBase.class);
-    protected SfcOfFlowProgrammerInterface sfcFlowProgrammer;
+    protected SfcFlowProgrammerBase sfcFlowProgrammer;
     protected SfcOfBaseProviderUtils sfcProviderUtils;
     protected RenderedServicePath rsp;
     protected SffGraph sffGraph;
@@ -51,7 +51,7 @@ public abstract class SfcRspTransportProcessorBase {
     }
 
     public SfcRspTransportProcessorBase(RenderedServicePath rsp, SfcOfBaseProviderUtils sfcProviderUtils,
-            SfcOfFlowProgrammerInterface sfcFlowProgrammer, SffGraph sffGraph) {
+            SfcFlowProgrammerBase sfcFlowProgrammer, SffGraph sffGraph) {
         this.rsp = rsp;
         this.sfcProviderUtils = sfcProviderUtils;
         this.sfcFlowProgrammer = sfcFlowProgrammer;
@@ -66,7 +66,7 @@ public abstract class SfcRspTransportProcessorBase {
         this.rsp = rsp;
     }
 
-    public void setFlowProgrammer(SfcOfFlowProgrammerInterface sfcFlowProgrammer) {
+    public void setFlowProgrammer(SfcFlowProgrammerBase sfcFlowProgrammer) {
         this.sfcFlowProgrammer = sfcFlowProgrammer;
     }
 
@@ -76,6 +76,10 @@ public abstract class SfcRspTransportProcessorBase {
 
     public void setSffGraph(SffGraph sffGraph) {
         this.sffGraph = sffGraph;
+    }
+
+    public SfcFlowProgrammerBase getFlowProgrammer() {
+        return this.sfcFlowProgrammer;
     }
 
     //

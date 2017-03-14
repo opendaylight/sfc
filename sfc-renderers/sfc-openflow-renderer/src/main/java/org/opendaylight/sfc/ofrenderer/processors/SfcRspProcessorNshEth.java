@@ -9,7 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
+import org.opendaylight.sfc.ofrenderer.openflow.SfcNshFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -69,7 +69,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
     public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         // Even though this calls configureNshVxgpeTransportIngressFlow,
         // it only matches on NSH NSP, nothing Vxgpe.
-        this.sfcFlowProgrammer.configureNshVxgpeTransportIngressFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshVxgpeTransportIngressFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()), entry.getPathId(),
                 entry.getServiceIndex());
     }
@@ -133,7 +133,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
         }
         String dstMac = ((MacAddressLocator) dstSfDpl.getLocatorType()).getMac().getValue();
 
-        this.sfcFlowProgrammer.configureNshEthNextHopFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()), srcMac, dstMac,
                 entry.getPathId(), entry.getServiceIndex());
     }
@@ -177,7 +177,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
             return;
         }
 
-        this.sfcFlowProgrammer.configureNshEthNextHopFlow(
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthNextHopFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId()), srcSfMac.getValue(),
                 dstSfMac.getValue(), entry.getPathId(), entry.getServiceIndex());
     }
@@ -228,8 +228,8 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
             portStr = String.valueOf(sffPort);
         }
 
-        this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(sffNodeName, entry.getPathId(),
-                entry.getServiceIndex(), portStr);
+        ((SfcNshFlowProgrammerImpl) this.sfcFlowProgrammer).configureNshEthTransportEgressFlow(sffNodeName,
+                entry.getPathId(), entry.getServiceIndex(), portStr);
     }
 
     /*
@@ -270,7 +270,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rsp.getTransportType());
 
-            SffName targetSffName = (entry.getDstSff().equals(SffGraph.EGRESS)) ? entry.getSrcSff() : entry.getDstSff();
+            SffName targetSffName = entry.getDstSff().equals(SffGraph.EGRESS) ? entry.getSrcSff() : entry.getDstSff();
             ServiceFunctionForwarder sff = sfcProviderUtils.getServiceFunctionForwarder(targetSffName,
                     entry.getPathId());
             SffDataPlaneLocatorName sffEgressDplName = sffGraph.getSffEgressDpl(sff.getName(), entry.getPathId());

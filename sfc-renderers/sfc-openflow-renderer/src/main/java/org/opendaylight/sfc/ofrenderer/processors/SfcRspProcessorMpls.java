@@ -9,7 +9,8 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
+import org.opendaylight.sfc.ofrenderer.openflow.SfcMplsFlowProgrammerImpl;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcVlanFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -24,6 +25,12 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     private static final int MPLS_LABEL_INCR_HOP = 1;
     private static final int MPLS_LABEL_INCR_RSP = 100;
     private static int lastMplsLabel;
+    private SfcVlanFlowProgrammerImpl vlanFlowProgrammer;
+
+    // There are a few cases where the Mpls processor uses VLAN flows
+    void setVlanFlowProgrammer(SfcVlanFlowProgrammerImpl vlanFlowProgrammer) {
+        this.vlanFlowProgrammer = vlanFlowProgrammer;
+    }
 
     /**
      * Set the RSP path egress DPL and SFF Hop Ingress DPLs for the VLAN
@@ -77,7 +84,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     public void configureSfTransportIngressFlow(SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         // Even though this is MPLS, the SFs will be VLAN
-        this.sfcFlowProgrammer.configureVlanTransportIngressFlow(sffNodeName);
+        this.vlanFlowProgrammer.configureVlanTransportIngressFlow(sffNodeName);
     }
 
     /**
@@ -89,7 +96,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        this.sfcFlowProgrammer.configureMplsTransportIngressFlow(sffNodeName);
+        ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMplsTransportIngressFlow(sffNodeName);
     }
 
     //
@@ -109,7 +116,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         Integer vlanTag = ((MacAddressLocator) sfDpl.getLocatorType()).getVlanId();
         if (vlanTag != null) {
-            this.sfcFlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, entry.getPathId(), true);
+            this.vlanFlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, entry.getPathId(), true);
         }
     }
 
@@ -125,7 +132,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     public void configureSffPathMapperFlow(SffGraphEntry entry, DataPlaneLocator hopDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel();
-        this.sfcFlowProgrammer.configureMplsPathMapperFlow(sffNodeName, mplsLabel, entry.getPathId(), false);
+        ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMplsPathMapperFlow(
+                sffNodeName, mplsLabel, entry.getPathId(), false);
     }
 
     //
@@ -148,7 +156,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = sfcProviderUtils.getSfDplMac(dstSfDpl);
-        this.sfcFlowProgrammer.configureMacNextHopFlow(sffNodeName, entry.getPathId(), srcMac, dstMac);
+        ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMacNextHopFlow(
+                sffNodeName, entry.getPathId(), srcMac, dstMac);
     }
 
     /**
@@ -168,7 +177,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
         String srcMac = sfcProviderUtils.getSfDplMac(srcSfDpl);
         String dstMac = sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
-        this.sfcFlowProgrammer.configureMacNextHopFlow(sffNodeName, entry.getPathId(), srcMac, dstMac);
+        ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMacNextHopFlow(
+                sffNodeName, entry.getPathId(), srcMac, dstMac);
     }
 
     /**
@@ -188,7 +198,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
         String srcMac = sfcProviderUtils.getSfDplMac(srcSfDpl);
         String dstMac = sfcProviderUtils.getSfDplMac(dstSfDpl);
-        this.sfcFlowProgrammer.configureMacNextHopFlow(sffNodeName, entry.getPathId(), srcMac, dstMac);
+        this.vlanFlowProgrammer.configureMacNextHopFlow(sffNodeName, entry.getPathId(), srcMac, dstMac);
     }
 
     /**
@@ -207,7 +217,8 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
-        this.sfcFlowProgrammer.configureMacNextHopFlow(sffNodeName, entry.getPathId(), srcMac, dstMac);
+        ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMacNextHopFlow(
+                sffNodeName, entry.getPathId(), srcMac, dstMac);
     }
 
     //
@@ -253,12 +264,12 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
             // If the SF is a TCP Proxy, we need this additional flow for the
             // SF:
             // - a flow that will also check for TCP Syn and do a PktIn
-            this.sfcFlowProgrammer.configureArpTransportIngressFlow(sffNodeName, srcMac);
+            ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureArpTransportIngressFlow(sffNodeName, srcMac);
             doPktIn = true;
         }
 
-        this.sfcFlowProgrammer.configureVlanSfTransportEgressFlow(sffNodeName, srcMac, dstMac, vlanTag, srcOfsPortStr,
-                entry.getPathId(), doPktIn);
+        this.vlanFlowProgrammer.configureVlanSfTransportEgressFlow(
+                sffNodeName, srcMac, dstMac, vlanTag, srcOfsPortStr, entry.getPathId(), doPktIn);
     }
 
     /**
@@ -287,11 +298,11 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = dstSffDpl == null ? null : sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-            this.sfcFlowProgrammer.configureMplsLastHopTransportEgressFlow(sffNodeName, srcMac, dstMac, mplsLabel,
-                    srcOfsPortStr, entry.getPathId());
+            ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMplsLastHopTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPortStr, entry.getPathId());
         } else {
-            this.sfcFlowProgrammer.configureMplsTransportEgressFlow(sffNodeName, srcMac, dstMac, mplsLabel,
-                    srcOfsPortStr, entry.getPathId());
+            ((SfcMplsFlowProgrammerImpl) this.sfcFlowProgrammer).configureMplsTransportEgressFlow(
+                    sffNodeName, srcMac, dstMac, mplsLabel, srcOfsPortStr, entry.getPathId());
         }
     }
 }

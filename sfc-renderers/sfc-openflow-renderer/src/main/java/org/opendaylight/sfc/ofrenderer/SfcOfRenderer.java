@@ -14,9 +14,9 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRendererDataListener;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfRspDataListener;
 import org.opendaylight.sfc.ofrenderer.listeners.SfcOfSfgDataListener;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcFlowProgrammerBase;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcIpv4PacketInHandler;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
-import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOpenFlowConfig;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
@@ -34,33 +34,45 @@ public class SfcOfRenderer implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
     private final SfcOfRspProcessor sfcOfRspProcessor;
 
-    private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private final Registration pktInRegistration;
-    private final SfcSynchronizer sfcSynchronizer;
 
+    SfcOfFlowWriterImpl sfcOfFlowWriterImpl = null;
     SfcOfRspDataListener openflowRspDataListener = null;
-    SfcOfSfgDataListener sfcOfSfgDataListener = null;
-    SfcIpv4PacketInHandler packetInHandler = null;
     SfcOfRendererDataListener sfcOfRendererListener = null;
+    SfcIpv4PacketInHandler packetInHandler = null;
+    SfcOfSfgDataListener sfcOfSfgDataListener = null;
 
     public SfcOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
             RpcProviderRegistry rpcProviderRegistry) {
         LOG.info("SfcOfRenderer starting the SfcOfRenderer plugin...");
 
-        this.sfcSynchronizer = new SfcSynchronizer();
-        SfcOfFlowWriterImpl sfcofflowwriterimpl = new SfcOfFlowWriterImpl();
-        sfcofflowwriterimpl.setDataProvider(dataBroker);
-        this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(sfcofflowwriterimpl);
+        // Handles writing Flows to the data store
+        this.sfcOfFlowWriterImpl = new SfcOfFlowWriterImpl();
+        this.sfcOfFlowWriterImpl.setDataProvider(dataBroker);
+
+        // Create a common SfcOpenFlowConfig to be used by all SFC OpenFlow entities
+        SfcOpenFlowConfig sfcOfConfig = SfcFlowProgrammerBase.createDefaultSfcOpenFlowConfig();
+
+        // Synchronizes the RspProcessor and the RendererListener
+        SfcSynchronizer sfcSynchronizer = new SfcSynchronizer();
         SfcOfBaseProviderUtils sfcOfProviderUtils = new SfcOfProviderUtils();
-        this.sfcOfRspProcessor = new SfcOfRspProcessor(sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer,
-                rpcProviderRegistry, dataBroker);
 
+        // The RspProcessor is called by the RspDataListener to process the RSP and write the corresponding flows
+        this.sfcOfRspProcessor = new SfcOfRspProcessor(this.sfcOfFlowWriterImpl, sfcOfConfig, sfcOfProviderUtils,
+                sfcSynchronizer, rpcProviderRegistry, dataBroker);
+
+        // Listens for RSP CRUD
         this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfRspProcessor);
-        this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);
-        this.sfcOfRendererListener = new SfcOfRendererDataListener(dataBroker, sfcOfFlowProgrammer, sfcSynchronizer);
 
-        this.packetInHandler = new SfcIpv4PacketInHandler((SfcOfFlowProgrammerImpl) sfcOfFlowProgrammer);
+        // Listens for SFC OpenFlow config changes, like application coexistence settings
+        this.sfcOfRendererListener = new SfcOfRendererDataListener(dataBroker, sfcOfConfig, sfcSynchronizer);
+
+        // PacketIn Handler for VLAN/MPLS transports
+        this.packetInHandler = new SfcIpv4PacketInHandler(this.sfcOfFlowWriterImpl, sfcOfConfig);
         this.pktInRegistration = notificationService.registerNotificationListener(packetInHandler);
+
+        this.sfcOfSfgDataListener = new SfcOfSfgDataListener(
+                dataBroker, this.sfcOfFlowWriterImpl, sfcOfConfig, sfcOfProviderUtils);
 
         LOG.info("SfcOfRenderer successfully started the SfcOfRenderer plugin");
     }
@@ -80,13 +92,26 @@ public class SfcOfRenderer implements AutoCloseable {
     public void close() throws Exception {
         LOG.info("SfcOfRenderer auto-closed");
         try {
-            if (sfcOfFlowProgrammer != null) {
-                sfcOfFlowProgrammer.shutdown();
+            if (this.sfcOfFlowWriterImpl != null) {
+                this.sfcOfFlowWriterImpl.shutdown();
             }
-            if (pktInRegistration != null) {
-                pktInRegistration.close();
+
+            if (this.pktInRegistration != null) {
+                this.pktInRegistration.close();
             }
-            openflowRspDataListener.close();
+
+            if (this.sfcOfRendererListener != null) {
+                this.sfcOfRendererListener.closeDataChangeListener();
+            }
+
+            if (this.openflowRspDataListener != null) {
+                this.openflowRspDataListener.close();
+            }
+
+            if (this.sfcOfSfgDataListener != null) {
+                this.sfcOfSfgDataListener.closeDataChangeListener();
+            }
+
         } finally {
             openflowRspDataListener = null;
         }

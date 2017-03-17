@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.util.openflow;
 
-public class OpenflowConstants {
+public final class OpenflowConstants {
 
     // identifies initialization flows installed in the SFFs - since they don't belong
     // to a particular NSP / RSP path ID
@@ -21,4 +21,7 @@ public class OpenflowConstants {
     public static final long ETHERTYPE_NSH = 0x894F;
 
     public static final short NSH_NP_ETH = 0x3;
+
+    private OpenflowConstants() {
+    }
 }

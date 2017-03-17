@@ -280,7 +280,7 @@ public class SfcOpenflowUtils {
      * @param match
      *            the Match object to which we want to add an EtherTypeMatch
      * @param etherType
-     *            the ethernet type
+     *            the Ethernet type
      */
     public static void addMatchEtherType(MatchBuilder match, final long etherType) {
         EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
@@ -470,7 +470,7 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchSrcIpv4(MatchBuilder match, String srcIpStr, int netmask) {
-        addMatchSrcIpv4(match, new Ipv4Prefix(srcIpStr + "/" + String.valueOf(netmask)));
+        addMatchSrcIpv4(match, new Ipv4Prefix(srcIpStr + "/" + netmask));
     }
 
     public static void addMatchSrcIpv4(MatchBuilder match, Ipv4Prefix srcIp) {
@@ -480,7 +480,7 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchDstIpv4(MatchBuilder match, String dstIpStr, int netmask) {
-        addMatchDstIpv4(match, new Ipv4Prefix(dstIpStr + "/" + String.valueOf(netmask)));
+        addMatchDstIpv4(match, new Ipv4Prefix(dstIpStr + "/" + netmask));
     }
 
     public static void addMatchDstIpv4(MatchBuilder match, Ipv4Prefix dstIp) {
@@ -510,7 +510,7 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchSrcIpv6(MatchBuilder match, String srcIpStr, int netmask) {
-        addMatchSrcIpv6(match, new Ipv6Prefix(srcIpStr + "/" + String.valueOf(netmask)));
+        addMatchSrcIpv6(match, new Ipv6Prefix(srcIpStr + "/" + netmask));
     }
 
     public static void addMatchSrcIpv6(MatchBuilder match, Ipv6Prefix srcIp) {
@@ -520,7 +520,7 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchDstIpv6(MatchBuilder match, String dstIpStr, int netmask) {
-        addMatchDstIpv6(match, new Ipv6Prefix(dstIpStr + "/" + String.valueOf(netmask)));
+        addMatchDstIpv6(match, new Ipv6Prefix(dstIpStr + "/" + netmask));
     }
 
     public static void addMatchDstIpv6(MatchBuilder match, Ipv6Prefix dstIp) {
@@ -671,7 +671,7 @@ public class SfcOpenflowUtils {
 
     public static Action createActionPktIn(final int pktLength, final int order) {
         OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(new Integer(0xffff));
+        output.setMaxLength(0xffff);
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
 
@@ -782,7 +782,7 @@ public class SfcOpenflowUtils {
 
     public static Action createActionPushMpls(int order) {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(new Integer(ETHERTYPE_MPLS_UCAST));
+        push.setEthernetType(ETHERTYPE_MPLS_UCAST);
 
         PushMplsActionCaseBuilder pushMplsCase = new PushMplsActionCaseBuilder();
         pushMplsCase.setPushMplsAction(push.build());
@@ -1043,8 +1043,8 @@ public class SfcOpenflowUtils {
         return ab.build();
     }
 
-    // Used for ARP to move the Source HW Address (Sha) to the Target HW address
-    // (Tha)
+    // Used for ARP to move the Source HW Address (SHA) to the Target HW address
+    // (THA)
     public static Action createActionNxMoveArpShaToArpThaAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
         ab.setAction(nxMoveRegAction(new SrcNxArpShaCaseBuilder().setNxArpSha(Boolean.TRUE).build(),
@@ -1628,7 +1628,7 @@ public class SfcOpenflowUtils {
 
     /*
      * Returns the string representation for a given {@link BigInteger)
-     * representing a mac address. (e.g. for the value 257, it returns
+     * representing a MAC address. (e.g. for the value 257, it returns
      * "00:00:00:00:01:01")
      *
      * @param value The BigInteger representation for the mac address

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 2015-06-23
  */
 
-public class SfcConcurrencyAPI {
+public final class SfcConcurrencyAPI {
     private static final Lock SFC_LOCK = new ReentrantLock();
     private static final Lock SFC_PATHID_LOCK = new ReentrantLock();
 

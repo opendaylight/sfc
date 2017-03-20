@@ -57,9 +57,12 @@ import org.slf4j.LoggerFactory;
  * @see org.opendaylight.sfc.provider.listeners.ServiceFunctionListener
  * @since 2014-06-30
  */
-public class SfcProviderServiceForwarderAPI {
+public final class SfcProviderServiceForwarderAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceForwarderAPI.class);
+
+    private SfcProviderServiceForwarderAPI() {
+    }
 
     /**
      * This method creates a SFF in the data store.

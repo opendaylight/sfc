@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
  *
  * @author Diego Granados (diego.jesus.granados.lopez@ericsson.com)
  */
-public class SfcDatastoreCache {
+public final class SfcDatastoreCache {
 
     /**
      * This cache stores the relationship between SFs and SF types.
@@ -65,6 +65,9 @@ public class SfcDatastoreCache {
                     return serviceFunctionTypesForChain;
                 }
             });
+
+    private SfcDatastoreCache() {
+    }
 
     public static LoadingCache<SfName, String> getSfToSfTypeCache() {
         return sfToSfTypeCache;

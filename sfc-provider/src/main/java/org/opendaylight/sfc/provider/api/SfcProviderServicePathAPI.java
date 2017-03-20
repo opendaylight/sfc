@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-06-30
  */
-public class SfcProviderServicePathAPI {
+public final class SfcProviderServicePathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
 

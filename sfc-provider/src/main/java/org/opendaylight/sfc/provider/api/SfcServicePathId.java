@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @version 0.1
  * @since 2015-08-09
  */
-public class SfcServicePathId {
+public final class SfcServicePathId {
     /*
      * We only use half of the path-id space in order to use algorithmic
      * symmetric path-id generation

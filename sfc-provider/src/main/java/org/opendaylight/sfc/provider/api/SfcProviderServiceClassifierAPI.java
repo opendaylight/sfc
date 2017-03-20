@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-11-04
  */
-public class SfcProviderServiceClassifierAPI {
+public final class SfcProviderServiceClassifierAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceClassifierAPI.class);
 
@@ -42,7 +42,6 @@ public class SfcProviderServiceClassifierAPI {
      * This method reads a classifier from DataStore.
      *
      * <p>
-     *
      * @param serviceClassifierName
      *            Classifier name
      * @return SF object or null if not found
@@ -60,5 +59,4 @@ public class SfcProviderServiceClassifierAPI {
         printTraceStop(LOG);
         return scl;
     }
-
 }

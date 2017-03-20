@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-03-20
  */
-public class SfcProviderScheduleTypeAPI {
+public final class SfcProviderScheduleTypeAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScheduleTypeAPI.class);
 

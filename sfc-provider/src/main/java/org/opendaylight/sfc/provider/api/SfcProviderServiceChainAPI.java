@@ -33,9 +33,12 @@ import org.slf4j.LoggerFactory;
  * @see org.opendaylight.sfc.provider.listeners.ServiceFunctionListener
  * @since 2014-06-30
  */
-public class SfcProviderServiceChainAPI {
+public final class SfcProviderServiceChainAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPI.class);
+
+    private SfcProviderServiceChainAPI() {
+    }
 
     /**
      * This method reads the service function chain specified by the given name

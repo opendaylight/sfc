@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-02-14
  */
-public class SfcProviderServiceFunctionGroupAPI {
+public final class SfcProviderServiceFunctionGroupAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAPI.class);
 

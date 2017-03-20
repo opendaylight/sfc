@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
-public class ValidationConstants {
+public final class ValidationConstants {
 
     /**
      * Yang instance identifiers.
@@ -61,4 +61,7 @@ public class ValidationConstants {
             Futures.immediateFailedCheckedFuture(SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_CONSISTENCY);
     public static final CheckedFuture<PostCanCommitStep, DataValidationFailedException> SUCCESS_CAN_COMMIT_FUTURE =
             Futures.immediateCheckedFuture(PostCanCommitStep.NOOP);
+
+    private ValidationConstants() {
+    }
 }

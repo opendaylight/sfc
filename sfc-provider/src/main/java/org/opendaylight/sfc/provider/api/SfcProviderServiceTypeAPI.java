@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @see org.opendaylight.sfc.provider.listeners.ServiceFunctionListener
  * @since 2014-06-30
  */
-public class SfcProviderServiceTypeAPI {
+public final class SfcProviderServiceTypeAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceTypeAPI.class);
 

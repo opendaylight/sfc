@@ -1,0 +1,16 @@
+<FindBugsFilter>
+  <Match>
+    <Or>
+      <Package name="~.*protobuff\.messages.*" />
+      <Package name="~org\.opendaylight\.yang\.gen\..*" />
+      <Package name="~org\.opendaylight\.controller\.config\.yang\.config\..*" />
+    </Or>
+  </Match>
+
+  <Match>
+    <Or>
+      <!-- Anonymous inner classes are very common in ODL. -->
+      <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+    </Or>
+  </Match>
+</FindBugsFilter>

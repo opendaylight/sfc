@@ -19,13 +19,13 @@ import org.slf4j.Logger;
  */
 public final class SfcProviderDebug {
 
-    private SfcProviderDebug() {
-    }
-
     private static boolean on = false;
     private static String traceStart = "####### Start: {}";
     private static String traceStop = "####### Stop: {}";
     private static String trace = "####### Trace: {}";
+
+    private SfcProviderDebug() {
+    }
 
     public static void setON(boolean on) {
         SfcProviderDebug.on = on;

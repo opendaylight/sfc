@@ -39,10 +39,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacChaining;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,6 +382,49 @@ public class SfcOfRspProcessorTest {
 
         verifyNoMoreInteractions(this.flowProgrammerTestMoc);
     }
+
+    @Test
+    public void testMacChainingSffSfFlowCreation() {
+        LOG.info("SfcOfRspProcessorTest testMacChainingSffFlowCreation");
+        String sffName = new String("SFF_0");
+        ServiceFunction sf =
+                rspBuilder.createServiceFunction(
+                        new SfName("SF-1"),
+                        new SffName(sffName),
+                        new SftTypeName("firewall"),
+                        Mac.class);
+        List<ServiceFunction> sfList = new ArrayList<>();
+        sfList.add(sf);
+
+        RenderedServicePath macChainRsp =
+                rspBuilder.createRspFromSfList(sfList, new SffName(sffName), Mac.class, MacChaining.class);
+        this.sfcOfRspProcessor.processRenderedServicePath(macChainRsp);
+
+        assertMatchAnyMethodsCalled(sffName);
+        // verify table index mapper setting
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+
+        // Verify calls to configureMacChainingTransportIngressFlow
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacChainingTransportIngressFlow(eq(sffName));
+
+        // Verify calls to configureMacChainingNextHopFlow
+        verify(this.flowProgrammerTestMoc, times(3)).configureMacChainingNextHopFlow(eq(sffName), anyString(),
+                anyString(), anyString(), anyBoolean());
+
+        // Verify calls to configureMacChainingSfTransportEgressFlow
+        verify(this.flowProgrammerTestMoc, times(1)).configureMacChainingSfTransportEgressFlow(
+                eq(sffName), anyString(), anyString(), anyString());
+
+        // verify flow flushing
+        verify(this.flowProgrammerTestMoc).flushFlows();
+        verify(this.flowProgrammerTestMoc).purgeFlows();
+
+        verifyNoMoreInteractions(this.flowProgrammerTestMoc);
+    }
+
 
     @Test
     public void testVlanTcpProxyFlowCreation() {

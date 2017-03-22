@@ -53,6 +53,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
@@ -298,6 +300,8 @@ public class RspBuilder {
 
         ServiceFunction sf = buildServiceFunction(sfName, sfType, getIpMgmt(), sfDpl);
         sfcUtilsTestMock.addServiceFunction(sfName, sf);
+        ServiceFunctionType sftType = buildServiceFunctionType(sf.getType(),false, false);
+        sfcUtilsTestMock.addServiceFunctionType(sf.getType(),sftType);
 
         return sf;
     }
@@ -548,5 +552,15 @@ public class RspBuilder {
                 .setServiceFunctionDictionary(dictionaryList);
 
         return sffBuilder.build();
+    }
+
+    private ServiceFunctionType buildServiceFunctionType(SftTypeName name, boolean bidirectional,
+                                                         boolean l2Transparent) {
+
+        ServiceFunctionTypeBuilder sfTypeBuilder = new ServiceFunctionTypeBuilder();
+        sfTypeBuilder.setType(name).setBidirectional(bidirectional).setL2Transparent(l2Transparent);
+
+
+        return sfTypeBuilder.build();
     }
 }

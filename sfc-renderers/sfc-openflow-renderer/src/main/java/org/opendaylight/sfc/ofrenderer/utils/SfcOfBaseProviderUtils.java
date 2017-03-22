@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
@@ -51,6 +52,8 @@ public abstract class SfcOfBaseProviderUtils {
     public abstract void removeRsp(long rspId);
 
     public abstract ServiceFunction getServiceFunction(SfName sfName, long rspId);
+
+    public abstract ServiceFunctionType getServiceFunctionType(final SfName sfName, long rspId);
 
     public abstract ServiceFunctionForwarder getServiceFunctionForwarder(SffName sffName, long rspId);
 
@@ -200,6 +203,28 @@ public abstract class SfcOfBaseProviderUtils {
         }
 
         return sfMac;
+    }
+
+    /**
+     * Return the mac address from a SFF DPL, only if its a MAC DPL.
+     *
+     * @param sfDpl the SFF DPL to process
+     * @return macAddress string or null if its not a MAC DPL
+     */
+    public String getSffDplMac(SffDataPlaneLocator sfDpl) {
+        String sffMac = null;
+
+        LocatorType sffLocatorType = sfDpl.getDataPlaneLocator().getLocatorType();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+
+        // Mac/IP and possibly VLAN
+        if (implementedInterface.equals(Mac.class)) {
+            if (((MacAddressLocator) sffLocatorType).getMac() != null) {
+                sffMac = ((MacAddressLocator) sffLocatorType).getMac().getValue();
+            }
+        }
+
+        return sffMac;
     }
 
     /**
@@ -436,4 +461,21 @@ public abstract class SfcOfBaseProviderUtils {
         return null;
     }
 
+    /**
+     * Return a named SffDataPlaneLocator on a SFF.
+     *
+     * @param sffName
+     *          The SFF name to search in
+     * @param rspId
+     *          rendered service path ID
+     * @return list of SffDataPlaneLocator or null if not found
+     */
+    public List<SffDataPlaneLocator> getSffDataPlaneLocators(SffName sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+
+        if (sff == null || sff.getSffDataPlaneLocator() == null) {
+            return null;
+        }
+        return sff.getSffDataPlaneLocator();
+    }
 }

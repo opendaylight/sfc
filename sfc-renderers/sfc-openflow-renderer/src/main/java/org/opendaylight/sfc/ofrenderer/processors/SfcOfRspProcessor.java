@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacChaining;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mpls;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
@@ -84,6 +85,8 @@ public class SfcOfRspProcessor {
                 new SfcRspProcessorMpls());
         this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), Transport.class.getName()),
                 new SfcRspProcessorVlan());
+        this.rspTransportProcessors.put(getTransportEncapName(Mac.class.getName(), MacChaining.class.getName()),
+                new SfcRspProcessorMacChaining());
         this.rspTransportProcessors.put(LOGICAL_SFF_TRANSPORT_PROCESSOR_KEY,
                 new SfcRspProcessorLogicalSff(getGeniusRpcClient(), getOperDsHandler()));
         rspTransportProcessors.forEach((key, value) -> value.setFlowProgrammer(sfcOfFlowProgrammer));

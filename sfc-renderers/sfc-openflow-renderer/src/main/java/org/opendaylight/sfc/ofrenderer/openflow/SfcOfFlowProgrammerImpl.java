@@ -89,6 +89,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private static final String INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL = "ingress_Transport_Arp_Flow";
     private static final String NEXT_HOP_FLOW_NAME_LITERAL = "nextHop";
 
+    // The 000005** cookies are for MAC Chaining Transport Egress flows
+    public static final String TRANSPORT_EGRESS_MAC_CHAINING_COOKIE = "00000501";
+
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("FFFFFFFFFFFFFFFF",
             COOKIE_BIGINT_HEX_RADIX);
@@ -473,6 +476,20 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         MatchBuilder match = new MatchBuilder();
         match.setVlanMatch(vlanBuilder.build());
+
+        FlowBuilder transportIngressFlow = configureTransportIngressFlow(match);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
+    }
+
+    /**
+     * Configure a Transport Ingress flow.
+     *
+     * @param sffNodeName - the SFF to write the flow to
+     */
+    @Override
+    public void configureMacChainingTransportIngressFlow(final String sffNodeName) {
+
+        MatchBuilder match = new MatchBuilder();
 
         FlowBuilder transportIngressFlow = configureTransportIngressFlow(match);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportIngressFlow);
@@ -864,6 +881,48 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
+     * Configure the Next Hop by matching on the virtual MAC address containing path and hop ID
+     * for MAC chaining encapsulation.
+     *
+     * @param sffNodeName
+     *              the SFF to write the flow to
+     * @param vmac
+     *              the virtual mac for this hop
+     * @param dstSfMac
+     *              destination mac of next SF
+     * @param nextVMac
+     *              next hop virtual mac
+     * @param l2Transparent
+     *              indicates if the SF do not swap MAC addresses (l2 transparent)
+     */
+    @Override
+    public void configureMacChainingNextHopFlow(final String sffNodeName, final String vmac, final String dstSfMac,
+                                                final String nextVMac, final boolean l2Transparent) {
+        MatchBuilder match = new MatchBuilder();
+        // for L2 transparent, MAC addres are not touched so match in the src MAC
+        if (l2Transparent) {
+            SfcOpenflowUtils.addMatchSrcMac(match, vmac);
+
+        // for non L2 transparent, MAC addres are reversed so match in the dest MAC
+        } else {
+            SfcOpenflowUtils.addMatchDstMac(match, vmac);
+        }
+
+        List<Action> actionList = new ArrayList<>();
+        // If the packet is going to other SFF we do not change vMAC because the hop is the same
+        if (nextVMac != null) {
+            actionList.add(SfcOpenflowUtils.createActionSetDlSrc(nextVMac, actionList.size()));
+        }
+
+        if (dstSfMac != null) {
+            actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstSfMac, actionList.size()));
+        }
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, FLOW_PRIORITY_NEXT_HOP);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
+    }
+
+    /**
      * Configure the NshVxgpe NSH Next Hop by matching on the NSH pathId and
      * index stored in the NSH header.
      *
@@ -970,6 +1029,27 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     //
     // Table 10, Transport Egress
     //
+
+    @Override
+    public void configureMacChainingSfTransportEgressFlow(final String sffNodeName, final String dstMac,
+                                                          String port, final String vmac) {
+
+        MatchBuilder match = new MatchBuilder();
+        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+        SfcOpenflowUtils.addMatchDstMac(match, dstMac);
+
+        List<Action> actionList = new ArrayList<>();
+
+        if (vmac != null) {
+            // when packets are forwarded to other SFFs we write back the virtual MAC, because it was overwritten to
+            // keep state between tables
+            actionList.add(SfcOpenflowUtils.createActionSetDlDst(vmac, actionList.size()));
+        }
+
+        FlowBuilder transportEgressFlow = configureTransportEgressFlow(
+                match, actionList, port, flowPriority, TRANSPORT_EGRESS_MAC_CHAINING_COOKIE);
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
+    }
 
     @Override
     public void configureVlanSfTransportEgressFlow(final String sffNodeName, final String srcMac, final String dstMac,

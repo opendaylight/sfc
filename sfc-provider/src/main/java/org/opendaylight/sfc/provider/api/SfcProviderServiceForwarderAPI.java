@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
@@ -484,4 +485,34 @@ public final class SfcProviderServiceForwarderAPI {
         return nonSfDpls;
     }
 
+    public static ConnectedSffDictionary getSffSffConnectedDictionary(SffName sffName, SffName dstSffName) {
+        ConnectedSffDictionary foundSffDict = null;
+
+        ServiceFunctionForwarder sff = readServiceFunctionForwarder(sffName);
+        if (sff == null || sff.getSffDataPlaneLocator() == null) {
+            return null;
+        }
+        List<ConnectedSffDictionary> sffDictList = sff.getConnectedSffDictionary();
+        if (sffDictList != null) {
+            for (ConnectedSffDictionary sffDict : sffDictList) {
+                if (sffDict.getName().getValue().equals(dstSffName.getValue())) {
+                    foundSffDict = sffDict;
+                    break;
+                }
+            }
+        }
+        return foundSffDict;
+    }
+
+    public static SffName getSffName(String nodeName) {
+
+        ServiceFunctionForwarders sffs =  readAllServiceFunctionForwarders();
+
+        for (ServiceFunctionForwarder sff : sffs.getServiceFunctionForwarder()) {
+            if (nodeName.equals(sff.getServiceNode().getValue())) {
+                return sff.getName();
+            }
+        }
+        return null;
+    }
 }

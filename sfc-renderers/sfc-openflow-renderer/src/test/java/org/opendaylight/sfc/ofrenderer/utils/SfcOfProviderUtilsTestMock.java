@@ -15,11 +15,13 @@ import java.util.Map;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,16 +31,23 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
     private Map<SfName, ServiceFunction> serviceFunctions;
     private Map<String, ServiceFunctionGroup> serviceFunctionGroups;
     private Map<SffName, ServiceFunctionForwarder> serviceFunctionForwarders;
+    private Map<SftTypeName, ServiceFunctionType> servceFunctionTypes;
+
 
     public SfcOfProviderUtilsTestMock() {
         LOG.info("SfcOfProviderUtilsTestMock constructor");
         serviceFunctions = new HashMap<>();
         serviceFunctionGroups = new HashMap<>();
         serviceFunctionForwarders = new HashMap<>();
+        servceFunctionTypes = new HashMap<>();
     }
 
     public void addServiceFunction(SfName sfName, ServiceFunction sf) {
         serviceFunctions.put(sfName, sf);
+    }
+
+    public void addServiceFunctionType(SftTypeName sftType, ServiceFunctionType sfType) {
+        servceFunctionTypes.put(sftType, sfType);
     }
 
     public void addServiceFunctionForwarder(SffName sffName, ServiceFunctionForwarder sff) {
@@ -69,6 +78,12 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
     @Override
     public ServiceFunction getServiceFunction(SfName sfName, long pathId) {
         return serviceFunctions.get(sfName);
+    }
+
+    @Override
+    public ServiceFunctionType getServiceFunctionType(SfName sfName, long pathId) {
+        ServiceFunction sf = serviceFunctions.get(sfName);
+        return servceFunctionTypes.get(sf.getType());
     }
 
     @Override

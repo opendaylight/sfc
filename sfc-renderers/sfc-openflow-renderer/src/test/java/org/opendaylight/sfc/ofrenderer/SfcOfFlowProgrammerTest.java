@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
+import org.opendaylight.sfc.util.macchaining.VirtualMacAddress;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
@@ -436,6 +437,115 @@ public class SfcOfFlowProgrammerTest {
         }
     }
 
+
+    /**
+     * Unit test to check match and action fields from mac chaining flows of no transparent SFs.
+     *
+     */
+    @Test
+    public void configureMacChainingNoTransparentSfsNextHopFlow() {
+
+
+        VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(PATH_ID, 0);
+        String vmac = hopMac.getHop(NSI).getValue();
+        String nextVmac = hopMac.getHop((short)(NSI - 1)).getValue();
+
+
+        sfcOfFlowProgrammer.configureMacChainingNextHopFlow(SFF_NAME, vmac, MAC_DST, nextVmac, false);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+
+        Match match = flowBuilder.getMatch();
+        // transparent equals false -> VMAC should be match in the destination MAC address
+        assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), vmac);
+
+        LOG.info("configureMacChainingNextHopFlow() Match DstMac: [{}]",
+                match.getEthernetMatch().getEthernetDestination().getAddress().getValue());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+
+                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+                SetFieldCase setField1 = (SetFieldCase) action.getApplyActions().getAction().get(0).getAction();
+                assertEquals(setField1.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(),
+                        nextVmac);
+                LOG.info("configureNextHopFlow() Action Set SrcMac: [{}]",
+                        setField1.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue());
+
+                SetFieldCase setField2 = (SetFieldCase) action.getApplyActions().getAction().get(1).getAction();
+                assertEquals(setField2.getSetField().getEthernetMatch()
+                        .getEthernetDestination().getAddress().getValue(), MAC_DST);
+                LOG.info("configureNextHopFlow() Action Set DstMac: [{}]",
+                        setField2.getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue());
+            }
+
+            checkGoToTable(curInstruction, SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+            LOG.info("configureNextHopFlow() Action NextTableId: [{}]",
+                    SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from mac chaining flows of transparent SFs.
+     *
+     */
+    @Test
+    public void configureMacChainingTransparentSfsNextHopFlow() {
+
+
+        VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(PATH_ID, 0);
+        String vmac = hopMac.getHop(NSI).getValue();
+        String nextVmac = hopMac.getHop((short)(NSI - 1)).getValue();
+
+
+        sfcOfFlowProgrammer.configureMacChainingNextHopFlow(SFF_NAME, vmac, MAC_DST, nextVmac, true);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+
+        Match match = flowBuilder.getMatch();
+        // transparent equals true -> VMAC should be match in the source MAC address
+        assertEquals(match.getEthernetMatch().getEthernetSource().getAddress().getValue(), vmac);
+
+        LOG.info("configureMacChainingNextHopFlow() Match DstMac: [{}]",
+                match.getEthernetMatch().getEthernetSource().getAddress().getValue());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+
+            if (curInstruction instanceof ApplyActionsCase) {
+
+                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+                SetFieldCase setField1 = (SetFieldCase) action.getApplyActions().getAction().get(0).getAction();
+                assertEquals(setField1.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(),
+                        nextVmac);
+                LOG.info("configureNextHopFlow() Action Set SrcMac: [{}]",
+                        setField1.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue());
+
+                SetFieldCase setField2 = (SetFieldCase) action.getApplyActions().getAction().get(1).getAction();
+                assertEquals(setField2.getSetField().getEthernetMatch()
+                        .getEthernetDestination().getAddress().getValue(), MAC_DST);
+                LOG.info("configureNextHopFlow() Action Set DstMac: [{}]",
+                        setField2.getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue());
+            }
+
+            checkGoToTable(curInstruction, SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+            LOG.info("configureNextHopFlow() Action NextTableId: [{}]",
+                    SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        }
+    }
+
     /**
      * Unit test to check match and action fields from flows.
      *
@@ -605,6 +715,86 @@ public class SfcOfFlowProgrammerTest {
 
                 LOG.info("configureMacTransportEgressFlow() Action SrcMac: [{}], OutputPort: [{}]",
                         setField.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(),
+                        output.getOutputAction().getOutputNodeConnector().getValue());
+            }
+        }
+    }
+
+
+    /**
+     * Unit test to check match and action fields from flows to forward packet to other SFFs.
+     *
+     */
+    @Test
+    public void configureMacChainingSffTransportEgressFlow() {
+
+        VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(PATH_ID, 0);
+        String vmac = hopMac.getHop(NSI).getValue();
+
+        sfcOfFlowProgrammer.configureMacChainingSfTransportEgressFlow(SFF_NAME, MAC_DST, PORT, vmac);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+
+        Match match = flowBuilder.getMatch();
+        assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
+
+        LOG.info("configureMacTransportEgressFlow() Match DstMac: [{}]",
+                match.getEthernetMatch().getEthernetDestination().getAddress().getValue());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+
+                SetFieldCase setField = (SetFieldCase) action.getApplyActions().getAction().get(0).getAction();
+                assertEquals(setField.getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue(),
+                        vmac);
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(1).getAction();
+                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
+
+                LOG.info("configureMacTransportEgressFlow() Action DstMac: [{}], OutputPort: [{}]",
+                        setField.getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue(),
+                        output.getOutputAction().getOutputNodeConnector().getValue());
+            }
+        }
+    }
+
+    /**
+     * Unit test to check match and action fields from flows to forward packet to SFs.
+     *
+     */
+    @Test
+    public void configureMacChainingSfTransportEgressFlow() {
+
+        sfcOfFlowProgrammer.configureMacChainingSfTransportEgressFlow(SFF_NAME, MAC_DST, PORT, null);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+
+        Match match = flowBuilder.getMatch();
+        assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
+
+        LOG.info("configureMacTransportEgressFlow() Match DstMac: [{}]",
+                match.getEthernetMatch().getEthernetDestination().getAddress().getValue());
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+            if (curInstruction instanceof ApplyActionsCase) {
+                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(0).getAction();
+                assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
+
+                LOG.info("configureMacTransportEgressFlow() Action  OutputPort: [{}]",
                         output.getOutputAction().getOutputNodeConnector().getValue());
             }
         }
@@ -1241,6 +1431,54 @@ public class SfcOfFlowProgrammerTest {
         curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
         assertTrue(curInstruction instanceof ApplyActionsCase);
         // checkGoToTable(curInstruction, TABLE_EGRESS, true);
+    }
+
+    /**
+     * Unit test to check application coexistence works for Mac Chaining flows.
+     */
+    @Test
+    public void appCoexistenceMacChaining() {
+        sfcOfFlowProgrammer.setTableBase(TABLE_BASE);
+        sfcOfFlowProgrammer.setTableEgress(TABLE_EGRESS);
+
+        // When checking the table offsets, we need to subtract 2 to compensate
+        // for:
+        // - TABLE_INDEX_CLASSIFIER=0 - which is not used for AppCoexistence
+        // - TABLE_INDEX_TRANSPORT_INGRESS=1 - which is table 0 for
+        // AppCoexistence
+        // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
+
+        // Check that configureMacChainingTransportIngressFlow() is written to the
+        // correct table
+        // Notice: TransportIngress doesn't use the offset, as it will always be
+        // table 0
+        sfcOfFlowProgrammer.configureMacChainingTransportIngressFlow(SFF_NAME);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+
+        // Check that configureMacChainingNextHopFlow() is written to the correct table
+
+        VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(PATH_ID_SMALL, 0);
+        String vmac = hopMac.getHop(NSI).getValue();
+        String nextVmac = hopMac.getHop((short)(NSI - 1)).getValue();
+
+        sfcOfFlowProgrammer.configureMacChainingNextHopFlow(SFF_NAME, vmac, MAC_DST, nextVmac, false);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP + TABLE_BASE - 2);
+        Instruction curInstruction = flowBuilder.getInstructions().getInstruction().get(1).getInstruction();
+        checkGoToTable(curInstruction, (short) (SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2),
+                true);
+
+        // Check that configureMacChainingSfTransportEgressFlow() is written
+        // to the correct table and that it does NOT go to TABLE_EGRESS
+        sfcOfFlowProgrammer.configureMacChainingSfTransportEgressFlow(SFF_NAME, MAC_DST, PORT, null);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(),
+                SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS + TABLE_BASE - 2);
+        assertEquals(flowBuilder.getInstructions().getInstruction().size(), 1);
+        curInstruction = flowBuilder.getInstructions().getInstruction().get(0).getInstruction();
+        assertTrue(curInstruction instanceof ApplyActionsCase);
     }
 
     /**

@@ -10,6 +10,7 @@ package org.opendaylight.sfc.scfofrenderer.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.opendaylight.sfc.util.macchaining.VirtualMacAddress;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -234,4 +235,139 @@ public class SfcScfOfUtils {
         return SfcOpenflowUtils.removeFlowFromDataStore(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
                 new FlowKey(new FlowId(flowKey)));
     }
+
+    /**
+     * create classifier out flow for MAC Chaining.
+     * The function returns true if successful.
+     * The function returns false if unsuccessful.
+     *
+     * @param  nodeName flow table node name
+     * @param  flowKey  flow key
+     * @param  match    flow match
+     * @param  outPort  flow out port
+     * @param  pathId   chain path ID
+     * @param  startIndex  Firt hop in the chain
+     * @return          create flow result
+     */
+    public static FlowBuilder createMacChainClassifierOutFlow(String nodeName, String flowKey, Match match,
+                                                              String outPort, Long pathId, short startIndex) {
+        int order = 0;
+
+        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
+
+        if ((nodeName == null) || (flowKey == null)) {
+            return null;
+        }
+
+        Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
+
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flowKey))
+                .setTableId(TABLE_INDEX_CLASSIFIER)
+                .setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
+                .setMatch(match)
+                .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                        .createActionsInstructionBuilder(macDst, out))
+                        .build());
+        return flowb;
+        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
+    }
+
+    /**
+     * create classifier relay flow for MAC Chaining.
+     * The function returns true if successful.
+     * The function returns false if unsuccessful.
+     *
+     * @param  nodeName flow table node name
+     * @param  flowKey  flow key
+     * @param  outPort  flow out port
+     * @param  pathId   chain path ID
+     * @param  startIndex  Firt hop in the chain
+     * @param  lastIndex   Last hop in the chain
+     * @return          create relay result
+     */
+    public static FlowBuilder createClassifierMacChainingRelayFlow(String nodeName, String flowKey, String outPort,
+                                                                   Long pathId, short startIndex, short lastIndex) {
+        int order = 0;
+
+        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
+
+        if ((nodeName == null) || (flowKey == null)) {
+            return null;
+        }
+
+        MatchBuilder mb = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchDstMac(mb, vmac.getHop(lastIndex).getValue());
+
+        Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
+
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flowKey))
+                .setTableId(TABLE_INDEX_CLASSIFIER)
+                .setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
+                .setMatch(mb.build())
+                .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                        .createActionsInstructionBuilder(macDst, out))
+                        .build());
+
+        return flowb;
+        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
+
+    }
+
+
+
+    /**
+     * create classifier out flow for MAC Chaining.
+     * The function returns true if successful.
+     * The function returns false if unsuccessful.
+     *
+     * @param  nodeName flow table node name
+     * @param  flowKey  flow key
+     * @param  outPort  flow out port
+     * @param  gwMac      Gateway MAC to recovery original MAC addresses
+     * @param  pathId     chain path ID
+     * @param  startIndex   Firt hop in the chain
+     * @return          create flow result
+     */
+    public static FlowBuilder createMacChainClassifierInFlow(String nodeName, String flowKey, String outPort,
+                                                             String gwMac, Long pathId, short startIndex) {
+        int order = 0;
+
+        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
+
+        if ((nodeName == null) || (flowKey == null)) {
+            return null;
+        }
+
+        MatchBuilder mb = new MatchBuilder();
+
+        SfcOpenflowUtils.addMatchDstMac(mb, vmac.getHop(startIndex).getValue());
+
+        //set here the gateway MAC to end the chain
+        Action macDst = SfcOpenflowUtils.createActionSetDlDst(gwMac, order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+
+        FlowBuilder flowb = new FlowBuilder();
+        flowb.setId(new FlowId(flowKey))
+                .setTableId(TABLE_INDEX_CLASSIFIER)
+                .setKey(new FlowKey(new FlowId(flowKey)))
+                .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER + 1))
+                .setMatch(mb.build())
+                .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
+                        .createActionsInstructionBuilder(macDst, out))
+                        .build());
+
+        return flowb;
+        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
+    }
+
 }

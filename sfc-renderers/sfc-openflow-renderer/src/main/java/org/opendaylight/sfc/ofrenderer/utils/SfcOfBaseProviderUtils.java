@@ -203,6 +203,28 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
+     * Return the mac address from a SFF DPL, only if its a MAC DPL.
+     *
+     * @param sfDpl the SFF DPL to process
+     * @return macAddress string or null if its not a MAC DPL
+     */
+    public String getSffDplMac(SffDataPlaneLocator sfDpl) {
+        String sffMac = null;
+
+        LocatorType sffLocatorType = sfDpl.getDataPlaneLocator().getLocatorType();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+
+        // Mac/IP and possibly VLAN
+        if (implementedInterface.equals(Mac.class)) {
+            if (((MacAddressLocator) sffLocatorType).getMac() != null) {
+                sffMac = ((MacAddressLocator) sffLocatorType).getMac().getValue();
+            }
+        }
+
+        return sffMac;
+    }
+
+    /**
      * Given an SFF object and SFF-SF dictionary entry, return the switch port
      * string. Looks for the SFF DPL name in the SFF-SF dictionary, then looks
      * up that DPL name on the SFF.
@@ -436,4 +458,21 @@ public abstract class SfcOfBaseProviderUtils {
         return null;
     }
 
+    /**
+     * Return a named SffDataPlaneLocator on a SFF.
+     *
+     * @param sffName
+     *          The SFF name to search in
+     * @param rspId
+     *          rendered service path ID
+     * @return list of SffDataPlaneLocator or null if not found
+     */
+    public List<SffDataPlaneLocator> getSffDataPlaneLocators(SffName sffName, long rspId) {
+        ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
+
+        if (sff == null || sff.getSffDataPlaneLocator() == null) {
+            return null;
+        }
+        return sff.getSffDataPlaneLocator();
+    }
 }

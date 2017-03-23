@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_08403e55",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 492,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "This will match on anything, shouldnt we instead check for certain etherTypes?",
+      "range": {
+        "startLine": 492,
+        "startChar": 21,
+        "endLine": 492,
+        "endChar": 26
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_e8305a09",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 915,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "Instead of this, can you instead use actionList.size()",
+      "range": {
+        "startLine": 915,
+        "startChar": 75,
+        "endLine": 915,
+        "endChar": 82
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_c83596f8",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 919,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "same comment here",
+      "range": {
+        "startLine": 919,
+        "startChar": 75,
+        "endLine": 919,
+        "endChar": 80
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_88542e22",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 922,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "We dont need a variable for this, just plug in FLOW_PRIORITY_NEXT_HOP in the following function call.",
+      "range": {
+        "startLine": 922,
+        "startChar": 12,
+        "endLine": 922,
+        "endChar": 24
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_a805b215",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1054,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "use actionList.size()",
+      "range": {
+        "startLine": 1054,
+        "startChar": 71,
+        "endLine": 1054,
+        "endChar": 76
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_aa09272e",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/SfcModelUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-03-23T13:25:23Z",
+      "side": 1,
+      "message": "Type, should be search",
+      "range": {
+        "startLine": 24,
+        "startChar": 38,
+        "endLine": 24,
+        "endChar": 44
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

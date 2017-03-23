@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_6a829f53",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 492,
+      "author": {
+        "id": 7019
+      },
+      "writtenOn": "2017-03-23T14:04:11Z",
+      "side": 1,
+      "message": "Since MAC Chaining works directly on MAC address, we do not require any specific ehterType. So for MAC Chaining perspective, we do not need to filter ehterTypes. However, if you see some problems here, we can discuss what kind of packets we should filter out.",
+      "parentUuid": "fafc7978_08403e55",
+      "range": {
+        "startLine": 492,
+        "startChar": 21,
+        "endLine": 492,
+        "endChar": 26
+      },
+      "revId": "d987f0932c0cea469b159d57d01af00acf77da4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_e8305a09",
         "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
         "patchSetId": 1

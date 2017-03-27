@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_7eb413f2",
+        "filename": "sfc-classifiers/sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/flowgenerators/MacChainingClassifier.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 7019
+      },
+      "writtenOn": "2017-03-27T14:23:35Z",
+      "side": 1,
+      "message": "That was my first attempt when I was implementing MAC chaining classifier. However, ClassifierInterface is tight to NSH headers, what would break in MAC Chaining case.",
+      "parentUuid": "fafc7978_db4391ad",
+      "revId": "aff60ce1bfc306b67223378471f13440dc03db45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_7be8a57c",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "fafc7978_9ecbb749",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 488,
+      "author": {
+        "id": 7019
+      },
+      "writtenOn": "2017-03-27T14:23:35Z",
+      "side": 1,
+      "message": "It is used the MAC address of the dictionary to bind ports from two connected SFFs. Firstly, it is found the SFF name connected in the dictionary, and then it is used the MAC address from the sff-dict to search dpl with this same MAC address. As you comment I can provide a demo where this may become clearer.",
+      "parentUuid": "fafc7978_7be8a57c",
+      "revId": "aff60ce1bfc306b67223378471f13440dc03db45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fafc7978_fb92d5f4",
         "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2017-03-27T12:12:53Z",
       "side": 1,
       "message": "This virtual MAC address format seems inconsistent with one in https://www.ietf.org/archive/id/draft-fedyk-sfc-mac-chain-02.txt\n\n       I U\n       / /                                                           B\n       G L                                                           T\n      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n      |X|n|CID1[42:47]|  CID2[32:39]  |  CID3[24:31]  |CS-ID[16:22] |X|\n      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n      | CS-ID [8:15]  |  CS-ID [0:7]  |\n      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n\n\nHere, PORT is openflow port ID? SFID? SFID only has 8 bits, how do you map SFID to RSP ID/Reverse RSP ID which may have 24 bits?",
+      "revId": "aff60ce1bfc306b67223378471f13440dc03db45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_9ef29799",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 7019
+      },
+      "writtenOn": "2017-03-27T14:23:35Z",
+      "side": 1,
+      "message": "We changed the MAC format, the document has an older version. The Port ID is reserved for other features, wich is not implemented in this patch. RSP is mapped to Chain ID (CID) and we use the uuid input to map it to an 8 bit CID. So we can support 256 different chains. This number should be enough for now, but we still can chain the length of this fields if necessary in the future.",
+      "parentUuid": "fafc7978_fb92d5f4",
       "revId": "aff60ce1bfc306b67223378471f13440dc03db45",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

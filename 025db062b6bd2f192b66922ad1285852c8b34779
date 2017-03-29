@@ -33,6 +33,24 @@
       "revId": "025db062b6bd2f192b66922ad1285852c8b34779",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_8696be92",
+        "filename": "sfc-demo/mac_chaining/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 7019
+      },
+      "writtenOn": "2017-03-29T18:30:34Z",
+      "side": 1,
+      "message": "You should run one of them, VLAN file will deploy a chain with the VLAN OpenFlow renderer, which was already implemented in ODL and used the TOS IP field to store the chain ID.\nThe macChain file will deploy a chain with mac chaining technology.\nI think this wrapper can be extended in the future to use ether+NSH as well.",
+      "parentUuid": "fafc7978_0e34aadc",
+      "revId": "025db062b6bd2f192b66922ad1285852c8b34779",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

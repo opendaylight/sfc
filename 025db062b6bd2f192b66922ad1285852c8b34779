@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_ae347edf",
+        "filename": "sfc-demo/mac_chaining/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2017-03-29T00:33:12Z",
+      "side": 1,
+      "message": "s/pipi/pip/",
+      "revId": "025db062b6bd2f192b66922ad1285852c8b34779",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fafc7978_0e34aadc",
+        "filename": "sfc-demo/mac_chaining/README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2017-03-29T00:33:12Z",
+      "side": 1,
+      "message": "file name is wrong, sfc-vla-topo.py should be sfc-vlan-topo.py.\n\nWhat is the difference between sfc-macChain-topo.py and sfc-vlan-topo.py?\n\nIs it ok we can run any one of them?",
+      "revId": "025db062b6bd2f192b66922ad1285852c8b34779",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

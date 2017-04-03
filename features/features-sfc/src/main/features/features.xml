@@ -153,7 +153,7 @@
         <bundle>mvn:com.sun.jersey/jersey-client/{{VERSION}}</bundle>
         <bundle>mvn:com.sun.jersey/jersey-core/{{VERSION}}</bundle>
         <bundle>mvn:com.google.code.gson/gson/{{VERSION}}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/default-config.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/sfc-vnfm-tacker.xml">mvn:org.opendaylight.sfc/sfc-vnfm-tacker/{{VERSION}}/xml/config</configfile>
     </feature>
 
     <feature name="odl-sfc-genius" version="${project.version}" description="OpenDaylight :: sfc :: Genius ">

@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-util-parent</artifactId>
-        <version>0.3.3-SNAPSHOT</version>
+        <version>0.3.3-Boron-SR3</version>
         <relativePath>../</relativePath>
     </parent>
 
     <artifactId>sfc-network-topology-utils</artifactId>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>0.3.3-Boron-SR3</version>
     <packaging>bundle</packaging>
 
     <dependencies>

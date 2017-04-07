@@ -12,7 +12,7 @@
  <parent>
   <artifactId>sfc-parent</artifactId>
   <groupId>org.opendaylight.sfc</groupId>
-  <version>0.3.3-SNAPSHOT</version>
+  <version>0.3.4-SNAPSHOT</version>
  </parent>
  <artifactId>sfc-jsonconfig</artifactId>
  <description>Configuration files for md-sal</description>

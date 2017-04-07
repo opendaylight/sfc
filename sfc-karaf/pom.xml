@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>karaf-parent</artifactId>
-    <version>1.7.3-SNAPSHOT</version>
+    <version>1.7.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-karaf</artifactId>
-  <version>0.3.3-SNAPSHOT</version>
+  <version>0.3.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <prerequisites>
     <maven>3.2</maven>

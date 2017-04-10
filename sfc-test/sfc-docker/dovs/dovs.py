@@ -251,6 +251,7 @@ class ODL:
                 'network-id' : net,
                 'admin-state-up' : 'true',
                 'device-owner' : owner,
+                'device-id' : dev,
                 'mac-address' : mac,
                 'fixed-ips' : {
                     'subnet-id' : subnet,
@@ -262,8 +263,6 @@ class ODL:
         if owner == 'compute':
             port['port']['neutron-binding:host-id'] = 'ovsdb://uuid/{}/bridge/{}'.format(dev, BRIDGE)
             port['port']['neutron-binding:vif-type'] = 'macvtap'
-        elif owner == 'network:router_interface':
-            port['port']['device-id'] = dev
 
         api(ODL.NEUTRON_RES).ports.port(id).put(data=port)
         return port['port']
@@ -950,8 +949,9 @@ class AddGuest(cli.Application):
         LOG.debug('Adding guest tap device {} to OVS of node {}', tapdev, node)
         CMD.addDevToOvs(node, tapdev, mac, str(id), extra)
 
-        LOG.debug('Wait for {} to be set as parent of {}', tapdev, id)
-        self.waitForParentInterface(str(id), tapdev)
+        if api and net:
+            LOG.debug('Wait for {} to be set as parent of {}', tapdev, id)
+            self.waitForParentInterface(str(id), tapdev)
 
     @retry(Dovs.Error, tries=60, delay=1)
     def waitForParentInterface(self, name, parent):
@@ -1070,7 +1070,7 @@ class AddGuest(cli.Application):
             mac,
             str(ip_interface(ip).ip),
             owner,
-            ovsId)
+            str(id))
 
         return netId
 

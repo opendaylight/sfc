@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,7 +7,6 @@
  */
 
 package org.opendaylight.sfc.genius.impl.handlers;
-
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 class SfcGeniusRspHandler {
 
-    private Executor executor;
+    private final Executor executor;
     private final ReadWriteTransaction transaction;
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusRspHandler.class);
 

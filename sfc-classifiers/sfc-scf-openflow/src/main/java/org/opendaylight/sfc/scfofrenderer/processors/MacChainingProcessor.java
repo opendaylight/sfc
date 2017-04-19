@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2016 Hewlett Packard Enterprise Development LP. All rights reserved.
+ * Copyright (c) 2016, 2017 Hewlett Packard Enterprise Development LP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.sfc.scfofrenderer.processors;
-
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
@@ -41,9 +40,9 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
     // true if we're adding a classifier node, false if we're deleting it
     private boolean addClassifier = true;
 
-    private MacChainingClassifier macChainingClassifier;
+    private final MacChainingClassifier macChainingClassifier;
 
-    private ClassifierHandler classifierHandler;
+    private final ClassifierHandler classifierHandler;
 
     private static final Logger LOG = LoggerFactory.getLogger(MacChainingProcessor.class);
 
@@ -67,6 +66,7 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
      * @param theAce        the ACE
      * @return              a List of {@link FlowDetails} having all the generated flows, which will be later installed
      */
+    @Override
     public List<FlowDetails> processAceByProcessor(String nodeName, ServiceFunctionForwarder theSff,
                                                    String theScfName, String aclName, String theIfName,
                                                    Ace theAce, Optional<RspName> rspName) {

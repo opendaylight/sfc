@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Hewlett Packard Enterprise Development LP. and others.  All rights reserved.
+ * Copyright (c) 2016, 2017 Hewlett Packard Enterprise Development LP. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -14,13 +14,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-
-
-
-
 
 /*  VirtualMAC format
      48              24  23   22                     0
@@ -129,7 +123,7 @@ public final class VirtualMacAddress {
     public static final int REVERSE = 0x800000;
 
 
-    private byte[] macAddr;
+    private final byte[] macAddr;
     private final int chainId;
     private final int flags;
     private final int port;
@@ -144,7 +138,7 @@ public final class VirtualMacAddress {
         }
 
         final int flagsMask = (MAX_FLAGS - 1) << (24 - FLAGS_LEN);
-        if ((flags & (~flagsMask)) != 0) {
+        if ((flags & ~flagsMask) != 0) {
             throw new IllegalArgumentException(String.format(
                     "Invalid flags composition: 0x%06x",
                     flags
@@ -157,8 +151,8 @@ public final class VirtualMacAddress {
         this.macAddr = toByte(
                         BASE_OUI
                        | flags
-                       | port << (CID_LEN + SFID_LEN)  // Flag bits: Reversed + Bidirectional
-                       | chainId << (SFID_LEN)
+                       | port << CID_LEN + SFID_LEN  // Flag bits: Reversed + Bidirectional
+                       | chainId << SFID_LEN
                        | (int) (Math.pow(2, SFID_LEN) - 1) // All bits 1
         );
 
@@ -213,7 +207,7 @@ public final class VirtualMacAddress {
     private long toLong() {
         long mac = 0;
         for (int i = 0; i < 6; i++) {
-            long tmp = (macAddr[i] & 0xffL) << ((5 - i) * 8);
+            long tmp = (macAddr[i] & 0xffL) << (5 - i) * 8;
             mac |= tmp;
         }
         return mac;

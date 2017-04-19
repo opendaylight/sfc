@@ -102,8 +102,8 @@ public interface SfcOfFlowProgrammerInterface {
 
     void configureGroupNextHopFlow(String sffNodeName, long sfpId, String srcMac, long groupId, String groupName);
 
-    void configureMacChainingNextHopFlow(final String sffNodeName, final String vmac, final String dstSfMac,
-                                         final String nextVMac, final boolean l2Tranparent);
+    void configureMacChainingNextHopFlow(String sffNodeName, String vmac, String dstSfMac,
+                                         String nextVMac, boolean l2Tranparent);
 
 
     void configureNshVxgpeNextHopFlow(String sffNodeName, String dstIp, String nshProxyIp, long nsp, short nsi);
@@ -134,8 +134,7 @@ public interface SfcOfFlowProgrammerInterface {
     void configureVlanTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, int dstVlan, String port,
             long pathId);
 
-    void configureMacChainingSfTransportEgressFlow(final String sffNodeName, final String dstMac, String port,
-                                                   final String vmac);
+    void configureMacChainingSfTransportEgressFlow(String sffNodeName, String dstMac, String port, String vmac);
 
     void configureVlanLastHopTransportEgressFlow(String sffNodeName, String srcMac, String dstMac, int dstVlan,
             String port, long pathId);

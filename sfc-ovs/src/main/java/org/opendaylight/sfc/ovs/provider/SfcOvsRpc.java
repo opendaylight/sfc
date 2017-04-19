@@ -17,7 +17,6 @@
 
 package org.opendaylight.sfc.ovs.provider;
 
-
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ExecutorService;
@@ -41,7 +40,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
 
@@ -88,7 +86,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
             InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(nodeId);
 
             //build OVS Bridge
-            //TODO: seperate into function as it will grow in future (including DP locators, etc.)
+            //TODO: separate into function as it will grow in future (including DP locators, etc.)
             OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
             ovsdbBridgeBuilder.setBridgeName(new OvsdbBridgeName(input.getName()));
             ovsdbBridgeBuilder.setManagedBy(new OvsdbNodeRef(nodeIID));

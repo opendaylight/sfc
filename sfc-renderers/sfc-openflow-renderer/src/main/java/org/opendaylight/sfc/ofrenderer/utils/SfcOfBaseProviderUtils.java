@@ -53,7 +53,7 @@ public abstract class SfcOfBaseProviderUtils {
 
     public abstract ServiceFunction getServiceFunction(SfName sfName, long rspId);
 
-    public abstract ServiceFunctionType getServiceFunctionType(final SfName sfName, long rspId);
+    public abstract ServiceFunctionType getServiceFunctionType(SfName sfName, long rspId);
 
     public abstract ServiceFunctionForwarder getServiceFunctionForwarder(SffName sffName, long rspId);
 

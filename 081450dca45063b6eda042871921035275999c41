@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "da01753e_0e330315",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-04-20T09:14:14Z",
+      "side": 1,
+      "message": "This is Eclipse automatic formatting, I\u0027ll fix it.",
+      "parentUuid": "da01753e_ee995f20",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 7
+      },
+      "revId": "081450dca45063b6eda042871921035275999c41",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da01753e_ae8f57cb",
         "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2017-04-20T09:08:00Z",
       "side": 1,
       "message": "Same comment, was easier to read before",
+      "range": {
+        "startLine": 185,
+        "startChar": 11,
+        "endLine": 190,
+        "endChar": 40
+      },
+      "revId": "081450dca45063b6eda042871921035275999c41",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_0e1ae37c",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-04-20T09:14:14Z",
+      "side": 1,
+      "message": "The same here.",
+      "parentUuid": "da01753e_ae8f57cb",
       "range": {
         "startLine": 185,
         "startChar": 11,

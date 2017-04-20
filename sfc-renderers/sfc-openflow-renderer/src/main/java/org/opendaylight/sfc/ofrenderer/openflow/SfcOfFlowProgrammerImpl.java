@@ -77,6 +77,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE = "00000201";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE = "00000202";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE = "00000203";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE = "00000204";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows
     public static final String TRANSPORT_EGRESS_VLAN_COOKIE = "00000301";
     public static final String TRANSPORT_EGRESS_VLAN_SF_COOKIE = "00000302";
@@ -1333,7 +1334,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
     /**
      * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
-     * the NSP and NSI.
+     * the NSP and NSI and NSH C1 not set. If NSH C1 is set, then the packets will
+     * be handled by configureNshEthLastHopTransportEgressFlow() which will have a
+     * lower priority than this flow.
      *
      * @param sffNodeName
      *            - the SFF to write the flow to
@@ -1346,37 +1349,126 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *            Eth-NSH encapsulation
      */
     @Override
-    public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
+    public void configureNshNscEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
             final short nshNsi, MacAddress macAddress) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+        SfcOpenflowUtils.addMatchNshNsc1(match, 0L);
 
         // On the last hop:
         // 1. remove nsh header
         // 2. Change src mac to the mac of the last SF
-        // 3. resubmit to the dispatcher table
+        // 3. resubmit to the ingress dispatcher table
         List<Action> actionList = new ArrayList<>();
 
         // Pop NSH
-        Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(actionList.size());
-        actionList.add(popNsh);
+        actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
 
-        // Change source address
-        Action changeSourceMac = SfcOpenflowUtils.createActionSetDlSrc(macAddress.getValue(), actionList.size());
-        actionList.add(changeSourceMac);
+        // Change source mac address
+        actionList.add(SfcOpenflowUtils.createActionSetDlSrc(macAddress.getValue(), actionList.size()));
 
         // Proceed with other services
-        actionList
-                .add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(
+                NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Make the cookie
-        BigInteger cookie = new BigInteger(TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE,
                 COOKIE_BIGINT_HEX_RADIX);
 
         // Create and return the flow
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                FLOW_PRIORITY_TRANSPORT_EGRESS, cookie, "last hop egress flow", match, isb);
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, cookie, "last hop egress flow", match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
+    }
+
+    /**
+     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
+     * the NSP and NSI. This flow is used when NSH C1/C2 is set. The flow written by
+     * configureNshNscEthLastHopTransportEgressFlow() determines that NSH C1 is NOT
+     * set, so this flow is effectively the else condition to NSH C1 not being set.
+     * Write NSH C1 to Ipv4TunDst and NSH C2 to Vnid.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param nshNsp
+     *            - the NSH Service Path to match on
+     * @param nshNsi
+     *            - the NSH Service Index to match on
+     */
+    @Override
+    public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
+            final short nshNsi) {
+        // When outputing to an outport, if inport==outport, then according to
+        // the openflow spec, the packet will be dropped. To avoid this, outport
+        // must be set to INPORT. This method writes 2 flows to avoid this
+        // situation:
+        // flow1:
+        // if inport==port, actions=output:INPORT (higher priority than flow2)
+        // flow2:
+        // actions=output:port (flow2 is basically the else condition)
+
+        Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        String inportStr = OutputPortValues.INPORT.toString();
+
+        if (vxgpePort != null) {
+            String vxgpePortStr = "output:" + vxgpePort.toString();
+            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, vxgpePortStr, inportStr);
+            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, vxgpePortStr);
+        } else {
+            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, inportStr);
+        }
+    }
+
+    /**
+     * Simple call through for configureNshEthLastHopTransportEgressFlow().
+     */
+    private void configureNshEthLastHopTransportEgressFlowPorts(final String sffNodeName, final long nshNsp,
+            final short nshNsi, final String inport, final String outport) {
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+
+        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+        String theOutPortToSet = outport;
+
+        if (!inport.startsWith(OutputPortValues.INPORT.toString())) {
+            // if we output to a port that's the same as the import, the packet
+            // will be dropped
+            SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(inport));
+            theOutPortToSet = OutputPortValues.INPORT.toString();
+            flowPriority += 5;
+        }
+
+        // On the last hop:
+        // 1. remove nsh header
+        // 3. Write C1 to Ipv4TunDst
+        // 4. Write C2 to Vnid
+        // 5. Egress to the specified port
+        List<Action> actionList = new ArrayList<>();
+
+        // Pop NSH
+        actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
+
+        // Write C1 to Ipv4TunDst
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+
+        // Write C2 to Vnid
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
+
+        // Egress to port
+        actionList.add(SfcOpenflowUtils.createActionOutPort(theOutPortToSet, actionList.size()));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Make the cookie
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                flowPriority, cookie, "last hop egress flow", match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
     }

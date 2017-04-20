@@ -284,12 +284,12 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals(1 + numberOfHops - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
-        // transport egress: one (initialization in the only switch) + two per
-        // (number of SFs) -1 (in this case
-        // both SFs are in the same compute node: there is no a "set tunnel id =
-        // x ; then output to port y" egress
-        // flow from first SF to the second one
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 1 + 2 * sfTypes.size() - 1, addedFlows.stream()
+        // transport egress: one (initialization in the only switch) +
+        // one (ChainEgress NSH C1) + two per (number of SFs) -1
+        // (in this case both SFs are in the same compute node:
+        // there is no a "set tunnel id = x ; then output to port y"
+        // egress flow from first SF to the second one
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * sfTypes.size() - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the only switch that it
@@ -404,10 +404,10 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals("SFC_TRANSPORT_INGRESS_TABLE", 2 + numberOfHops - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
-        // transport egress: one (initialization in the only switch) + one per
-        // (hops -1, this is the
+        // transport egress: one (initialization in the only switch) +
+        // one (ChainEgress NSH C1) + one per (hops -1, this is the
         // number of "SF egresses" in the chain)
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * (numberOfHops - 1), addedFlows.stream()
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 3 + 2 * (numberOfHops - 1), addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the two switches that

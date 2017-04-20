@@ -74,9 +74,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.pop.nsh.grouping.NxPopNsh;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmit;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
@@ -284,12 +286,12 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals(1 + numberOfHops - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
-        // transport egress: one (initialization in the only switch) + two per
-        // (number of SFs) -1 (in this case
-        // both SFs are in the same compute node: there is no a "set tunnel id =
-        // x ; then output to port y" egress
-        // flow from first SF to the second one
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 1 + 2 * sfTypes.size() - 1, addedFlows.stream()
+        // transport egress: one (initialization in the only switch) +
+        // one (ChainEgress NSH C1) + two per (number of SFs) -1
+        // (in this case both SFs are in the same compute node:
+        // there is no a "set tunnel id = x ; then output to port y"
+        // egress flow from first SF to the second one
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * sfTypes.size() - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the only switch that it
@@ -404,10 +406,10 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertEquals("SFC_TRANSPORT_INGRESS_TABLE", 2 + numberOfHops - 1, addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
-        // transport egress: one (initialization in the only switch) + one per
-        // (hops -1, this is the
+        // transport egress: one (initialization in the only switch) +
+        // one (ChainEgress NSH C1) + one per (hops -1, this is the
         // number of "SF egresses" in the chain)
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * (numberOfHops - 1), addedFlows.stream()
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 3 + 2 * (numberOfHops - 1), addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the two switches that
@@ -556,6 +558,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 return false;
             }
         } else {
+            // They should all do a PopNsh
             Optional<NxPopNsh> popNsh = actionList.stream()
                     .map(action -> filterActionType(action, NxActionPopNshNodesNodeTableFlowApplyActionsCase.class))
                     .filter(Optional::isPresent).map(Optional::get).findFirst()
@@ -565,14 +568,30 @@ public class SfcOfLogicalSffRspProcessorTest {
             if (!popNsh.isPresent()) {
                 return false;
             }
-            Optional<Short> resubmit = actionList.stream().map(Action::getAction)
-                    .filter(theAction -> theAction.getImplementedInterface()
-                            .equals(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class))
-                    .map(theAction -> (NxActionResubmitNodesNodeTableFlowWriteActionsCase) theAction).findFirst()
-                    .map(NxActionResubmitNodesNodeTableFlowWriteActionsCase::getNxResubmit).map(NxResubmit::getTable);
 
-            // check actions - resubmit to dispatcher table
-            if (!resubmit.filter(table_nr -> table_nr.equals(NwConstants.LPORT_DISPATCHER_TABLE)).isPresent()) {
+            if (actionList.size() == 3) {
+                Optional<Short> resubmit = actionList.stream().map(Action::getAction)
+                        .filter(theAction -> theAction.getImplementedInterface()
+                                .equals(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class))
+                        .map(theAction -> (NxActionResubmitNodesNodeTableFlowWriteActionsCase) theAction).findFirst()
+                        .map(NxActionResubmitNodesNodeTableFlowWriteActionsCase::getNxResubmit)
+                        .map(NxResubmit::getTable);
+
+                // check actions - resubmit to dispatcher table
+                if (!resubmit.filter(table_nr -> table_nr.equals(NwConstants.LPORT_DISPATCHER_TABLE)).isPresent()) {
+                    return false;
+                }
+            } else if (actionList.size() == 4) {
+                Optional<NxRegMove> nxRegMoveAction = actionList.stream()
+                        .map(action -> filterActionType(action,
+                                NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class))
+                        .filter(Optional::isPresent).map(Optional::get).findFirst()
+                        .map(NxActionRegMoveNodesNodeTableFlowApplyActionsCase::getNxRegMove);
+                if (!nxRegMoveAction.isPresent()) {
+                    return false;
+                }
+            } else {
+                // there are no other valid possibilities
                 return false;
             }
         }

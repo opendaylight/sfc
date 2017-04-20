@@ -250,6 +250,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]");
             }
 
+            this.sfcFlowProgrammer.configureNshNscEthLastHopTransportEgressFlow(sffNodeName, nsp, nsi,
+                    macAddress.get());
             this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName, nsp, nsi, macAddress.get());
         } else {
             LOG.debug("configureSffTransportEgressFlow: called for non-final graph entry");

@@ -77,6 +77,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE = "00000201";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE = "00000202";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE = "00000203";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE = "00000204";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows
     public static final String TRANSPORT_EGRESS_VLAN_COOKIE = "00000301";
     public static final String TRANSPORT_EGRESS_VLAN_SF_COOKIE = "00000302";
@@ -1333,7 +1334,64 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
     /**
      * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
-     * the NSP and NSI.
+     * the NSP and NSI and NSH C1 not set. If NSH C1 is set, then the packets will
+     * be handled by configureNshEthLastHopTransportEgressFlow() which will have a
+     * lower priority than this flow.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param nshNsp
+     *            - the NSH Service Path to match on
+     * @param nshNsi
+     *            - the NSH Service Index to match on
+     * @param macAddress
+     *            - mac address to set as source mac address after removing
+     *            Eth-NSH encapsulation
+     */
+    @Override
+    public void configureNshNscEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
+            final short nshNsi, MacAddress macAddress) {
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+        SfcOpenflowUtils.addMatchNshNsc1(match, 0L);
+
+        // On the last hop:
+        // 1. remove nsh header
+        // 2. Change src mac to the mac of the last SF
+        // 3. resubmit to the dispatcher table
+        List<Action> actionList = new ArrayList<>();
+
+        // Pop NSH
+        Action popNsh = SfcOpenflowUtils.createActionNxPopNsh(actionList.size());
+        actionList.add(popNsh);
+
+        // Change source address
+        Action changeSourceMac = SfcOpenflowUtils.createActionSetDlSrc(macAddress.getValue(), actionList.size());
+        actionList.add(changeSourceMac);
+
+        // Proceed with other services
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(
+                NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        // Make the cookie
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, cookie, "last hop egress flow", match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
+    }
+
+    /**
+     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
+     * the NSP and NSI. This flow is used when NSH C1/C2 is set. The flow written by
+     * configureNshNscEthLastHopTransportEgressFlow() determines that NSH C1 is NOT
+     * set, so this flow is effectively the else condition to NSH C1 not being set.
+     * Write NSH C1 to Ipv4TunDst and NSH C2 to Vnid.
      *
      * @param sffNodeName
      *            - the SFF to write the flow to
@@ -1353,7 +1411,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // On the last hop:
         // 1. remove nsh header
         // 2. Change src mac to the mac of the last SF
-        // 3. resubmit to the dispatcher table
+        // 3. Write C1 to Ipv4TunDst
+        // 4. Write C2 to Vnid
+        // 5. resubmit to the dispatcher table
         List<Action> actionList = new ArrayList<>();
 
         // Pop NSH
@@ -1364,14 +1424,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         Action changeSourceMac = SfcOpenflowUtils.createActionSetDlSrc(macAddress.getValue(), actionList.size());
         actionList.add(changeSourceMac);
 
+        // Write C1 to Ipv4TunDst
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+
+        // Write C2 to Vnid
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
+
         // Proceed with other services
-        actionList
-                .add(SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(
+                NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Make the cookie
-        BigInteger cookie = new BigInteger(TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
                 COOKIE_BIGINT_HEX_RADIX);
 
         // Create and return the flow

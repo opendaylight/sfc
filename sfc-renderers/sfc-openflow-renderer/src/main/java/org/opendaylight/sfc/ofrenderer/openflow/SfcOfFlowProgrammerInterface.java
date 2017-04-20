@@ -203,7 +203,7 @@ public interface SfcOfFlowProgrammerInterface {
             List<GroupBucketInfo> bucketInfos, boolean isAddGroup);
 
     /**
-     * Used by logical sff processor in order to write chain egress flows.
+     * Used by logical sff processor in order to write chain egress flows if NSH C1 is NOT set.
      *
      * @param sffNodeName
      *            last openflow node in the chain
@@ -219,6 +219,25 @@ public interface SfcOfFlowProgrammerInterface {
      *            processing)
      */
     void configureNshEthLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi,
+            MacAddress macAddress);
+
+    /**
+     * Used by logical sff processor in order to write chain egress flows if NSH C1 is set.
+     *
+     * @param sffNodeName
+     *            last openflow node in the chain
+     * @param nshNsp
+     *            nsp for the match
+     * @param nshNsi
+     *            nsi for the match
+     * @param macAddress
+     *            the mac address to set as source address at chain egress time
+     *            (if not set, the src mac address after decapsulation would be
+     *            the one set before the chain was executed (at classification
+     *            time), and the packet would be dropped at subsequent pipeline
+     *            processing)
+     */
+    void configureNshNscEthLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi,
             MacAddress macAddress);
 
     /**

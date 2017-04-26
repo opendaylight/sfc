@@ -71,6 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 
 /**
  * SFC OpenFlow Programmer Test.
@@ -1169,6 +1170,28 @@ public class SfcOfFlowProgrammerTest {
             }
         }
     }
+
+    /**
+     * Unit test to check match and action fields from flows.
+     *
+     */
+    @Test
+    public void configureTransportIngressTableMatchAnyResubmit() {
+        sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(SFF_NAME, NwConstants.LPORT_DISPATCHER_TABLE);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+            checkActionHasResubmit(curInstruction, NwConstants.LPORT_DISPATCHER_TABLE);
+        }
+    }
+
 
     /**
      * Unit test to check match and action fields from flows.

@@ -45,6 +45,8 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opendaylight.genius.mdsalutil.NwConstants;
+
 
 public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
@@ -547,7 +549,14 @@ public class SfcOfRspProcessor {
             }
 
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+           
+            if (entry.usesLogicalSFF()) {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(sffNodeName,
+                    NwConstants.LPORT_DISPATCHER_TABLE);
+            }
+            else {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            }
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureNextHopTableMatchAny(sffNodeName);

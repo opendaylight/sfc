@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
@@ -45,6 +46,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class SfcOfRspProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRspProcessor.class);
@@ -547,7 +549,12 @@ public class SfcOfRspProcessor {
             }
 
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            if (entry.usesLogicalSFF()) {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(sffNodeName,
+                    NwConstants.LPORT_DISPATCHER_TABLE);
+            } else {
+                this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+            }
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureNextHopTableMatchAny(sffNodeName);

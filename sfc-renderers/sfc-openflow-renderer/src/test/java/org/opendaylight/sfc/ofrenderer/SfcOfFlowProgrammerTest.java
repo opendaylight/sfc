@@ -102,6 +102,7 @@ public class SfcOfFlowProgrammerTest {
     private static final boolean PKTIN = false;
     private static final short TABLE_BASE = 30;
     private static final short TABLE_EGRESS = 80;
+    public static final short DISPATCHER_TABLE = 17;
 
     private SfcOfFlowWriterInterface sfcOfFlowWriter;
     private SfcOfFlowProgrammerImpl sfcOfFlowProgrammer;
@@ -1161,12 +1162,7 @@ public class SfcOfFlowProgrammerTest {
                  instruction : isb.getInstruction()) {
 
             Instruction curInstruction = instruction.getInstruction();
-            if (curInstruction instanceof ApplyActionsCase) {
-                ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-                DropActionCase drop = (DropActionCase) action.getApplyActions().getAction().get(0).getAction();
-                assertTrue(drop.getDropAction() != null);
-                LOG.info("configureTransportIngressTableMatchAny() Action is: [{}]", drop.getDropAction().toString());
-            }
+            checkActionHasResubmit(curInstruction, DISPATCHER_TABLE);
         }
     }
 

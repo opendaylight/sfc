@@ -22,6 +22,7 @@ import com.google.common.net.InetAddresses;
 import java.util.List;
 
 import org.junit.Test;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.util.macchaining.VirtualMacAddress;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
@@ -1169,6 +1170,29 @@ public class SfcOfFlowProgrammerTest {
             }
         }
     }
+
+    /**
+     * Unit test to check match and action fields from flows.
+     *
+     */
+    @Test
+    public void configureTransportIngressTableMatchAnyResubmit() {
+        sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(SFF_NAME,
+             NwConstants.LPORT_DISPATCHER_TABLE);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+
+        Instructions isb = flowBuilder.getInstructions();
+        for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+                 instruction : isb.getInstruction()) {
+
+            Instruction curInstruction = instruction.getInstruction();
+            checkActionHasResubmit(curInstruction, NwConstants.LPORT_DISPATCHER_TABLE);
+        }
+    }
+
 
     /**
      * Unit test to check match and action fields from flows.

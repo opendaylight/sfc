@@ -117,6 +117,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     private static final int PKTIN_IDLE_TIMEOUT = 60;
     private static final String EMPTY_SWITCH_PORT = "";
     public static final short APP_COEXISTENCE_NOT_SET = -1;
+    public static final short DISPATCHER_TABLE = 17;
 
     // Instance variables
     private short tableBase;
@@ -327,7 +328,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             return;
         }
 
-        FlowBuilder flowBuilder = configureTableMatchAnyDropFlow(getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
+//        FlowBuilder flowBuilder = configureTableMatchAnyDropFlow(getTableId(TABLE_INDEX_TRANSPORT_INGRESS));
+        FlowBuilder flowBuilder = configureTableMatchAnyFlowResubmit(getTableId(TABLE_INDEX_TRANSPORT_INGRESS), DISPATCHER_TABLE);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
@@ -433,6 +435,33 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         MatchBuilder match = new MatchBuilder();
 
         InstructionsBuilder isb = SfcOpenflowUtils.appendGotoTableInstruction(new InstructionsBuilder(), nextTableId);
+
+        // Create and configure the FlowBuilder
+        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+    }
+
+    /**
+     * Internal util method to create the Match Any flow and resubmit packets.
+     *
+     * @param tableId
+     *            - the table to write to
+     * @param nextTableId
+     *            - the next table to resubmit
+     *
+     * @return the created flow
+     */
+    private FlowBuilder configureTableMatchAnyFlowResubmit(short tableId, short nextTableId) {
+        LOG.debug("SfcProviderSffFlowWriter.ConfigureTableMatchAnyFlowResubmit, tableId [{}] nextTableId [{}]", tableId,
+                nextTableId);
+
+        // Match any
+        MatchBuilder match = new MatchBuilder();
+
+        // Resubmit is an action not an instruction
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(nextTableId, actionList.size()));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_4d94cc42",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-04-27T08:14:26Z",
+      "side": 1,
+      "message": "This should be removed. Instead use NwConstants.LPORT_DISPATCHER_TABLE",
+      "range": {
+        "startLine": 120,
+        "startChar": 30,
+        "endLine": 120,
+        "endChar": 46
+      },
+      "revId": "dc28f2af7a3be95d421f29a3ebd01ab28c213cc9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_6da550a1",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-04-27T08:14:26Z",
+      "side": 1,
+      "message": "The configureTransportIngressTableMatchAny() method is used by all transports, genius related or not. So this change will break everything else. We need to rethink how to do what you\u0027re trying to achieve here.",
+      "range": {
+        "startLine": 332,
+        "startChar": 0,
+        "endLine": 332,
+        "endChar": 130
+      },
+      "revId": "dc28f2af7a3be95d421f29a3ebd01ab28c213cc9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

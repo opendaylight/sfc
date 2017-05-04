@@ -9,6 +9,8 @@
 package org.opendaylight.sfc.util.openflow;
 
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -36,13 +38,20 @@ import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.addMatchVlan;
 @RunWith(JUnitParamsRunner.class)
 public class SfcOpenflowUtilsTest{
 
-    private static Integer[] randNumArray= new Integer[6];
-    private static Integer[] randVlanArray= new Integer[6];
+    private static final int RANDOM_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS = 100;
+    private static final int TOTAL_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS =
+            5 + RANDOM_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS;
+
+    private static Integer[] randNumArray = new Integer[TOTAL_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS];
+    private static Integer[] randVlanArray = new Integer[6];
     private static Random randomInt = new Random();
+
     static {
-        for(int i = 0; i<randNumArray.length; i++){
-            randNumArray[i] = randomInt.nextInt((1500 - 0) + 1);
-            randVlanArray[i] = randomInt.nextInt((500 - 10) + 1) + 10;
+        for (int i = 0; i < randVlanArray.length; i++) {
+            randVlanArray[i] = randomInt.nextInt(500 - 10 + 1) + 10;
+        }
+        for (int i = 0; i < randNumArray.length; i++) {
+            randNumArray[i] = randomInt.nextInt(1500 - 0 + 1);
         }
     }
     @SuppressWarnings("unused")
@@ -58,16 +67,32 @@ public class SfcOpenflowUtilsTest{
     }
 
     @SuppressWarnings("unused")
-    private static Object[] createActionSetDlBadParams(){
-        return $(
-                $(constructMulticastAddress().toString().replace(":", ""), randNumArray[0]),
-                $(constructMulticastAddress().toString().replace(":", "."), randNumArray[1]),
-                $(constructMulticastAddress().toString().replace(":", RandomStringUtils.random(1, true, true)),
-                        randNumArray[2]),
-                $("                                                      ", randNumArray[3]),
-                $(RandomStringUtils.random(17, true, true), randNumArray[4]),
-                $(cleanInvalidXmlChars(RandomStringUtils.random(randomInt.nextInt((150 - 1) + 1) + 1)), randNumArray[5])
-        );
+    private static Object[] createActionSetDlBadParams() {
+        Object [] generatedInput = new Object[TOTAL_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS];
+
+        generatedInput[0] = new Object[] {constructMulticastAddress().toString().replace(":", ""), randNumArray[0]};
+        generatedInput[1] = new Object[] {constructMulticastAddress().toString().replace(":", "."), randNumArray[1]};
+        generatedInput[2] = new Object[] {
+                constructMulticastAddress().toString().replace(":", RandomStringUtils.random(1, true, true)),
+                randNumArray[2]
+        };
+        generatedInput[3] = new Object[] {"                                                      ", randNumArray[3]};
+        generatedInput[4] = new Object[] {RandomStringUtils.random(17, true, true), randNumArray[4]};
+
+        // those are unicode chars that would make input matching regexp in junit parameterised executor fail
+        Pattern pattern = Pattern.compile("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]");
+        int retries = 0;
+        for (int i = 5; i < generatedInput.length; i++) {
+            String input = RandomStringUtils.random(randomInt.nextInt(150 - 1 + 1) + 1);
+            String cleaned = cleanInvalidXmlChars(input);
+            Matcher matcher = pattern.matcher(cleaned);
+            if (matcher.find()) {
+                i--;
+                continue;
+            }
+            generatedInput[i] = new Object[] {cleaned, randNumArray[i]};
+        }
+        return generatedInput;
     }
 
     /**
@@ -75,7 +100,7 @@ public class SfcOpenflowUtilsTest{
      * @param random the string to clean from invalid xml chars
      * @return the sanitized string
      */
-    private static Object cleanInvalidXmlChars(String random) {
+    private static String cleanInvalidXmlChars(String random) {
         String xml10pattern = "[^"
                 + "\u0009\r\n"
                 + "\u0020-\uD7FF"

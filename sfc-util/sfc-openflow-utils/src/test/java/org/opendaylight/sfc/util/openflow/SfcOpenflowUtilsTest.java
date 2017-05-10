@@ -21,8 +21,6 @@ import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionSe
 
 import java.math.BigInteger;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.apache.commons.lang.RandomStringUtils;
@@ -74,19 +72,11 @@ public class SfcOpenflowUtilsTest {
                 randNumArray[2]
         };
         generatedInput[3] = new Object[] {"                                                      ", randNumArray[3]};
-        generatedInput[4] = new Object[] {RandomStringUtils.random(17, true, true), randNumArray[4]};
 
-        // those are unicode chars that would make input matching regexp in junit parameterised executor fail
-        Pattern pattern = Pattern.compile("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]");
         int retries = 0;
-        for (int i = 5; i < generatedInput.length; i++) {
-            String input = RandomStringUtils.random(randomInt.nextInt(150 - 1 + 1) + 1);
+        for (int i = 4; i < generatedInput.length; i++) {
+            String input = RandomStringUtils.random(randomInt.nextInt(150 - 1 + 1) + 1, true, true);
             String cleaned = cleanInvalidXmlChars(input);
-            Matcher matcher = pattern.matcher(cleaned);
-            if (matcher.find()) {
-                i--;
-                continue;
-            }
             generatedInput[i] = new Object[] {cleaned, randNumArray[i]};
         }
         return generatedInput;

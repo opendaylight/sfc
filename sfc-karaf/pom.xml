@@ -14,9 +14,6 @@
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: sfc :: ${project.artifactId}</name>
-  <prerequisites>
-    <maven>3.2</maven>
-  </prerequisites>
 
   <properties>
     <!-- The feature to install via featuresBoot in org.apache.karaf.features.cfg  -->

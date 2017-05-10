@@ -20,14 +20,8 @@
   <artifactId>sfc-ui</artifactId>
   <description>Resources</description>
   <packaging>pom</packaging>
-  <prerequisites>
-    <maven>3.2</maven>
-  </prerequisites>
   <modules>
     <module>module</module>
     <module>bundle</module>
   </modules>
-
-
-
 </project>

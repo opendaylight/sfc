@@ -1265,6 +1265,8 @@ class SfcConfig(cli.Application):
     _different_subnets = False
     _create_rsp_from_id = None
     _delete_rsp_from_id = None
+    _create_classifier_from_id = None
+    _classifier_port = None
 
     @cli.autoswitch(str)
     def odl(self, odl):
@@ -1346,6 +1348,20 @@ class SfcConfig(cli.Application):
         Delete a RSP "RSP<CHAIN_ID>"
         """
         self._delete_rsp_from_id = chain_id
+
+    @cli.autoswitch(int, requires = ['--odl'])
+    def create_classifer_from_id(self, chain_id):
+        """
+        Create a classifier rule
+        """
+        self._create_classifier_from_id = chain_id
+
+    @cli.autoswitch(int, requires = ['--create-classifer-from-id'])
+    def classifier_port(self, port):
+        """
+        Define the destination port
+        """
+        self._classifier_port = port
 
     @staticmethod
     def getChainNameFromId(chainId):
@@ -1553,6 +1569,34 @@ class SfcConfig(cli.Application):
 
 
     @staticmethod
+    def getCreateClassifierJson(chainId, port):
+        stringClassifier = """
+{
+    "acl": [ {
+        "acl-name": """ + '"' + 'ACL' + str(chainId) + '"' + """,
+        "acl-type": "ietf-access-control-list:ipv4-acl",
+        "access-list-entries": 
+        {
+             "ace": [ {
+                  "rule-name": """ + '"' + 'ACE' + str(chainId) + '"' + """,
+                  "actions": {
+                       "netvirt-sfc-acl:rsp-name": "RSP""" + str(chainId) + """"
+                   },
+                  "matches": {
+                       "network-uuid" : "177bef73-514e-4922-990f-d7aba0f3b0f4",
+                       "source-ipv4-network": "10.0.0.0/24",
+                       "protocol": "6",
+                       "source-port-range": { "lower-port": 0 },
+                       "destination-port-range": { "lower-port": """ + str(port) + """ }
+                   }
+              } ]
+        }
+    } ]
+}
+        """
+        return stringClassifier 
+
+    @staticmethod
     def printSfConfig(strJson):
         try:
             sfJson = json.loads(strJson)
@@ -1745,6 +1789,12 @@ class SfcConfig(cli.Application):
         restconf = "/restconf/operations/rendered-service-path:delete-rendered-path/"
         self.sendPostOdlConfig(self, odlIpAddress, restconf, payload)
 
+    @staticmethod
+    def sendCreateClassifierConfig(self, odlIpAddress, rsp_id, payload):
+        restconf = ("/restconf/config/ietf-access-control-list:access-lists/"
+                    "acl/ietf-access-control-list:ipv4-acl/ACL" + str(rsp_id))
+        self.sendPutOdlConfig(self, odlIpAddress, restconf, payload)
+
     def main(self):
         print(sys.argv[0] + ' arguments: ' + str(sys.argv[1:])) + '\n'
 
@@ -1775,6 +1825,13 @@ class SfcConfig(cli.Application):
             self.sendDeleteRspConfig(self,
                 self._odl, self.getDeleteReverseRspChainJson(
                     self._delete_rsp_from_id))
+
+        if self._create_classifier_from_id != None:
+            self.sendCreateClassifierConfig(self,
+                self._odl, self._create_classifier_from_id, 
+                self.getCreateClassifierJson(
+                    self._create_classifier_from_id, 
+                    self._classifier_port))
 
         Info.invoke()
 

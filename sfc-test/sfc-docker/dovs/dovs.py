@@ -306,7 +306,7 @@ class ODL:
             {
                 'dpn-id' : dpnid,
                 'portname' : 'vxlan-{}'.format(name if name else dpnid),
-                'ip-address' : ip
+                'ip-address' : ip,
             }
         )
         api(ODL.TZ_RES + '/' + name).put(data={'transport-zone' : [tz]})
@@ -1265,6 +1265,7 @@ class SfcConfig(cli.Application):
     _different_subnets = False
     _create_rsp_from_id = None
     _delete_rsp_from_id = None
+    _all_in_one_node = False
 
     @cli.autoswitch(str)
     def odl(self, odl):
@@ -1347,6 +1348,13 @@ class SfcConfig(cli.Application):
         """
         self._delete_rsp_from_id = chain_id
 
+    @cli.autoswitch()
+    def allinonenode(self):
+        """
+        Deploy all guests in one node
+        """
+        self._all_in_one_node = True
+
     @staticmethod
     def getChainNameFromId(chainId):
         return "SFC" + str(chainId)
@@ -1389,22 +1397,41 @@ class SfcConfig(cli.Application):
         ip_value='10.0.0.1/24'
         router_value='router1'
         indexItem = 0
-        for nameItem in names:
-            indexItem += 1
-            if (self._different_subnets):
-                net_name = nameItem
-                ip_value='10.0.' + str(indexItem) + '.1/24'
-            else:
-                ip_value='10.0.0.' + str(indexItem) + '/24'
+        if self._all_in_one_node:
+            ovs_name="SFF-classifier"
+            AddNode.invoke(name=ovs_name, odl=self._odl)
+            for nameItem in names:
+                indexItem += 1
+                if (self._different_subnets):
+                    net_name = nameItem
+                    ip_value='10.0.' + str(indexItem) + '.1/24'
+                else:
+                    ip_value='10.0.0.' + str(indexItem) + '/24'
 
-            AddNode.invoke(name=nameItem, odl=self._odl)
-            AddGuest.invoke(
-                name=nameItem,
-                node=nameItem,
-                net=net_name,
-                ip=ip_value,
-                router=router_value,
-                odl=self._odl)
+                AddGuest.invoke(
+                    name=nameItem,
+                    node=ovs_name,
+                    net=net_name,
+                    ip=ip_value,
+                    router=router_value,
+                    odl=self._odl)
+        else:
+            for nameItem in names:
+                indexItem += 1
+                if (self._different_subnets):
+                    net_name = nameItem
+                    ip_value='10.0.' + str(indexItem) + '.1/24'
+                else:
+                    ip_value='10.0.0.' + str(indexItem) + '/24'
+
+                AddNode.invoke(name=nameItem, odl=self._odl)
+                AddGuest.invoke(
+                    name=nameItem,
+                    node=nameItem,
+                    net=net_name,
+                    ip=ip_value,
+                    router=router_value,
+                    odl=self._odl)
 
     @staticmethod
     def createNetworkFromGuestNames(self):
@@ -1750,7 +1777,7 @@ class SfcConfig(cli.Application):
 
         if self._chains != []:
             if (not self._only_config):
-                self.deleteAllSfInChains(self)
+#                self.deleteAllSfInChains(self)
                 time.sleep(1)
                 self.createNetworkFromGuestNames(self)
             self.putSfcConfig(self,

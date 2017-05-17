@@ -136,6 +136,10 @@
 
       > sudo dovs sfc-config --chains "[['client1', 'firewall', 'server1']]" --odl 172.28.128.1
 
+     If instead you would like to have all guests connected to one node:
+
+      > sudo dovs sfc-config --chains "[['client1', 'firewall', 'server1']]" --odl 172.28.128.1 --allinonenode
+
      Then you create the two RSPs with the following command:
 
       > sudo dovs sfc-config --create-rsp-from-id 1 --odl 172.28.128.1

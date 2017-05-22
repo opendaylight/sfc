@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a0b7d60_b2e6fe14",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1578,
+      "author": {
+        "id": 3838
+      },
+      "writtenOn": "2017-05-22T12:34:54Z",
+      "side": 1,
+      "message": "Nit: a couple of trailing spaces in this file. There is not pep8 check in the CI pipeline, but I\u0027d guess it\u0027s a good practice.",
+      "range": {
+        "startLine": 1578,
+        "startChar": 30,
+        "endLine": 1578,
+        "endChar": 31
+      },
+      "revId": "9af769a0c0ca8ac47fb4cea8c9c9e2d741158fe3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a0b7d60_92e3fa04",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1597,
+      "author": {
+        "id": 3838
+      },
+      "writtenOn": "2017-05-22T12:34:54Z",
+      "side": 1,
+      "message": "idem",
+      "range": {
+        "startLine": 1597,
+        "startChar": 31,
+        "endLine": 1597,
+        "endChar": 32
+      },
+      "revId": "9af769a0c0ca8ac47fb4cea8c9c9e2d741158fe3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a0b7d60_f2f086cb",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1831,
+      "author": {
+        "id": 3838
+      },
+      "writtenOn": "2017-05-22T12:34:54Z",
+      "side": 1,
+      "message": "idem",
+      "range": {
+        "startLine": 1831,
+        "startChar": 59,
+        "endLine": 1831,
+        "endChar": 60
+      },
+      "revId": "9af769a0c0ca8ac47fb4cea8c9c9e2d741158fe3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a0b7d60_d2ed82f1",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1833,
+      "author": {
+        "id": 3838
+      },
+      "writtenOn": "2017-05-22T12:34:54Z",
+      "side": 1,
+      "message": "idem",
+      "range": {
+        "startLine": 1833,
+        "startChar": 52,
+        "endLine": 1833,
+        "endChar": 53
+      },
+      "revId": "9af769a0c0ca8ac47fb4cea8c9c9e2d741158fe3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

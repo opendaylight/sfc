@@ -1488,20 +1488,20 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         }
 
         // On the last hop:
-        // 1. remove nsh header
-        // 3. Write C1 to Ipv4TunDst
-        // 4. Write C2 to Vnid
-        // 5. Egress to the specified port
+        // 1. Write C1 to Ipv4TunDst
+        // 2. Write C2 to Vnid
+        // 3. remove nsh header
+        // 4. Egress to the specified port
         List<Action> actionList = new ArrayList<>();
-
-        // Pop NSH
-        actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
 
         // Write C1 to Ipv4TunDst
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
 
         // Write C2 to Vnid
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
+
+        // Pop NSH
+        actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
 
         // Egress to port
         actionList.add(SfcOpenflowUtils.createActionOutPort(theOutPortToSet, actionList.size()));

@@ -57,6 +57,8 @@ import org.slf4j.LoggerFactory;
 
 public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener implements AutoCloseable {
 
+    private static final String CONTROLLER_CONFIG = "controller-config";
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
     private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
@@ -71,8 +73,8 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
         registerAsDataChangeListener();
     }
 
-    public void setSfcProviderSfDescriptionMonitorAPI(SfcProviderSfDescriptionMonitorAPI broker) {
-        getSfDescMon = broker;
+    public void setSfcProviderSfDescriptionMonitorAPI(SfcProviderSfDescriptionMonitorAPI descriptionMonitorAPI) {
+        getSfDescMon = descriptionMonitorAPI;
     }
 
     private static boolean isServiceFunction(NetconfNode netconfNode) {
@@ -89,10 +91,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
 
     @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-
         printTraceStart(LOG);
-
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
 
         // Node CREATION
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
@@ -100,19 +99,15 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
             if (entry.getValue() instanceof Node) {
                 Node node = (Node) entry.getValue();
-                String nodeName = node.getNodeId().getValue();
                 LOG.debug("\nCreated NetconfNodeAugmentation: {}", node.toString());
-
             }
         }
 
         for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
-            Node node = null;
             if (entry.getKey().getTargetType() == NetconfNode.class) {
                 // We have a Netconf device
                 NodeId nodeId = getNodeId(entry);
                 String nodeName = nodeId.getValue();
-                NetconfNode nnode = (NetconfNode) entry.getValue();
                 LOG.info("NETCONF Listener created event: {}", nodeName);
             }
         }
@@ -124,7 +119,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
                 String nodeName = nodeId.getValue();
 
                 // We bypass the internal Netconf server
-                if (!nodeName.equals("controller-config")) {
+                if (!CONTROLLER_CONFIG.equals(nodeName)) {
                     NetconfNode nnode = (NetconfNode) entry.getValue();
 
                     NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
@@ -241,7 +236,6 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
     }
 
     class SfDescriptionMonitoringThread implements Runnable {
-        private final int ticket = 10;
         private final String nodeName;
 
         SfDescriptionMonitoringThread(String nodeName) {

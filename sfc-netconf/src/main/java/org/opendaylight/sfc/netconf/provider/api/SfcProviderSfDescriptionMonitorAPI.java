@@ -82,7 +82,7 @@ public class SfcProviderSfDescriptionMonitorAPI {
                 }
 
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Cannot get the SF description information.");
+                LOG.error("Cannot get the SF description information", e);
             }
         }
         printTraceStop(LOG);
@@ -106,7 +106,7 @@ public class SfcProviderSfDescriptionMonitorAPI {
                     LOG.error("getSFMonitoringInfo() failed.");
                 }
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Cannot get the SF monitoring information.");
+                LOG.error("Cannot get the SF monitoring information", e);
             }
         }
         printTraceStop(LOG);

@@ -132,8 +132,8 @@ public class SfcNetconfServiceFunctionAPI {
      */
     public static boolean putServiceFunctionDescription(DescriptionInfo descInfo, SfName sfName) {
         boolean ret = false;
-        SfcSfDescMonBuilder sfDescMonBuilder = null;
-        SfcSfDescMon sfDescMon = null;
+        SfcSfDescMonBuilder sfDescMonBuilder;
+        SfcSfDescMon sfDescMon;
         ServiceFunctionState dataSfcStateObject;
         printTraceStart(LOG);
 
@@ -210,8 +210,8 @@ public class SfcNetconfServiceFunctionAPI {
      */
     public static boolean putServiceFunctionMonitor(MonitoringInfo monInfo, SfName sfName) {
         boolean ret = false;
-        SfcSfDescMonBuilder sfDescMonBuilder = null;
-        SfcSfDescMon sfDescMon = null;
+        SfcSfDescMonBuilder sfDescMonBuilder;
+        SfcSfDescMon sfDescMon;
         ServiceFunctionState dataSfcStateObject;
         printTraceStart(LOG);
         if (dataBroker != null) {

@@ -185,7 +185,7 @@ public interface SfcOfFlowProgrammerInterface {
 
     void configureTransportIngressTableMatchAny(String sffNodeName);
 
-    void configureTransportIngressTableMatchAnyResubmit(final String sffNodeName, short nextTableId);
+    void configureTransportIngressTableMatchAnyResubmit(String sffNodeName, short nextTableId);
 
     void configurePathMapperTableMatchAny(String sffNodeName);
 

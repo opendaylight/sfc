@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7af0899e_3f55a5c6",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/listener/SfcNetconfNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6419
+      },
+      "writtenOn": "2017-05-26T08:06:03Z",
+      "side": 1,
+      "message": "move this to a constant",
+      "range": {
+        "startLine": 120,
+        "startChar": 21,
+        "endLine": 120,
+        "endChar": 40
+      },
+      "revId": "b8728118e5ab20aba6099820970c2c42d386dc4f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

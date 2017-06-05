@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
-    <artifactId>karaf-parent</artifactId>
+    <artifactId>karaf4-parent</artifactId>
     <version>1.8.0-Carbon</version>
   </parent>
 
@@ -22,24 +22,23 @@
   <dependencies>
     <!-- Basic Karaf dependencies -->
     <dependency>
-      <!-- scope is compile so all features (there is only one) are installed
-            into startup.properties and the feature repo itself is not installed -->
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>framework</artifactId>
-      <version>${karaf.version}</version>
+      <!--version>${karaf.version}</version-->
       <type>kar</type>
     </dependency>
 
     <!-- Project local feautures -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>features-sfc</artifactId>
+      <artifactId>features4-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+
 
   <build>
     <plugins>

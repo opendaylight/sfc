@@ -29,7 +29,6 @@
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
     <modules>
-        <module>features-sfc</module>
         <module>features4-sfc</module>
         <module>odl-sfc-model</module>
         <module>odl-sfc-provider</module>

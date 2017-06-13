@@ -11,7 +11,7 @@
    <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>features-parent</artifactId>
-    <version>1.8.0-Carbon</version>
+    <version>1.9.0</version>
     <relativePath />
   </parent>
 
@@ -317,7 +317,7 @@
     <dependency>
       <groupId>org.opendaylight.odlparent</groupId>
       <artifactId>opendaylight-karaf-empty</artifactId>
-      <version>1.8.0-Carbon</version>
+      <version>1.9.0</version>
       <type>zip</type>
     </dependency>
     <!-- Uncomment this if you get an error : java.lang.NoSuchMethodError: org.slf4j.helpers.MessageFormatter.format(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)Lorg/slf4j/helpers/FormattingTuple; -->

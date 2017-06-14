@@ -25,60 +25,36 @@
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>
-    <artifactId>odl-sfc-openflow-renderer</artifactId>
+    <artifactId>odl-sfc-statistics</artifactId>
     <version>0.7.0-SNAPSHOT</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>0.6.0-SNAPSHOT</version>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>odl-mdsal-broker</artifactId>
+            <version>1.7.0-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
-            <version>0.6.0-SNAPSHOT</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.genius</groupId>
-            <artifactId>odl-genius-api</artifactId>
-            <version>0.4.0-SNAPSHOT</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
+            <!-- Bring in the odl-sfc-provider feature -->
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>odl-sfc-ovs</artifactId>
+            <artifactId>odl-sfc-provider</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>odl-sfc-statistics</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-genius</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-openflow-renderer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
+            <!-- Bring in the sfc-openflow-utils bundle -->
             <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-openflow-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-statistics</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

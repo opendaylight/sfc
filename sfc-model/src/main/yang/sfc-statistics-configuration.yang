@@ -1,0 +1,49 @@
+module sfc-statistics-configuration {
+  yang-version 1;
+
+  namespace "urn:inocybe:params:xml:ns:yang:sfc-statistics-configuration";
+  prefix "sfc-stats-confic";
+
+  organization "Inocybe, Inc.";
+  contact "Brady Johnson <bjohnson@inocybe.com>";
+
+  revision 2017-11-30 {
+    description
+      "This module defines the SFC statistics configuration.
+       These configuration values will only be stored in the
+       configuration data store.";
+  }
+
+  container sfc-statistics-configuration {
+    description
+      "Configuration values for the SFC statistics collection";
+
+    leaf sfc-rsp-statistics-period {
+      description
+        "The collection period in seconds for RSP statistics
+         gathering. Set to 0 to disable rsp statistics.";
+
+      type uint32;
+      default 120;
+    }
+
+    leaf sfc-sf-statistics-period {
+      description
+        "The collection period in seconds for Service Function
+         statistics gathering. Set to 0 to disable sf statistics.";
+
+      type uint32;
+      default 120;
+    }
+
+    leaf sfc-sff-statistics-period {
+      description
+        "The collection period in seconds for Service Function
+         Forwarder statistics gathering. Set to 0 to disable
+         sff statistics.";
+
+      type uint32;
+      default 120;
+    }
+  }
+}

@@ -10,6 +10,9 @@
     interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
   <reference id="rpcProviderRegistry"
     interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+  <reference id="sfcStatisticsManager"
+    interface="org.opendaylight.sfc.statistics.SfcStatisticsManagerInterface"
+    odl:type="default" />
 
   <bean id="renderer"
     class="org.opendaylight.sfc.ofrenderer.SfcOfRenderer"
@@ -17,6 +20,7 @@
     <argument ref="dataBroker"/>
     <argument ref="notificationService"/>
     <argument ref="rpcProviderRegistry"/>
+    <argument ref="sfcStatisticsManager"/>
   </bean>
 
 </blueprint>

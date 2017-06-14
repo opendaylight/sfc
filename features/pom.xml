@@ -33,6 +33,7 @@
         <module>odl-sfc-model</module>
         <module>odl-sfc-provider</module>
         <module>odl-sfc-provider-rest</module>
+        <module>odl-sfc-statistics</module>
         <module>odl-sfc-netconf</module>
         <module>odl-sfc-ios-xe-renderer</module>
         <module>odl-sfc-ovs</module>

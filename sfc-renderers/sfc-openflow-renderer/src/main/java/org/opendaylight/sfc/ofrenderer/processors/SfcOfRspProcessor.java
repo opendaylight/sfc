@@ -8,11 +8,14 @@
 
 package org.opendaylight.sfc.ofrenderer.processors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
@@ -24,6 +27,7 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerInterface;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -41,6 +45,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfTableOffsets;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfTableOffsetsBuilder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTable;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -57,6 +65,7 @@ public class SfcOfRspProcessor {
     private final OperDsUpdateHandlerInterface operDsHandler;
     private final Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
     private final SfcGeniusRpcClient theGeniusRpcClient;
+    private final SfcStatisticsManagerInterface sfcStatisticsMgr;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /*
@@ -70,7 +79,8 @@ public class SfcOfRspProcessor {
 
     public SfcOfRspProcessor(SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils, SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry, DataBroker dataBroker) {
+            SfcStatisticsManagerInterface sfcStatisticsMgr, RpcProviderRegistry rpcProviderRegistry,
+            DataBroker dataBroker) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
@@ -78,6 +88,7 @@ public class SfcOfRspProcessor {
         this.theGeniusRpcClient = new SfcGeniusRpcClient(rpcProviderRegistry);
         this.operDsHandler = new OperDsUpdateHandlerLSFFImpl(dataBroker);
         this.rspTransportProcessors = new HashMap<>();
+        this.sfcStatisticsMgr = sfcStatisticsMgr;
 
         this.rspTransportProcessors.put(getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshVxgpe());
@@ -155,6 +166,9 @@ public class SfcOfRspProcessor {
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
 
+            this.sfcStatisticsMgr.scheduleRspStatistics(
+                    rsp, getTableOffsets(sffGraph.getGraphEntryIterator().next().getDstSff()));
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (SfcRenderingException e) {
@@ -184,6 +198,30 @@ public class SfcOfRspProcessor {
         // if the RSP
         // being deleted contains dpnid information (asynchronously)
         getOperDsHandler().onRspDeletion(rsp);
+    }
+
+    private SfcOfTableOffsets getTableOffsets(SffName sffName) {
+        long tableBase = sfcOfFlowProgrammer.getTableBase();
+        if (tableBase < 0) {
+            tableBase = 0;
+        }
+
+        SfcOfTablesByBaseTableBuilder sfcOfTablesByBaseTableBuilder = new SfcOfTablesByBaseTableBuilder();
+        sfcOfTablesByBaseTableBuilder.setSffName(sffName);
+        sfcOfTablesByBaseTableBuilder.setBaseTable(tableBase);
+        sfcOfTablesByBaseTableBuilder.setTransportIngressTable(tableBase + 1);
+        sfcOfTablesByBaseTableBuilder.setPathMapperTable(tableBase + 2);
+        sfcOfTablesByBaseTableBuilder.setPathMapperAclTable(tableBase + 3);
+        sfcOfTablesByBaseTableBuilder.setNextHopTable(tableBase + 4);
+        sfcOfTablesByBaseTableBuilder.setTransportEgressTable(tableBase + 10);
+
+        List<SfcOfTablesByBaseTable> tableList = new ArrayList<>();
+        tableList.add(sfcOfTablesByBaseTableBuilder.build());
+
+        SfcOfTableOffsetsBuilder sfcOfTableOffsetsBuilder = new SfcOfTableOffsetsBuilder();
+        sfcOfTableOffsetsBuilder.setSfcOfTablesByBaseTable(tableList);
+
+        return sfcOfTableOffsetsBuilder.build();
     }
 
     private OperDsUpdateHandlerInterface getOperDsHandler() {

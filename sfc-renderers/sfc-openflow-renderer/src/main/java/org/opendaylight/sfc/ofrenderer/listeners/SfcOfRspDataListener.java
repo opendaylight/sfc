@@ -54,11 +54,15 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
                         LOG.info("SfcOfRspDataListener.onDataTreeChanged create RSP {}", rootNode.getDataBefore());
                         sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
                     } else if (rootNode.getDataAfter().equals(rootNode.getDataBefore())) {
-                        LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",
-                                rootNode.getDataAfter(), rootNode.getDataBefore());
+                        //LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",
+                        //        rootNode.getDataAfter(), rootNode.getDataBefore());
                         // This clause supports re-rendering of unmodified RSPs
-                        sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
-                        sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
+
+                        // TODO Modifying the RSP stats is causing RSP delete/create which isnt correct
+                        if (!compareBaseRsps(rootNode.getDataBefore(), rootNode.getDataAfter())) {
+                            sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
+                            sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
+                        }
                     }
                     break;
                 case DELETE:
@@ -76,5 +80,28 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
     @Override
     public void close() throws Exception {
         rspListenerRegistration.close();
+    }
+
+    private boolean compareBaseRsps(RenderedServicePath rspBefore, RenderedServicePath rspAfter) {
+        // We just need a basic, simple comparison, to avoid
+        // triggering RSP deletion for RSP statistics changes
+
+        if (!rspBefore.getName().equals(rspAfter.getName())) {
+            return false;
+        }
+
+        if (!rspBefore.getParentServiceFunctionPath().equals(rspAfter.getParentServiceFunctionPath())) {
+            return false;
+        }
+
+        if (!rspBefore.getStartingIndex().equals(rspAfter.getStartingIndex())) {
+            return false;
+        }
+
+        if (!rspBefore.getServiceChainName().equals(rspAfter.getServiceChainName())) {
+            return false;
+        }
+
+        return true;
     }
 }

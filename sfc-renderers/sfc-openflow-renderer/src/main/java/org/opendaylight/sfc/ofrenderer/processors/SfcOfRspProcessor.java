@@ -24,6 +24,7 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerBase;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -57,6 +58,7 @@ public class SfcOfRspProcessor {
     private final OperDsUpdateHandlerInterface operDsHandler;
     private final Map<String, SfcRspTransportProcessorBase> rspTransportProcessors;
     private final SfcGeniusRpcClient theGeniusRpcClient;
+    private final SfcStatisticsManagerBase sfcStatisticsMgr;
     private static final String TRANSPORT_ENCAP_SEPARATOR_STRING = "//";
 
     /*
@@ -70,7 +72,8 @@ public class SfcOfRspProcessor {
 
     public SfcOfRspProcessor(SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcOfBaseProviderUtils sfcOfProviderUtils, SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry, DataBroker dataBroker) {
+            SfcStatisticsManagerBase sfcStatisticsMgr, RpcProviderRegistry rpcProviderRegistry,
+            DataBroker dataBroker) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
@@ -78,6 +81,7 @@ public class SfcOfRspProcessor {
         this.theGeniusRpcClient = new SfcGeniusRpcClient(rpcProviderRegistry);
         this.operDsHandler = new OperDsUpdateHandlerLSFFImpl(dataBroker);
         this.rspTransportProcessors = new HashMap<>();
+        this.sfcStatisticsMgr = sfcStatisticsMgr;
 
         this.rspTransportProcessors.put(getTransportEncapName(VxlanGpe.class.getName(), Nsh.class.getName()),
                 new SfcRspProcessorNshVxgpe());
@@ -154,6 +158,8 @@ public class SfcOfRspProcessor {
 
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
+
+            this.sfcStatisticsMgr.scheduleRspStatistics(rsp);
 
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 

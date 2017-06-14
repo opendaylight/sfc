@@ -5,16 +5,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.sfc</groupId>
-    <artifactId>sfc-renderers</artifactId>
+    <artifactId>sfc-parent</artifactId>
     <version>0.6.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
-  <artifactId>sfc-openflow-renderer</artifactId>
+  <artifactId>sfc-statistics</artifactId>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: sfc :: ${project.artifactId}</name>
+
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -25,51 +26,23 @@
       <artifactId>sfc-provider</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-ovs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-openflow-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-statistics</artifactId>
-      <version>0.6.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-config</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-binding-broker-impl</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-base</artifactId>
+      <version>${feature.openflowplugin.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-genius</artifactId>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-flow-service</artifactId>
+      <version>${feature.openflowplugin.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <scope>test</scope>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-nicira</artifactId>
+      <version>${openflowplugin.version}</version>
     </dependency>
   </dependencies>
 

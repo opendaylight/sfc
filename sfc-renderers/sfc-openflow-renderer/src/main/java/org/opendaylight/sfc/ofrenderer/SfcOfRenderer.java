@@ -21,6 +21,7 @@ import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerBase;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
@@ -44,7 +45,8 @@ public class SfcOfRenderer implements AutoCloseable {
     SfcOfRendererDataListener sfcOfRendererListener = null;
 
     public SfcOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
-            RpcProviderRegistry rpcProviderRegistry) {
+            RpcProviderRegistry rpcProviderRegistry,
+            SfcStatisticsManagerBase sfcStatisticsMgr) {
         LOG.info("SfcOfRenderer starting the SfcOfRenderer plugin...");
 
         this.sfcSynchronizer = new SfcSynchronizer();
@@ -53,7 +55,7 @@ public class SfcOfRenderer implements AutoCloseable {
         this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(sfcofflowwriterimpl);
         SfcOfBaseProviderUtils sfcOfProviderUtils = new SfcOfProviderUtils();
         this.sfcOfRspProcessor = new SfcOfRspProcessor(sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer,
-                rpcProviderRegistry, dataBroker);
+                sfcStatisticsMgr, rpcProviderRegistry, dataBroker);
 
         this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfRspProcessor);
         this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);

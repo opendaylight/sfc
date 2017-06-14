@@ -23,7 +23,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ovs.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -74,6 +76,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
         LOG.info("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
         // add augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(serviceFunctionForwarder);
+        setSffOvsBridgeAugOpenflowNodeId(serviceFunctionForwarder);
     }
 
     @Override
@@ -126,8 +129,6 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
      *
      * @param sff
      *            ServiceFunctionForwarder Object.
-     * @param executor
-     *            ExecutorService Object
      */
     static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
 
@@ -140,5 +141,22 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
             // put Termination Points
             SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator(), executor);
         }
+    }
+
+    /**
+     * Store the Openflow NodeId in the SFF OvsBridge Augmentation.
+     * This makes it easier to get the Openflow NodeId from other parts of the SFC code.
+     *
+     * @param sff - The SFF to modify
+     */
+    static void setSffOvsBridgeAugOpenflowNodeId(ServiceFunctionForwarder sff) {
+        ServiceFunctionForwarder augmentedSff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
+        InstanceIdentifier<SffOvsBridgeAugmentation> sffOvsBridgeAugIid = InstanceIdentifier
+                .builder(ServiceFunctionForwarders.class)
+                .child(ServiceFunctionForwarder.class, sff.getKey())
+                .augmentation(SffOvsBridgeAugmentation.class).build();
+        SfcDataStoreAPI.writePutTransactionAPI(sffOvsBridgeAugIid,
+                augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class),
+                LogicalDatastoreType.CONFIGURATION);
     }
 }

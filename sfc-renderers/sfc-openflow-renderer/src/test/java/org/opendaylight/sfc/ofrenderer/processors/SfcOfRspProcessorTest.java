@@ -32,6 +32,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerImpl;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -79,7 +80,7 @@ public class SfcOfRspProcessorTest {
         this.flowProgrammerTestMoc.setFlowWriter(mock(SfcOfFlowWriterInterface.class));
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         this.sfcOfRspProcessor = new SfcOfRspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock,
-                new SfcSynchronizer(), null, null);
+                new SfcSynchronizer(), new SfcStatisticsManagerImpl(), null, null);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();

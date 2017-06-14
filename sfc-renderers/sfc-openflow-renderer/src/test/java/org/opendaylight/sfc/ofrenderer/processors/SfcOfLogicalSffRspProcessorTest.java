@@ -58,6 +58,7 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerImpl;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
@@ -195,7 +196,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         logicalSffProcessor.setFlowProgrammer(flowProgrammer);
 
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(flowProgrammer, sfcUtils, new SfcSynchronizer(),
-                rpcProviderRegistry, dataBroker));
+                new SfcStatisticsManagerImpl(), rpcProviderRegistry, dataBroker));
         PowerMockito.when(sfcOfRspProcessor, "getOperDsHandler").thenReturn(operDsUpdateHandler);
 
         rspBuilder = new RspBuilder(sfcUtils);

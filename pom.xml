@@ -49,6 +49,7 @@
     <module>sfc-pot</module>
     <module>features</module>
     <module>sfc-karaf</module>
+    <module>sfc-statistics</module>
     <module>sfc-renderers</module>
     <module>sfc-genius</module>
     <module>sfc-shell</module>
@@ -103,6 +104,11 @@
       <dependency>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-ovs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-statistics</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

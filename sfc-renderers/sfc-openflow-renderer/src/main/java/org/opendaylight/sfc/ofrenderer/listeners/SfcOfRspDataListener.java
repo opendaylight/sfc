@@ -57,8 +57,10 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
                         LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",
                                 rootNode.getDataAfter(), rootNode.getDataBefore());
                         // This clause supports re-rendering of unmodified RSPs
-                        sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
-                        sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
+
+                        // TODO Modifying the RSP stats is causing RSP delete/create which isnt correct
+                        //sfcOfRspProcessor.deleteRenderedServicePath(rootNode.getDataBefore());
+                        //sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
                     }
                     break;
                 case DELETE:

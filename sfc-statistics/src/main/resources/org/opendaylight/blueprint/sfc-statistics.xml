@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+  <bean id="sfcStatisticsManager"
+    class="org.opendaylight.sfc.statistics.SfcStatisticsManagerImpl"
+    destroy-method="close">
+      <argument value="30"/>
+      <argument value="10"/>
+  </bean>
+
+  <service ref="sfcStatisticsManager"
+    interface="org.opendaylight.sfc.statistics.SfcStatisticsManagerBase"
+    odl:type="default"/>
+
+</blueprint>

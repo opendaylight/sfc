@@ -38,6 +38,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.processors.SfcOfRspProcessor;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
+import org.opendaylight.sfc.statistics.SfcStatisticsManagerImpl;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
@@ -103,7 +104,7 @@ public class SfcOfRspTransactionalProcessorTest {
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         // spied in order to check private methods
         this.sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(this.flowProgrammerTestMock,
-                this.sfcUtilsTestMock, new SfcSynchronizer(), null, dataBroker));
+                this.sfcUtilsTestMock, new SfcSynchronizer(), new SfcStatisticsManagerImpl(), null, dataBroker));
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();

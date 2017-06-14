@@ -138,6 +138,11 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>sfc-statistics</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>sfc-ovs</artifactId>
         <version>${project.version}</version>
     </dependency>

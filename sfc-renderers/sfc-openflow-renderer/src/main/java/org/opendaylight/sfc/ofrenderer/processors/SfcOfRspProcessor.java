@@ -155,6 +155,8 @@ public class SfcOfRspProcessor {
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
 
+            SfcStatisticsManager.scheduleRspStatistics(rsp);
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (SfcRenderingException e) {

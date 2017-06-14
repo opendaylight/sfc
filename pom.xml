@@ -192,6 +192,7 @@
     <modules>
         <module>sfc-model</module>
         <module>sfc-provider</module>
+        <module>sfc-statistics</module>
         <module>sfc-test-consumer</module>
         <module>sfc-ui</module>
         <module>sfc-sb-rest</module>

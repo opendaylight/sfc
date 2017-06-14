@@ -48,6 +48,11 @@
         <bundle>mvn:org.opendaylight.sfc/sfc-netconf/{{VERSION}}</bundle>
     </feature>
 
+    <feature name="odl-sfc-statistics" version="${project.version}" description="OpenDaylight :: sfc :: Statistics ">
+        <feature version="${project.version}">odl-sfc-provider-rest</feature>
+        <bundle>mvn:org.opendaylight.sfc/sfc-statistics/{{VERSION}}</bundle>
+    </feature>
+
     <feature name="odl-sfc-ios-xe-renderer" version="${project.version}" description="OpenDaylight :: sfc-renderers :: IOS-XE Renderer ">
         <feature version="${project.version}">odl-sfc-provider-rest</feature>
         <feature version="${netconf.parent.version}">odl-netconf-connector</feature>
@@ -80,6 +85,7 @@
 
     <feature name="odl-sfc-openflow-renderer" version="${project.version}" description="OpenDaylight :: sfc-openflow-renderer">
         <feature version="${project.version}">odl-sfc-ovs</feature>
+        <feature version="${project.version}">odl-sfc-statistics</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
         <feature version="${openflowplugin.version}">odl-openflowplugin-nxm-extensions</feature>
         <feature version="${genius.version}">odl-genius-api</feature>

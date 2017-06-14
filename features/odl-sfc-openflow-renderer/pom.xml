@@ -74,5 +74,10 @@
             <artifactId>sfc-openflow-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-statistics</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

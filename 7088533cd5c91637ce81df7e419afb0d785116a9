@@ -16,6 +16,24 @@
       "revId": "7088533cd5c91637ce81df7e419afb0d785116a9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1af78d9a_6f748dfd",
+        "filename": "sfc-karaf/pom.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-06-16T14:13:56Z",
+      "side": 1,
+      "message": "Oh wow, that was a major mistake on my part while rebasing. Thanks for catching that!",
+      "parentUuid": "1af78d9a_6bbf62d1",
+      "revId": "7088533cd5c91637ce81df7e419afb0d785116a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

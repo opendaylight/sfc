@@ -166,9 +166,11 @@ public interface SfcOfFlowProgrammerInterface {
      *            NSI to use in the match part
      * @param actionList
      *            List of actions to use in the actions part
+     * @param flowName
+     *            A unique flow name, also used as a flow key
      */
     void configureNshEthTransportEgressFlow(String sffOpenFlowNodeName, long nshNsp, short nshNsi,
-            List<Action> actionList);
+            List<Action> actionList, String flowName);
 
     void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port);
 

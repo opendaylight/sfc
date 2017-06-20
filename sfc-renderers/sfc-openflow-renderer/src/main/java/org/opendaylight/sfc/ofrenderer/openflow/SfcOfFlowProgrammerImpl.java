@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.genius.mdsalutil.NwConstants;
@@ -87,8 +88,21 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String TRANSPORT_EGRESS_MPLS_LASTHOP_COOKIE = "00000402";
     public static final String TRANSPORT_EGRESS_MAX_COOKIE = "00000FFF";
 
-    private static final String INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL = "ingress_Transport_Arp_Flow";
-    private static final String NEXT_HOP_FLOW_NAME_LITERAL = "nextHop";
+    private static final String FLOW_NAME_MATCH_ANY = "matchAny";
+    private static final String FLOW_NAME_MATCH_ANY_DROP = "matchAnyDrop";
+    private static final String FLOW_NAME_MATCH_ANY_RESUBMIT = "matchAnyResubmit";
+    private static final String FLOW_NAME_CLASS_DPDK_OUT = "classifierDpdkOutput";
+    private static final String FLOW_NAME_CLASS_DPDK_IN = "classifierDpdkInput";
+    private static final String FLOW_NAME_TRANSPORT_INGRESS_ARP = "transportIngressArp";
+    private static final String FLOW_NAME_TRANSPORT_INGRESS = "transportIngress";
+    private static final String FLOW_NAME_PATH_MAPPER = "pathMapper";
+    private static final String FLOW_NAME_PATH_MAPPER_ACL = "pathMapperAcl";
+    private static final String FLOW_NAME_NEXT_HOP = "nextHop";
+    private static final String FLOW_NAME_TRANSPORT_EGRESS = "transportEgress";
+    private static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS = "transportEgressLastHop";
+    private static final String FLOW_NAME_APPCOEXIST_TRANSPORT_EGRESS = "transportEgressAppCoexist";
+    private static final String FLOW_NAME_SF_LOOPBACK_INGRESS = "sfLoopbackIngress";
+    private static final String FLOW_NAME_SF_LOOPBACK_EGRESS = "sfLoopbackEgress";
 
     // The 000005** cookies are for MAC Chaining Transport Egress flows
     public static final String TRANSPORT_EGRESS_MAC_CHAINING_COOKIE = "00000501";
@@ -116,6 +130,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
     private static final int PKTIN_IDLE_TIMEOUT = 60;
     private static final String EMPTY_SWITCH_PORT = "";
+    private static final String FLOW_NAME_DELIMITER = "_";
     public static final short APP_COEXISTENCE_NOT_SET = -1;
 
     // Instance variables
@@ -275,9 +290,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_CLASS_DPDK_OUT).add(sffNodeName).add(String.valueOf(outPort));
+
         // Create and configure the FlowBuilder
         FlowBuilder classifierDpdkOutputFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_CLASSIFIER),
-                FLOW_PRIORITY_CLASSIFIER, "classifier_dpdk_output", match, isb);
+                FLOW_PRIORITY_CLASSIFIER, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierDpdkOutputFlow);
     }
@@ -307,9 +325,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_CLASS_DPDK_IN).add(sffNodeName).add(String.valueOf(inPort));
+
         // Create and configure the FlowBuilder
         FlowBuilder classifierDpdkInputFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_CLASSIFIER),
-                FLOW_PRIORITY_CLASSIFIER, "classifier_dpdk_input", match, isb);
+                FLOW_PRIORITY_CLASSIFIER, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, classifierDpdkInputFlow);
     }
@@ -431,8 +452,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Finish up the instructions
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_MATCH_ANY_DROP).add(String.valueOf(tableId));
+
         // Create and configure the FlowBuilder
-        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, flowName.toString(), match, isb);
     }
 
     /**
@@ -454,8 +478,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.appendGotoTableInstruction(new InstructionsBuilder(), nextTableId);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_MATCH_ANY).add(String.valueOf(tableId)).add(String.valueOf(nextTableId));
+
         // Create and configure the FlowBuilder
-        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, flowName.toString(), match, isb);
     }
 
     /**
@@ -481,8 +508,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_MATCH_ANY_RESUBMIT).add(String.valueOf(tableId)).add(String.valueOf(nextTableId));
+
         // Create and configure the FlowBuilder
-        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
+        return SfcOpenflowUtils.createFlowBuilder(tableId, FLOW_PRIORITY_MATCH_ANY, flowName.toString(), match, isb);
     }
 
     //
@@ -627,9 +657,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.appendGotoTableInstruction(new InstructionsBuilder(), nextTable);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_INGRESS).add(match.toString());
+
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
-                FLOW_PRIORITY_TRANSPORT_INGRESS, "ingress_Transport_Flow", match, isb);
+                FLOW_PRIORITY_TRANSPORT_INGRESS, flowName.toString(), match, isb);
     }
 
     /**
@@ -666,10 +699,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Put our Instruction in a list of Instructions
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_INGRESS_ARP).add(sffNodeName).add(mac);
+
         // Create and configure the FlowBuilder
         FlowBuilder arpTransportIngressFlow = SfcOpenflowUtils.createFlowBuilder(
                 getTableId(TABLE_INDEX_TRANSPORT_INGRESS), FLOW_PRIORITY_ARP_TRANSPORT_INGRESS,
-                INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL, match, isb);
+                flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, arpTransportIngressFlow);
     }
@@ -690,9 +726,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_SF_LOOPBACK_EGRESS)
+            .add(sffNodeName).add(sfIp).add(String.valueOf(vxlanUdpPort)).add(String.valueOf(sffPort));
+
         // Create and configure the FlowBuilder
         FlowBuilder sfFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
-                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL, match, isb);
+                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
     }
@@ -712,9 +752,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_SF_LOOPBACK_INGRESS)
+            .add(sffNodeName).add(String.valueOf(vxlanUdpPort)).add(String.valueOf(sffPort));
+
         // Create and configure the FlowBuilder
         FlowBuilder sfFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
-                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, INGRESS_TRANSPORT_ARP_FLOW_NAME_LITERAL, match, isb);
+                FLOW_PRIORITY_ARP_TRANSPORT_INGRESS, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, sfFlow);
     }
@@ -839,9 +883,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         SfcOpenflowUtils.appendMetadataInstruction(isb, getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
         SfcOpenflowUtils.appendGotoTableInstruction(isb, getTableId(TABLE_INDEX_NEXT_HOP));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_PATH_MAPPER)
+            .add(String.valueOf(pathId)).add(match.toString());
+
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_PATH_MAPPER), flowPriority,
-                NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
+                flowName.toString(), match, isb);
     }
 
     //
@@ -876,9 +924,13 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                 getMetadataSFP(pathId), METADATA_MASK_SFP_MATCH);
         SfcOpenflowUtils.appendGotoTableInstruction(isb, getTableId(TABLE_INDEX_NEXT_HOP));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_PATH_MAPPER_ACL)
+            .add(sffNodeName).add(pktSrcIpStr).add(pktDstIpStr).add(String.valueOf(pathId));
+
         // Create and configure the FlowBuilder
         FlowBuilder ingressFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_PATH_MAPPER_ACL),
-                FLOW_PRIORITY_PATH_MAPPER_ACL, NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
+                FLOW_PRIORITY_PATH_MAPPER_ACL, flowName.toString(), match, isb);
         // Set an idle timeout on this flow
         ingressFlow.setIdleTimeout(PKTIN_IDLE_TIMEOUT);
 
@@ -924,7 +976,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstMac, actionList.size()));
         }
 
-        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowPriority);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(String.valueOf(pathId)).add(srcMac).add(dstMac);
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowPriority, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
@@ -966,7 +1022,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionSetDlDst(dstSfMac, actionList.size()));
         }
 
-        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, FLOW_PRIORITY_NEXT_HOP);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(vmac).add(nextVMac).add(dstSfMac);
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, FLOW_PRIORITY_NEXT_HOP, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
@@ -1004,7 +1064,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(actionSetNwDst);
         }
 
-        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp));
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
@@ -1025,13 +1089,18 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshEthNextHopFlow(String sffNodeName, String srcMac, String dstMac, long nsp, short nsi) {
-        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nsp, nsi);
 
         List<Action> actionList = new ArrayList<>();
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthSrc(srcMac, actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthDst(dstMac, actionList.size()));
 
-        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(String.valueOf(nsi)).add(String.valueOf(nsp));
+
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nsp, nsi);
+
+        FlowBuilder nextHopFlow = configureNextHopFlow(match, actionList, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 
@@ -1045,8 +1114,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *
      * @return a FlowBuilder with the created Path Mapper flow
      */
-    private FlowBuilder configureNextHopFlow(MatchBuilder match, List<Action> actionList) {
-        return configureNextHopFlow(match, actionList, FLOW_PRIORITY_NEXT_HOP);
+    private FlowBuilder configureNextHopFlow(MatchBuilder match, List<Action> actionList, String flowName) {
+        return configureNextHopFlow(match, actionList, FLOW_PRIORITY_NEXT_HOP, flowName);
     }
 
     /**
@@ -1062,7 +1131,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *
      * @return a FlowBuilder with the created Path Mapper flow
      */
-    private FlowBuilder configureNextHopFlow(MatchBuilder match, List<Action> actionList, int flowPriority) {
+    private FlowBuilder configureNextHopFlow(MatchBuilder match, List<Action> actionList, int flowPriority,
+            String flowName) {
         LOG.debug("SfcProviderSffFlowWriter.configureNextHopFlow");
 
         // this apply actions has an 'order' of 0 - first one executed
@@ -1071,7 +1141,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_NEXT_HOP), flowPriority,
-                NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
+                flowName, match, isb);
     }
 
     //
@@ -1083,7 +1153,6 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
                                                           String port, final String vmac) {
 
         MatchBuilder match = new MatchBuilder();
-        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
         SfcOpenflowUtils.addMatchDstMac(match, dstMac);
 
         List<Action> actionList = new ArrayList<>();
@@ -1094,8 +1163,14 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionSetDlDst(vmac, actionList.size()));
         }
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(dstMac).add(vmac).add(port);
+
+        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(
-                match, actionList, port, flowPriority, TRANSPORT_EGRESS_MAC_CHAINING_COOKIE);
+                match, actionList, port, flowPriority, TRANSPORT_EGRESS_MAC_CHAINING_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1374,8 +1449,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, actionList.size()));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_NEXT_HOP)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(inport).add(outport);
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, theOutPortToSet, flowPriority,
-                TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE);
+                TRANSPORT_EGRESS_NSH_VXGPE_LASTHOP_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1419,6 +1498,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(macAddress.getValue());
+
         // Make the cookie
         BigInteger cookie = new BigInteger(
                 TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE,
@@ -1426,7 +1509,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and return the flow
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, cookie, "last hop egress flow", match, isb);
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, cookie, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
     }
@@ -1508,6 +1591,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(inport).add(outport);
+
         // Make the cookie
         BigInteger cookie = new BigInteger(
                 TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
@@ -1515,7 +1602,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and return the flow
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                flowPriority, cookie, "last hop egress flow", match, isb);
+                flowPriority, cookie, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
     }
@@ -1576,8 +1663,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, actionList.size()));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(inport).add(outport);
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, theOutPortToSet, flowPriority,
-                TRANSPORT_EGRESS_NSH_VXGPE_COOKIE);
+                TRANSPORT_EGRESS_NSH_VXGPE_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1612,8 +1703,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, actionList.size()));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(port);
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, port,
-                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE);
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, TRANSPORT_EGRESS_NSH_VXGPE_NSC_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1648,8 +1743,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, actionList.size()));
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_APPCOEXIST_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(sffIp);
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, EMPTY_SWITCH_PORT,
-                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE);
+                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, TRANSPORT_EGRESS_NSH_VXGPE_APPCOEXIST_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
@@ -1668,8 +1767,6 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureNshEthTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi, String port) {
-        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
-
         List<Action> actionList = new ArrayList<>();
         // Copy/Move Nsc1/Nsc2/Nsi/Nsp to the next hop
         actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1(actionList.size()));
@@ -1686,16 +1783,26 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Ethernet encap is performed in configureNshEthNextHopFlow()
         // while setting the next hop outer MAC addresses
 
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_EGRESS)
+            .add(sffNodeName).add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(port);
+
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+
         FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, port,
-                FLOW_PRIORITY_TRANSPORT_EGRESS, TRANSPORT_EGRESS_NSH_ETH_COOKIE);
+                FLOW_PRIORITY_TRANSPORT_EGRESS, TRANSPORT_EGRESS_NSH_ETH_COOKIE, flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 
     @Override
     public void configureNshEthTransportEgressFlow(String sffOpenflowNodeName, long nsp, short nsi,
             List<Action> actionList) {
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_EGRESS)
+            .add(sffOpenflowNodeName).add(String.valueOf(nsi)).add(String.valueOf(nsp));
+
         configureTransportEgressFlow(sffOpenflowNodeName, nsp, nsi, actionList, FLOW_PRIORITY_TRANSPORT_EGRESS,
-                TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE);
+                TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE, flowName.toString());
     }
 
     @Override
@@ -1739,7 +1846,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             actionList.add(SfcOpenflowUtils.createActionSetDlSrc(srcMac, actionList.size()));
         }
 
-        return configureTransportEgressFlow(match, actionList, port, flowPriority, cookieStr);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
+        flowName.add(FLOW_NAME_TRANSPORT_EGRESS)
+            .add(port).add(String.valueOf(pathId)).add(srcMac).add(dstMac);
+
+        return configureTransportEgressFlow(match, actionList, port, flowPriority, cookieStr, flowName.toString());
     }
 
     /**
@@ -1758,7 +1869,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      * @return a FlowBuilder with the created Path Mapper flow
      */
     private FlowBuilder configureTransportEgressFlow(MatchBuilder match, List<Action> actionList, String port,
-            int flowPriority, String cookieStr) {
+            int flowPriority, String cookieStr, String flowName) {
         LOG.debug("SfcProviderSffFlowWriter.ConfigureTransportEgressFlow");
 
         if (port.equals(EMPTY_SWITCH_PORT) && getTableEgress() > APP_COEXISTENCE_NOT_SET) {
@@ -1778,11 +1889,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and return the flow
         return SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS), flowPriority, cookie,
-                "default_egress_flow", match, isb);
+                flowName, match, isb);
     }
 
     private void configureTransportEgressFlow(String openflowName, long nshNsp, short nshNsi, List<Action> actionList,
-            int flowPriority, String cookieStr) {
+            int flowPriority, String cookieStr, String flowName) {
 
         LOG.debug("configureTransportEgressFlow:starting. ofname:{} instructions: {}", openflowName, actionList);
 
@@ -1793,7 +1904,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         BigInteger cookie = new BigInteger(TRANSPORT_EGRESS_COOKIE_STR_BASE + cookieStr, COOKIE_BIGINT_HEX_RADIX);
 
         FlowBuilder transportEgressFlowBuilder = SfcOpenflowUtils.createFlowBuilder(
-                getTableId(TABLE_INDEX_TRANSPORT_EGRESS), flowPriority, cookie, "default egress flow", match, isb);
+                getTableId(TABLE_INDEX_TRANSPORT_EGRESS), flowPriority, cookie, flowName, match, isb);
         sfcOfFlowWriter.writeFlow(flowRspId, openflowName, transportEgressFlowBuilder);
     }
 
@@ -1897,7 +2008,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and configure the FlowBuilder
         FlowBuilder nextHopFlow = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_NEXT_HOP), flowPriority,
-                NEXT_HOP_FLOW_NAME_LITERAL, match, isb);
+                FLOW_NAME_NEXT_HOP, match, isb);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, nextHopFlow);
     }
 

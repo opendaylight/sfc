@@ -9,7 +9,7 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.StringJoiner;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
@@ -215,9 +215,14 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                     + " egress actions for logical interface [" + sfLogicalInterface + "] (sf:" + sfDst + ")");
         }
+
+        StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
+        flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
+            .add("SF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
+
         sfcFlowProgrammer.configureNshEthTransportEgressFlow(
                 sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
-                entry.getPathId(), entry.getServiceIndex(), actionList.get());
+                entry.getPathId(), entry.getServiceIndex(), actionList.get(), flowName.toString());
     }
 
     /**
@@ -286,8 +291,13 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 actionList.get().add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH,
                         actionList.get().size()));
 
+                StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
+                flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
+                    .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
+
                 // 4, write those actions
-                this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(sffNodeName, nsp, nsi, actionList.get());
+                this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(
+                        sffNodeName, nsp, nsi, actionList.get(), flowName.toString());
             }
         }
     }

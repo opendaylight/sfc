@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-parent</artifactId>
-        <version>0.3.4-SNAPSHOT</version>
+        <version>0.3.5-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
     <artifactId>sfc-util-parent</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>0.3.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>sfc-openflow-utils</module>

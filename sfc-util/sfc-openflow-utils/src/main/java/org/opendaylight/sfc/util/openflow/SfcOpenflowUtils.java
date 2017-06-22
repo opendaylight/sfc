@@ -12,7 +12,6 @@ import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action.ActionUtil;
@@ -209,7 +208,6 @@ public class SfcOpenflowUtils {
     public static final int ARP_REPLY = 2;
 
     private static final int COOKIE_BIGINT_INT_RADIX = 10;
-    private static AtomicLong flowIdInc = new AtomicLong();
 
     private SfcOpenflowUtils() {
     }
@@ -217,9 +215,8 @@ public class SfcOpenflowUtils {
     public static FlowBuilder createFlowBuilder(final short table, final int priority, final BigInteger cookieValue,
             final String flowName, MatchBuilder match, InstructionsBuilder isb) {
         FlowBuilder flow = new FlowBuilder();
-        String idStr = String.valueOf(flowIdInc.getAndIncrement());
-        flow.setId(new FlowId(idStr));
-        flow.setKey(new FlowKey(new FlowId(idStr)));
+        flow.setId(new FlowId(flowName));
+        flow.setKey(new FlowKey(new FlowId(flowName)));
         flow.setTableId(table);
         flow.setFlowName(flowName);
         flow.setCookie(new FlowCookie(cookieValue));

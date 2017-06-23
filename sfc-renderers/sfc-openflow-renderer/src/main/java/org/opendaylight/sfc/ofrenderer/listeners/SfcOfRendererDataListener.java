@@ -110,9 +110,9 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
             return;
         }
 
+        // Update the SFC Openflow Programmer
         UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset(),
                 config.getSfcOfAppEgressTableOffset());
-
         threadExecutor.submit(updateThread);
     }
 
@@ -125,7 +125,7 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener {
      *            optionally the number of tables beyond tableOffset to be used
      * @return a valid TableId or null if invalid
      */
-    public TableId verifyMaxTableId(short tableOffset, short maxTable) {
+    private TableId verifyMaxTableId(short tableOffset, short maxTable) {
         try {
             return new TableId((short) (tableOffset + maxTable));
         } catch (IllegalArgumentException e) {

@@ -14,16 +14,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
+import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -41,9 +44,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfTableOffsets;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTable;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableKey;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +163,8 @@ public class SfcOfRspProcessor {
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
 
+            setAllRspTables(sffGraph);
+
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (SfcRenderingException e) {
@@ -231,6 +241,92 @@ public class SfcOfRspProcessor {
         transportProcessor.setRsp(rsp);
         transportProcessor.setSffGraph(sffGraph);
         return transportProcessor;
+    }
+
+    /**
+     * Writes the table offsets for all the SFFs in this RSP.
+     *
+     * @param isLogicalSff
+     *            - is the SFF logical or not
+     */
+    private void setAllRspTables(SffGraph sffGraph) {
+        SffGraph.SffGraphEntry entry = null;
+        Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
+
+        if (sffGraph.isUsingLogicalSFF()) {
+            entry = sffGraphIter.next();
+            if (!checkRspSffTables(entry.getDstSff(), NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE)) {
+                setRspTables(entry.getDstSff(),
+                        NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE,
+                        NwConstants.SFC_TRANSPORT_INGRESS_TABLE,
+                        NwConstants.SFC_TRANSPORT_PATH_MAPPER_TABLE,
+                        NwConstants.SFC_TRANSPORT_PATH_MAPPER_ACL_TABLE,
+                        NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE,
+                        NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
+            }
+        } else {
+            while (sffGraphIter.hasNext()) {
+                entry = sffGraphIter.next();
+                if (entry.getDstSff().getValue().equals(SffGraph.EGRESS.getValue())) {
+                    continue;
+                }
+
+                short sfcOffsetTable =
+                        sfcOfFlowProgrammer.getTableBase() == SfcOfFlowProgrammerImpl.APP_COEXISTENCE_NOT_SET
+                        ? 0 : sfcOfFlowProgrammer.getTableBase();
+
+                // If the entry is already present for this SFF, then no need to write it again
+                if (checkRspSffTables(entry.getDstSff(), sfcOffsetTable)) {
+                    continue;
+                }
+
+                setRspTables(entry.getDstSff(),
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_CLASSIFIER,
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS,
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER,
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER_ACL,
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP,
+                        sfcOffsetTable + SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
+            }
+        }
+    }
+
+    private boolean checkRspSffTables(SffName sffName, short baseTableIndex) {
+        InstanceIdentifier<SfcOfTablesByBaseTable> iid = InstanceIdentifier
+                .builder(SfcOfTableOffsets.class)
+                .child(SfcOfTablesByBaseTable.class, new SfcOfTablesByBaseTableKey(sffName))
+                .build();
+        SfcOfTablesByBaseTable tablesByBase =
+                SfcDataStoreAPI.readTransactionAPI(iid, LogicalDatastoreType.OPERATIONAL);
+
+        if (tablesByBase == null) {
+            return false;
+        } else {
+            if (tablesByBase.getBaseTable() == baseTableIndex) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private void setRspTables(SffName sffName, long baseTable, long transportIngress, long pathMapper,
+            long pathMapperAcl, long nextHop, long transportEgress) {
+
+        SfcOfTablesByBaseTableBuilder builder = new SfcOfTablesByBaseTableBuilder();
+        builder.setKey(new SfcOfTablesByBaseTableKey(sffName));
+        builder.setBaseTable(baseTable);
+        builder.setTransportIngressTable(transportIngress);
+        builder.setPathMapperTable(pathMapper);
+        builder.setPathMapperAclTable(pathMapperAcl);
+        builder.setNextHopTable(nextHop);
+        builder.setTransportEgressTable(transportEgress);
+
+        InstanceIdentifier<SfcOfTablesByBaseTable> iid = InstanceIdentifier
+                .builder(SfcOfTableOffsets.class)
+                .child(SfcOfTablesByBaseTable.class, new SfcOfTablesByBaseTableKey(sffName))
+                .build();
+        SfcDataStoreAPI.writeMergeTransactionAPI(iid, builder.build(), LogicalDatastoreType.OPERATIONAL);
     }
 
     /**

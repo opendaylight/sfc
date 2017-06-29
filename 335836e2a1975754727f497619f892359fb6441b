@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da2a55be_c69f734f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 3327
+      },
+      "writtenOn": "2017-06-29T02:36:21Z",
+      "side": 1,
+      "message": "Looks like they aren\u0027t table offset, they are final table IDs, aren\u0027t they? Per my understanding, we can always get Table Base from data store anywhere without any dependency on other sfc components, TABLE_INDEX_* are constants, if we can move them to a common place, any component can get it without dependencies on other sfc components, in that way, do we still really need to save them to data store?",
+      "revId": "335836e2a1975754727f497619f892359fb6441b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

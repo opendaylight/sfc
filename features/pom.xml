@@ -41,7 +41,9 @@
         <module>odl-sfc-scf-vpp</module>
         <module>odl-sfc-openflow-renderer</module>
         <module>odl-sfc-vpp-renderer</module>
+        <!--
         <module>odl-sfclisp</module>
+        -->
         <module>odl-sfc-sb-rest</module>
         <module>odl-sfc-pot</module>
         <module>odl-sfc-pot-netconf-renderer</module>

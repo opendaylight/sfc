@@ -25,6 +25,7 @@ yang-gen-sal
 classes
 out/
 .externalToolBuilders
+.fbExcludeFilterFile
 maven-eclipse.xml
 .DS_STORE
 .metadata

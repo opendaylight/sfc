@@ -15,7 +15,7 @@
     <name>sfc</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
-    <!-- The following sections are for compatability with Maven Central -->
+    <!-- The following sections are for compatibility with Maven Central -->
     <description>Open Daylight SDN controller Service Function Chaining application</description>
     <url>https://wiki.opendaylight.org/view/Service_Function_Chaining:Main</url>
     <licenses>
@@ -43,16 +43,13 @@
         <restconf.version>1.6.0-SNAPSHOT</restconf.version>
         <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
         <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-
         <yangtools.version>1.2.0-SNAPSHOT</yangtools.version>
         <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
-
-
         <lispflowmapping.version>1.6.0-SNAPSHOT</lispflowmapping.version>
         <ovsdb.southbound.version>1.5.0-SNAPSHOT</ovsdb.southbound.version>
         <l2switch.version>0.6.0-SNAPSHOT</l2switch.version>
-
         <genius.version>0.3.0-SNAPSHOT</genius.version>
+        <infrautils.version>1.2.0-SNAPSHOT</infrautils.version>
 
         <!-- Supporting Libraries -->
         <feature.openflowplugin.version>0.5.0-SNAPSHOT</feature.openflowplugin.version>

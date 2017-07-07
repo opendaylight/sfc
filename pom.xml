@@ -25,12 +25,34 @@
       <url>http://www.eclipse.org/legal/epl-v10.html</url>
     </license>
   </licenses>
+
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</connection>
     <developerConnection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</developerConnection>
     <url>https://wiki.opendaylight.org/view/Service_Function_Chaining:Main</url>
     <tag>HEAD</tag>
   </scm>
+
+  <modules>
+    <module>sfc-model</module>
+    <module>sfc-provider</module>
+    <module>sfc-test-consumer</module>
+    <module>sfc-ui</module>
+    <module>sfc-sb-rest</module>
+    <module>sfclisp</module>
+    <module>sfc-util</module>
+    <module>sfc-classifiers</module>
+    <module>sfc-ovs</module>
+    <module>sfc-netconf</module>
+    <module>sfc-vnfm-spi</module>
+    <module>sfc-vnfm-tacker</module>
+    <module>sfc-pot</module>
+    <module>features</module>
+    <module>sfc-karaf</module>
+    <module>sfc-renderers</module>
+    <module>sfc-rsp-manager</module>
+    <module>sfc-genius</module>
+  </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -196,26 +218,12 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <modules>
-    <module>sfc-model</module>
-    <module>sfc-provider</module>
-    <module>sfc-test-consumer</module>
-    <module>sfc-ui</module>
-    <module>sfc-sb-rest</module>
-    <module>sfclisp</module>
-    <module>sfc-util</module>
-    <module>sfc-classifiers</module>
-    <module>sfc-ovs</module>
-    <module>sfc-netconf</module>
-    <module>sfc-vnfm-spi</module>
-    <module>sfc-vnfm-tacker</module>
-    <module>sfc-pot</module>
-    <module>features</module>
-    <module>sfc-karaf</module>
-    <module>sfc-renderers</module>
-    <module>sfc-rsp-manager</module>
-    <module>sfc-genius</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,6 +10,9 @@ package org.opendaylight.sfc.provider.listeners;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -33,9 +36,10 @@ import org.slf4j.LoggerFactory;
  * This class listens to changes (addition, update, removal) in Service
  * Functions taking the appropriate actions.
  *
- * @author David Suárez (david.suarez.fuentes@ericsson.com)
+ * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
  */
+@Singleton
 public class ServiceFunctionListener extends AbstractDataTreeChangeListener<ServiceFunction> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionListener.class);
@@ -44,18 +48,15 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
 
     private ListenerRegistration<ServiceFunctionListener> listenerRegistration;
 
+    @Inject
     public ServiceFunctionListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    public void init() {
-        LOG.debug("Initializing...");
         registerListeners();
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
-
         LOG.debug("Closing listener...");
         if (listenerRegistration != null) {
             listenerRegistration.close();
@@ -188,9 +189,6 @@ public class ServiceFunctionListener extends AbstractDataTreeChangeListener<Serv
                         sfName);
             }
             for (SfServicePath sfServicePath : sfServicePathList) {
-                // TODO Bug 4495 - RPCs hiding heuristics using Strings -
-                // alagalah
-
                 RspName rspName = new RspName(sfServicePath.getName().getValue());
                 SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
                 LOG.info("Deleting RSP [{}] on SF [{}]", rspName, sfName);

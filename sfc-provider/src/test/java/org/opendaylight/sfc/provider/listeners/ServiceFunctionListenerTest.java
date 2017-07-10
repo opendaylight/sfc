@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -102,7 +102,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionListener = new ServiceFunctionListener(getDataBroker());
-        serviceFunctionListener.init();
     }
 
     @After

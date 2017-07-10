@@ -7,11 +7,14 @@
  */
 package org.opendaylight.sfc.genius.util;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rev160406.TunnelTypeVxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceInput;
@@ -20,6 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.OdlInterfaceRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInputBuilder;
@@ -204,6 +210,42 @@ public class SfcGeniusRpcClient {
             dpnid = Optional.empty();
         }
         return dpnid;
+    }
+
+    /**
+     * Given a DPN ID, the method returns its IP addresses.
+     *
+     * @param theDpnIdType the dataplane id.
+     * @return the IP addresses.
+     */
+    public List<IpAddress> getDpnIpFromGeniusRPC(DpnIdType theDpnIdType) {
+        GetEndpointIpForDpnInputBuilder builder = new GetEndpointIpForDpnInputBuilder();
+        builder.setDpid(theDpnIdType.getValue());
+        GetEndpointIpForDpnInput input = builder.build();
+        OdlInterfaceRpcService service = getInterfaceManagerRpcService();
+
+        if (service == null) {
+            LOG.error("Genius RPC service not available", input);
+            throw new SfcGeniusRuntimeException(new RuntimeException("Genius RPC service not available"));
+        }
+
+        try {
+            RpcResult<GetEndpointIpForDpnOutput> output = service.getEndpointIpForDpn(input).get();
+            if (!output.isSuccessful()) {
+                LOG.warn("getDpnIpFromGeniusRPC({}) failed: {}", input, output);
+                return Collections.emptyList();
+            }
+            List<IpAddress> localIps = output.getResult().getLocalIps();
+            LOG.trace("getDpnIpFromGeniusRPC({}) succeeded: {}", input, output);
+            if (localIps != null) {
+                return localIps;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("getDpnIpFromGeniusRPC failed due to exception", e);
+            throw new SfcGeniusRuntimeException(e);
+        }
+
+        return Collections.emptyList();
     }
 
     private ItmRpcService getItmRpcService() {

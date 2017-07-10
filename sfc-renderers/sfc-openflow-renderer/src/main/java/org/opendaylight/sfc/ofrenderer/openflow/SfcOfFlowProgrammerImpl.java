@@ -9,14 +9,13 @@
 package org.opendaylight.sfc.ofrenderer.openflow;
 
 import com.google.common.net.InetAddresses;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
@@ -24,6 +23,8 @@ import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
@@ -77,8 +78,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     // The 000002** cookies are for NSH Eth Transport Egress flows
     public static final String TRANSPORT_EGRESS_NSH_ETH_COOKIE = "00000201";
     public static final String TRANSPORT_EGRESS_NSH_ETH_LOGICAL_COOKIE = "00000202";
-    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE = "00000203";
-    public static final String TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE = "00000204";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_PIPELINE_COOKIE = "00000203";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_REMOTE_COOKIE = "00000204";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_LOCAL_COOKIE = "00000205";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_REMOTE_COOKIE = "00000206";
+    public static final String TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_LOCAL_COOKIE = "00000207";
     // The 000003** cookies are for VXGEP NSH Transport Egress flows
     public static final String TRANSPORT_EGRESS_VLAN_COOKIE = "00000301";
     public static final String TRANSPORT_EGRESS_VLAN_SF_COOKIE = "00000302";
@@ -107,6 +111,11 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public static final String FLOW_NAME_NEXT_HOP = "nextHop";
     public static final String FLOW_NAME_TRANSPORT_EGRESS = "transportEgress";
     public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS = "transportEgressLastHop";
+    public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_PIPELINE = "transportEgressLastHop_Pipeline";
+    public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_TUNNEL_REMOTE = "transportEgressLastHop_TunnelRemote";
+    public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_TUNNEL_LOCAL = "transportEgressLastHop_TunnelLocal";
+    public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_NSH_REMOTE = "transportEgressLastHop_NshRemote";
+    public static final String FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_NSH_LOCAL = "transportEgressLastHop_NshLocal";
     public static final String FLOW_NAME_APPCOEXIST_TRANSPORT_EGRESS = "transportEgressAppCoexist";
     public static final String FLOW_NAME_SF_LOOPBACK_INGRESS = "sfLoopbackIngress";
     public static final String FLOW_NAME_SF_LOOPBACK_EGRESS = "sfLoopbackEgress";
@@ -117,27 +126,33 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     // Which bits in the metadata field to set, Assuming 4095 PathId's
     public static final BigInteger METADATA_MASK_SFP_MATCH = new BigInteger("FFFFFFFFFFFFFFFF",
             COOKIE_BIGINT_HEX_RADIX);
-
     public static final short TABLE_INDEX_CLASSIFIER = 0;
     public static final short TABLE_INDEX_TRANSPORT_INGRESS = 1;
     public static final short TABLE_INDEX_PATH_MAPPER = 2;
     public static final short TABLE_INDEX_PATH_MAPPER_ACL = 3;
     public static final short TABLE_INDEX_NEXT_HOP = 4;
     public static final short TABLE_INDEX_TRANSPORT_EGRESS = 10;
-    public static final short TABLE_INDEX_MAX_OFFSET = TABLE_INDEX_TRANSPORT_EGRESS;
 
+    public static final short TABLE_INDEX_MAX_OFFSET = TABLE_INDEX_TRANSPORT_EGRESS;
     public static final int FLOW_PRIORITY_TRANSPORT_INGRESS = 250;
     public static final int FLOW_PRIORITY_ARP_TRANSPORT_INGRESS = 300;
     public static final int FLOW_PRIORITY_PATH_MAPPER = 350;
     public static final int FLOW_PRIORITY_PATH_MAPPER_ACL = 450;
     public static final int FLOW_PRIORITY_NEXT_HOP = 550;
     public static final int FLOW_PRIORITY_TRANSPORT_EGRESS = 650;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_TUNNEL_REMOTE = 650;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_TUNNEL_LOCAL = 660;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_NSH_REMOTE = 670;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_NSH_LOCAL = 680;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_PIPELINE = 680;
+    public static final int FLOW_PRIORITY_TRANSPORT_EGRESS_NSH = 660;
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
-    public static final int FLOW_PRIORITY_CLASSIFIER = 1000;
 
+    public static final int FLOW_PRIORITY_CLASSIFIER = 1000;
     private static final int PKTIN_IDLE_TIMEOUT = 60;
     private static final String EMPTY_SWITCH_PORT = "";
     public static final short APP_COEXISTENCE_NOT_SET = -1;
+    private static final String LOCALHOST_IP = "127.0.0.1";
 
     // Instance variables
     private short tableBase;
@@ -431,6 +446,14 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // This is the last table, cant set next table AND doDrop should be
         // false
         FlowBuilder flowBuilder = configureTableMatchAnyDropFlow(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
+    }
+
+    @Override
+    public void configureTransportEgressTableMatchAnyResubmit(final String sffNodeName, short nextTableId) {
+
+        FlowBuilder flowBuilder = configureTableMatchAnyFlowResubmit(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                nextTableId);
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
     }
 
@@ -1459,24 +1482,24 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     /**
-     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
-     * the NSP and NSI and NSH C1 not set. If NSH C1 is set, then the packets will
-     * be handled by configureNshEthLastHopTransportEgressFlow() which will have a
-     * lower priority than this flow.
+     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching
+     * on the NSP and NSI, an optionally NSH C1 not set. Assume a different
+     * local service will be able to handle the encapsulated packet. This
+     * service is assumed to provide connectivity from the last SF to the
+     * destination.
      *
      * @param sffNodeName
      *            - the SFF to write the flow to
+     * @param sfMacAddress
+     *            - the SF mac address
      * @param nshNsp
      *            - the NSH Service Path to match on
      * @param nshNsi
      *            - the NSH Service Index to match on
-     * @param macAddress
-     *            - mac address to set as source mac address after removing
-     *            Eth-NSH encapsulation
      */
-    @Override
-    public void configureNshNscEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
-            final short nshNsi, MacAddress macAddress) {
+    private void configureNshEthLastHopTransportEgressToPipelineService(final String sffNodeName,
+                                                                        final MacAddress sfMacAddress,
+                                                                        final long nshNsp, final short nshNsi) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
         SfcOpenflowUtils.addMatchNshNsc1(match, 0L);
 
@@ -1490,7 +1513,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
 
         // Change source mac address
-        actionList.add(SfcOpenflowUtils.createActionSetDlSrc(macAddress.getValue(), actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionSetDlSrc(sfMacAddress.getValue(), actionList.size()));
 
         // Proceed with other services
         actionList.add(SfcOpenflowUtils.createActionResubmitTable(
@@ -1498,28 +1521,58 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
-        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
-        flowName.add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS)
-            .add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(macAddress.getValue());
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER)
+                .add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_PIPELINE)
+                .add(String.valueOf(nshNsi))
+                .add(String.valueOf(nshNsp))
+                .add(sfMacAddress.getValue());
 
         // Make the cookie
         BigInteger cookie = new BigInteger(
-                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_NSC_LASTHOP_COOKIE,
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_PIPELINE_COOKIE,
                 COOKIE_BIGINT_HEX_RADIX);
 
         // Create and return the flow
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                FLOW_PRIORITY_TRANSPORT_EGRESS + 10, cookie, flowName.toString(), match, isb);
+                FLOW_PRIORITY_TRANSPORT_EGRESS_PIPELINE, cookie, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
     }
 
+    @Override
+    public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final IpAddress sffIpAddress,
+                                                          final MacAddress sfMacAddress, final long nshNsp,
+                                                          final short nshNsi) {
+        final Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        if (vxgpePort != null) {
+            // If a VXLAN GPE openflow based port is available,
+            // support egress scenarios that forward the traffic
+            // to remote locations via IP provided through NSH C1.
+            final String vxgpePortStr = "output:" + vxgpePort.toString();
+            configureNshEthLastHopTransportEgressToRemoteTunnelService(sffNodeName, nshNsp, nshNsi, vxgpePortStr);
+            configureNshEthLastHopTransportEgressToRemoteNshService(sffNodeName, nshNsp, nshNsi, vxgpePortStr);
+        }
+
+        final String inputSffIpAddress = Optional.ofNullable(sffIpAddress)
+                .map(IpAddress::getIpv4Address)
+                .map(Ipv4Address::getValue)
+                .orElse(null);
+        final boolean hasTunnelEndpoint = inputSffIpAddress != null && !inputSffIpAddress.isEmpty();
+        final String usedSffIpAddress = hasTunnelEndpoint ? inputSffIpAddress : LOCALHOST_IP;
+        configureNshEthLastHopTransportEgressToLocalTunnelService(sffNodeName, usedSffIpAddress, nshNsp, nshNsi);
+        configureNshEthLastHopTransportEgressToLocalNshService(sffNodeName, usedSffIpAddress, nshNsp, nshNsi);
+
+        // Egress based on connectivity between last SF and destination
+        // provided by a different service
+        configureNshEthLastHopTransportEgressToPipelineService(sffNodeName, sfMacAddress, nshNsp, nshNsi);
+    }
+
     /**
-     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching on
-     * the NSP and NSI. This flow is used when NSH C1/C2 is set. The flow written by
-     * configureNshNscEthLastHopTransportEgressFlow() determines that NSH C1 is NOT
-     * set, so this flow is effectively the else condition to NSH C1 not being set.
-     * Write NSH C1 to Ipv4TunDst and NSH C2 to Vnid.
+     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching
+     * on the NSP and NSI with both NSH C1, C2 set. In such a case, assume a
+     * different remote service will be able to handle the encapsulated packet.
+     * This service will use the tunnel id metadata obtained from C2 to handle
+     * it.
      *
      * @param sffNodeName
      *            - the SFF to write the flow to
@@ -1527,48 +1580,12 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *            - the NSH Service Path to match on
      * @param nshNsi
      *            - the NSH Service Index to match on
+     * @param outport
+     *            - the outport to output on
      */
-    @Override
-    public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final long nshNsp,
-            final short nshNsi) {
-        // When outputing to an outport, if inport==outport, then according to
-        // the openflow spec, the packet will be dropped. To avoid this, outport
-        // must be set to INPORT. This method writes 2 flows to avoid this
-        // situation:
-        // flow1:
-        // if inport==port, actions=output:INPORT (higher priority than flow2)
-        // flow2:
-        // actions=output:port (flow2 is basically the else condition)
-
-        Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
-        String inportStr = OutputPortValues.INPORT.toString();
-
-        if (vxgpePort != null) {
-            String vxgpePortStr = "output:" + vxgpePort.toString();
-            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, vxgpePortStr, inportStr);
-            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, vxgpePortStr);
-        } else {
-            configureNshEthLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, inportStr);
-        }
-    }
-
-    /**
-     * Simple call through for configureNshEthLastHopTransportEgressFlow().
-     */
-    private void configureNshEthLastHopTransportEgressFlowPorts(final String sffNodeName, final long nshNsp,
-            final short nshNsi, final String inport, final String outport) {
+    private void configureNshEthLastHopTransportEgressToRemoteTunnelService(final String sffNodeName, final long nshNsp,
+                                                                            final short nshNsi, final String outport) {
         MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
-
-        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
-        String theOutPortToSet = outport;
-
-        if (!inport.startsWith(OutputPortValues.INPORT.toString())) {
-            // if we output to a port that's the same as the import, the packet
-            // will be dropped
-            SfcOpenflowUtils.addMatchInPort(match, new NodeConnectorId(inport));
-            theOutPortToSet = OutputPortValues.INPORT.toString();
-            flowPriority += 5;
-        }
 
         // On the last hop:
         // 1. Write C1 to Ipv4TunDst
@@ -1587,22 +1604,193 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
 
         // Egress to port
-        actionList.add(SfcOpenflowUtils.createActionOutPort(theOutPortToSet, actionList.size()));
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outport, actionList.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
-        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
-        flowName.add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS)
-            .add(String.valueOf(nshNsi)).add(String.valueOf(nshNsp)).add(inport).add(outport);
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER)
+                .add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_TUNNEL_REMOTE)
+                .add(String.valueOf(nshNsi))
+                .add(String.valueOf(nshNsp))
+                .add(outport);
 
         // Make the cookie
         BigInteger cookie = new BigInteger(
-                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_COOKIE,
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_REMOTE_COOKIE,
                 COOKIE_BIGINT_HEX_RADIX);
 
         // Create and return the flow
         FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
-                flowPriority, cookie, flowName.toString(), match, isb);
+                FLOW_PRIORITY_TRANSPORT_EGRESS_TUNNEL_REMOTE, cookie, flowName.toString(), match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
+    }
+
+    /**
+     * As {@link #configureNshEthLastHopTransportEgressToRemoteTunnelService}
+     * but handle the special case that such remote service is not really
+     * remote, but local.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param sffIpAddress
+     *            - the SFF IP address
+     * @param nshNsp
+     *            - the NSH Service Path to match on
+     * @param nshNsi
+     *            - the NSH Service Index to match on
+     */
+    private void configureNshEthLastHopTransportEgressToLocalTunnelService(final String sffNodeName,
+                                                                           final String sffIpAddress,
+                                                                           final long nshNsp, final short nshNsi) {
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+
+        // Create a match checking if C1 is set to this SFF
+        // Assuming IPv4
+        int ip = InetAddresses.coerceToInteger(InetAddresses.forString(sffIpAddress));
+        long ipl = ip & 0xffffffffL;
+        SfcOpenflowUtils.addMatchNshNsc1(match, ipl);
+
+        // On the last hop:
+        // 1. Write C1 to Ipv4TunDst
+        // 2. Write C2 to Vnid
+        // 4. Resubmit to internal tunnel table
+        List<Action> actionList = new ArrayList<>();
+
+        // Write C1 to Ipv4TunDst
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+
+        // Write C2 to Vnid
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
+
+        // Pop NSH
+        actionList.add(SfcOpenflowUtils.createActionNxPopNsh(actionList.size()));
+
+        // Resubmit to tunnel table
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(
+                NwConstants.INTERNAL_TUNNEL_TABLE, actionList.size()));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER)
+                .add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_TUNNEL_LOCAL)
+                .add(String.valueOf(nshNsi))
+                .add(String.valueOf(nshNsp))
+                .add(sffIpAddress);
+
+        // Make the cookie
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_LOCAL_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                FLOW_PRIORITY_TRANSPORT_EGRESS_TUNNEL_LOCAL, cookie, flowName.toString(), match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
+    }
+
+    /**
+     * As {@link #configureNshEthLastHopTransportEgressToRemoteNshService}
+     * but handle the special case that such remote service is not really
+     * remote, but local.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param sffIpAddress
+     *            - the SFF IP address
+     * @param nshNsp
+     *            - the NSH Service Path to match on
+     * @param nshNsi
+     *            - the NSH Service Index to match on
+     */
+    private void configureNshEthLastHopTransportEgressToLocalNshService(final String sffNodeName,
+                                                                        final String sffIpAddress,
+                                                                        final long nshNsp, final short nshNsi) {
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+
+        // Create a match checking if C1 is set to this SFF
+        // Assuming IPv4
+        int ip = InetAddresses.coerceToInteger(InetAddresses.forString(sffIpAddress));
+        long ipl = ip & 0xffffffffL;
+        SfcOpenflowUtils.addMatchNshNsc1(match, ipl);
+        SfcOpenflowUtils.addMatchNshNsc2(match, 0L);
+
+        List<Action> actionList = new ArrayList<>();
+        actionList.add(SfcOpenflowUtils.createActionResubmitTable(
+                NwConstants.LPORT_DISPATCHER_TABLE, actionList.size()));
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER)
+                .add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_NSH_LOCAL)
+                .add(String.valueOf(nshNsi))
+                .add(String.valueOf(nshNsp))
+                .add(sffIpAddress);
+
+        // Make the cookie
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_LOCAL_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                FLOW_PRIORITY_TRANSPORT_EGRESS_NSH_LOCAL, cookie, flowName.toString(), match, isb);
+
+        sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
+    }
+
+    /**
+     * Configure the last hop VxLAN GPE NSH Transport Egress flow by matching
+     * on the NSP and NSI with both NSH C1 but no C2 set. In such a case,
+     * assume a different remote service will be able to handle the NSH packet.
+     * This service will use the remaining NSH metadata to handle the
+     * encapsulated packet.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param nshNsp
+     *            - the NSH Service Path to match on
+     * @param nshNsi
+     *            - the NSH Service Index to match on
+     * @param outport
+     *            - the outport to output on
+     */
+    private void configureNshEthLastHopTransportEgressToRemoteNshService(final String sffNodeName, final long nshNsp,
+                                                                         final short nshNsi, final String outport) {
+        MatchBuilder match = SfcOpenflowUtils.getNshMatches(nshNsp, nshNsi);
+        SfcOpenflowUtils.addMatchNshNsc2(match, 0L);
+
+        // On the last hop:
+        // 1. Write C1 to Ipv4TunDst
+        // 2. Write C2 to Vnid
+        // 4. Egress to the specified port
+        List<Action> actionList = new ArrayList<>();
+
+        // Write C1 to Ipv4TunDst
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc1ToTunIpv4DstRegister(actionList.size()));
+
+        // Write C2 to Vnid
+        actionList.add(SfcOpenflowUtils.createActionNxMoveNsc2ToTunIdRegister(actionList.size()));
+
+        // Egress to port
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outport, actionList.size()));
+
+        InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
+
+        StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER)
+                .add(FLOW_NAME_LASTHOP_TRANSPORT_EGRESS_NSH_REMOTE)
+                .add(String.valueOf(nshNsi))
+                .add(String.valueOf(nshNsp))
+                .add(outport);
+
+        // Make the cookie
+        BigInteger cookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_REMOTE_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+
+        // Create and return the flow
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_EGRESS),
+                FLOW_PRIORITY_TRANSPORT_EGRESS_NSH_REMOTE, cookie, flowName.toString(), match, isb);
 
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, fb);
     }

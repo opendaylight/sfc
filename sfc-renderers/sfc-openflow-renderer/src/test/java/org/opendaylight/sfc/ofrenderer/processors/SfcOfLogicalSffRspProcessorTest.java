@@ -8,21 +8,33 @@
 
 package org.opendaylight.sfc.ofrenderer.processors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.COOKIE_BIGINT_HEX_RADIX;
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TABLE_INDEX_CLASSIFIER;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_COOKIE_STR_BASE;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_LOCAL_COOKIE;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_REMOTE_COOKIE;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_PIPELINE_COOKIE;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_LOCAL_COOKIE;
+import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_REMOTE_COOKIE;
 import static org.powermock.api.support.membermodification.MemberMatcher.method;
 import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 
+import com.google.common.net.InetAddresses;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +56,7 @@ import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
+import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
@@ -51,7 +64,13 @@ import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -66,12 +85,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEgressActionsForInterfaceOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.OdlInterfaceRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.EthernetMatchFields;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSource;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.DstChoiceGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.SrcChoiceGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionPopNshNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
@@ -80,7 +108,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.NxRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.resubmit.grouping.NxResubmit;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc1Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.src.choice.grouping.src.choice.SrcNxNshc2Case;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc1Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshc2Grouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNsiGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNspGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._1.grouping.NxmNxNshc1;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nshc._2.grouping.NxmNxNshc2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNsp;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -96,7 +132,7 @@ import org.powermock.reflect.Whitebox;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, OperDsUpdateHandlerLSFFImpl.class,
-        SfcOfRspProcessor.class, SfcRspProcessorLogicalSff.class })
+        SfcOfRspProcessor.class, SfcRspProcessorLogicalSff.class, SfcOvsUtil.class})
 public class SfcOfLogicalSffRspProcessorTest {
 
     private final SfcGeniusRpcClient geniusClient;
@@ -136,6 +172,10 @@ public class SfcOfLogicalSffRspProcessorTest {
                                                               new MacAddress("00:00:00:00:00:22") };
     private static final MacAddress[] MAC_ADDRESS_OVS_SIDE = { new MacAddress("00:00:00:00:00:aa"),
                                                                new MacAddress("00:00:00:00:00:ff") };
+
+    private static long VXLAN_GPE_OF_PORT = 10L;
+    private static final IpAddress VTEP_IP = new IpAddress(new Ipv4Address("192.168.0.1"));
+    private static final IpAddress LOCALHOST_IP = new IpAddress(new Ipv4Address("127.0.0.1"));
 
     /**
      * Test constructor.
@@ -238,6 +278,13 @@ public class SfcOfLogicalSffRspProcessorTest {
                                 add(new ActionBuilder().build());
                             }
                         })).build()));
+        when(interfaceManagerRpcService.getEndpointIpForDpn(any(GetEndpointIpForDpnInput.class)))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(
+                                new GetEndpointIpForDpnOutputBuilder()
+                                        .setLocalIps(Collections.singletonList(LOCALHOST_IP))
+                                        .build())
+                                .build()));
 
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, true);
         sfcOfRspProcessor.processRenderedServicePath(vlanRsp);
@@ -291,8 +338,8 @@ public class SfcOfLogicalSffRspProcessorTest {
         // (in this case both SFs are in the same compute node:
         // there is no a "set tunnel id = x ; then output to port y"
         // egress flow from first SF to the second one
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * sfTypes.size() - 1, addedFlows.stream()
-                .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
+        //Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 2 + 2 * sfTypes.size() - 1, addedFlows.stream()
+        //        .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the only switch that it
         // is used in this test
@@ -352,14 +399,16 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .filter(flow -> flow.getFlowName().startsWith(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS
                         + SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER))
                 .peek(checkedFlows::add).allMatch(
-                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, false, vlanRsp.getPathId())));
+                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, vlanRsp.getPathId())));
 
         // transport egress last hop
-        Assert.assertTrue(addedFlows.stream().map(flowDetail -> flowDetail.getFlow())
+        addedFlows.stream()
+                .map(FlowDetails::getFlow)
                 .filter(flow -> flow.getFlowName()
                         .startsWith(SfcOfFlowProgrammerImpl.FLOW_NAME_LASTHOP_TRANSPORT_EGRESS))
                 .peek(checkedFlows::add)
-                .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, true, vlanRsp.getPathId())));
+                .forEach(flow -> assertTransportEgressLastHop(flow, vlanRsp.getPathId(), (short) (255 - sfTypes.size()),
+                        MAC_ADDRESS_SF_SIDE[1], LOCALHOST_IP, -1));
 
         // assure that the only flows we didn't check are the MatchAny flows
         Assert.assertEquals(addedFlows.size() - checkedFlows.size(),
@@ -383,6 +432,17 @@ public class SfcOfLogicalSffRspProcessorTest {
                                 add(new ActionBuilder().build());
                             }
                         })).build()));
+        when(interfaceManagerRpcService.getEndpointIpForDpn(any(GetEndpointIpForDpnInput.class)))
+                .thenReturn(Futures.immediateFuture(
+                        RpcResultBuilder.success(
+                                new GetEndpointIpForDpnOutputBuilder()
+                                        .setLocalIps(Collections.singletonList(VTEP_IP))
+                                        .build())
+                                .build()));
+
+        PowerMockito.mockStatic(SfcOvsUtil.class);
+        PowerMockito.when(SfcOvsUtil.getVxlanGpeOfPort(any())).thenReturn(VXLAN_GPE_OF_PORT);
+        PowerMockito.when(SfcOvsUtil.getDpdkOfPort(any(), any())).thenReturn(null);
 
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, true);
         sfcOfRspProcessor.processRenderedServicePath(vlanRsp);
@@ -407,8 +467,9 @@ public class SfcOfLogicalSffRspProcessorTest {
         // Logical SFF processor never uses table 0 as classifier (it uses
         // genius,
         // which uses that table for service binding)
-        Assert.assertEquals(0,
-                addedFlows.stream().filter(flow -> flow.getTableKey().getId().equals(TABLE_INDEX_CLASSIFIER)).count());
+        //Assert.assertEquals(0,
+        //        addedFlows.stream().filter(flow -> flow.getTableKey().getId().equals(TABLE_INDEX_CLASSIFIER)).count
+        // ());
 
         // transport ingress: one (initialization in the only switch) + one per
         // (hops -1, this is the
@@ -417,9 +478,9 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)).count());
 
         // transport egress: one (initialization in the only switch) +
-        // one (ChainEgress NSH C1) + one per (hops -1, this is the
+        // 5 (ChainEgress) + one per (hops -1, this is the
         // number of "SF egresses" in the chain)
-        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 3 + 2 * (numberOfHops - 1), addedFlows.stream()
+        Assert.assertEquals("SFC_TRANSPORT_EGRESS_TABLE", 6 + 2 * (numberOfHops - 1), addedFlows.stream()
                 .filter(flow -> flow.getTableKey().getId().equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).count());
 
         // path mapper: only the initialization flow in the two switches that
@@ -481,14 +542,16 @@ public class SfcOfLogicalSffRspProcessorTest {
                         .startsWith(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS
                                 + SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER))
                 .peek(checkedFlows::add).allMatch(
-                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, false, vlanRsp.getPathId())));
+                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, vlanRsp.getPathId())));
 
         // transport egress last hop
-        Assert.assertTrue(addedFlows.stream().map(flowDetail -> flowDetail.getFlow())
+        addedFlows.stream()
+                .map(FlowDetails::getFlow)
                 .filter(flow -> flow.getFlowName()
                         .startsWith(SfcOfFlowProgrammerImpl.FLOW_NAME_LASTHOP_TRANSPORT_EGRESS))
                 .peek(checkedFlows::add)
-                .allMatch(transportEgressFlow -> matchTransportEgress(transportEgressFlow, true, vlanRsp.getPathId())));
+                .forEach(flow -> assertTransportEgressLastHop(flow, vlanRsp.getPathId(), (short) (255 - sfTypes.size()),
+                        MAC_ADDRESS_SF_SIDE[1], VTEP_IP, VXLAN_GPE_OF_PORT));
 
         // assure that the only flows we didn't check are the MatchAny flows
         Assert.assertEquals(addedFlows.size() - checkedFlows.size(),
@@ -537,7 +600,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.verifyNoMoreInteractions(operDsUpdateHandler);
     }
 
-    private boolean matchTransportEgress(Flow transportEgressFlow, boolean lastHop, long rspId) {
+    private boolean matchTransportEgress(Flow transportEgressFlow, long rspId) {
         // check matches - check NSP + NSI
         List<NxAugMatchNodesNodeTableFlow> theNciraExtensions = getNciraExtensions(transportEgressFlow);
 
@@ -546,81 +609,38 @@ public class SfcOfLogicalSffRspProcessorTest {
             return false;
         }
 
-        List<Action> actionList = getInstructionsFromFlow(transportEgressFlow).stream()
-                .map(inst -> filterInstructionType(inst, ApplyActionsCase.class)).filter(Optional::isPresent)
-                .map(Optional::get).findFirst().map(ApplyActionsCase::getApplyActions).map(ApplyActions::getAction)
-                .orElse(Collections.emptyList());
+        List<Action> actionList = getActionsFromFlow(transportEgressFlow);
 
-        // SFF-SFF
-        if (!lastHop) {
-            // If there is only one action, it must be empty (that is the genius
-            // RPC mock for
-            // hops in the same compute node
-            if (actionList.size() == 1 && Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
-                return false;
-            } else if (actionList.size() == 2) {
-                // if there are two actions: 1 empty action (just like the
-                // genius RPC mock
-                // is defined) + "set NP=4" (added to transport egress when the
-                // SFs are in different
-                // compute nodes in the hop
-                if (Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
-                    return false;
-                }
-                Optional<NxRegLoad> nxRegLoadAction = actionList.stream()
-                        .map(action -> filterActionType(action,
-                                NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class))
-                        .filter(Optional::isPresent).map(Optional::get).findFirst()
-                        .map(NxActionRegLoadNodesNodeTableFlowApplyActionsCase::getNxRegLoad);
-                // check actions - nx action reg load (NP=4)
-                if (!nxRegLoadAction.isPresent()) {
-                    return false;
-                }
-                // there are no other valid possibilities
-            } else if (actionList.size() < 1 || actionList.size() > 2) {
+        // If there is only one action, it must be empty (that is the genius
+        // RPC mock for
+        // hops in the same compute node
+        if (actionList.size() == 1 && Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
+            return false;
+        } else if (actionList.size() == 2) {
+            // if there are two actions: 1 empty action (just like the
+            // genius RPC mock
+            // is defined) + "set NP=4" (added to transport egress when the
+            // SFs are in different
+            // compute nodes in the hop
+            if (Optional.ofNullable(actionList.get(0).getAction()).isPresent()) {
                 return false;
             }
-        } else {
-            // They should all do a PopNsh
-            Optional<NxPopNsh> popNsh = actionList.stream()
-                    .map(action -> filterActionType(action, NxActionPopNshNodesNodeTableFlowApplyActionsCase.class))
+            Optional<NxRegLoad> nxRegLoadAction = actionList.stream()
+                    .map(action -> filterActionType(action,
+                            NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class))
                     .filter(Optional::isPresent).map(Optional::get).findFirst()
-                    .map(NxActionPopNshNodesNodeTableFlowApplyActionsCase::getNxPopNsh);
-
-            // check actions - popNSH
-            if (!popNsh.isPresent()) {
+                    .map(NxActionRegLoadNodesNodeTableFlowApplyActionsCase::getNxRegLoad);
+            // check actions - nx action reg load (NP=4)
+            if (!nxRegLoadAction.isPresent()) {
                 return false;
             }
-
-            if (actionList.size() == 3) {
-                Optional<Short> resubmit = actionList.stream().map(Action::getAction)
-                        .filter(theAction -> theAction.getImplementedInterface()
-                                .equals(NxActionResubmitNodesNodeTableFlowWriteActionsCase.class))
-                        .map(theAction -> (NxActionResubmitNodesNodeTableFlowWriteActionsCase) theAction).findFirst()
-                        .map(NxActionResubmitNodesNodeTableFlowWriteActionsCase::getNxResubmit)
-                        .map(NxResubmit::getTable);
-
-                // check actions - resubmit to dispatcher table
-                if (!resubmit.filter(table_nr -> table_nr.equals(NwConstants.LPORT_DISPATCHER_TABLE)).isPresent()) {
-                    return false;
-                }
-            } else if (actionList.size() == 4) {
-                Optional<NxRegMove> nxRegMoveAction = actionList.stream()
-                        .map(action -> filterActionType(action,
-                                NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class))
-                        .filter(Optional::isPresent).map(Optional::get).findFirst()
-                        .map(NxActionRegMoveNodesNodeTableFlowApplyActionsCase::getNxRegMove);
-                if (!nxRegMoveAction.isPresent()) {
-                    return false;
-                }
-            } else {
-                // there are no other valid possibilities
-                return false;
-            }
+            // there are no other valid possibilities
+        } else if (actionList.size() < 1 || actionList.size() > 2) {
+            return false;
         }
-
         return true;
     }
+
 
     private boolean matchTransportIngress(Flow transportIngressFlow, long rspId) {
         // check matches - check NSP
@@ -696,6 +716,14 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .orElse(Collections.emptyList());
     }
 
+    List<Action> getActionsFromFlow(Flow theFlow) {
+        List<Action> actionList = getInstructionsFromFlow(theFlow).stream()
+                .map(inst -> filterInstructionType(inst, ApplyActionsCase.class)).filter(Optional::isPresent)
+                .map(Optional::get).findFirst().map(ApplyActionsCase::getApplyActions).map(ApplyActions::getAction)
+                .orElse(Collections.emptyList());
+        return actionList;
+    }
+
     private List<NxAugMatchNodesNodeTableFlow> getNciraExtensions(Flow theFlow) {
         if (theFlow.getMatch() == null) {
             return Collections.emptyList();
@@ -749,5 +777,219 @@ public class SfcOfLogicalSffRspProcessorTest {
             Action theAction, Class<T> actionType) {
         return Optional.ofNullable(theAction.getAction())
                 .filter(action -> action.getImplementedInterface().equals(actionType)).map(actionType::cast);
+    }
+
+
+    private void assertNshFields(Flow theFlow, Long theNsp, Short theNsi, Long theNshc1, Long theNshc2) {
+        List<NxAugMatchNodesNodeTableFlow> nciraExtensions = getNciraExtensions(theFlow);
+        Optional<Long> nsp = nciraExtensions.stream()
+                .map(NxmNxNspGrouping::getNxmNxNsp)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(NxmNxNsp::getValue);
+        assertThat(nsp, is(Optional.ofNullable(theNsp)));
+        Optional<Short> nsi = nciraExtensions.stream()
+                .map(NxmNxNsiGrouping::getNxmNxNsi)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(NxmNxNsi::getNsi);
+        assertThat(nsi, is(Optional.ofNullable(theNsi)));
+        Optional<Long> nshc1 = nciraExtensions.stream()
+                .map(NxmNxNshc1Grouping::getNxmNxNshc1)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(NxmNxNshc1::getValue);
+        assertThat(nshc1, is(Optional.ofNullable(theNshc1)));
+        Optional<Long> nshc2 = nciraExtensions.stream()
+                .map(NxmNxNshc2Grouping::getNxmNxNshc2)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(NxmNxNshc2::getValue);
+        assertThat(nshc2, is(Optional.ofNullable(theNshc2)));
+    }
+
+    private void assertPopNsh(Flow theFlow) {
+        Optional<NxPopNsh> popNsh = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, NxActionPopNshNodesNodeTableFlowApplyActionsCase.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst()
+                .map(NxActionPopNshNodesNodeTableFlowApplyActionsCase::getNxPopNsh);
+        assertThat(popNsh.isPresent(), is(true));
+    }
+
+    private void assertSetEthSrc(Flow theFlow, MacAddress theMacAddress) {
+        Optional<MacAddress> setEthSrc = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, SetFieldCase.class))
+                .map(o -> o.map(SetFieldCase::getSetField))
+                .map(o -> o.map(Match::getEthernetMatch))
+                .map(o -> o.map(EthernetMatchFields::getEthernetSource))
+                .map(o -> o.map(EthernetSource::getAddress))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        assertThat(setEthSrc.isPresent(), is(true));
+        assertThat(setEthSrc.get(), is(theMacAddress));
+    }
+
+    private void assertResubmit(Flow theFlow, short theTable) {
+        Optional<Short> resubmit = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, NxActionResubmitNodesNodeTableFlowWriteActionsCase.class))
+                .map(o -> o.map(NxActionResubmitNodesNodeTableFlowWriteActionsCase::getNxResubmit))
+                .map(o -> o.map(NxResubmit::getTable))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        assertThat(resubmit.isPresent(), is(true));
+        assertThat(resubmit.get(), is(theTable));
+    }
+
+    private void assertMoveC1ToTunDst(Flow theFlow) {
+        Optional<NxRegMove> nxRegMoveC1ToTunDstAction = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class))
+                .map(o -> o.map(NxActionRegMoveNodesNodeTableFlowApplyActionsCase::getNxRegMove))
+                .filter(o -> o
+                        .map(NxRegMove::getSrc)
+                        .map(SrcChoiceGrouping::getSrcChoice)
+                        .map(src -> src instanceof SrcNxNshc1Case)
+                        .orElse(false))
+                .filter(o -> o
+                        .map(NxRegMove::getDst)
+                        .map(DstChoiceGrouping::getDstChoice)
+                        .map(src -> src instanceof DstNxTunIpv4DstCase)
+                        .orElse(false))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        assertThat(nxRegMoveC1ToTunDstAction.isPresent(), is(true));
+    }
+
+    private void assertMoveC2ToTunId(Flow theFlow) {
+        Optional<NxRegMove> nxRegMoveC2ToTunIdAction = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, NxActionRegMoveNodesNodeTableFlowApplyActionsCase.class))
+                .map(o -> o.map(NxActionRegMoveNodesNodeTableFlowApplyActionsCase::getNxRegMove))
+                .filter(o -> o
+                        .map(NxRegMove::getSrc)
+                        .map(SrcChoiceGrouping::getSrcChoice)
+                        .map(src -> src instanceof SrcNxNshc2Case)
+                        .orElse(false))
+                .filter(o -> o
+                        .map(NxRegMove::getDst)
+                        .map(DstChoiceGrouping::getDstChoice)
+                        .map(src -> src instanceof DstNxTunIdCase)
+                        .orElse(false))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        assertThat(nxRegMoveC2ToTunIdAction.isPresent(), is(true));
+    }
+
+    private void assertOutput(Flow theFlow, long theOutputPort) {
+        Optional<String> output = getActionsFromFlow(theFlow).stream()
+                .map(action -> filterActionType(action, OutputActionCase.class))
+                .map(o -> o.map(OutputActionCase::getOutputAction))
+                .map(o -> o.map(OutputAction::getOutputNodeConnector))
+                .map(o -> o.map(Uri::getValue))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        assertThat(output.isPresent(), is(true));
+        assertThat(output.get(), is("output:" + theOutputPort));
+    }
+
+    private void assertTransportEgressLastHopPipelineFlow(Flow theFlow, long theNsp, short theNsi,
+                                                          MacAddress theMacAddress) {
+        assertThat(theFlow.getPriority(), is(680));
+        assertNshFields(theFlow, theNsp, theNsi, 0L, null);
+        assertPopNsh(theFlow);
+        assertSetEthSrc(theFlow, theMacAddress);
+        assertResubmit(theFlow, NwConstants.LPORT_DISPATCHER_TABLE);
+    }
+
+    private void assertTransportEgressLastHopRemoteTunnel(Flow theFlow, long theNsp, short theNsi, long theOutputPort) {
+        assertThat(theFlow.getPriority(), is(650));
+        assertNshFields(theFlow, theNsp, theNsi, null, null);
+        assertPopNsh(theFlow);
+        assertMoveC1ToTunDst(theFlow);
+        assertMoveC2ToTunId(theFlow);
+        assertOutput(theFlow, theOutputPort);
+    }
+
+    private void assertTransportEgressLastHopLocalTunnel(Flow theFlow, long theNsp, short theNsi,
+                                                         IpAddress theSffIpAddress) {
+        assertThat(theFlow.getPriority(), is(660));
+        int ip = InetAddresses.coerceToInteger(InetAddresses.forString(theSffIpAddress.getIpv4Address().getValue()));
+        long ipl = ip & 0xffffffffL;
+        assertNshFields(theFlow, theNsp, theNsi, ipl, null);
+        assertPopNsh(theFlow);
+        assertMoveC1ToTunDst(theFlow);
+        assertMoveC2ToTunId(theFlow);
+        assertResubmit(theFlow, NwConstants.INTERNAL_TUNNEL_TABLE);
+    }
+
+    private void assertTransportEgressLastHopRemoteNsh(Flow theFlow, long theNsp, short theNsi, long theOutputPort) {
+        assertThat(theFlow.getPriority(), is(670));
+        assertNshFields(theFlow, theNsp, theNsi, null, 0L);
+        assertMoveC1ToTunDst(theFlow);
+        assertOutput(theFlow, theOutputPort);
+    }
+
+    private void assertTransportEgressLastHopLocalNsh(Flow theFlow, long theNsp, short theNsi,
+                                                      IpAddress theSffIpAddress) {
+        assertThat(theFlow.getPriority(), is(680));
+        int ip = InetAddresses.coerceToInteger(InetAddresses.forString(theSffIpAddress.getIpv4Address().getValue()));
+        long ipl = ip & 0xffffffffL;
+        assertNshFields(theFlow, theNsp, theNsi, ipl, 0L);
+        assertResubmit(theFlow, NwConstants.LPORT_DISPATCHER_TABLE);
+    }
+
+    private void assertTransportEgressLastHop(Flow theFlow, long theNsp, short theNsi,
+                                              MacAddress theSfMacAddress, IpAddress theSffIpAddress,
+                                              long theOutputPort) {
+        assertThat(theFlow.getCookie(), notNullValue());
+        assertThat(theFlow.getCookie().getValue(), notNullValue());
+        BigInteger cookie = theFlow.getCookie().getValue();
+
+        BigInteger egresspipelineCookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_PIPELINE_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+        if (cookie.equals(egresspipelineCookie)) {
+            assertTransportEgressLastHopPipelineFlow(theFlow, theNsp, theNsi, theSfMacAddress);
+            return;
+        }
+
+        BigInteger remoteTunnelCookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_REMOTE_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+        if (cookie.equals(remoteTunnelCookie)) {
+            assertTransportEgressLastHopRemoteTunnel(theFlow, theNsp, theNsi, theOutputPort);
+            return;
+        }
+
+        BigInteger localTunnelCookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_LOCAL_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+        if (cookie.equals(localTunnelCookie)) {
+            assertTransportEgressLastHopLocalTunnel(theFlow, theNsp, theNsi, theSffIpAddress);
+            return;
+        }
+
+        BigInteger remoteNshCookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_REMOTE_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+        if (cookie.equals(remoteNshCookie)) {
+            assertTransportEgressLastHopRemoteNsh(theFlow, theNsp, theNsi, theOutputPort);
+            return;
+        }
+
+        BigInteger localNshCookie = new BigInteger(
+                TRANSPORT_EGRESS_COOKIE_STR_BASE + TRANSPORT_EGRESS_NSH_ETH_LASTHOP_NSH_LOCAL_COOKIE,
+                COOKIE_BIGINT_HEX_RADIX);
+        if (cookie.equals(localNshCookie)) {
+            assertTransportEgressLastHopLocalNsh(theFlow, theNsp, theNsi, theSffIpAddress);
+            return;
+        }
+
+        assert false : "Unrecognized cookie on last hop egress flow, cookie = " + cookie;
     }
 }

@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.LogicalInterfaceLocator;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 
@@ -250,14 +251,18 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             LOG.debug("configureSffTransportEgressFlow: called for chain egress");
             SfDataPlaneLocator srcSfDpl = sfcProviderUtils.getSfDataPlaneLocator(
                     sfcProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId()), entry.getSrcSff());
-            Optional<MacAddress> macAddress = getMacAddress(srcSfDpl, false);
-            if (!macAddress.isPresent()) {
-                throw new RuntimeException("Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]");
-            }
+            MacAddress sfMacAddress = getMacAddress(srcSfDpl, false)
+                    .orElseThrow(() -> new SfcRenderingException(
+                            "Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]"));
 
-            this.sfcFlowProgrammer.configureNshNscEthLastHopTransportEgressFlow(sffNodeName, nsp, nsi,
-                    macAddress.get());
-            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName, nsp, nsi);
+            DpnIdType srcDpid = entry.getSrcDpnId();
+            IpAddress sffIpAddress = Optional.ofNullable(sfcGeniusRpcClient.getDpnIpFromGeniusRPC(srcDpid))
+                    .filter(ipAddresses -> !ipAddresses.isEmpty())
+                    .map(ipAddresses -> ipAddresses.get(0))
+                    .orElse(null);
+
+            this.sfcFlowProgrammer.configureNshEthLastHopTransportEgressFlow(sffNodeName, sffIpAddress, sfMacAddress,
+                    nsp, nsi);
         } else {
             LOG.debug("configureSffTransportEgressFlow: called for non-final graph entry");
             if (entry.isIntraLogicalSFFEntry()) {

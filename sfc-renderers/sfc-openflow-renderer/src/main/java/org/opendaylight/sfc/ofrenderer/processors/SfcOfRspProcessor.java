@@ -551,14 +551,16 @@ public class SfcOfRspProcessor {
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
             if (entry.usesLogicalSFF()) {
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(sffNodeName,
-                    NwConstants.LPORT_DISPATCHER_TABLE);
+                        NwConstants.LPORT_DISPATCHER_TABLE);
+                this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAnyResubmit(sffNodeName,
+                        NwConstants.LPORT_DISPATCHER_TABLE);
             } else {
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
+                this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
             }
             this.sfcOfFlowProgrammer.configurePathMapperTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configurePathMapperAclTableMatchAny(sffNodeName);
             this.sfcOfFlowProgrammer.configureNextHopTableMatchAny(sffNodeName);
-            this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
 
             setSffInitialized(sffNodeId, true);
         }

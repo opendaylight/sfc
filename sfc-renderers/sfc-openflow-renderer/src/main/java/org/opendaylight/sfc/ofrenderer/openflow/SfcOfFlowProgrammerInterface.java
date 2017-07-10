@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -197,6 +198,16 @@ public interface SfcOfFlowProgrammerInterface {
 
     void configureTransportEgressTableMatchAny(String sffNodeName);
 
+    /**
+     * Set the match any flow in the Transport Egress table to resubmit.
+     *
+     * @param sffNodeName
+     *            - the SFF to write the flow to
+     * @param nextTableId
+     *            - the table to resubmit
+     */
+    void configureTransportEgressTableMatchAnyResubmit(String sffNodeName, short nextTableId);
+
     /* OVS DPDK only, these APIs will add extra flows for OVS DPDK */
     void configureClassifierTableDpdkOutput(String sffNodeName, Long outPort);
 
@@ -207,35 +218,23 @@ public interface SfcOfFlowProgrammerInterface {
             List<GroupBucketInfo> bucketInfos, boolean isAddGroup);
 
     /**
-     * Used by logical sff processor in order to write chain egress flows if NSH C1 is NOT set.
+     * Used by logical sff processor in order to write chain egress flows.
+     * The sff ip address is optional, if not provided it is assumed that
+     * the sff has no dataplane tunnel endpoints.
      *
      * @param sffNodeName
      *            last openflow node in the chain
+     * @param sffIpAddress
+     *            the sff ip address
+     * @param sfMacAddress
+     *            the last sf mac address
      * @param nshNsp
      *            nsp for the match
      * @param nshNsi
      *            nsi for the match
      */
-    void configureNshEthLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi);
-
-    /**
-     * Used by logical sff processor in order to write chain egress flows if NSH C1 is set.
-     *
-     * @param sffNodeName
-     *            last openflow node in the chain
-     * @param nshNsp
-     *            nsp for the match
-     * @param nshNsi
-     *            nsi for the match
-     * @param macAddress
-     *            the mac address to set as source address at chain egress time
-     *            (if not set, the src mac address after decapsulation would be
-     *            the one set before the chain was executed (at classification
-     *            time), and the packet would be dropped at subsequent pipeline
-     *            processing)
-     */
-    void configureNshNscEthLastHopTransportEgressFlow(String sffNodeName, long nshNsp, short nshNsi,
-            MacAddress macAddress);
+    void configureNshEthLastHopTransportEgressFlow(String sffNodeName, IpAddress sffIpAddress,
+                                                   MacAddress sfMacAddress, long nshNsp, short nshNsi);
 
     /**
      * Setter for the table index mapper (class which provides the tables to use

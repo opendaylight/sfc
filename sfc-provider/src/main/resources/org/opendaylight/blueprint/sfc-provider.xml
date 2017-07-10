@@ -18,12 +18,6 @@
 
   <odl:rpc-implementation ref="sfcProviderRpc" />
 
-  <bean id="serviceFunctionListener"
-    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionListener"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
-
   <bean id="serviceFunctionChainListener"
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionChainListener"
     init-method="init" destroy-method="close">

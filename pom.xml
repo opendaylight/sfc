@@ -228,10 +228,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>

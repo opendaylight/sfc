@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -85,7 +85,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 /**
  * Test Suite to test the ServiceFunctionForwarderListener class.
  *
- * @author David Suárez (david.suarez.fuentes@ericsson.com)
+ * @author David Suárez (david.suarez.fuentes@gmail.com)
  */
 public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManager {
     private final Collection<DataTreeModification<ServiceFunctionForwarder>> collection = new ArrayList<>();
@@ -102,7 +102,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionForwarderListener = new ServiceFunctionForwarderListener(getDataBroker());
-        serviceFunctionForwarderListener.init();
     }
 
     @After
@@ -523,7 +522,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
     ServiceFunctionForwarder build_service_function_forwarder() {
         final SffName name = new SffName("SFF1");
         List<SfName> sfNames = new ArrayList<SfName>() {
-
             {
                 add(new SfName("unittest-fw-1"));
                 add(new SfName("unittest-dpi-1"));

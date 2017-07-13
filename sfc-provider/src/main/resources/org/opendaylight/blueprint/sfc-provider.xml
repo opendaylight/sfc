@@ -30,12 +30,6 @@
     <argument ref="domDataBroker" />
   </bean>
 
-  <bean id="serviceFunctionForwarderListener"
-    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionForwarderListener"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
-
   <bean id="serviceFunctionClassifierListener"
     class="org.opendaylight.sfc.provider.listeners.ServiceFunctionClassifierListener"
     init-method="init" destroy-method="close">

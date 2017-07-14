@@ -212,7 +212,7 @@ def execAllCmds(args_dir, chains, url_odl, execute_traffic):
 
     return status
 
-def sfcConfig(args_chains, args_odl, args_different_subnets, args_only_config):
+def sfcConfig(args_chains, args_odl, args_different_subnets, args_only_config, args_aio):
     print ("Creating SFC data ...")
     # sudo dovs sfc-config
     cmd = 'dovs sfc-config --chains "' + args_chains + '" --odl ' + args_odl
@@ -220,6 +220,8 @@ def sfcConfig(args_chains, args_odl, args_different_subnets, args_only_config):
         cmd = cmd + ' --different-subnets'
     if (args_only_config):
         cmd = cmd + ' --only-config'
+    if (args_aio):
+        cmd = cmd + ' --allinonenode'
     execCommand(cmd)
     seconds = 2
     print ("Waiting " + str(seconds) + " seconds ...")
@@ -282,6 +284,8 @@ sudo ./%(prog)s --odl 172.28.128.3 -d ../sf_hhe """ + args_chain_example + " -rs
         help='Start applications in the guests: basic classifier; SFs and servers')
     parser.add_argument('-t', '--exec-traffic', action='store_true', default=False,
         help='Start applications and also launch traffic')
+    parser.add_argument('--aio', action='store_true', default=False,
+        help='Use a single node topology')
 
     args = parser.parse_args()
     if ((args.odl is None) or (args.dir_sf is None) or (args.chains is None)):
@@ -304,11 +308,12 @@ sudo ./%(prog)s --odl 172.28.128.3 -d ../sf_hhe """ + args_chain_example + " -rs
     print("args.different_subnets(" + str(args.different_subnets) + ")")
     print("args.exec_apps(" + str(args.exec_apps) + ")")
     print("args.exec_traffic(" + str(args.exec_traffic) + ")")
+    print("args.aio(" + str(args.aio) + ")")
 
     if args.remove_sfc:
         execRemove(chains, args.odl)
     if args.create_sfc:
-        sfcConfig(args.chains, args.odl, args.different_subnets, args.only_config)
+        sfcConfig(args.chains, args.odl, args.different_subnets, args.only_config, args.aio)
         createRsps(chains, args.odl)
     if (args.exec_apps or args.exec_traffic):
         status += execAllCmds(args.dir_sf, chains, args.odl, args.exec_traffic)

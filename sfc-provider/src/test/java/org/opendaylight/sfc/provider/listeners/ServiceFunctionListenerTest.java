@@ -85,7 +85,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 /**
  * Test Suite to test the ServiceFunctionListener class.
  *
- * @author David Suárez (david.suarez.fuentes@ericsson.com)
+ * @author David Suárez (david.suarez.fuentes@gmail.com)
  */
 public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     private final Collection<DataTreeModification<ServiceFunction>> collection = new ArrayList<>();

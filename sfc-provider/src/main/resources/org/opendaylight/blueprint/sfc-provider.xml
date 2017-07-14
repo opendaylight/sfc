@@ -18,22 +18,10 @@
 
   <odl:rpc-implementation ref="sfcProviderRpc" />
 
-  <bean id="serviceFunctionChainListener"
-    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionChainListener"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
-
   <bean id="serviceFunctionPathValidator"
     class="org.opendaylight.sfc.provider.validators.ServiceFunctionPathValidator"
     init-method="init" destroy-method="close">
     <argument ref="domDataBroker" />
-  </bean>
-
-  <bean id="serviceFunctionForwarderListener"
-    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionForwarderListener"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
   </bean>
 
   <bean id="serviceFunctionClassifierListener"

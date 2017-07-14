@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2017 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -9,7 +9,9 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * This class listens to changes (addition, update, removal) in Service
  * Functions chains taking the appropriate actions.
  */
+@Singleton
 public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener<ServiceFunctionChain> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionChainListener.class);
@@ -34,8 +37,10 @@ public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener
 
     private ListenerRegistration<ServiceFunctionChainListener> listenerRegistration;
 
+    @Inject
     public ServiceFunctionChainListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
+        registerListeners();
     }
 
     private void registerListeners() {
@@ -43,15 +48,10 @@ public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener
                 LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(ServiceFunctionChains.class).child(ServiceFunctionChain.class));
         listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
-
-    }
-
-    public void init() {
-        LOG.debug("ServiceFunctionChainListener:Initializing...");
-        registerListeners();
     }
 
     @Override
+    @PreDestroy
     public void close() throws Exception {
         LOG.debug("Closing listener...");
         if (listenerRegistration != null) {

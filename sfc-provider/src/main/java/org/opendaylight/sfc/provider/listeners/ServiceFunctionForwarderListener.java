@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -37,21 +39,19 @@ import org.slf4j.LoggerFactory;
  * This class listens to changes (addition, update, removal) in Service Function
  * Forwarders taking the appropriate actions.
  *
- * @author David Suárez (david.suarez.fuentes@ericsson.com)
+ * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
  */
+@Singleton
 public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionForwarderListener.class);
 
     private final DataBroker dataBroker;
     private ListenerRegistration<ServiceFunctionForwarderListener> listenerRegistration;
 
+    @Inject
     public ServiceFunctionForwarderListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    public void init() {
-        LOG.debug("Initializing...");
         registerListeners();
     }
 
@@ -96,13 +96,14 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
 
     /**
      * Obtains the list of RSP affected by a change on the SFF.
-     * @param originalSff the original SFF.
-     * @param updatedSff the updated SFF.
+     *
+     * @param originalSff
+     *            the original SFF.
+     * @param updatedSff
+     *            the updated SFF.
      * @return a list of {@link RspName} of the affected RSP.
      */
-    private List<RspName> findAffectedRsp(
-            ServiceFunctionForwarder originalSff,
-            ServiceFunctionForwarder updatedSff) {
+    private List<RspName> findAffectedRsp(ServiceFunctionForwarder originalSff, ServiceFunctionForwarder updatedSff) {
 
         SffName sffName = originalSff.getName();
         List<RspName> rspNames = SfcProviderServiceForwarderAPI.readRspNamesFromSffState(sffName);
@@ -141,34 +142,32 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
         removedDictionaries.removeAll(updatedDictionaries);
         if (!removedDictionaries.isEmpty()) {
             LOG.debug("SFF dictionaries removed {}", removedDictionaries);
-            return rspNames.stream()
-                    .map(SfcProviderRenderedPathAPI::readRenderedServicePath)
+            return rspNames.stream().map(SfcProviderRenderedPathAPI::readRenderedServicePath)
                     .filter(rsp -> isAnyDictionaryUsedInRsp(sffName, rsp, removedDictionaries))
-                    .map(RenderedServicePath::getName)
-                    .collect(Collectors.toList());
+                    .map(RenderedServicePath::getName).collect(Collectors.toList());
         }
 
         return Collections.emptyList();
     }
 
     /**
-     * Whether any hop of a RSP makes use of any SF dictionary of a given list for the given SFF.
-     * @param sffName the SFF name.
-     * @param renderedServicePath the RSP.
-     * @param dictionaries the list of SF dictionaries.
+     * Whether any hop of a RSP makes use of any SF dictionary of a given list for
+     * the given SFF.
+     *
+     * @param sffName
+     *            the SFF name.
+     * @param renderedServicePath
+     *            the RSP.
+     * @param dictionaries
+     *            the list of SF dictionaries.
      * @return true if the RSP makes use of the dictionary.
      */
-    private boolean isAnyDictionaryUsedInRsp(
-            final SffName sffName,
-            final RenderedServicePath renderedServicePath,
+    private boolean isAnyDictionaryUsedInRsp(final SffName sffName, final RenderedServicePath renderedServicePath,
             final List<ServiceFunctionDictionary> dictionaries) {
-        List<SfName> dictionarySfNames = dictionaries.stream()
-                .map(ServiceFunctionDictionary::getName)
+        List<SfName> dictionarySfNames = dictionaries.stream().map(ServiceFunctionDictionary::getName)
                 .collect(Collectors.toList());
         return renderedServicePath.getRenderedServicePathHop().stream()
                 .filter(rspHop -> sffName.equals(rspHop.getServiceFunctionForwarder()))
-                .filter(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName()))
-                .findFirst()
-                .isPresent();
+                .filter(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName())).findFirst().isPresent();
     }
 }

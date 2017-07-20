@@ -31,7 +31,7 @@
     <!-- Project local feautures -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>features4-sfc</artifactId>
+      <artifactId>features-sfc</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>

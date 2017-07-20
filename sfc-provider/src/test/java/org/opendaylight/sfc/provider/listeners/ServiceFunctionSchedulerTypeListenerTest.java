@@ -71,7 +71,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionSchedulerTypeListener = new ServiceFunctionSchedulerTypeListener(getDataBroker());
-        serviceFunctionSchedulerTypeListener.init();
     }
 
     @After

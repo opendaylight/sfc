@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +7,8 @@
  */
 package org.opendaylight.sfc.provider.listeners;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -22,21 +24,19 @@ import org.slf4j.LoggerFactory;
  * This class listens to changes (addition, update, removal) in Service Function
  * Classifiers taking the appropriate actions.
  *
- * @author David Suárez (david.suarez.fuentes@ericsson.com)
+ * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
  */
+@Singleton
 public class ServiceFunctionClassifierListener extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionClassifierListener.class);
 
     private final DataBroker dataBroker;
     private ListenerRegistration<ServiceFunctionClassifierListener> listenerRegistration;
 
+    @Inject
     public ServiceFunctionClassifierListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    public void init() {
-        LOG.debug("Initializing...");
         registerListeners();
     }
 

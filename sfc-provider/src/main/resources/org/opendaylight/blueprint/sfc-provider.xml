@@ -11,9 +11,8 @@
     interface="org.opendaylight.controller.md.sal.dom.api.DOMDataBroker"
     odl:type="default" />
 
-  <bean id="sfcProviderRpc"
-    class="org.opendaylight.sfc.provider.SfcProviderRpc">
-    <property name="dataProvider" ref="dataBroker"/>
+  <bean id="sfcProviderRpc" class="org.opendaylight.sfc.provider.SfcProviderRpc">
+    <property name="dataProvider" ref="dataBroker" />
   </bean>
 
   <odl:rpc-implementation ref="sfcProviderRpc" />
@@ -24,20 +23,7 @@
     <argument ref="domDataBroker" />
   </bean>
 
-  <bean id="serviceFunctionClassifierListener"
-    class="org.opendaylight.sfc.provider.listeners.ServiceFunctionClassifierListener"
-    init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
-  </bean>
-
-   <bean id="sfcdatastoreApi"
-        class="org.opendaylight.sfc.provider.api.SfcDataStoreAPI">
-    <property name="dataProvider" ref="dataBroker"/>
-  </bean>
-
-  <bean id="serviceFunctionSchedulerTypeListener"
-        class="org.opendaylight.sfc.provider.listeners.ServiceFunctionSchedulerTypeListener"
-        init-method="init" destroy-method="close">
-    <argument ref="dataBroker" />
+  <bean id="sfcdatastoreApi" class="org.opendaylight.sfc.provider.api.SfcDataStoreAPI">
+    <property name="dataProvider" ref="dataBroker" />
   </bean>
 </blueprint>

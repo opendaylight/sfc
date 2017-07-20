@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,6 +8,8 @@
 package org.opendaylight.sfc.provider.listeners;
 
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -27,18 +29,16 @@ import org.slf4j.LoggerFactory;
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
  *
  */
+@Singleton
 public class ServiceFunctionSchedulerTypeListener extends AbstractDataTreeChangeListener<ServiceFunctionSchedulerType> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionSchedulerTypeListener.class);
 
     private final DataBroker dataBroker;
     private ListenerRegistration<ServiceFunctionSchedulerTypeListener> listenerRegistration;
 
+    @Inject
     public ServiceFunctionSchedulerTypeListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
-    }
-
-    public void init() {
-        LOG.debug("Initializing...");
         registerListeners();
     }
 

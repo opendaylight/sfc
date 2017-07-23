@@ -56,8 +56,9 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
         this.sfpv = sfpv;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
+    @Deprecated
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public CheckedFuture<PostCanCommitStep, DataValidationFailedException> canCommit(Object txId,
             DOMDataTreeCandidate candidate, SchemaContext ctx) {
 

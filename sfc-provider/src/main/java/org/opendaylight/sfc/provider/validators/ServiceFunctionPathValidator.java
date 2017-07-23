@@ -51,7 +51,7 @@ public class ServiceFunctionPathValidator {
 
     }
 
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("close(): closing sfp validator ...");
     }
 

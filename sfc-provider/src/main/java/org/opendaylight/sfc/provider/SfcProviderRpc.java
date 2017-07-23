@@ -134,7 +134,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<Void>> putServiceFunction(PutServiceFunctionInput input) {
         printTraceStart(LOG);
-        LOG.info("\n####### Input: " + input);
+        LOG.info("\n####### Input: {}", input);
 
         if (dataBroker == null) {
             return Futures.immediateFuture(
@@ -162,7 +162,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
         printTraceStart(LOG);
-        LOG.info("Input: " + input);
+        LOG.info("Input: {}", input);
 
         if (dataBroker != null) {
             ServiceFunctionKey sfkey = new ServiceFunctionKey(new SfName(input.getName()));

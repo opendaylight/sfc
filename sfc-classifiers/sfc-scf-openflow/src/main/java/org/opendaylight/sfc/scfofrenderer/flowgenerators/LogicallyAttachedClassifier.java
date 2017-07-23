@@ -108,7 +108,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
                     .orElseThrow(RuntimeException::new);
 
             LOG.info("createClassifierOutFlow - Must go through tunnel {}. src: {}; dst: {}", theTunnelIf,
-                    classifierNodeDpnId.getValue().toString(), firstHopDataplaneId.getValue().toString());
+                    classifierNodeDpnId.getValue(), firstHopDataplaneId.getValue());
 
             // since these actions from genius *have to* be appended to other
             // actions, we must pass

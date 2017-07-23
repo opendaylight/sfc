@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener<RenderedServicePath> {
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspsUpdateListener.class);
     private final DataBroker dataBroker;
-    private ListenerRegistration<AbstractDataTreeChangeListener> listenerRegistration;
+    private ListenerRegistration<ClassifierRspsUpdateListener> listenerRegistration;
     private final ClassifierRspUpdateProcessor classifierProcessor;
     private final SfcOfFlowWriterInterface openflowWriter;
     private final ClassifierRspUpdateDataGetter updateDataGetter;

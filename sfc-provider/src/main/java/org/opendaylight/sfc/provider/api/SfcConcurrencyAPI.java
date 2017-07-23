@@ -38,6 +38,7 @@ public final class SfcConcurrencyAPI {
             }
         } catch (InterruptedException e) {
             LOG.error("Failed to Acquire Lock");
+            Thread.currentThread().interrupt();
         }
         return false;
     }
@@ -53,6 +54,7 @@ public final class SfcConcurrencyAPI {
             }
         } catch (InterruptedException e) {
             LOG.error("Failed to Acquire Lock");
+            Thread.currentThread().interrupt();
         }
         return false;
     }

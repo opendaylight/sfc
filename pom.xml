@@ -63,7 +63,6 @@
     <mdsal.version>1.6.0-SNAPSHOT</mdsal.version>
     <netconf.parent.version>1.3.0-SNAPSHOT</netconf.parent.version>
     <restconf.version>1.6.0-SNAPSHOT</restconf.version>
-    <jmxGeneratorPath>src/main/yang-gen-config</jmxGeneratorPath>
     <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
     <yangtools.version>1.2.0-SNAPSHOT</yangtools.version>
     <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
@@ -130,11 +129,6 @@
         <artifactId>sfc-genius</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>config-api</artifactId>
-        <version>${config.version}</version>
-      </dependency>
 
       <!-- YANG tools -->
       <dependency>
@@ -160,13 +154,6 @@
       </dependency>
 
       <!-- Controller infrastructure -->
-      <dependency>
-        <groupId>org.opendaylight.controller</groupId>
-        <artifactId>config-artifacts</artifactId>
-        <version>${config.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
       <dependency>
         <groupId>org.opendaylight.controller</groupId>
         <artifactId>mdsal-artifacts</artifactId>
@@ -238,12 +225,6 @@
           <configuration>
             <filesets>
               <fileset>
-                <directory>${jmxGeneratorPath}</directory>
-                <includes>
-                  <include>**</include>
-                </includes>
-              </fileset>
-              <fileset>
                 <directory>${salGeneratorPath}</directory>
                 <includes>
                   <include>**</include>
@@ -265,7 +246,6 @@
               </goals>
               <configuration>
                 <sources>
-                  <source>${jmxGeneratorPath}</source>
                   <source>${salGeneratorPath}</source>
                 </sources>
               </configuration>
@@ -285,13 +265,6 @@
               <configuration>
                 <codeGenerators>
                   <generator>
-                    <codeGeneratorClass>org.opendaylight.controller.config.yangjmxgenerator.plugin.JMXGenerator</codeGeneratorClass>
-                    <outputBaseDir>${jmxGeneratorPath}</outputBaseDir>
-                    <additionalConfiguration>
-                      <namespaceToPackage1>urn:opendaylight:params:xml:ns:yang:controller==org.opendaylight.controller.config.yang</namespaceToPackage1>
-                    </additionalConfiguration>
-                  </generator>
-                  <generator>
                     <codeGeneratorClass>org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl</codeGeneratorClass>
                     <outputBaseDir>${salGeneratorPath}</outputBaseDir>
                   </generator>
@@ -301,12 +274,6 @@
             </execution>
           </executions>
           <dependencies>
-            <dependency>
-              <groupId>org.opendaylight.controller</groupId>
-              <artifactId>yang-jmx-generator-plugin</artifactId>
-              <version>${config.version}</version>
-              <scope>compile</scope>
-            </dependency>
             <dependency>
               <groupId>org.opendaylight.mdsal</groupId>
               <artifactId>maven-sal-api-gen-plugin</artifactId>

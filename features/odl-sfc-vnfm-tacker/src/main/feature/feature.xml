@@ -7,9 +7,6 @@
                               http://karaf.apache.org/xmlns/features/v1.2.0">
 
     <feature name="odl-sfc-vnfm-tacker" version="${project.version}">
-        <configfile finalname="etc/opendaylight/karaf/sfc-vnfm-tacker.xml">
-            mvn:org.opendaylight.sfc/sfc-vnfm-tacker/${project.version}/xml/config
-        </configfile>
     </feature>
 </features>
 

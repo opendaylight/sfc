@@ -50,5 +50,13 @@
             <artifactId>sfc-test-consumer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <!-- finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml" -->
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>sfc-test-consumer</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
     </dependencies>
 </project>

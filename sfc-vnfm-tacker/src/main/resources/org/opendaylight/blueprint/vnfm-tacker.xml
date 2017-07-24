@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
+
+  <odl:clustered-app-config id="tackerConfig"
+      binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.sfc.vnfm.tacker.config.rev170724.VnfmTackerConfig">
+  </odl:clustered-app-config>
+
+  <bean id="tackerManagerFactory" class="org.opendaylight.sfc.tacker.api.TackerManagerFactory"/>
+
+  <bean id="tackerManager" factory-ref="tackerManagerFactory" factory-method="newInstance"
+      destroy-method = "close">
+    <argument ref="tackerConfig"/>
+  </bean>
+
+  <service ref="tackerManager" interface="org.opendaylight.sfc.vnfm.spi.SfcVnfManager"/>
+</blueprint>

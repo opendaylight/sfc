@@ -56,13 +56,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-vnfm-tacker</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
         </dependency>

@@ -25,14 +25,13 @@ import org.opendaylight.sfc.tacker.dto.TackerResponse;
 import org.opendaylight.sfc.tacker.dto.Token;
 import org.opendaylight.sfc.tacker.dto.Vnf;
 import org.opendaylight.sfc.tacker.util.DateDeserializer;
-import org.opendaylight.sfc.vnfm.spi.SfcVnfManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TackerManager implements SfcVnfManager, AutoCloseable {
+public class TackerManager implements AutoCloseableSfcVnfManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(TackerManager.class);
     private static final DateDeserializer DATE_DESERIALIZER = new DateDeserializer();
@@ -40,11 +39,11 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
     private static final Integer CONNECT_TIMEOUT_MILLISEC = 7000;
     private static final Integer READ_TIMEOUT_MILLISEC = 5000;
     private final Client client;
-    private String baseUri;
-    private int tackerPort;
-    private int keystonePort;
+    private final String baseUri;
+    private final int tackerPort;
+    private final int keystonePort;
     private Token token;
-    private Auth auth;
+    private final Auth auth;
 
     private TackerManager(TackerManagerBuilder builder) {
         Preconditions.checkNotNull(builder.getBaseUri());
@@ -79,9 +78,9 @@ public class TackerManager implements SfcVnfManager, AutoCloseable {
                 .build())
             .build();
 
-        ClientResponse response = (webResource.type(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+        ClientResponse response = webResource.type(javax.ws.rs.core.MediaType.APPLICATION_JSON)
             .header("X-Auth-Token", authToken.getId())
-            .header("X-Auth-Project-Id", authToken.getTenant().getName())).post(ClientResponse.class,
+            .header("X-Auth-Project-Id", authToken.getTenant().getName()).post(ClientResponse.class,
                     GSON.toJson(tackerRequest));
 
         if (response != null) {

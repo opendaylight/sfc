@@ -134,7 +134,6 @@ public final class SfcProviderServiceTypeAPI {
      * @return Service Function Type Object
      */
     public static boolean deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
-
         printTraceStart(LOG);
         boolean ret = false;
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
@@ -159,7 +158,7 @@ public final class SfcProviderServiceTypeAPI {
         if (sftServiceFunctionNameList != null) {
             LOG.debug("List size for service type {} is: {}", serviceFunction.getType(),
                     sftServiceFunctionNameList.size());
-            if (sftServiceFunctionNameList.size() == 0) {
+            if (sftServiceFunctionNameList.isEmpty()) {
                 deleteServiceFunctionType(serviceFunction.getType());
             }
         }

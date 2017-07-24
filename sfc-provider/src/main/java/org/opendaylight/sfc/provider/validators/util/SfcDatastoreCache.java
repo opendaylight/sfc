@@ -40,7 +40,7 @@ public final class SfcDatastoreCache {
                     if (sf == null) {
                         return null;
                     }
-                    return sf.getType().getValue().toString();
+                    return sf.getType().getValue();
                 }
             });
 
@@ -58,7 +58,6 @@ public final class SfcDatastoreCache {
                         return null;
                     }
                     List<String> serviceFunctionTypesForChain = new ArrayList<>();
-                    // SfcServiceFunction sfcSf = null;
                     for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {
                         serviceFunctionTypesForChain.add(sfcSf.getType().getValue());
                     }

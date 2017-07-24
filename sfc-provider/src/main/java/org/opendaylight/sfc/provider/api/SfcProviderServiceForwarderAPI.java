@@ -476,8 +476,8 @@ public final class SfcProviderServiceForwarderAPI {
             }
 
             if (!dplInSf) {
-                LOG.debug("getNonSfDataPlaneLocators found NonSf DPL [{}] from SFF [{}]", sffDpl.getName().toString(),
-                        sff.getName().toString());
+                LOG.debug("getNonSfDataPlaneLocators found NonSf DPL [{}] from SFF [{}]", sffDpl.getName(),
+                        sff.getName());
                 nonSfDpls.add(sffDpl);
             }
         }

@@ -20,6 +20,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 public final class ValidationConstants {
 
+    private static final String SFC_VALIDATION_ERROR = "SFC validation error";
+
     /**
      * Yang instance identifiers.
      */
@@ -45,15 +47,15 @@ public final class ValidationConstants {
      */
     public static final DataValidationFailedWithMessageException SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_MISSING =
             new DataValidationFailedWithMessageException(YangInstanceIdentifier.class,
-                    SFP_PATH_YII, "The SF referenced in the SF Path does not exist", "SFC validation error");
+                    SFP_PATH_YII, "The SF referenced in the SF Path does not exist", SFC_VALIDATION_ERROR);
 
     public static final DataValidationFailedWithMessageException SFP_FAILED_CAN_COMMIT_EXCEPTION_SFC_MISSING =
             new DataValidationFailedWithMessageException(YangInstanceIdentifier.class, SFP_PATH_YII,
-                    "The SF chain referenced in the SF Path does not exist", "SFC validation error");
+                    "The SF chain referenced in the SF Path does not exist", SFC_VALIDATION_ERROR);
 
     public static final DataValidationFailedWithMessageException SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_CONSISTENCY =
             new DataValidationFailedWithMessageException(YangInstanceIdentifier.class, SFP_PATH_YII,
-                    "SF/ SF types are not consistent with those defined in the SFC", "SFC validation error");
+                    "SF/ SF types are not consistent with those defined in the SFC", SFC_VALIDATION_ERROR);
     /*
      * Futures
      */

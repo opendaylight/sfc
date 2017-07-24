@@ -22,7 +22,6 @@ public final class SfcProviderDebug {
     private static boolean on = false;
     private static String traceStart = "####### Start: {}";
     private static String traceStop = "####### Stop: {}";
-    private static String trace = "####### Trace: {}";
 
     private SfcProviderDebug() {
     }

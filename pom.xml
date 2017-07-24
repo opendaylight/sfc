@@ -50,7 +50,6 @@
     <module>features</module>
     <module>sfc-karaf</module>
     <module>sfc-renderers</module>
-    <module>sfc-rsp-manager</module>
     <module>sfc-genius</module>
   </modules>
 

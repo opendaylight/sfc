@@ -11,7 +11,7 @@ package org.opendaylight.sfc.sfc_test_consumer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import org.opendaylight.controller.config.yang.config.sfc_test_consumer.impl.SfcTestConsumerRuntimeMXBean;
+import org.opendaylight.controller.md.sal.common.util.jmx.AbstractMXBean;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * @since 2014-07-01
  */
 
-public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRuntimeMXBean {
+public class SfcTestConsumerImpl extends AbstractMXBean implements SfcTestConsumer, SfcTestConsumerRuntimeMXBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcTestConsumerImpl.class);
 
@@ -70,7 +70,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
     private final ServiceFunctionChainService sfcService;
 
     public SfcTestConsumerImpl(ServiceFunctionService sfService, ServiceFunctionChainService sfcService) {
-
+        super("sfc-test-consumer-impl", "RuntimeBean", null);
         this.sfService = sfService;
         this.sfcService = sfcService;
     }
@@ -95,7 +95,7 @@ public class SfcTestConsumerImpl implements SfcTestConsumer, SfcTestConsumerRunt
 
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
         sfDataPlaneLocatorBuilder = sfDataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
-        List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<SfDataPlaneLocator>();
+        List<SfDataPlaneLocator> sfDataPlaneLocatorList = new ArrayList<>();
         sfDataPlaneLocatorList.add(sfDataPlaneLocatorBuilder.build());
 
         // Build ServiceFunctionBuilder and set all data constructed above

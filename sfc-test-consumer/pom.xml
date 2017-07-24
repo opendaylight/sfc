@@ -12,9 +12,6 @@
     <!-- <name> formatting is used by autorelease to parse and notify projects on
          build failure. Please do not modify this unless you have a good reason. -->
     <name>ODL :: sfc :: ${project.artifactId}</name>
-    <properties>
-        <configfile>configuration/initial/sfc-test-consumer-initial.xml</configfile>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -28,11 +25,14 @@
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>ietf-yang-types-20130715</artifactId>
-        </dependency>
-        <dependency>
+        </dependency><dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-config</artifactId>
+        </dependency><dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-common-util</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -51,28 +51,6 @@
             <plugin>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yang-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                    <executions>
-                       <execution>
-                           <id>attach-artifacts</id>
-                           <goals>
-                              <goal>attach-artifact</goal>
-                           </goals>
-                           <phase>package</phase>
-                           <configuration>
-                             <artifacts>
-                                <artifact>
-                                   <file>${project.build.directory}/classes/${configfile}</file>
-                                   <type>xml</type>
-                                   <classifier>config</classifier>
-                               </artifact>
-                             </artifacts>
-                           </configuration>
-                       </execution>
-                    </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

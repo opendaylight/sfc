@@ -7,9 +7,6 @@
                               http://karaf.apache.org/xmlns/features/v1.2.0">
 
     <feature name="odl-sfc-test-consumer" version="${project.version}">
-        <configfile finalname="etc/opendaylight/karaf/sfc-test-consumer-initial.xml">
-            mvn:org.opendaylight.sfc/sfc-test-consumer/${project.version}/xml/config
-        </configfile>
     </feature>
 </features>
 

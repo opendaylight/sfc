@@ -43,7 +43,8 @@ public class SfcPotRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotRspProcessor.class);
 
-    public SfcPotRspProcessor() {
+    private SfcPotRspProcessor() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

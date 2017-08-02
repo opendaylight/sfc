@@ -115,7 +115,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
         if (srcSffDpl == null) {
             // srcSffDpl will be null for the first hop in the chain, just use
             // the SFF DPL mac
-            SffDataPlaneLocator dpl = sfcProviderUtils.getSffSfDict_SffDpl(entry.getSf(), entry.getDstSff(),
+            SffDataPlaneLocator dpl = sfcProviderUtils.getSffSfDictSffDpl(entry.getSf(), entry.getDstSff(),
                     entry.getPathId());
             srcMacAddress = ((MacAddressLocator) dpl.getDataPlaneLocator().getLocatorType()).getMac();
         } else {
@@ -216,7 +216,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
     public void configureSfTransportEgressFlow(SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        String portStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);
+        String portStr;
 
         SfDplOvsAugmentation sfDplOvs = dstSfDpl.getAugmentation(SfDplOvsAugmentation.class);
         if (sfDplOvs == null) {
@@ -262,7 +262,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
 
             if (entry.getSrcSff().equals(entry.getDstSff())) {
                 // It may be that multiple SFs are on the same SFF
-                // If so, we dont need to set the transports again
+                // If so, we don't need to set the transports again
                 // Otherwise the SFF ingress DPL will be overwritten
                 continue;
             }
@@ -270,7 +270,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rsp.getTransportType());
 
-            SffName targetSffName = (entry.getDstSff().equals(SffGraph.EGRESS)) ? entry.getSrcSff() : entry.getDstSff();
+            SffName targetSffName = entry.getDstSff().equals(SffGraph.EGRESS) ? entry.getSrcSff() : entry.getDstSff();
             ServiceFunctionForwarder sff = sfcProviderUtils.getServiceFunctionForwarder(targetSffName,
                     entry.getPathId());
             SffDataPlaneLocatorName sffEgressDplName = sffGraph.getSffEgressDpl(sff.getName(), entry.getPathId());

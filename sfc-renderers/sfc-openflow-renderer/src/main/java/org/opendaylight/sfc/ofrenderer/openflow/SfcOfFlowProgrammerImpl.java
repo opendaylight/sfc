@@ -63,6 +63,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
+    private static final String OUTPUT_STRING = "output:";
+
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfFlowProgrammerImpl.class);
 
     public static final int COOKIE_BIGINT_HEX_RADIX = 16;
@@ -166,7 +168,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public SfcOfFlowProgrammerImpl() {
         this.tableBase = APP_COEXISTENCE_NOT_SET;
         this.tableEgress = APP_COEXISTENCE_NOT_SET;
-        this.flowRspId = new Long(0);
+        this.flowRspId = 0L;
     }
 
     public SfcOfFlowProgrammerImpl(SfcOfFlowWriterInterface sfcOfFlowWriter) {
@@ -276,7 +278,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureClassifierTableMatchAny(final String sffNodeName) {
         if (getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -294,7 +296,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureClassifierTableDpdkOutput(final String sffNodeName, Long outPort) {
         if (getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -306,7 +308,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Action output
         List<Action> actionList = new ArrayList<>();
-        String outPortStr = "output:" + outPort.toString();
+        String outPortStr = OUTPUT_STRING + outPort.toString();
         actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
@@ -330,7 +332,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureClassifierTableDpdkInput(final String sffNodeName, Long inPort) {
         if (getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -365,7 +367,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureTransportIngressTableMatchAny(final String sffNodeName) {
         if (getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -384,7 +386,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureTransportIngressTableMatchAnyResubmit(final String sffNodeName, short nextTableId) {
         if (getTableBase() > APP_COEXISTENCE_NOT_SET) {
-            // We dont need this flow with App Coexistence.
+            // We don't need this flow with App Coexistence.
             return;
         }
 
@@ -443,7 +445,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     @Override
     public void configureTransportEgressTableMatchAny(final String sffNodeName) {
-        // This is the last table, cant set next table AND doDrop should be
+        // This is the last table, can't set next table AND doDrop should be
         // false
         FlowBuilder flowBuilder = configureTableMatchAnyDropFlow(getTableId(TABLE_INDEX_TRANSPORT_EGRESS));
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, flowBuilder);
@@ -575,7 +577,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     @Override
     public void configureVlanTransportIngressFlow(final String sffNodeName) {
         // vlan match
-        // For some reason it didnt match setting etherType=0x8100
+        // For some reason it didn't match setting etherType=0x8100
         VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
         VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
         vlanIdBuilder.setVlanIdPresent(true);
@@ -1433,7 +1435,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         String inportStr = OutputPortValues.INPORT.toString();
 
         if (vxgpePort != null) {
-            String vxgpePortStr = "output:" + vxgpePort.toString();
+            String vxgpePortStr = OUTPUT_STRING + vxgpePort.toString();
             configureNshVxgpeLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, vxgpePortStr, inportStr);
             configureNshVxgpeLastHopTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, vxgpePortStr);
         } else {
@@ -1548,7 +1550,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             // If a VXLAN GPE openflow based port is available,
             // support egress scenarios that forward the traffic
             // to remote locations via IP provided through NSH C1.
-            final String vxgpePortStr = "output:" + vxgpePort.toString();
+            final String vxgpePortStr = OUTPUT_STRING + vxgpePort.toString();
             configureNshEthLastHopTransportEgressToRemoteTunnelService(sffNodeName, nshNsp, nshNsi, vxgpePortStr);
             configureNshEthLastHopTransportEgressToRemoteNshService(sffNodeName, nshNsp, nshNsi, vxgpePortStr);
         }
@@ -1812,7 +1814,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         String inportStr = OutputPortValues.INPORT.toString();
 
         if (vxgpePort != null) {
-            String vxgpePortStr = "output:" + vxgpePort.toString();
+            String vxgpePortStr = OUTPUT_STRING + vxgpePort.toString();
             configureNshVxgpeTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, vxgpePortStr, inportStr);
             configureNshVxgpeTransportEgressFlowPorts(sffNodeName, nshNsp, nshNsi, inportStr, vxgpePortStr);
         } else {

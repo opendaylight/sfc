@@ -332,7 +332,6 @@ public class SffGraph {
                         sffDpl.getSffName(), sffDpl.getPathId(), sffDpl.getIngressDplName(), sffDpl.getEgressDplName(),
                         sffDpl.getIngressHopDpl() == null ? "null"
                                 : sffDpl.getIngressHopDpl().getTransport().getName(),
-                        // ((Mpls)sffDpl.getIngressHopDpl().getLocatorType()).getMplsLabel());
                         sffDpl.getIngressHopDpl() == null ? "null"
                                 : ((Mac) sffDpl.getIngressHopDpl().getLocatorType()).getVlanId());
             }

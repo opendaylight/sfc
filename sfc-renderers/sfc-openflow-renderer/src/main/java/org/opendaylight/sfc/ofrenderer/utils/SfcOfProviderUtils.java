@@ -116,11 +116,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
      */
     @Override
     public ServiceFunctionType getServiceFunctionType(final SfName sfName, long rspId) {
-
-        ServiceFunction sf =  getServiceFunction(sfName, rspId);
-
-        ServiceFunctionType sfType = SfcProviderServiceTypeAPI.readServiceFunctionType(sf.getType());
-        return sfType;
+        return SfcProviderServiceTypeAPI.readServiceFunctionType(getServiceFunction(sfName, rspId).getType());
     }
 
     /**
@@ -246,6 +242,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
     // Get the SFF DPLs that are not used by SFs. Useful when there are multiple
     // DPL types: one for the SFs and another for the SFF trunk.
+    @Override
     public List<SffDataPlaneLocator> getSffNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
         return SfcProviderServiceForwarderAPI.getNonSfDataPlaneLocators(sff);
     }

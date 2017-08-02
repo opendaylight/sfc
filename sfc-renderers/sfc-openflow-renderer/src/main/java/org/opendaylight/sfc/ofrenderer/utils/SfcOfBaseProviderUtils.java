@@ -218,10 +218,8 @@ public abstract class SfcOfBaseProviderUtils {
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
 
         // Mac/IP and possibly VLAN
-        if (implementedInterface.equals(Mac.class)) {
-            if (((MacAddressLocator) sffLocatorType).getMac() != null) {
-                sffMac = ((MacAddressLocator) sffLocatorType).getMac().getValue();
-            }
+        if (implementedInterface.equals(Mac.class) && ((MacAddressLocator) sffLocatorType).getMac() != null) {
+            sffMac = ((MacAddressLocator) sffLocatorType).getMac().getValue();
         }
 
         return sffMac;
@@ -412,10 +410,8 @@ public abstract class SfcOfBaseProviderUtils {
         // Check if its an service-function-forwarder-ovs augmentation
         // if it is, then get the open flow node id there
         SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
-        if (ovsSff != null) {
-            if (ovsSff.getOvsBridge() != null) {
-                return ovsSff.getOvsBridge().getOpenflowNodeId();
-            }
+        if (ovsSff != null && ovsSff.getOvsBridge() != null) {
+            return ovsSff.getOvsBridge().getOpenflowNodeId();
         }
 
         // it its not an sff-ovs, then just return the ServiceNode
@@ -449,7 +445,7 @@ public abstract class SfcOfBaseProviderUtils {
         return interfaceName;
     }
 
-    public SffDataPlaneLocator getSffSfDict_SffDpl(SfName sfName, SffName sffName, long rspId) {
+    public SffDataPlaneLocator getSffSfDictSffDpl(SfName sfName, SffName sffName, long rspId) {
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(sffName, rspId);
 
         for (ServiceFunctionDictionary sffDict : sff.getServiceFunctionDictionary()) {

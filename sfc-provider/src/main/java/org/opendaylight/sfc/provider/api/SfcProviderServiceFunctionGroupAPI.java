@@ -107,13 +107,13 @@ public final class SfcProviderServiceFunctionGroupAPI {
             for (ServiceFunctionGroup element : sfgs.getServiceFunctionGroup()) {
                 if (element.getType().equals(serviceFunctionType)) {
                     sfg = element;
-                    LOG.debug("found group " + sfg + " that matches type " + serviceFunctionType);
+                    LOG.debug("found group {} that matches type {}.", sfg, serviceFunctionType);
                     break;
                 }
             }
         }
         if (sfg == null) {
-            LOG.debug("didn't found group " + sfg + " that matches type " + serviceFunctionType);
+            LOG.debug("didn't found group {} that matches type {}", sfg, serviceFunctionType);
         }
         printTraceStop(LOG);
         return sfg;
@@ -191,6 +191,7 @@ public final class SfcProviderServiceFunctionGroupAPI {
      * Removes a SF from SFG.
      *
      * <p>
+     *
      * @param serviceFunctionGroupName
      *            SFG name
      * @param serviceFunctionName

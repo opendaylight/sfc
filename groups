@@ -1,7 +1,7 @@
-# UUID                                  	Group Name
+# UUID                                                        	Group Name
 #
-c9025ab9ddc1e3171919e085449f22c54f8f7b54	GitHub Replication
-ee61070ca5cbe15d8445415ff456875dbd974300	Non-Interactive sfc users
-global:Anonymous-Users                  	Anonymous Users
-global:Registered-Users                 	Registered Users
+c9025ab9ddc1e3171919e085449f22c54f8f7b54                      	GitHub Replication
+ee61070ca5cbe15d8445415ff456875dbd974300                      	Non-Interactive sfc users
+global:Anonymous-Users                                        	Anonymous Users
+global:Registered-Users                                       	Registered Users
 ldap:cn=gerrit-sfc-committers,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-sfc-committers

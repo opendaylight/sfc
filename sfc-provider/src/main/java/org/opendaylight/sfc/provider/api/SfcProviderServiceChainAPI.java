@@ -41,13 +41,13 @@ public final class SfcProviderServiceChainAPI {
     }
 
     /**
-     * This method reads the service function chain specified by the given name
-     * from the datastore.
+     * This method reads the service function chain specified by the given name from
+     * the datastore.
      *
      * @param serviceFunctionChainName
      *            SF name
-     * @return A ServiceFunctionState object that is a list of all paths using
-     *         this service function, null otherwise
+     * @return A ServiceFunctionState object that is a list of all paths using this
+     *         service function, null otherwise
      */
     public static ServiceFunctionChain readServiceFunctionChain(SfcName serviceFunctionChainName) {
         printTraceStart(LOG);
@@ -61,6 +61,11 @@ public final class SfcProviderServiceChainAPI {
 
         printTraceStop(LOG);
         return sfc;
+    }
+
+    public static ServiceFunctionChains readAllServiceFunctionChains() {
+        InstanceIdentifier<ServiceFunctionChains> ids = InstanceIdentifier.builder(ServiceFunctionChains.class).build();
+        return SfcDataStoreAPI.readTransactionAPI(ids, LogicalDatastoreType.CONFIGURATION);
     }
 
     /**

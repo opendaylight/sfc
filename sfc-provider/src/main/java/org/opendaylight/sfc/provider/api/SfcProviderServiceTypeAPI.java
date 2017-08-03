@@ -128,6 +128,12 @@ public final class SfcProviderServiceTypeAPI {
                 LogicalDatastoreType.CONFIGURATION);
     }
 
+    public static ServiceFunctionTypes readAllServiceFunctionTypes() {
+        InstanceIdentifier<ServiceFunctionTypes> ids = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
+        return SfcDataStoreAPI.readTransactionAPI(ids, LogicalDatastoreType.CONFIGURATION);
+    }
+
+
     /**
      * This method is used to delete a Service Function entry from the Service
      * Function Type list.

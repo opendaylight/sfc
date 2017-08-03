@@ -22,6 +22,30 @@
       "revId": "adf03c098db2d802d3137e84eef3899ba6640722",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9a814b4d",
+        "filename": "docs/specs/sfc-shell.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-08-03T06:37:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba1f61a0_34095596",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 31
+      },
+      "revId": "adf03c098db2d802d3137e84eef3899ba6640722",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

@@ -133,7 +133,7 @@ public class SfcOfRspTransactionalProcessorTest {
      */
     private boolean areSffsFreeOfInitializationFlows(Map<Long, Map<String, List<FlowDetails>>> theMap) {
         Predicate<Map.Entry<String, List<FlowDetails>>> emptySff = theInputEntry -> theInputEntry.getValue()
-                .size() == 0;
+                .isEmpty();
         return theMap.get(OpenflowConstants.SFC_FLOWS).entrySet().stream().allMatch(emptySff);
     }
 

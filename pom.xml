@@ -51,6 +51,7 @@
     <module>sfc-karaf</module>
     <module>sfc-renderers</module>
     <module>sfc-genius</module>
+    <module>sfc-shell</module>
   </modules>
 
   <properties>
@@ -127,6 +128,11 @@
       <dependency>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-genius</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opendaylight.sfc</groupId>
+        <artifactId>sfc-shell</artifactId>
         <version>${project.version}</version>
       </dependency>
 

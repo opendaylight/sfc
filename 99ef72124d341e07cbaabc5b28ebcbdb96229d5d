@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_16ea360f",
+        "filename": "sfc-shell/src/main/java/org/opendaylight/sfc/shell/ServiceFunctionsCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-08-09T22:05:47Z",
+      "side": 1,
+      "message": "We need null checks on these parameters to avoid NPEs. At least the IpMgmtAddress and RestUri can be null.",
+      "range": {
+        "startLine": 71,
+        "startChar": 38,
+        "endLine": 74,
+        "endChar": 85
+      },
+      "revId": "99ef72124d341e07cbaabc5b28ebcbdb96229d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

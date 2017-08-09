@@ -48,6 +48,7 @@
         <module>odl-sfc-test-consumer</module>
         <module>odl-sfc-vnfm-tacker</module>
         <module>odl-sfc-genius</module>
+        <module>odl-sfc-shell</module>
     </modules>
 
     <scm>

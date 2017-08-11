@@ -171,7 +171,7 @@ public final class SfcProviderServiceForwarderAPI {
      *
      * @return ServiceFunctionForwarders object
      */
-    protected static ServiceFunctionForwarders readAllServiceFunctionForwarders() {
+    public static ServiceFunctionForwarders readAllServiceFunctionForwarders() {
         ServiceFunctionForwarders sffs;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarders> sffsIID =

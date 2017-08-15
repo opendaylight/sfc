@@ -1,0 +1,209 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_7a625eae",
+        "filename": "features/odl-sfc-statistics/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "This is an old odlparent version - the project is at least on 2.0.2 but should be on 2.0.4.",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ba5cd6ee",
+        "filename": "sfc-renderers/sfc-openflow-renderer/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "The version should be defined in a parent pom or artifacts pom.",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_fa6dae9a",
+        "filename": "sfc-statistics/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "Is this needed? ...",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_5a6dda97",
+        "filename": "sfc-statistics/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "... and this?  I\u0027d think these are defined in a parent pom.",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_da10aa03",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "Call this(...) so you don\u0027t have to duplicate instantiation of the local fields (ie scheduler etc).",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_faf48ed0",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsManagerImpl.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "The statsTask is passed off to the scheduler so what\u0027s the reason for storing in the map? So it can be unscheduled later? Does the map need to be concurrent/synchronized?",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_bab856e6",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfcStatisticsHandlerBase.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "You should extract a public interface, SfcStatisticsHandler?. You can still have an abstract base but do you need it (ie would there be more than one implmenetation)?",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9a2d9249",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfcStatisticsHandlerTask.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "package protected instead of public?",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 6
+      },
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3a1626f2",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/utils/SfcStatisticsOpenFlowUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "package protected instead of public?",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 6
+      },
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_dadeea3e",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/utils/SfcStatisticsWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "package protected instead of public?",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 6
+      },
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_dab54aef",
+        "filename": "sfc-statistics/src/main/resources/org/opendaylight/blueprint/sfc-statistics.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-08-15T15:53:28Z",
+      "side": 1,
+      "message": "These should probably be configurable - either via clustered-app-config or cfg file.",
+      "revId": "78d544f8143dcd3c6240d9e3af0eaadaba08dc9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

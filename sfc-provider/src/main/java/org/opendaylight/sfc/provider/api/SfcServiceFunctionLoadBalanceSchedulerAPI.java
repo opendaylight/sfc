@@ -31,11 +31,11 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-03-13
  */
-public class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+public final class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionLoadBalanceSchedulerAPI.class);
 
-    SfcServiceFunctionLoadBalanceSchedulerAPI() {
+    protected SfcServiceFunctionLoadBalanceSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(LoadBalance.class);
     }
 

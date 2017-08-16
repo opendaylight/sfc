@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
  * @since 2016-09-10
  */
 
-public class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+public final class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionLoadPathAwareSchedulerAPI.class);
 
-    SfcServiceFunctionLoadPathAwareSchedulerAPI() {
+    protected SfcServiceFunctionLoadPathAwareSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(
                 org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadPathAware.class);
     }

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @since 2014-06-30
  */
 
-public class SfcInstanceIdentifiers implements AutoCloseable {
+public final class SfcInstanceIdentifiers implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcInstanceIdentifiers.class);
 

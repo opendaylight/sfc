@@ -31,11 +31,11 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-03-04
  */
-public class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+public final class SfcServiceFunctionRandomSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRandomSchedulerAPI.class);
 
-    SfcServiceFunctionRandomSchedulerAPI() {
+    protected SfcServiceFunctionRandomSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(
                 org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random.class);
     }

@@ -44,6 +44,7 @@ public final class SfcProviderServicePathAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServicePathAPI.class);
 
     private SfcProviderServicePathAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

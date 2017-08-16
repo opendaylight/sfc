@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 2014-11-04
  */
-public class SfcProviderRenderedPathAPI {
+public final class SfcProviderRenderedPathAPI {
     private static final String FUNCTION = "function";
     private static final String IP = "ip";
     private static final String LISP = "lisp";
@@ -88,7 +88,8 @@ public class SfcProviderRenderedPathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
 
-    protected SfcProviderRenderedPathAPI() {
+    private SfcProviderRenderedPathAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     private static SfcServiceFunctionSchedulerAPI getServiceFunctionScheduler(

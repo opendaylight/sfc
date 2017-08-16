@@ -42,6 +42,7 @@ public final class SfcProviderServiceFunctionGroupAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAPI.class);
 
     private SfcProviderServiceFunctionGroupAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static List<String> getSfgNameList(ServiceFunctionChain serviceFunctionChain) {

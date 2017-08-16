@@ -38,6 +38,7 @@ public final class SfcProviderServiceChainAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPI.class);
 
     private SfcProviderServiceChainAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

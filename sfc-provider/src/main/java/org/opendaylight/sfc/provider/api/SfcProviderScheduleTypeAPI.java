@@ -35,6 +35,7 @@ public final class SfcProviderScheduleTypeAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderScheduleTypeAPI.class);
 
     private SfcProviderScheduleTypeAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static ServiceFunctionSchedulerType readEnabledServiceFunctionScheduleTypeEntry() {

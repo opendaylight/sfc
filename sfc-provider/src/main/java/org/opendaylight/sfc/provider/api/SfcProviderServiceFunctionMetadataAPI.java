@@ -38,6 +38,7 @@ public final class SfcProviderServiceFunctionMetadataAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionMetadataAPI.class);
 
     private SfcProviderServiceFunctionMetadataAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static boolean putContextMetadata(ContextMetadata md) {

@@ -37,6 +37,7 @@ public final class SfcProviderServiceFunctionGroupAlgAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceFunctionGroupAlgAPI.class);
 
     private SfcProviderServiceFunctionGroupAlgAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

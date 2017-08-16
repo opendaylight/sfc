@@ -63,6 +63,7 @@ public final class SfcProviderServiceForwarderAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceForwarderAPI.class);
 
     private SfcProviderServiceForwarderAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

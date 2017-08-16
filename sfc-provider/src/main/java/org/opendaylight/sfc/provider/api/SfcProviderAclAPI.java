@@ -40,11 +40,12 @@ import org.slf4j.LoggerFactory;
  *
  * @since 2014-11-04
  */
-public class SfcProviderAclAPI {
+public final class SfcProviderAclAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderAclAPI.class);
 
     private SfcProviderAclAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

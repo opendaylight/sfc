@@ -29,6 +29,7 @@ public final class SfcConcurrencyAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcConcurrencyAPI.class);
 
     private SfcConcurrencyAPI() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static boolean getLock() {

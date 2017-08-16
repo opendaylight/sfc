@@ -43,6 +43,7 @@ public final class SfcServicePathId {
     private static final int N = 64;
 
     private SfcServicePathId() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**

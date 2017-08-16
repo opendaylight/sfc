@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-03-04
  */
-public class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+public final class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRoundRobinSchedulerAPI.class);
 
     private static Map<SftTypeName, Integer> mapCountRoundRobin = new HashMap<>();
 
-    SfcServiceFunctionRoundRobinSchedulerAPI() {
+    protected SfcServiceFunctionRoundRobinSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(RoundRobin.class);
     }
 

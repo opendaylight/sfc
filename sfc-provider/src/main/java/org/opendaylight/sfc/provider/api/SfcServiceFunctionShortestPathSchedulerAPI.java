@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
  *
  * @since 2015-03-13
  */
-public class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
+public final class SfcServiceFunctionShortestPathSchedulerAPI extends SfcServiceFunctionSchedulerAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionShortestPathSchedulerAPI.class);
 
-    SfcServiceFunctionShortestPathSchedulerAPI() {
+    protected SfcServiceFunctionShortestPathSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(
                 org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath.class);
     }

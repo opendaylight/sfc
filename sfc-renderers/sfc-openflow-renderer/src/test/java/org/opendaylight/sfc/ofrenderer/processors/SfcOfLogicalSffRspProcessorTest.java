@@ -57,7 +57,6 @@ import org.opendaylight.sfc.ofrenderer.utils.SfcOfProviderUtilsTestMock;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSFFImpl;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
@@ -136,9 +135,6 @@ import org.powermock.reflect.Whitebox;
 public class SfcOfLogicalSffRspProcessorTest {
 
     private final SfcGeniusRpcClient geniusClient;
-
-    @Mock
-    private SfcInstanceIdentifiers odlSfc;
 
     @Mock
     private OdlInterfaceRpcService interfaceManagerRpcService;
@@ -293,9 +289,9 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         checkOperationalDatastoreUpdateOnRSPCreation();
 
-        // two times when SFs are in the same compute node (only one invokation
+        // two times when SFs are in the same compute node (only one invocation
         // per SF). When SFs
-        // are in different compute nodes, there is a third invokation (for the
+        // are in different compute nodes, there is a third invocation (for the
         // interface used
         // to go from SF1 to SF2)
         verify(interfaceManagerRpcService, times(sfTypes.size()))

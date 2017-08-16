@@ -30,13 +30,9 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-11-22
  */
-public class SfcDataStoreAPI {
+public final class SfcDataStoreAPI {
     protected static DataBroker dataProvider = null;
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
-
-    public SfcDataStoreAPI() {
-        LOG.info("SfcDataStoreAPI Initialized");
-    }
 
     // blueprint setter
     public void setDataProvider(DataBroker broker) {

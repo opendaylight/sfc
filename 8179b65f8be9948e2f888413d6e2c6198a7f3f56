@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_16ba12c0",
+        "filename": "sfc-shell/src/main/java/org/opendaylight/sfc/shell/ServiceFunctionPathsCommand.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-08-17T14:21:06Z",
+      "side": 1,
+      "message": "For the SFP, can we also include the transport type and sfc encapsulation?",
+      "range": {
+        "startLine": 43,
+        "startChar": 8,
+        "endLine": 46,
+        "endChar": 44
+      },
+      "revId": "8179b65f8be9948e2f888413d6e2c6198a7f3f56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

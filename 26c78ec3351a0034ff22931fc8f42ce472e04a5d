@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_3605967a",
+        "filename": "sfc-shell/src/main/java/org/opendaylight/sfc/shell/ServiceFunctionChainsCommand.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-08-17T14:22:50Z",
+      "side": 1,
+      "message": "Can we also add the list of SF types? This is a dynamically sized list, so maybe it can just be a simple string.",
+      "range": {
+        "startLine": 43,
+        "startChar": 8,
+        "endLine": 43,
+        "endChar": 20
+      },
+      "revId": "26c78ec3351a0034ff22931fc8f42ce472e04a5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

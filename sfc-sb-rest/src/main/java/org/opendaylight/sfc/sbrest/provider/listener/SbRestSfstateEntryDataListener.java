@@ -10,22 +10,20 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstateTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
+public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionState> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstateEntryDataListener.class);
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
@@ -39,54 +37,30 @@ public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionState>> changes) {
         printTraceStart(LOG);
+        for (DataTreeModification<ServiceFunctionState> change: changes) {
+            DataObjectModification<ServiceFunctionState> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    ServiceFunctionState updatedServiceFunctionState = rootNode.getDataAfter();
+                    LOG.debug("\nUpdated Service Function State Name: {}", updatedServiceFunctionState.getName());
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionState) {
-                ServiceFunctionState originalServiceFunctionState = (ServiceFunctionState) entry.getValue();
-                LOG.debug("\nOriginal Service Function State Name: {}", originalServiceFunctionState.getName());
+                    executor.submit(new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executor));
+                    break;
+                case DELETE:
+                    ServiceFunctionState originalServiceFunctionState = rootNode.getDataBefore();
+                    LOG.debug("\nDeleted Service Function State Name: {}", originalServiceFunctionState.getName());
+
+                    executor.submit(new SbRestSfstateTask(RestOperation.DELETE, originalServiceFunctionState,
+                            executor));
+                    break;
+                default:
+                    break;
             }
         }
 
-        // Service Function State CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionState) {
-                ServiceFunctionState createdServiceFunctionState = (ServiceFunctionState) entry.getValue();
-                LOG.debug("\nCreated Service Function State Name: {}", createdServiceFunctionState.getName());
-
-                Runnable task = new SbRestSfstateTask(RestOperation.PUT, createdServiceFunctionState, executor);
-                executor.submit(task);
-            }
-        }
-
-        // Service Function State UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionState && !dataCreatedObject.containsKey(entry.getKey())) {
-                ServiceFunctionState updatedServiceFunctionState = (ServiceFunctionState) entry.getValue();
-                LOG.debug("\nModified Service Function State Name: {}", updatedServiceFunctionState.getName());
-
-                Runnable task = new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executor);
-                executor.submit(task);
-            }
-        }
-
-        // Service Function State DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if (dataObject instanceof ServiceFunctionState) {
-
-                ServiceFunctionState originalServiceFunctionState = (ServiceFunctionState) dataObject;
-                LOG.debug("\nDeleted Service Function State Name: {}", originalServiceFunctionState.getName());
-
-                Runnable task = new SbRestSfstateTask(RestOperation.DELETE, originalServiceFunctionState, executor);
-                executor.submit(task);
-            }
-        }
         printTraceStop(LOG);
     }
 }

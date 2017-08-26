@@ -20,10 +20,11 @@ package org.opendaylight.sfc.netconf.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI;
@@ -49,13 +50,12 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener implements AutoCloseable {
+public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<Node> implements AutoCloseable {
 
     private static final String CONTROLLER_CONFIG = "controller-config";
 
@@ -63,8 +63,9 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
 
     private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
 
-    public static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
+    public static final InstanceIdentifier<Node> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
+            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
+            .child(Node.class);
 
     public SfcNetconfNodeDataListener(DataBroker dataprovider) {
         setDataBroker(dataprovider);
@@ -90,135 +91,129 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener i
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(Collection<DataTreeModification<Node>> changes) {
         printTraceStart(LOG);
-
-        // Node CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof Node) {
-                Node node = (Node) entry.getValue();
-                LOG.debug("\nCreated NetconfNodeAugmentation: {}", node.toString());
-            }
-        }
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getCreatedData().entrySet()) {
-            if (entry.getKey().getTargetType() == NetconfNode.class) {
-                // We have a Netconf device
-                NodeId nodeId = getNodeId(entry);
-                String nodeName = nodeId.getValue();
-                LOG.info("NETCONF Listener created event: {}", nodeName);
-            }
-        }
-
-        // React to data changes in Netconf nodes present in the Netcon topology
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : change.getUpdatedData().entrySet()) {
-            if (entry.getKey().getTargetType() == NetconfNode.class && !dataCreatedObject.containsKey(entry.getKey())) {
-                NodeId nodeId = getNodeId(entry);
-                String nodeName = nodeId.getValue();
-
-                // We bypass the internal Netconf server
-                if (!CONTROLLER_CONFIG.equals(nodeName)) {
-                    NetconfNode nnode = (NetconfNode) entry.getValue();
-
-                    NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
-
-                    switch (csts) {
-                        case Connected: {
-                            // Fully connected, all services for remote device
-                            // available from
-                            // MountPointService
-                            LOG.debug("NETCONF Node: {} is fully connected", nodeId.getValue());
-                            List<AvailableCapability> capabilities = nnode.getAvailableCapabilities()
-                                    .getAvailableCapability();
-                            LOG.debug("Capabilities: {}", capabilities);
-
-                            /* Identify it is SF or SFF */
-                            if (isServiceFunction(nnode)) { // SF
-                                DescriptionInfo descInfo = SfcNetconfServiceFunctionAPI
-                                        .getServiceFunctionDescription(nodeName);
-                                String type = descInfo.getType();
-                                if (type == null || type.isEmpty()) {
-                                    LOG.error("SF type is empty");
-                                    break;
-                                }
-                                SftTypeName sfType = SfcProviderServiceTypeAPI
-                                        .readServiceFunctionType(new SftTypeName(type)).getType();
-                                if (sfType == null) {
-                                    LOG.error("Invalid SF type {}", type);
-                                    break;
-                                }
-                                SfName sfNodeName = new SfName(nodeName);
-                                ServiceFunction sf = SfcNetconfServiceFunctionAPI.buildServiceFunctionFromNetconf(
-                                        sfNodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
-                                if (SfcProviderServiceFunctionAPI.putServiceFunction(sf)) {
-                                    LOG.info("Successfully created SF from Netconf node {}", nodeName);
-                                    SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, sfNodeName);
-                                    MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI
-                                            .getServiceFunctionMonitor(nodeName);
-                                    if (monInfo != null) {
-                                        SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
-                                    }
-                                } else {
-                                    LOG.error("Failed to create SF from Netconf node {}", nodeName);
-                                }
-
-                                SfDescriptionMonitoringThread monitoringThread = new SfDescriptionMonitoringThread(
-                                        nodeName);
-                                Thread thread = new Thread(monitoringThread);
-                                thread.start();
-                            } else { // SFF
-                                ServiceFunctionForwarder sff = SfcNetconfServiceForwarderAPI
-                                        .buildServiceForwarderFromNetconf(nodeName, nnode);
-                                if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff)) {
-                                    LOG.info("Successfully created SFF from Netconf node {}", nodeName);
-                                } else {
-                                    LOG.error("Failed to create SFF from Netconf node {}", nodeName);
-                                }
-                            }
-                            break;
-                        }
-                        case Connecting: {
-                            // Connecting state is set initially but netconf
-                            // device can get back to
-                            // it after a disconnect
-                            // Note that device could jump back and forth
-                            // between connected and
-                            // connecting for various reasons:
-                            // disconnect from remote device, network
-                            // connectivity loss etc.
-                            LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
-                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(new SffName(nodeName))) {
-                                LOG.info("SFF {} deleted successfully", nodeName);
-                            } else {
-                                LOG.error("Failed to delete SFF {}", nodeName);
-                            }
-                            break;
-                        }
-                        case UnableToConnect: {
-                            // Its over for the device, no more reconnects
-                            LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
-                            if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(new SffName(nodeName))) {
-                                LOG.info("SFF {} deleted successfully", nodeName);
-                            } else {
-                                LOG.error("Failed to delete SFF {}", nodeName);
-                            }
-                            break;
-                        }
-                        default:
-                            break;
+        for (DataTreeModification<Node> change: changes) {
+            DataObjectModification<Node> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    // React to data changes in Netconf nodes present in the Netconf topology
+                    if (rootNode.getDataBefore() == null) {
+                        break;
                     }
-                }
+
+                    NetconfNode nnode = rootNode.getDataAfter().getAugmentation(NetconfNode.class);
+                    if (nnode != null) {
+                        netconfNodeUpdated(getNodeId(change.getRootPath().getRootIdentifier()), nnode);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         printTraceStop(LOG);
     }
 
-    private NodeId getNodeId(final Map.Entry<InstanceIdentifier<?>, DataObject> entry) {
+    private void netconfNodeUpdated(NodeId nodeId, NetconfNode nnode) {
+        String nodeName = nodeId.getValue();
+
+        // We bypass the internal Netconf server
+        if (!CONTROLLER_CONFIG.equals(nodeName)) {
+            NetconfNodeFields.ConnectionStatus csts = nnode.getConnectionStatus();
+
+            switch (csts) {
+                case Connected: {
+                    // Fully connected, all services for remote device
+                    // available from
+                    // MountPointService
+                    LOG.debug("NETCONF Node: {} is fully connected", nodeId.getValue());
+                    List<AvailableCapability> capabilities = nnode.getAvailableCapabilities()
+                            .getAvailableCapability();
+                    LOG.debug("Capabilities: {}", capabilities);
+
+                    /* Identify it is SF or SFF */
+                    if (isServiceFunction(nnode)) { // SF
+                        DescriptionInfo descInfo = SfcNetconfServiceFunctionAPI
+                                .getServiceFunctionDescription(nodeName);
+                        String type = descInfo.getType();
+                        if (type == null || type.isEmpty()) {
+                            LOG.error("SF type is empty");
+                            break;
+                        }
+                        SftTypeName sfType = SfcProviderServiceTypeAPI
+                                .readServiceFunctionType(new SftTypeName(type)).getType();
+                        if (sfType == null) {
+                            LOG.error("Invalid SF type {}", type);
+                            break;
+                        }
+                        SfName sfNodeName = new SfName(nodeName);
+                        ServiceFunction sf = SfcNetconfServiceFunctionAPI.buildServiceFunctionFromNetconf(
+                                sfNodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
+                        if (SfcProviderServiceFunctionAPI.putServiceFunction(sf)) {
+                            LOG.info("Successfully created SF from Netconf node {}", nodeName);
+                            SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, sfNodeName);
+                            MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI
+                                    .getServiceFunctionMonitor(nodeName);
+                            if (monInfo != null) {
+                                SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
+                            }
+                        } else {
+                            LOG.error("Failed to create SF from Netconf node {}", nodeName);
+                        }
+
+                        SfDescriptionMonitoringThread monitoringThread = new SfDescriptionMonitoringThread(
+                                nodeName);
+                        Thread thread = new Thread(monitoringThread);
+                        thread.start();
+                    } else { // SFF
+                        ServiceFunctionForwarder sff = SfcNetconfServiceForwarderAPI
+                                .buildServiceForwarderFromNetconf(nodeName, nnode);
+                        if (SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff)) {
+                            LOG.info("Successfully created SFF from Netconf node {}", nodeName);
+                        } else {
+                            LOG.error("Failed to create SFF from Netconf node {}", nodeName);
+                        }
+                    }
+                    break;
+                }
+                case Connecting: {
+                    // Connecting state is set initially but netconf
+                    // device can get back to
+                    // it after a disconnect
+                    // Note that device could jump back and forth
+                    // between connected and
+                    // connecting for various reasons:
+                    // disconnect from remote device, network
+                    // connectivity loss etc.
+                    LOG.info("Netconf device disconnected, deleting SFF {}", nodeName);
+                    if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(new SffName(nodeName))) {
+                        LOG.info("SFF {} deleted successfully", nodeName);
+                    } else {
+                        LOG.error("Failed to delete SFF {}", nodeName);
+                    }
+                    break;
+                }
+                case UnableToConnect: {
+                    // Its over for the device, no more reconnects
+                    LOG.info("Unable to connected to Netconf device, deleting SFF {}", nodeName);
+                    if (SfcProviderServiceForwarderAPI.deleteServiceFunctionForwarder(new SffName(nodeName))) {
+                        LOG.info("SFF {} deleted successfully", nodeName);
+                    } else {
+                        LOG.error("Failed to delete SFF {}", nodeName);
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    private NodeId getNodeId(final InstanceIdentifier<?> iid) {
         NodeId nodeId = null;
-        for (InstanceIdentifier.PathArgument pathArgument : entry.getKey().getPathArguments()) {
+        for (InstanceIdentifier.PathArgument pathArgument : iid.getPathArguments()) {
             if (pathArgument instanceof InstanceIdentifier.IdentifiableItem<?, ?>) {
 
                 final Identifier key = ((InstanceIdentifier.IdentifiableItem) pathArgument).getKey();

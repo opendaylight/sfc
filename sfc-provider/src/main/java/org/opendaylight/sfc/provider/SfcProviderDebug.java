@@ -51,10 +51,14 @@ public final class SfcProviderDebug {
     }
 
     public static void printTraceStart(Logger log) {
-        log.debug(traceStart, Thread.currentThread().getStackTrace()[1]);
+        if (log.isDebugEnabled()) {
+            log.debug(traceStart, Thread.currentThread().getStackTrace()[1]);
+        }
     }
 
     public static void printTraceStop(Logger log) {
-        log.debug(traceStop, Thread.currentThread().getStackTrace()[1]);
+        if (log.isDebugEnabled()) {
+            log.debug(traceStop, Thread.currentThread().getStackTrace()[1]);
+        }
     }
 }

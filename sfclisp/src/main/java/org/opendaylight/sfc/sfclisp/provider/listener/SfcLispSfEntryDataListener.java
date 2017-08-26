@@ -7,16 +7,15 @@
  */
 package org.opendaylight.sfc.sfclisp.provider.listener;
 
-import java.util.Map;
+import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sfclisp.provider.LispUpdater;
 import org.opendaylight.sfc.sfclisp.provider.api.SfcProviderServiceLispAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-06-30
  */
-public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener {
+public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener<ServiceFunction> {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
     private final LispUpdater lispUpdater;
 
@@ -48,21 +47,31 @@ public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunction>> changes) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        }
 
-        // SF CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
+        for (DataTreeModification<ServiceFunction> change: changes) {
+            DataObjectModification<ServiceFunction> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case WRITE:
+                    // SF CREATION
+                    if (rootNode.getDataBefore() == null) {
+                        ServiceFunction createdServiceFunction = rootNode.getDataAfter();
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunction) {
-                ServiceFunction createdServiceFunction = (ServiceFunction) entry.getValue();
-
-                if (lispUpdater.containsLispAddress(createdServiceFunction)) {
-                    SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
-                }
+                        if (lispUpdater.containsLispAddress(createdServiceFunction)) {
+                            SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        }
     }
 }

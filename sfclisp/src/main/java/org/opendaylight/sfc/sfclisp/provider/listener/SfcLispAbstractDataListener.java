@@ -9,16 +9,18 @@
 package org.opendaylight.sfc.sfclisp.provider.listener;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SfcLispAbstractDataListener implements DataChangeListener {
+public abstract class SfcLispAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
     protected DataBroker dataBroker;
-    protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    protected ListenerRegistration<SfcLispAbstractDataListener<T>> dataChangeListenerRegistration;
     protected LogicalDatastoreType dataStoreType;
-    protected InstanceIdentifier<?> instanceId;
+    protected InstanceIdentifier<T> instanceId;
 
     public SfcLispAbstractDataListener() {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
@@ -32,13 +34,13 @@ public abstract class SfcLispAbstractDataListener implements DataChangeListener 
         this.dataStoreType = dataStoreType;
     }
 
-    public void setInstanceIdentifier(InstanceIdentifier<?> instanceId) {
+    public void setInstanceIdentifier(InstanceIdentifier<T> instanceId) {
         this.instanceId = instanceId;
     }
 
     public void registerAsDataChangeListener() {
-        dataChangeListenerRegistration =  dataBroker.registerDataChangeListener(dataStoreType, instanceId, this,
-                DataBroker.DataChangeScope.SUBTREE);
+        dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                dataStoreType, instanceId), this);
     }
 
     public void closeDataChangeListener() {

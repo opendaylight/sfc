@@ -8,8 +8,11 @@
 
 package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
+import java.util.Collection;
 import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfIoam;
@@ -27,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version 0.1
  */
-public class SfcPotNetconfRSPListener extends SfcPotNetconfAbstractDataListener {
+public class SfcPotNetconfRSPListener extends SfcPotNetconfAbstractDataListener<RenderedServicePath> {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfRSPListener.class);
 
     private final SfcPotNetconfIoam sfcPotNetconfIoam;
@@ -40,7 +43,6 @@ public class SfcPotNetconfRSPListener extends SfcPotNetconfAbstractDataListener 
         registerAsDataChangeListener();
     }
 
-    @Override
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
         Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
@@ -72,6 +74,34 @@ public class SfcPotNetconfRSPListener extends SfcPotNetconfAbstractDataListener 
                 RenderedServicePath rsp = (RenderedServicePath) dataOriginalDataObject.get(iid);
                 LOG.debug("iOAM:PoT:SB:Deleted RSP: {}", rsp.getName());
                 sfcPotNetconfIoam.deleteRsp(rsp);
+            }
+        }
+    }
+
+    @Override
+    public void onDataTreeChanged(Collection<DataTreeModification<RenderedServicePath>> changes) {
+        for (DataTreeModification<RenderedServicePath> change: changes) {
+            DataObjectModification<RenderedServicePath> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    // As of now, it is not expected that PoT configurations will be
+                    // configured as part of the RSP creation itself.
+                    RenderedServicePath updatedRsp = rootNode.getDataAfter();
+                    if (rootNode.getDataBefore() != null) {
+                        LOG.debug("iOAM:PoT:SB:Updated RSP: {}", updatedRsp.getName());
+                        sfcPotNetconfIoam.processRspUpdate(updatedRsp);
+                    } else {
+                        LOG.debug("iOAM:PoT:SB:Created RSP: {}.Not handling iOAM configuration.", updatedRsp.getName());
+                    }
+                    break;
+                case DELETE:
+                    RenderedServicePath deletedRsp = rootNode.getDataBefore();
+                    LOG.debug("iOAM:PoT:SB:Deleted RSP: {}", deletedRsp.getName());
+                    sfcPotNetconfIoam.deleteRsp(deletedRsp);
+                    break;
+                default:
+                    break;
             }
         }
     }

@@ -10,22 +10,20 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
+public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
     protected static ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -39,57 +37,30 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-
+    public void onDataTreeChanged(Collection<DataTreeModification<Acl>> changes) {
         printTraceStart(LOG);
+        for (DataTreeModification<Acl> change: changes) {
+            DataObjectModification<Acl> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    Acl updatedAcl = rootNode.getDataAfter();
+                    LOG.debug("\nUpdated Access List Name: {}", updatedAcl.getAclName());
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
+                    RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
+                    executor.submit(new SbRestAclTask(restOp, updatedAcl, executor));
+                    break;
+                case DELETE:
+                    Acl originalAcl = rootNode.getDataBefore();
+                    LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
 
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if (entry.getValue() instanceof Acl) {
-                Acl originalAcl = (Acl) entry.getValue();
-                LOG.debug("\nOriginal Access List Name: {}", originalAcl.getAclName());
+                    executor.submit(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor));
+                    break;
+                default:
+                    break;
             }
         }
 
-        // ACL CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof Acl) {
-                Acl createdAcl = (Acl) entry.getValue();
-                LOG.debug("\nCreated Access List Name: {}", createdAcl.getAclName());
-
-                Runnable task = new SbRestAclTask(RestOperation.POST, createdAcl, executor);
-                executor.submit(task);
-            }
-        }
-
-        // ACL UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if (entry.getValue() instanceof Acl && !dataCreatedObject.containsKey(entry.getKey())) {
-                Acl updatedAcl = (Acl) entry.getValue();
-                LOG.debug("\nModified Access List Name: {}", updatedAcl.getAclName());
-
-                Runnable task = new SbRestAclTask(RestOperation.PUT, updatedAcl, executor);
-                executor.submit(task);
-            }
-        }
-
-        // ACL DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if (dataObject instanceof Acl) {
-
-                Acl originalAcl = (Acl) dataObject;
-                LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
-
-                Runnable task = new SbRestAclTask(RestOperation.DELETE, originalAcl, executor);
-                executor.submit(task);
-            }
-        }
         printTraceStop(LOG);
     }
 }

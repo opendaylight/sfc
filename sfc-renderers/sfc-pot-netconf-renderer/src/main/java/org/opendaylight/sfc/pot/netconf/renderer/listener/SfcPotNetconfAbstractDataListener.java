@@ -9,15 +9,17 @@
 package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SfcPotNetconfAbstractDataListener implements DataChangeListener {
+public abstract class SfcPotNetconfAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
     private DataBroker dataBroker;
-    private InstanceIdentifier<?> instanceIdentifier;
-    private ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    private InstanceIdentifier<T> instanceIdentifier;
+    private ListenerRegistration<SfcPotNetconfAbstractDataListener<T>> dataChangeListenerRegistration;
     private LogicalDatastoreType dataStoreType;
 
     public SfcPotNetconfAbstractDataListener() {
@@ -34,15 +36,15 @@ public abstract class SfcPotNetconfAbstractDataListener implements DataChangeLis
         this.dataStoreType = dataStoreType;
     }
 
-    protected void setInstanceIdentifier(InstanceIdentifier<?> instanceIdentifier) {
+    protected void setInstanceIdentifier(InstanceIdentifier<T> instanceIdentifier) {
         this.instanceIdentifier = instanceIdentifier;
     }
 
     public void registerAsDataChangeListener() {
         if (dataBroker != null) {
             dataChangeListenerRegistration =
-                    dataBroker.registerDataChangeListener(dataStoreType,
-                            instanceIdentifier, this, DataBroker.DataChangeScope.SUBTREE);
+                    dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(dataStoreType,
+                            instanceIdentifier), this);
         }
     }
 

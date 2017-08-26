@@ -9,11 +9,11 @@
 package org.opendaylight.sfc.ofrenderer.listeners;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.sfg.GroupBucketInfo;
@@ -37,8 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2015-18-04
  */
-public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
+public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunctionGroup> {
 
     private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private final SfcOfBaseProviderUtils sfcOfProviderUtils;
@@ -68,40 +66,23 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-
-        // SFG create
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedConfigurationObject = change.getCreatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionGroup) {
-                LOG.info("SfcOfSfgDataListener.onDataChanged Add SFG {}",
-                        ((ServiceFunctionGroup) entry.getValue()).getName());
-                ServiceFunctionGroup sfg = (ServiceFunctionGroup) entry.getValue();
-                buildGroup(sfg, true);
-            }
-        }
-
-        // SFG update
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedConfigurationObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedConfigurationObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionGroup
-                    && !dataCreatedConfigurationObject.containsKey(entry.getKey())) {
-                LOG.info("SfcOfSfgDataListener.onDataChanged Update SFG {}",
-                        ((ServiceFunctionGroup) entry.getValue()).getName());
-                ServiceFunctionGroup sfg = (ServiceFunctionGroup) entry.getValue();
-                buildGroup(sfg, true);
-            }
-        }
-
-        // SFG delete
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier<?> instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = change.getOriginalData().get(instanceIdentifier);
-            if (dataObject instanceof ServiceFunctionGroup) {
-                LOG.info("SfcOfSfgDataListener.onDataChanged remove SFG {}",
-                        ((ServiceFunctionGroup) dataObject).getName());
-                ServiceFunctionGroup sfg = (ServiceFunctionGroup) dataObject;
-                buildGroup(sfg, false);
+    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionGroup>> changes) {
+        for (DataTreeModification<ServiceFunctionGroup> change: changes) {
+            DataObjectModification<ServiceFunctionGroup> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    ServiceFunctionGroup updatedGroup = rootNode.getDataBefore();
+                    LOG.info("SfcOfSfgDataListener.onDataTreeChanged Update SFG {}", updatedGroup.getName());
+                    buildGroup(updatedGroup, true);
+                    break;
+                case DELETE:
+                    ServiceFunctionGroup deletedGroup = rootNode.getDataBefore();
+                    LOG.info("SfcOfSfgDataListener.onDataChanged remove SFG {}", deletedGroup.getName());
+                    buildGroup(deletedGroup, false);
+                    break;
+                default:
+                    break;
             }
         }
     }

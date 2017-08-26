@@ -10,22 +10,20 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstTask;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
+public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionSchedulerType> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstEntryDataListener.class);
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
@@ -39,64 +37,33 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionSchedulerType>> changes) {
         printTraceStart(LOG);
+        for (DataTreeModification<ServiceFunctionSchedulerType> change: changes) {
+            DataObjectModification<ServiceFunctionSchedulerType> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case SUBTREE_MODIFIED:
+                case WRITE:
+                    ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = rootNode.getDataAfter();
+                    LOG.debug("\nUpdated Service Function Schedule Type Name: {}",
+                            updatedServiceFunctionSchedulerType.getName());
 
-        Map<InstanceIdentifier<?>, DataObject> dataOriginalDataObject = change.getOriginalData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataOriginalDataObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionSchedulerType) {
-                ServiceFunctionSchedulerType originalServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry
-                        .getValue();
-                LOG.debug("\nOriginal Service Function Schedule Type Name: {}",
-                        originalServiceFunctionScheduleType.getName());
+                    executor.submit(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType,
+                            executor));
+                    break;
+                case DELETE:
+                    ServiceFunctionSchedulerType originalServiceFunctionSchedulerType = rootNode.getDataBefore();
+                    LOG.debug("\nDeleted Service Function Schedule Type Name: {}",
+                            originalServiceFunctionSchedulerType.getName());
+
+                    executor.submit(new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
+                            executor));
+                    break;
+                default:
+                    break;
             }
         }
 
-        // SF Schedule Type CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionSchedulerType) {
-                ServiceFunctionSchedulerType createdServiceFunctionScheduleType = (ServiceFunctionSchedulerType) entry
-                        .getValue();
-                LOG.debug("\nCreated Service Function Schedule Type Name: {}",
-                        createdServiceFunctionScheduleType.getName());
-
-                Runnable task = new SbRestSfstTask(RestOperation.PUT, createdServiceFunctionScheduleType, executor);
-                executor.submit(task);
-            }
-        }
-
-        // SF Schedule Type UPDATE
-        Map<InstanceIdentifier<?>, DataObject> dataUpdatedObject = change.getUpdatedData();
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataUpdatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionSchedulerType
-                    && !dataCreatedObject.containsKey(entry.getKey())) {
-                ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType = (ServiceFunctionSchedulerType) entry
-                        .getValue();
-                LOG.debug("\nModified Service Function Schedule Type Name: {}",
-                        updatedServiceFunctionSchedulerType.getName());
-
-                Runnable task = new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executor);
-                executor.submit(task);
-            }
-        }
-
-        // SF Schedule Type DELETION
-        Set<InstanceIdentifier<?>> dataRemovedConfigurationIID = change.getRemovedPaths();
-        for (InstanceIdentifier instanceIdentifier : dataRemovedConfigurationIID) {
-            DataObject dataObject = dataOriginalDataObject.get(instanceIdentifier);
-            if (dataObject instanceof ServiceFunctionSchedulerType) {
-
-                ServiceFunctionSchedulerType originalServiceFunctionSchedulerType =
-                        (ServiceFunctionSchedulerType) dataObject;
-                LOG.debug("\nDeleted Service Function Schedule Type Name: {}",
-                        originalServiceFunctionSchedulerType.getName());
-
-                Runnable task = new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
-                        executor);
-                executor.submit(task);
-            }
-        }
         printTraceStop(LOG);
     }
 }

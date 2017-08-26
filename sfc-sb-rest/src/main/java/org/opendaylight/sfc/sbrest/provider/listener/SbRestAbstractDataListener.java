@@ -8,15 +8,17 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SbRestAbstractDataListener implements DataChangeListener {
+public abstract class SbRestAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
     protected DataBroker dataBroker;
-    protected InstanceIdentifier<?> instanceIdentifier;
-    protected ListenerRegistration<DataChangeListener> dataChangeListenerRegistration;
+    protected InstanceIdentifier<T> instanceIdentifier;
+    protected ListenerRegistration<SbRestAbstractDataListener<T>> dataChangeListenerRegistration;
     protected LogicalDatastoreType dataStoreType;
 
     public SbRestAbstractDataListener() {
@@ -35,18 +37,13 @@ public abstract class SbRestAbstractDataListener implements DataChangeListener {
         this.dataStoreType = dataStoreType;
     }
 
-    public void setInstanceIdentifier(InstanceIdentifier<?> instanceIdentifier) {
+    public void setInstanceIdentifier(InstanceIdentifier<T> instanceIdentifier) {
         this.instanceIdentifier = instanceIdentifier;
     }
 
-    public ListenerRegistration<DataChangeListener> getDataChangeListenerRegistration() {
-        return dataChangeListenerRegistration;
-    }
-
     public void registerAsDataChangeListener() {
-        dataChangeListenerRegistration =
-                dataBroker.registerDataChangeListener(dataStoreType,
-                        instanceIdentifier, this, DataBroker.DataChangeScope.SUBTREE);
+        dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                dataStoreType, instanceIdentifier), this);
     }
 
     public void closeDataChangeListener() {

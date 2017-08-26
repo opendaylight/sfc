@@ -12,11 +12,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcSynchronizer;
@@ -31,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class SfcOfRendererDataListenerTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRendererDataListenerTest.class);
     private static final long SLEEP = 100; // milliseconds to sleep after
-                                            // onDataChanged is called.
+                                            // onDataTreeChanged is called.
     private final SfcOfRendererDataListener sfcOfRendererDataListener;
     private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
 
@@ -53,20 +58,17 @@ public class SfcOfRendererDataListenerTest {
         // SfcOfRendererConfigBuilder.checkSfcOfTableOffsetRange()
 
         // Table Offset must be greater than 1
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(0, 100);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(0, 100));
         Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
 
         // Table Offset must be greater than 1
-        change = createSfcOfRendererConfig(1, 100);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(1, 100));
         Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
 
         // Table Offset must be less than 246 (255-maxTableOffset())
-        change = createSfcOfRendererConfig(250, 100);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(250, 100));
         Thread.sleep(SLEEP); // otherwise the failure is not detected
         verifySettersNotCalled();
     }
@@ -81,8 +83,7 @@ public class SfcOfRendererDataListenerTest {
         // Table Egress cannot be in the tableOffset range
         AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = null;
         for (int i = 100; i < 110; ++i) {
-            change = createSfcOfRendererConfig(100, i);
-            this.sfcOfRendererDataListener.onDataChanged(change);
+            this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(100, i));
             Thread.sleep(SLEEP); // otherwise the failure is not detected
             verifySettersNotCalled();
         }
@@ -93,8 +94,7 @@ public class SfcOfRendererDataListenerTest {
         // Test offset values less than egress values
         int offset = 20;
         int egress = 80;
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(offset, egress);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(offset, egress));
         Thread.sleep(100); // Let the thread finish
         verifySettersCalled(offset, egress);
     }
@@ -104,8 +104,7 @@ public class SfcOfRendererDataListenerTest {
         // Test offset values greater than egress values
         int offset = 200;
         int egress = 10;
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(offset, egress);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(offset, egress));
         Thread.sleep(100); // Let the thread finish
         verifySettersCalled(offset, egress);
     }
@@ -115,28 +114,28 @@ public class SfcOfRendererDataListenerTest {
         // Test egress set to 0
         int offset = 100;
         int egress = 0;
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = createSfcOfRendererConfig(offset, egress);
-        this.sfcOfRendererDataListener.onDataChanged(change);
+        this.sfcOfRendererDataListener.onDataTreeChanged(createSfcOfRendererConfig(offset, egress));
         Thread.sleep(100); // Let the thread finish
         verifySettersCalled(offset, egress);
     }
 
-    private AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> createSfcOfRendererConfig(int tableOffset,
+    @SuppressWarnings("unchecked")
+    private Collection<DataTreeModification<SfcOfRendererConfig>> createSfcOfRendererConfig(int tableOffset,
             int tableEgress) {
         SfcOfRendererConfigBuilder configBuilder = new SfcOfRendererConfigBuilder();
         configBuilder.setSfcOfTableOffset((short) tableOffset);
         configBuilder.setSfcOfAppEgressTableOffset((short) tableEgress);
-        SfcOfRendererConfig entryValue = configBuilder.build();
+        SfcOfRendererConfig config = configBuilder.build();
 
-        InstanceIdentifier<SfcOfRendererConfig> entryKey = InstanceIdentifier.builder(SfcOfRendererConfig.class)
-                .build();
-        Map<InstanceIdentifier<?>, DataObject> entrySet = new HashMap<>();
-        entrySet.put(entryKey, entryValue);
+        InstanceIdentifier<SfcOfRendererConfig> iid = InstanceIdentifier.builder(SfcOfRendererConfig.class).build();
+        DataTreeModification<SfcOfRendererConfig> mockChange = mock(DataTreeModification.class);
+        DataObjectModification<SfcOfRendererConfig> mockModification = mock(DataObjectModification.class);
+        when(mockModification.getDataAfter()).thenReturn(config);
+        when(mockModification.getModificationType()).thenReturn(ModificationType.WRITE);
+        when(mockChange.getRootPath()).thenReturn(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION, iid));
+        when(mockChange.getRootNode()).thenReturn(mockModification);
 
-        AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change = mock(AsyncDataChangeEvent.class);
-        when(change.getCreatedData()).thenReturn(entrySet);
-
-        return change;
+        return Collections.singletonList(mockChange);
     }
 
     private void verifySettersCalled(int offset, int egress) {

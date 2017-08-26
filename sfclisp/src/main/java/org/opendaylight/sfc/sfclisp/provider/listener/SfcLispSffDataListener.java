@@ -8,18 +8,17 @@
 
 package org.opendaylight.sfc.sfclisp.provider.listener;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sfclisp.provider.LispUpdater;
 import org.opendaylight.sfc.sfclisp.provider.api.SfcProviderServiceLispAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-06-30
  */
-public class SfcLispSffDataListener extends SfcLispAbstractDataListener {
+public class SfcLispSffDataListener extends SfcLispAbstractDataListener<ServiceFunctionForwarders> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSffDataListener.class);
     private final LispUpdater lispUpdater;
@@ -51,26 +50,34 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener {
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionForwarders>> changes) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Start: {}", Thread.currentThread().getStackTrace()[1]);
+        }
 
-        // SF CREATION
-        Map<InstanceIdentifier<?>, DataObject> dataCreatedObject = change.getCreatedData();
-
-        for (Map.Entry<InstanceIdentifier<?>, DataObject> entry : dataCreatedObject.entrySet()) {
-            if (entry.getValue() instanceof ServiceFunctionForwarders) {
-
-                ServiceFunctionForwarders updatedServiceFunctionForwarders = (ServiceFunctionForwarders) entry
-                        .getValue();
-                List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders
-                        .getServiceFunctionForwarder();
-                for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
-                    if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
-                        SfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
+        for (DataTreeModification<ServiceFunctionForwarders> change: changes) {
+            DataObjectModification<ServiceFunctionForwarders> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case WRITE:
+                    // SF CREATION
+                    if (rootNode.getDataBefore() == null) {
+                        ServiceFunctionForwarders updatedServiceFunctionForwarders = rootNode.getDataAfter();
+                        List<ServiceFunctionForwarder> serviceFunctionForwarderList = updatedServiceFunctionForwarders
+                                .getServiceFunctionForwarder();
+                        for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
+                            if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
+                                SfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
+                            }
+                        }
                     }
-                }
+                    break;
+                default:
+                    break;
             }
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        }
     }
 }

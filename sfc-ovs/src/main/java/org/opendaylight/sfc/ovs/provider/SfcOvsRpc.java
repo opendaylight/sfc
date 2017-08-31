@@ -76,7 +76,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         //create parent OVS Node InstanceIdentifier (based on ip)
         } else if (ovsNode.getIp() != null) {
             IpAddress ipAddress = new IpAddress(ovsNode.getIp().getValue());
-            Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress, executor);
+            Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress);
             if (node != null) {
                 nodeId = node.getNodeId();
             }

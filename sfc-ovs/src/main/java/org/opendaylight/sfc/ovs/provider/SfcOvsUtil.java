@@ -382,9 +382,7 @@ public class SfcOvsUtil {
     }
 
     public static boolean putOvsdbTerminationPoints(OvsdbBridgeAugmentation ovsdbBridge,
-            List<SffDataPlaneLocator> sffDataPlaneLocatorList, ExecutorService executor) {
-        Preconditions.checkNotNull(executor);
-
+            List<SffDataPlaneLocator> sffDataPlaneLocatorList) {
         boolean result = true;
         List<OvsdbTerminationPointAugmentation> ovsdbTerminationPointList = SfcSffToOvsMappingAPI
                 .buildTerminationPointAugmentationList(sffDataPlaneLocatorList);
@@ -407,28 +405,21 @@ public class SfcOvsUtil {
         return result;
     }
 
-    public static boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge, ExecutorService executor) {
-        Preconditions.checkNotNull(executor);
-
+    public static boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge) {
         Object[] methodParameters = { ovsdbBridge };
         SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutBridge = new SfcOvsDataStoreAPI(
                 SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParameters);
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, executor);
     }
 
-    public static boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID, ExecutorService executor) {
-        Preconditions.checkNotNull(executor);
-
+    public static boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
         Object[] methodParameters = { ovsdbNodeIID };
         SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteNode = new SfcOvsDataStoreAPI(
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE, methodParameters);
         return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, executor);
     }
 
-    public static boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID,
-            ExecutorService executor) {
-        Preconditions.checkNotNull(executor);
-
+    public static boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
         Object[] methodParameters = { ovsdbTerminationPointIID };
         SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint = new SfcOvsDataStoreAPI(
                 SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT, methodParameters);
@@ -501,7 +492,7 @@ public class SfcOvsUtil {
      *            - {@link ExecutorService}
      * @return {@link Node}
      */
-    public static Node lookupTopologyNode(ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
+    public static Node lookupTopologyNode(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> sffDplList = serviceFunctionForwarder.getSffDataPlaneLocator();
         IpAddress ip = null;
 
@@ -530,7 +521,7 @@ public class SfcOvsUtil {
             LOG.debug("Could not get IP address for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
         }
-        return SfcOvsUtil.getManagerNodeByIp(ip, executor);
+        return SfcOvsUtil.getManagerNodeByIp(ip);
 
     }
 
@@ -547,7 +538,7 @@ public class SfcOvsUtil {
     }
 
     public static NodeId getOvsdbAugmentationNodeIdBySff(ServiceFunctionForwarder serviceFunctionForwarder) {
-        Node managerNode = lookupTopologyNode(serviceFunctionForwarder, executor);
+        Node managerNode = lookupTopologyNode(serviceFunctionForwarder);
         if (managerNode == null) {
             LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -598,7 +589,7 @@ public class SfcOvsUtil {
         return address;
     }
 
-    public static Node getManagerNodeByIp(IpAddress ip, ExecutorService executor) {
+    public static Node getManagerNodeByIp(IpAddress ip) {
         String ipAddressString = null;
 
         if (ip == null || ip.getIpv4Address() == null && ip.getIpv6Address() == null) {
@@ -623,7 +614,7 @@ public class SfcOvsUtil {
         }
     }
 
-    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef, ExecutorService executor) {
+    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef) {
         Preconditions.checkNotNull(executor);
         if (nodeRef.getValue().getTargetType().equals(Node.class)) {
             Object[] methodParams = { nodeRef };

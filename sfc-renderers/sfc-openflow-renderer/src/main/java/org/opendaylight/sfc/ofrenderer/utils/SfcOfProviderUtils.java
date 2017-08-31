@@ -108,7 +108,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the service funtion type from a specific sf.
+     * Return the service function type from a specific sf.
      *
      * @param sfName
      *            - The SF Name to search for
@@ -175,7 +175,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         }
         // we shouldn't use the getter getOpendaylightSfcObj, but nobody uses
         // getPortNumberFromName
-        Node node = SfcOvsUtil.lookupTopologyNode(sff, executor);
+        Node node = SfcOvsUtil.lookupTopologyNode(sff);
         if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
         }

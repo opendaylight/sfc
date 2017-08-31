@@ -72,7 +72,7 @@ public class SfcSffToOvsMappingAPI {
      * @return {@link OvsdbBridgeAugmentation}
      */
     public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(
-            ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
+            ServiceFunctionForwarder serviceFunctionForwarder) {
         Preconditions.checkNotNull(serviceFunctionForwarder);
 
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
@@ -105,7 +105,7 @@ public class SfcSffToOvsMappingAPI {
             if (serviceForwarderOvsNode != null) {
                 ovsdbBridgeBuilder.setManagedBy(serviceForwarderOvsNode.getNodeId());
                 OvsdbNodeAugmentation ovsdbNodeAugmentation =
-                        SfcOvsUtil.getOvsdbNodeAugmentation(serviceForwarderOvsNode.getNodeId(), executor);
+                        SfcOvsUtil.getOvsdbNodeAugmentation(serviceForwarderOvsNode.getNodeId());
                 if (ovsdbNodeAugmentation != null) {
                     ovsdbBridgeBuilder.setControllerEntry(getControllerEntries(ovsdbNodeAugmentation));
                 }
@@ -116,7 +116,7 @@ public class SfcSffToOvsMappingAPI {
             }
 
         } else {
-            Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarder, executor);
+            Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarder);
             if (node == null || node.getNodeId() == null) {
                 LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}",
                         serviceFunctionForwarder.getName());
@@ -124,7 +124,7 @@ public class SfcSffToOvsMappingAPI {
             }
             OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(node.getNodeId()));
             ovsdbBridgeBuilder.setManagedBy(ovsdbNodeRef);
-            OvsdbNodeAugmentation ovsdbNodeAugmentation = SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executor);
+            OvsdbNodeAugmentation ovsdbNodeAugmentation = SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef);
             if (ovsdbNodeAugmentation != null) {
                 ovsdbBridgeBuilder.setControllerEntry(getControllerEntries(ovsdbNodeAugmentation));
             }

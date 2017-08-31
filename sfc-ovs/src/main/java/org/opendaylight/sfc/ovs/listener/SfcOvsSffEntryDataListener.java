@@ -16,8 +16,6 @@
 
 package org.opendaylight.sfc.ovs.listener;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -41,9 +39,6 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsSffEntryDataListener.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<SfcOvsSffEntryDataListener> listenerRegistration;
-
-    // TODO is this necessary????
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SfcOvsSffEntryDataListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
@@ -96,8 +91,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
             if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
                 // delete OvsdbTerminationPoint
                 SfcOvsUtil.deleteOvsdbTerminationPoint(
-                        SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()),
-                        executor);
+                        SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()));
             }
         }
     }
@@ -131,14 +125,14 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
      */
     static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
 
-        OvsdbBridgeAugmentation ovsdbBridge = SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(sff, executor);
+        OvsdbBridgeAugmentation ovsdbBridge = SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(sff);
 
         if (ovsdbBridge != null) {
             // put Bridge
-            SfcOvsUtil.putOvsdbBridge(ovsdbBridge, executor);
+            SfcOvsUtil.putOvsdbBridge(ovsdbBridge);
 
             // put Termination Points
-            SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator(), executor);
+            SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator());
         }
     }
 }

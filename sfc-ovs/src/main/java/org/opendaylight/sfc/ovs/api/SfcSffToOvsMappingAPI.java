@@ -11,7 +11,6 @@ package org.opendaylight.sfc.ovs.api;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
@@ -68,11 +67,10 @@ public class SfcSffToOvsMappingAPI {
      *
      * <p>
      * @param serviceFunctionForwarder {@link ServiceFunctionForwarder}
-     * @param executor - {@link ExecutorService}
      * @return {@link OvsdbBridgeAugmentation}
      */
     public static OvsdbBridgeAugmentation buildOvsdbBridgeAugmentation(
-            ServiceFunctionForwarder serviceFunctionForwarder, ExecutorService executor) {
+            ServiceFunctionForwarder serviceFunctionForwarder) {
         Preconditions.checkNotNull(serviceFunctionForwarder);
 
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
@@ -105,7 +103,7 @@ public class SfcSffToOvsMappingAPI {
             if (serviceForwarderOvsNode != null) {
                 ovsdbBridgeBuilder.setManagedBy(serviceForwarderOvsNode.getNodeId());
                 OvsdbNodeAugmentation ovsdbNodeAugmentation =
-                        SfcOvsUtil.getOvsdbNodeAugmentation(serviceForwarderOvsNode.getNodeId(), executor);
+                        SfcOvsUtil.getOvsdbNodeAugmentation(serviceForwarderOvsNode.getNodeId());
                 if (ovsdbNodeAugmentation != null) {
                     ovsdbBridgeBuilder.setControllerEntry(getControllerEntries(ovsdbNodeAugmentation));
                 }
@@ -116,7 +114,7 @@ public class SfcSffToOvsMappingAPI {
             }
 
         } else {
-            Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarder, executor);
+            Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarder);
             if (node == null || node.getNodeId() == null) {
                 LOG.info("Cannot build OvsdbBridgeAugmentation. Missing OVS Node augmentation on SFF {}",
                         serviceFunctionForwarder.getName());
@@ -124,7 +122,7 @@ public class SfcSffToOvsMappingAPI {
             }
             OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(SfcOvsUtil.buildOvsdbNodeIID(node.getNodeId()));
             ovsdbBridgeBuilder.setManagedBy(ovsdbNodeRef);
-            OvsdbNodeAugmentation ovsdbNodeAugmentation = SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executor);
+            OvsdbNodeAugmentation ovsdbNodeAugmentation = SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef);
             if (ovsdbNodeAugmentation != null) {
                 ovsdbBridgeBuilder.setControllerEntry(getControllerEntries(ovsdbNodeAugmentation));
             }

@@ -15,10 +15,7 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
@@ -96,14 +93,8 @@ public class SfcSffToOvsMappingAPITest {
     private SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder;
     private SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
     private SffOvsLocatorOptionsAugmentationBuilder sffOvsLocatorOptionsAugmentationBuilder;
-    private ExecutorService executor;
     private OvsdbNodeAugmentationBuilder ovsdbNodeAugmentationBuilder;
     private ConnectionInfoBuilder connectionInfoBuilder;
-
-    @Before
-    public void setup() throws Exception {
-        executor = Executors.newScheduledThreadPool(1);
-    }
 
     @Test
     public void testSfcSffToOvsMappingAPITest() {
@@ -116,7 +107,7 @@ public class SfcSffToOvsMappingAPITest {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNull("Must be null", ovsdbBridgeAugmentation);
     }
@@ -131,7 +122,7 @@ public class SfcSffToOvsMappingAPITest {
                 sffOvsBridgeAugmentationBuilder.build());
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNull("Must be null", ovsdbBridgeAugmentation);
     }
@@ -151,7 +142,7 @@ public class SfcSffToOvsMappingAPITest {
                 .addAugmentation(SffOvsNodeAugmentation.class, sffOvsNodeAugmentationBuilder.build());
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNull("Must be null", ovsdbBridgeAugmentation);
     }
@@ -179,7 +170,7 @@ public class SfcSffToOvsMappingAPITest {
                 .toReturn(ovsdbNodeAugmentationBuilder.build());
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNull("Must be null", ovsdbBridgeAugmentation);
     }
@@ -212,7 +203,7 @@ public class SfcSffToOvsMappingAPITest {
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "lookupTopologyNode")).toReturn(nodeBuilder.build());
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", ovsdbBridgeAugmentation);
         assertEquals("Must be equal", ovsdbBridgeAugmentation.getBridgeName().getValue(), BRIDGE_NAME);
@@ -249,7 +240,7 @@ public class SfcSffToOvsMappingAPITest {
                 .toReturn(ovsdbNodeAugmentationBuilder.build());
 
         ovsdbBridgeAugmentation = SfcSffToOvsMappingAPI
-                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build(), executor);
+                .buildOvsdbBridgeAugmentation(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", ovsdbBridgeAugmentation);
         assertEquals("Must be equal", ovsdbBridgeAugmentation.getBridgeName().getValue(), BRIDGE_NAME);

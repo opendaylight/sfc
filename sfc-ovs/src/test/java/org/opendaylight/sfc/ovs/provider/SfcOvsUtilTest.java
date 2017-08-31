@@ -331,7 +331,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // put ovsdb termination point
         boolean result = SfcOvsUtil.putOvsdbTerminationPoints(createOvsdbBridgeAugmentation(),
-                createSffDataPlaneLocatorList(VxlanGpe.class, null), executorService);
+                createSffDataPlaneLocatorList(VxlanGpe.class, null));
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
@@ -340,7 +340,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
         // delete created ovsdb termination point
         result = SfcOvsUtil.deleteOvsdbTerminationPoint(
-                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(sffName.getValue()), "Dpl"), executorService);
+                SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(sffName.getValue()), "Dpl"));
 
         assertNotNull("Must not be null", result);
         assertTrue("Must be true", result);
@@ -350,12 +350,12 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     // put ovsdb bridge into ovs node (created in @Before block) and then delete whole node
     public void testPutAndDeleteOvsdbNode() throws Exception {
 
-        boolean result = SfcOvsUtil.putOvsdbBridge(createOvsdbBridgeAugmentation(), executorService);
+        boolean result = SfcOvsUtil.putOvsdbBridge(createOvsdbBridgeAugmentation());
 
         assertNotNull("Must be not null", result);
         assertTrue("Must be true", result);
 
-        result = SfcOvsUtil.deleteOvsdbNode(nodeIID, executorService);
+        result = SfcOvsUtil.deleteOvsdbNode(nodeIID);
 
         assertNotNull("Must be not null", result);
         assertTrue("Must be true", result);
@@ -370,7 +370,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(null);
 
-        Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build(), executorService);
+        Node node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build());
 
         // no sff exists, should return null
         assertNull("Must be null", node);
@@ -378,7 +378,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, null));
 
-        node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build(), executorService);
+        node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build());
 
         // sff exists, but there is no ip address assigned, should return null
         assertNull("Must be null", node);
@@ -392,7 +392,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()));
 
-        node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build(), executorService);
+        node = SfcOvsUtil.lookupTopologyNode(serviceFunctionForwarderBuilder.build());
 
         // ip address assigned to data plane locator, we can recover it from node
         assertNotNull("Must not be null", node);
@@ -566,11 +566,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetManagerNodeByIp() {
 
         // null ip address
-        Node node = SfcOvsUtil.getManagerNodeByIp(null, executorService);
+        Node node = SfcOvsUtil.getManagerNodeByIp(null);
 
         assertNull("Must be null", node);
 
-        node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)), executorService);
+        node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)));
 
         assertNull("Must be null", node);
     }
@@ -580,7 +580,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     public void testGetManagerNodeByIpV4() {
 
         // ipv4 address
-        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)), executorService);
+        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 
         assertNotNull("Must be not null", node);
         assertEquals("Must be equal", node.getKey().getNodeId().getValue(), TEST_IP_ADDRESS);
@@ -611,7 +611,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         assertTrue("Must be true", transactionSuccessful);
 
         // ipv6 address
-        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)), executorService);
+        Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)));
 
         assertNotNull("Must be not null", node);
         assertEquals("Must be equal", node.getKey().getNodeId().getValue(), IPV6_ADDRESS);
@@ -623,7 +623,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(nodeIID);
 
         OvsdbNodeAugmentation ovsdbNodeAugmentation =
-                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executorService);
+                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef);
 
         assertNotNull("Must not be null", ovsdbNodeAugmentation);
         assertEquals("Must be equal", ovsdbNodeAugmentation.getDbVersion(), "DbVersion_");
@@ -637,7 +637,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(dummyIID);
 
         OvsdbNodeAugmentation ovsdbNodeAugmentation =
-                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executorService);
+                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef);
 
         assertNull("Must be null", ovsdbNodeAugmentation);
     }
@@ -648,7 +648,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(createOvsdbBridgeIID(new NodeId(TEST_STRING)));
 
         OvsdbNodeAugmentation ovsdbNodeAugmentation =
-                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef, executorService);
+                SfcOvsUtil.getOvsdbNodeAugmentation(ovsdbNodeRef);
 
         assertNull("Must be null", ovsdbNodeAugmentation);
     }

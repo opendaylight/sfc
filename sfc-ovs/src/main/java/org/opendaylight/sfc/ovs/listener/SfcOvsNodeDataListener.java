@@ -22,9 +22,6 @@ import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -50,9 +47,6 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
     private final DataBroker dataBroker;
     private ListenerRegistration<SfcOvsNodeDataListener> listenerRegistration;
-
-    // TODO is this necessary????
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SfcOvsNodeDataListener(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;

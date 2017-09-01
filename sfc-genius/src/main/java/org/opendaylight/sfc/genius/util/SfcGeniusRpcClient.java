@@ -16,6 +16,7 @@ import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rev160406.TunnelTypeVxlan;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rev160406.TunnelTypeVxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetDpidFromInterfaceInputBuilder;
@@ -27,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.GetEndpointIpForDpnOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.OdlInterfaceRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.GetTunnelInterfaceNameOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
@@ -135,38 +135,47 @@ public class SfcGeniusRpcClient {
      *         retrieval)
      */
     public Optional<String> getTargetInterfaceFromGeniusRPC(DpnIdType srcDpid, DpnIdType dstDpid) {
-        Optional<String> interfaceName = Optional.empty();
-        boolean successful = false;
-
         LOG.debug("getTargetInterfaceFromGeniusRPC: starting (src dpnid:{} dst dpnid:{})", srcDpid, dstDpid);
+
+        final ItmRpcService service = getItmRpcService();
+        if (service == null) {
+            LOG.error("getTargetInterfaceFromGeniusRPC failed (service couldn't be retrieved)");
+            return Optional.empty();
+        }
+
         GetTunnelInterfaceNameInputBuilder builder = new GetTunnelInterfaceNameInputBuilder();
         builder.setSourceDpid(srcDpid.getValue());
         builder.setDestinationDpid(dstDpid.getValue());
-        builder.setTunnelType(TunnelTypeVxlanGpe.class);
+        Optional<String> interfaceName;
+        RpcResult<GetTunnelInterfaceNameOutput> output;
 
-        GetTunnelInterfaceNameInput input = builder.build();
-        ItmRpcService service = getItmRpcService();
-        if (service != null) {
-            RpcResult<GetTunnelInterfaceNameOutput> output;
-            try {
-                output = service.getTunnelInterfaceName(input).get();
-                if (output.isSuccessful()) {
-                    interfaceName = Optional.of(output.getResult().getInterfaceName());
-                    LOG.debug("getTargetInterfaceFromGeniusRPC({}) succeeded", input);
-                    successful = true;
-                } else {
-                    LOG.error("getTargetInterfaceFromGeniusRPC({}) failed", input);
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("failed to retrieve target interface name: ", e);
+        try {
+            // Try first a specific VxlanGpe interface type
+            builder.setTunnelType(TunnelTypeVxlanGpe.class);
+            output = service.getTunnelInterfaceName(builder.build()).get();
+            interfaceName = Optional.ofNullable(output)
+                    .map(RpcResult::getResult)
+                    .map(GetTunnelInterfaceNameOutput::getInterfaceName);
+            if (output.isSuccessful() && interfaceName.isPresent()) {
+                LOG.debug("getTargetInterfaceFromGeniusRPC found VxlanGpe interface {}", interfaceName);
+                return interfaceName;
             }
-        } else {
-            LOG.error("getTargetInterfaceFromGeniusRPC({}) failed (service couldn't be retrieved)", input);
+
+            // If not, try with standard vxlan type, it might also have gpe enabled
+            builder.setTunnelType(TunnelTypeVxlan.class);
+            output = service.getTunnelInterfaceName(builder.build()).get();
+            interfaceName = Optional.ofNullable(output)
+                    .map(RpcResult::getResult)
+                    .map(GetTunnelInterfaceNameOutput::getInterfaceName);
+            if (output.isSuccessful() && interfaceName.isPresent()) {
+                LOG.debug("getTargetInterfaceFromGeniusRPC found Vxlan interface {}", interfaceName);
+                return interfaceName;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("getTargetInterfaceFromGeniusRPC exception when trying to retrieve target interface name: ", e);
         }
-        if (!successful) {
-            interfaceName = Optional.empty();
-        }
-        return interfaceName;
+        LOG.debug("getTargetInterfaceFromGeniusRPC did not find target interface name");
+        return Optional.empty();
     }
 
     /**

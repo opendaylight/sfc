@@ -28,7 +28,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI;
-import org.opendaylight.sfc.netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
@@ -61,8 +60,6 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
-    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
-
     public static final InstanceIdentifier<Node> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
             .child(Node.class);
@@ -72,10 +69,6 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
         setInstanceIdentifier(NETCONF_TOPO_IID);
         setDataStoreType(LogicalDatastoreType.OPERATIONAL);
         registerAsDataChangeListener();
-    }
-
-    public void setSfcProviderSfDescriptionMonitorAPI(SfcProviderSfDescriptionMonitorAPI descriptionMonitorAPI) {
-        getSfDescMon = descriptionMonitorAPI;
     }
 
     private static boolean isServiceFunction(NetconfNode netconfNode) {

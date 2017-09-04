@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2015, 2017 Cisco Systems, Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,49 +8,47 @@
 
 package org.opendaylight.sfc.pot.netconf.renderer.utils;
 
-import com.google.common.util.concurrent.CheckedFuture;
-
+import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcPotNetconfReaderWriterAPI {
+public final class SfcPotNetconfReaderWriterAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfReaderWriterAPI.class);
 
-    /* Put method */
-    public static <T extends DataObject> boolean put(DataBroker broker,
-            LogicalDatastoreType logicalDatastoreType, InstanceIdentifier<T> iid, T dataObject) {
+    private SfcPotNetconfReaderWriterAPI() {
+    }
+
+    public static <T extends DataObject> boolean put(DataBroker broker, LogicalDatastoreType logicalDatastoreType,
+            InstanceIdentifier<T> iid, T dataObject) {
         try {
             WriteTransaction tx = broker.newWriteOnlyTransaction();
             tx.put(logicalDatastoreType, iid, dataObject);
-            CheckedFuture<Void, TransactionCommitFailedException> future = tx.submit();
-            future.checkedGet();
+            ListenableFuture<Void> future = tx.submit();
+            future.get();
 
             return true;
-        } catch (TransactionCommitFailedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOG.warn("iOAM:PoT:SB:Netconf put to nodeid: failed:", e);
             return false;
         }
     }
 
-    /* Delete method */
-    public static <T extends DataObject> boolean delete(DataBroker broker,
-            LogicalDatastoreType logicalDatastoreType, InstanceIdentifier<T> iid) {
+    public static <T extends DataObject> boolean delete(DataBroker broker, LogicalDatastoreType logicalDatastoreType,
+            InstanceIdentifier<T> iid) {
         try {
             WriteTransaction tx = broker.newWriteOnlyTransaction();
             tx.delete(logicalDatastoreType, iid);
-            CheckedFuture<Void, TransactionCommitFailedException> future = tx.submit();
-            future.checkedGet();
+            ListenableFuture<Void> future = tx.submit();
+            future.get();
 
             return true;
-        } catch (TransactionCommitFailedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOG.warn("iOAM:PoT:SB:Netconf delete to nodeid failed:", e);
             return false;
         }

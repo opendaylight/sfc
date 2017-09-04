@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Ericsson Inc. and others. All rights reserved.
+ * Copyright (c) 2016, 2017 Ericsson Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,19 +7,19 @@
  */
 package org.opendaylight.sfc.ofrenderer.utils.operdsupdate;
 
-import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -205,10 +205,10 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
      */
     private void commitChangesAsync(WriteTransaction trans) {
         threadPoolExecutorService.submit(() -> {
-            CheckedFuture<Void, TransactionCommitFailedException> submitFuture = trans.submit();
+            ListenableFuture<Void> submitFuture = trans.submit();
             try {
-                submitFuture.checkedGet();
-            } catch (TransactionCommitFailedException e) {
+                submitFuture.get();
+            } catch (ExecutionException | InterruptedException e) {
                 LOG.error("commitChangesAsync: Transaction failed. Message: {}", e.getMessage(), e);
             }
         });
@@ -216,7 +216,6 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
 
     @Override
     public void onRspCreation(SffGraph theGraph, RenderedServicePath rsp) {
-
         WriteTransaction trans = dataBroker.newWriteOnlyTransaction();
         updateRenderedServicePathOperationalStateWithDpnIds(theGraph, rsp, trans);
         updateSffStateWithDpnIds(theGraph, rsp, trans);
@@ -225,7 +224,6 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
 
     @Override
     public void onRspDeletion(RenderedServicePath rsp) {
-
         WriteTransaction trans = dataBroker.newWriteOnlyTransaction();
         deleteRspFromSffState(rsp, trans);
         commitChangesAsync(trans);

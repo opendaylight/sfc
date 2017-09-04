@@ -8,13 +8,13 @@
 
 package org.opendaylight.sfc.util.openflow.writer;
 
-import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -50,7 +50,6 @@ public class FlowSetRemoverTask implements Runnable {
 
     @Override
     public void run() {
-
         WriteTransaction writeTx = tx == null ? dataProvider.newWriteOnlyTransaction() : tx;
 
         LOG.debug("FlowSetRemoverTask: starting deletion of {} flows", flowsToDelete.size());
@@ -64,10 +63,10 @@ public class FlowSetRemoverTask implements Runnable {
             writeTx.delete(LogicalDatastoreType.CONFIGURATION, iidFlow);
         }
 
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+        ListenableFuture<Void> submitFuture = writeTx.submit();
         try {
-            submitFuture.checkedGet();
-        } catch (TransactionCommitFailedException e) {
+            submitFuture.get();
+        } catch (ExecutionException | InterruptedException e) {
             LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
         }
     }

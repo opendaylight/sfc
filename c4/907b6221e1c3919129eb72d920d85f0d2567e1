@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Sam Hague <shague@redhat.com>
+Code-Review+2: Brady Johnson <bjohnson@inocybe.ca>
+Submitted-by: Thanh Ha <thanh.ha@linuxfoundation.org>
+Submitted-at: Thu, 07 Sep 2017 17:54:56 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/62550
+Project: sfc
+Branch: refs/heads/stable/nitrogen

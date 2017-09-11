@@ -12,6 +12,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.List;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
@@ -49,12 +50,10 @@ public final class SfcProviderServiceTypeAPI {
      * This method creates a Service function Type entry from a Service
      * Function.
      *
-     * @param serviceFunction
-     *            Service Function Object
+     * @param serviceFunction Service Function Object
      * @return true if service type was created, false otherwise
      */
     public static boolean createServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
-
         printTraceStart(LOG);
 
         boolean ret = false;
@@ -68,10 +67,10 @@ public final class SfcProviderServiceTypeAPI {
 
         SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(sfName);
 
-        InstanceIdentifier<SftServiceFunctionName> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                .child(ServiceFunctionType.class, serviceFunctionTypeKey)
-                .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
+        InstanceIdentifier<SftServiceFunctionName> sftentryIID =
+                InstanceIdentifier.builder(ServiceFunctionTypes.class)
+                        .child(ServiceFunctionType.class, serviceFunctionTypeKey)
+                        .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
 
         // Create a item in the list keyed by service function name
         SftServiceFunctionNameBuilder sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
@@ -105,10 +104,8 @@ public final class SfcProviderServiceTypeAPI {
      * This method is used to retrieve a Service Function Type from the
      * DataStore.
      *
-     * @param serviceFunctionType
-     *            Service Function Type abstract class
-     * @return Service Function Type Object which contains a list of SF of this
-     *         type
+     * @param serviceFunctionType Service Function Type abstract class
+     * @return Service Function Type which contains a list of SF of this type
      */
     public static ServiceFunctionType readServiceFunctionType(SftTypeName serviceFunctionType) {
         printTraceStart(LOG);
@@ -119,24 +116,23 @@ public final class SfcProviderServiceTypeAPI {
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey).build();
         sft = SfcDataStoreAPI.readTransactionAPI(sftIID, LogicalDatastoreType.CONFIGURATION);
         if (sft == null) {
-            LOG.error("Could not read Service Function list for Type {} " + "", serviceFunctionType);
+            LOG.error("Could not read Service Function list for Type {} ", serviceFunctionType);
         }
         printTraceStop(LOG);
         return sft;
     }
 
     public static ServiceFunctionTypes readAllServiceFunctionTypes() {
-        InstanceIdentifier<ServiceFunctionTypes> ids = InstanceIdentifier.builder(ServiceFunctionTypes.class).build();
-        return SfcDataStoreAPI.readTransactionAPI(ids, LogicalDatastoreType.CONFIGURATION);
+        return SfcDataStoreAPI.readTransactionAPI(InstanceIdentifier
+                        .builder(ServiceFunctionTypes.class).build(),
+                LogicalDatastoreType.CONFIGURATION);
     }
-
 
     /**
      * This method is used to delete a Service Function entry from the Service
      * Function Type list.
      *
-     * @param serviceFunction
-     *            Service Function object
+     * @param serviceFunction Service Function object
      * @return Service Function Type Object
      */
     public static boolean deleteServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
@@ -175,8 +171,7 @@ public final class SfcProviderServiceTypeAPI {
     /**
      * Delete a ServiceFunctionType based on SftType (key).
      *
-     * @param sftType:
-     *            Sft type
+     * @param sftType: Sft type
      * @return Status of delete stf operation
      */
 
@@ -195,8 +190,7 @@ public final class SfcProviderServiceTypeAPI {
      * functions of a given type. The Service Functions themselves are not
      * touched by this function.
      *
-     * @param serviceFunctionType
-     *            Service Function Type abstract class
+     * @param serviceFunctionType Service Function Type abstract class
      * @return Service Function Type Object
      */
     public static boolean deleteServiceFunctionType(ServiceFunctionType serviceFunctionType) {
@@ -218,14 +212,11 @@ public final class SfcProviderServiceTypeAPI {
     /**
      * This method reads a Service function Type entry from a Service Function.
      *
-     * @param serviceFunction
-     *            Service Function Object
+     * @param serviceFunction Service Function Object
      * @return Nothing.
      */
     public static SftServiceFunctionName readServiceFunctionTypeEntry(ServiceFunction serviceFunction) {
-
         printTraceStart(LOG);
-
         ServiceFunctionTypeKey serviceFunctionTypeKey = new ServiceFunctionTypeKey(serviceFunction.getType());
 
         // Build the instance identifier all the way down to the bottom child
@@ -233,8 +224,7 @@ public final class SfcProviderServiceTypeAPI {
         SfName sfName = new SfName(serviceFunction.getName().getValue());
         SftServiceFunctionNameKey sftServiceFunctionNameKey = new SftServiceFunctionNameKey(sfName);
 
-        InstanceIdentifier<SftServiceFunctionName> sftentryIID;
-        sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
+        InstanceIdentifier<SftServiceFunctionName> sftentryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
                 .child(ServiceFunctionType.class, serviceFunctionTypeKey)
                 .child(SftServiceFunctionName.class, sftServiceFunctionNameKey).build();
 

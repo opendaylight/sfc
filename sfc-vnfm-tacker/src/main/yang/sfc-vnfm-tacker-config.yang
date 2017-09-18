@@ -6,7 +6,7 @@ module sfc-vnfm-tacker-config {
     description
       "This module contains the YANG configuration definitions for the SFC VNF MANAGER TACKER module.";
 
-    revision "2017-7-24" {
+    revision "2017-07-24" {
         description "Initial revision";
     }
 

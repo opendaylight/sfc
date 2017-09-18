@@ -75,7 +75,7 @@ public class IosXeServiceForwarderMapper {
                                     IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
                                             localForwarder.getLocal(), WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
-                                    if (result != null && result == Boolean.TRUE) {
+                                    if (Boolean.TRUE.equals(result)) {
                                         LOG.info("Local forwarder with ip {} created on node {}",
                                                 forwarder.getIpMgmtAddress().toString(),
                                                 netconfNode.getNodeId().getValue());
@@ -86,7 +86,7 @@ public class IosXeServiceForwarderMapper {
                                             localForwarder.getLocal(), DELETE_LOCAL,
                                             LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
-                                    if (result != null && result == Boolean.TRUE) {
+                                    if (Boolean.TRUE.equals(result)) {
                                         LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId()
                                                 .getValue());
                                     }

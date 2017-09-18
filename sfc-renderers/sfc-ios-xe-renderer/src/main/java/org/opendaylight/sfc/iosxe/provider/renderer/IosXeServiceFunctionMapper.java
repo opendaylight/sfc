@@ -68,7 +68,7 @@ public class IosXeServiceFunctionMapper {
                             IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction,
                                     WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
                             Object result = writeServiceFunction.call();
-                            if (result != null && result == Boolean.TRUE) {
+                            if (Boolean.TRUE.equals(result)) {
                                 LOG.info("Service function {} created on node {}", serviceFunction.getName(),
                                         netconfNode.getNodeId().getValue());
                             }
@@ -82,7 +82,7 @@ public class IosXeServiceFunctionMapper {
                                     serviceFunction.getKey(),
                                     DELETE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
                             Object result = writeServiceFunction.call();
-                            if (result != null && result == Boolean.TRUE) {
+                            if (Boolean.TRUE.equals(result)) {
                                 LOG.info("Service function {} removed", serviceFunction.getName());
                             }
                         }

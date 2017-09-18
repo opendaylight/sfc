@@ -56,7 +56,7 @@ public class RspStatus {
         try {
             submitFuture.checkedGet();
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Write transaction failed to {}", e.getMessage());
+            LOG.error("Write transaction failed", e);
         }
     }
 }

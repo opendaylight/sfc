@@ -106,7 +106,7 @@ public class IosXeRspProcessor {
             return;
         }
         ServiceTypeChoice serviceTypeChoice = buildServiceFunctionChoice(serviceFunction);
-        Short serviceIndex = renderedServicePath.getStartingIndex();
+        short serviceIndex = renderedServicePath.getStartingIndex().shortValue();
         Services serviceEntry = createServicesEntry(serviceIndex, serviceTypeChoice);
         services.add(serviceEntry);
         serviceIndex--;

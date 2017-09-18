@@ -68,7 +68,7 @@ public class IosXeDataStoreAPI implements Callable {
                             .createSfIid(serviceFunction.getKey());
                     return writeMergeTransaction(serviceFunctionIid, serviceFunction);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServiceFunction", data);
+                    LOG.error("Argument data {} is not an instance of ServiceFunction", data, e);
                 }
                 break;
             }
@@ -80,7 +80,7 @@ public class IosXeDataStoreAPI implements Callable {
                             .createSfIid(new ServiceFunctionKey(serviceFunction.getValue()));
                     return readTransaction(serviceFunctionIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServiceFunction", data);
+                    LOG.error("Argument data {} is not an instance of ServiceFunction", data, e);
                 }
                 break;
             }
@@ -92,7 +92,7 @@ public class IosXeDataStoreAPI implements Callable {
                             .createSfIid(serviceFunctionKey);
                     return deleteTransaction(serviceFunctionIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServiceFunction", data);
+                    LOG.error("Argument data {} is not an instance of ServiceFunction", data, e);
                 }
                 break;
             }
@@ -103,7 +103,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<Local> localIid = SfcIosXeUtils.createLocalSffIid();
                     return writeMergeTransaction(localIid, localSff);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of Local", data);
+                    LOG.error("Argument data {} is not an instance of Local", data, e);
                 }
                 break;
             }
@@ -122,7 +122,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<ServiceFfName> remoteIid = SfcIosXeUtils.createRemoteSffIid(remoteSff);
                     return writeMergeTransaction(remoteIid, remoteSff);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServiceFfName", data);
+                    LOG.error("Argument data {} is not an instance of ServiceFfName", data, e);
                 }
                 break;
             }
@@ -133,7 +133,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<ServiceFfName> remoteIid = SfcIosXeUtils.createRemoteSffIid(remoteSff);
                     return deleteTransaction(remoteIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServiceFfName", data);
+                    LOG.error("Argument data {} is not an instance of ServiceFfName", data, e);
                 }
                 break;
             }
@@ -144,7 +144,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<ServiceFfName> remoteIid = SfcIosXeUtils.createRemoteSffIid(remoteSffName);
                     return readTransaction(remoteIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of SffName", data);
+                    LOG.error("Argument data {} is not an instance of SffName", data, e);
                 }
                 break;
             }
@@ -156,7 +156,7 @@ public class IosXeDataStoreAPI implements Callable {
                             .getKey());
                     return writeMergeTransaction(pathIid, path);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServicePath", data);
+                    LOG.error("Argument data {} is not an instance of ServicePath", data, e);
                 }
                 break;
             }
@@ -167,7 +167,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<ServicePath> pathIid = SfcIosXeUtils.createServicePathIid(pathKey);
                     return readTransaction(pathIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServicePath", data);
+                    LOG.error("Argument data {} is not an instance of ServicePath", data, e);
                 }
                 break;
             }
@@ -178,7 +178,7 @@ public class IosXeDataStoreAPI implements Callable {
                     InstanceIdentifier<ServicePath> pathIid = SfcIosXeUtils.createServicePathIid(pathKey);
                     return deleteTransaction(pathIid);
                 } catch (ClassCastException e) {
-                    LOG.error("Argument data {} is not an instance of ServicePathKey", data);
+                    LOG.error("Argument data {} is not an instance of ServicePathKey", data, e);
                 }
                 break;
             }
@@ -199,7 +199,7 @@ public class IosXeDataStoreAPI implements Callable {
                 transaction = mountpoint.newWriteOnlyTransaction();
             } catch (RuntimeException e) {
                 if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
-                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt, e.getCause());
                     try {
                         Thread.sleep(timeout);
                         timeout += 1000L;
@@ -207,7 +207,7 @@ public class IosXeDataStoreAPI implements Callable {
                         LOG.error("Thread interrupted while waiting ... {} ", i);
                     }
                 } else {
-                    LOG.error("Runtime exception ... {}", e.getMessage());
+                    LOG.error("Runtime exception ...", e);
                 }
             }
         }
@@ -222,10 +222,10 @@ public class IosXeDataStoreAPI implements Callable {
             submitFuture.checkedGet();
             return true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Write transaction failed to {}", e.getMessage());
+            LOG.error("Write transaction failed", e);
             return false;
         } catch (Exception e) {
-            LOG.error("Failed to .. {}", e.getMessage());
+            LOG.error("Write transaction failed", e);
             return false;
         }
     }
@@ -241,7 +241,7 @@ public class IosXeDataStoreAPI implements Callable {
                 transaction = mountpoint.newWriteOnlyTransaction();
             } catch (RuntimeException e) {
                 if (e.getCause() != null && e.getCause().getClass().equals(NetconfDocumentedException.class)) {
-                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt, e.getCause());
                     try {
                         Thread.sleep(timeout);
                         timeout += 1000L;
@@ -249,7 +249,7 @@ public class IosXeDataStoreAPI implements Callable {
                         LOG.error("Thread interrupted while waiting ... {} ", i);
                     }
                 } else {
-                    LOG.error("Runtime exception ... {}", e.getMessage());
+                    LOG.error("Runtime exception ...", e);
                 }
             }
         }
@@ -264,10 +264,10 @@ public class IosXeDataStoreAPI implements Callable {
             submitFuture.checkedGet();
             return true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("Delete transaction failed to {}", e.getMessage());
+            LOG.error("Delete transaction failed", e);
             return false;
         } catch (Exception e) {
-            LOG.error("Failed to .. {}", e.getMessage());
+            LOG.error("Delete transaction failed", e);
             return false;
         }
     }
@@ -283,7 +283,7 @@ public class IosXeDataStoreAPI implements Callable {
                 transaction = mountpoint.newReadOnlyTransaction();
             } catch (RuntimeException e) {
                 if (e.getCause().getClass().equals(NetconfDocumentedException.class)) {
-                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt);
+                    LOG.warn("NetconfDocumentedException thrown, retrying ({})...", attempt, e.getCause());
                     try {
                         Thread.sleep(timeout);
                         timeout += 1000L;
@@ -291,7 +291,7 @@ public class IosXeDataStoreAPI implements Callable {
                         LOG.error("Thread interrupted while waiting ... {} ", i);
                     }
                 } else {
-                    LOG.error("Runtime exception ... {}", e.getMessage());
+                    LOG.error("Runtime exception ...", e);
                 }
             }
         }
@@ -310,9 +310,9 @@ public class IosXeDataStoreAPI implements Callable {
                 LOG.debug("Failed to read. {}", Thread.currentThread().getStackTrace()[1]);
             }
         } catch (ReadFailedException e) {
-            LOG.warn("Read transaction failed to {} ", e);
+            LOG.warn("Read transaction failed", e);
         } catch (Exception e) {
-            LOG.error("Failed to .. {}", e.getMessage());
+            LOG.error("Read transaction failed", e);
         }
         return null;
     }

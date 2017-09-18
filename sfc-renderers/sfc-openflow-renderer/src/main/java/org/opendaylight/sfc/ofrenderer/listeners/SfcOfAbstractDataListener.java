@@ -18,32 +18,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class SfcOfAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
 
-    private DataBroker dataBroker;
-    private InstanceIdentifier<T> instanceIdentifier;
     private ListenerRegistration<SfcOfAbstractDataListener<T>> dataChangeListenerRegistration;
 
-    public void setDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    public void setIID(InstanceIdentifier<T> instanceIdentifier) {
-        this.instanceIdentifier = instanceIdentifier;
-    }
-
-    public DataBroker getDataBroker() {
-        return dataBroker;
-    }
-
-    public void registerAsDataChangeListener(LogicalDatastoreType datastoreType) {
+    public void registerAsDataChangeListener(DataBroker dataBroker, LogicalDatastoreType datastoreType,
+            InstanceIdentifier<T> instanceIdentifier) {
         dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
                 datastoreType, instanceIdentifier), this);
     }
 
-    public void registerAsDataChangeListener() {
-        registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
-    }
-
     public void closeDataChangeListener() {
-        dataChangeListenerRegistration.close();
+        if (dataChangeListenerRegistration != null) {
+            dataChangeListenerRegistration.close();
+        }
     }
 }

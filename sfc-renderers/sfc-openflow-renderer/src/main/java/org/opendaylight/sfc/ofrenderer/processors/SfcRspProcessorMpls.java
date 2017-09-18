@@ -9,7 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
+import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     private static final int MPLS_LABEL_INCR_HOP = 1;
     private static final int MPLS_LABEL_INCR_RSP = 100;
-    private static int lastMplsLabel;
+    private static final AtomicLong LAST_MPLS_LABEL = new AtomicLong(0);
 
     /**
      * Set the RSP path egress DPL and SFF Hop Ingress DPLs for the VLAN
@@ -32,8 +32,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     @Override
     public void setRspTransports() {
         int hopIncrement = MPLS_LABEL_INCR_HOP;
-        int transportData = lastMplsLabel + MPLS_LABEL_INCR_RSP;
-        lastMplsLabel = transportData;
+        long transportData = LAST_MPLS_LABEL.addAndGet(MPLS_LABEL_INCR_RSP);
 
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
         while (sffGraphIter.hasNext()) {
@@ -50,7 +49,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
             DataPlaneLocatorBuilder dpl = new DataPlaneLocatorBuilder();
             dpl.setTransport(rsp.getTransportType());
             MplsBuilder mplsBuilder = new MplsBuilder();
-            mplsBuilder.setMplsLabel((long) transportData);
+            mplsBuilder.setMplsLabel(transportData);
             dpl.setLocatorType(mplsBuilder.build());
 
             if (entry.getDstSff().equals(SffGraph.EGRESS)) {

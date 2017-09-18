@@ -40,9 +40,8 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
 
     public SfcOfRendererDataListener(DataBroker dataBroker, SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
             SfcSynchronizer sfcSynchronizer) {
-        setDataBroker(dataBroker);
-        setIID(InstanceIdentifier.builder(SfcOfRendererConfig.class).build());
-        registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
+        registerAsDataChangeListener(dataBroker, LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.builder(SfcOfRendererConfig.class).build());
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcSynchronizer = sfcSynchronizer;
         threadExecutor = Executors.newSingleThreadExecutor();
@@ -112,7 +111,7 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
         UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset(),
                 config.getSfcOfAppEgressTableOffset());
 
-        threadExecutor.submit(updateThread);
+        threadExecutor.execute(updateThread);
     }
 
     /**
@@ -129,7 +128,7 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
             return new TableId((short) (tableOffset + maxTable));
         } catch (IllegalArgumentException e) {
             LOG.error("SfcOfRendererDataListener::verifyMaxTableId invalid table offset [{}] maxTable [{}]",
-                    tableOffset, maxTable);
+                    tableOffset, maxTable, e);
             return null;
         }
     }

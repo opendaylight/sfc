@@ -60,9 +60,8 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
 
-        setDataBroker(dataBroker);
-        setIID(SfcInstanceIdentifiers.SFG_ENTRY_IID);
-        registerAsDataChangeListener(LogicalDatastoreType.CONFIGURATION);
+        registerAsDataChangeListener(dataBroker, LogicalDatastoreType.CONFIGURATION,
+                SfcInstanceIdentifiers.SFG_ENTRY_IID);
     }
 
     @Override

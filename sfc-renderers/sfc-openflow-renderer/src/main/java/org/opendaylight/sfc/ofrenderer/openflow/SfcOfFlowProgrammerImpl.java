@@ -12,6 +12,7 @@ import com.google.common.net.InetAddresses;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -254,7 +255,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
             return false;
         }
 
-        return cookie.toString().toUpperCase().startsWith(TRANSPORT_EGRESS_COOKIE_STR_BASE);
+        return cookie.toString().toUpperCase(Locale.getDefault()).startsWith(TRANSPORT_EGRESS_COOKIE_STR_BASE);
     }
 
     //
@@ -309,7 +310,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // Action output
         List<Action> actionList = new ArrayList<>();
         String outPortStr = OUTPUT_STRING + outPort.toString();
-        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order++));
+        actionList.add(SfcOpenflowUtils.createActionOutPort(outPortStr, order));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
@@ -344,7 +345,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Action NORMAL
         List<Action> actionList = new ArrayList<>();
-        actionList.add(SfcOpenflowUtils.createActionNormal(order++));
+        actionList.add(SfcOpenflowUtils.createActionNormal(order));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(actionList);
 
@@ -696,7 +697,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
 
         // Create and configure the FlowBuilder
         return SfcOpenflowUtils.createFlowBuilder(getTableId(TABLE_INDEX_TRANSPORT_INGRESS),
-                FLOW_PRIORITY_TRANSPORT_INGRESS, flowName.toString(), match, isb);
+                FLOW_PRIORITY_TRANSPORT_INGRESS, flowName, match, isb);
     }
 
     /**

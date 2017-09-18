@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
 import org.opendaylight.sfc.util.macchaining.SfcModelUtil;
 import org.opendaylight.sfc.util.macchaining.VirtualMacAddress;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -161,7 +160,7 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
         VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(entry.getPathId(), 0);
 
         String vmac = hopMac.getHop(entry.getServiceIndex()).getValue();
-        String dstSfMac = sfcProviderUtils.getSfDplMac(dstSfDpl);
+        String dstSfMac = dstSfDpl == null ? null : sfcProviderUtils.getSfDplMac(dstSfDpl);
         String nextVMac = hopMac.getHop((short)(entry.getServiceIndex() - 1)).getValue();
 
         boolean isL2Transparent = false;
@@ -245,7 +244,7 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
 
         String dstMac = sfcProviderUtils.getSfDplMac(dstSfDpl);
 
-        LOG.info("SFFNodeName {}", sffNodeName.toString());
+        LOG.info("SFFNodeName {}", sffNodeName);
         this.sfcFlowProgrammer.configureMacChainingSfTransportEgressFlow(sffNodeName, dstMac, srcOfsPortStr, null);
 
     }
@@ -295,7 +294,7 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
         VirtualMacAddress hopMac = VirtualMacAddress.getForwardAddress(entry.getPathId(), 0);
         String vmac = hopMac.getHop(entry.getServiceIndex()).getValue();
 
-        LOG.info("SFFNodeName {}", sffNodeName.toString());
+        LOG.info("SFFNodeName {}", sffNodeName);
 
         this.sfcFlowProgrammer.configureMacChainingSfTransportEgressFlow(sffNodeName, dstMac, srcOfsPortStr, vmac);
     }

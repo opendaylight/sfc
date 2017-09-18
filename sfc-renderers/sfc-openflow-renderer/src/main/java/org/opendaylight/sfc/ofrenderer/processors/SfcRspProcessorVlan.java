@@ -9,7 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     private static final int VLAN_ID_INCR_HOP = 1;
     private static final int VLAN_ID_INCR_RSP = 100;
-    private static int lastVlanId = 0;
+    private static final AtomicInteger LAST_VLAN_ID = new AtomicInteger(0);
 
     /**
      * Set the RSP path egress DPL and SFF Hop Ingress DPLs for the VLAN
@@ -31,8 +31,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     @Override
     public void setRspTransports() {
         int hopIncrement = VLAN_ID_INCR_HOP;
-        int transportData = lastVlanId + VLAN_ID_INCR_RSP;
-        lastVlanId = transportData;
+        int transportData = LAST_VLAN_ID.addAndGet(VLAN_ID_INCR_RSP);
 
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
         while (sffGraphIter.hasNext()) {

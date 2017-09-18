@@ -10,8 +10,8 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
-
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.ofrenderer.utils.SfcOfBaseProviderUtils;
@@ -177,13 +177,12 @@ public abstract class SfcRspTransportProcessorBase {
             // may be null if its EGRESS
             ServiceFunctionForwarder dstSff = sfcProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
                     entry.getPathId());
-            if (dstSff != null) {
-                // Set the SFF-SFF Hop DPL
-                if (!setSffHopDataPlaneLocators(srcSff, dstSff)) {
-                    throw new SfcRenderingException("Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff()
-                            + "] dstSff [" + entry.getDstSff() + "] transport [" + rsp.getTransportType() + "] pathId ["
-                            + entry.getPathId() + "]");
-                }
+
+            // Set the SFF-SFF Hop DPL
+            if (dstSff != null && !setSffHopDataPlaneLocators(srcSff, dstSff)) {
+                throw new SfcRenderingException("Unable to get SFF HOP DPLs srcSff [" + entry.getSrcSff()
+                    + "] dstSff [" + entry.getDstSff() + "] transport [" + rsp.getTransportType() + "] pathId ["
+                    + entry.getPathId() + "]");
             }
 
             if (entry.getDstSff().equals(SffGraph.EGRESS)) {
@@ -360,29 +359,17 @@ public abstract class SfcRspTransportProcessorBase {
         if (lhs.getImplementedInterface() != rhs.getImplementedInterface()) {
             return false;
         }
-        String type = lhs.getImplementedInterface().getSimpleName().toLowerCase();
+        String type = lhs.getImplementedInterface().getSimpleName().toLowerCase(Locale.getDefault());
 
         switch (type) {
             case IP:
-                if (((Ip) lhs).getPort().getValue().intValue() == ((Ip) rhs).getPort().getValue().intValue()) {
-                    if (((Ip) lhs).getIp().toString().equals(((Ip) rhs).getIp().toString())) {
-                        return true;
-                    }
-                }
-                break;
+                return ((Ip) lhs).getPort().getValue().intValue() == ((Ip) rhs).getPort().getValue().intValue()
+                    && ((Ip) lhs).getIp().toString().equals(((Ip) rhs).getIp().toString());
             case MAC:
-                if (((Mac) lhs).getVlanId() != null && ((Mac) rhs).getVlanId() != null) {
-                    if (((Mac) lhs).getVlanId().intValue() == ((Mac) rhs).getVlanId().intValue()) {
-                        return true;
-                    }
-                }
-                break;
+                return ((Mac) lhs).getVlanId() != null && ((Mac) rhs).getVlanId() != null
+                    && ((Mac) lhs).getVlanId().intValue() == ((Mac) rhs).getVlanId().intValue();
             case MPLS:
-                if (((Mpls) lhs).getMplsLabel().longValue() == ((Mpls) rhs).getMplsLabel().longValue()) {
-                    return true;
-                }
-                break;
-
+                return ((Mpls) lhs).getMplsLabel().longValue() == ((Mpls) rhs).getMplsLabel().longValue();
             case FUNCTION:
             case LISP:
             default:

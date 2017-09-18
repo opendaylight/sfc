@@ -13,8 +13,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
@@ -171,13 +172,13 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // Configure the uplink packet
         if (ulPathId >= 0) {
-            this.flowProgrammer.setFlowRspId(new Long(ulPathId));
+            this.flowProgrammer.setFlowRspId(Long.valueOf(ulPathId));
             this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktSrcIpStr, pktDstIpStr, ulPathId);
         }
 
         // Configure the downlink packet
         if (dlPathId >= 0) {
-            this.flowProgrammer.setFlowRspId(new Long(dlPathId));
+            this.flowProgrammer.setFlowRspId(Long.valueOf(dlPathId));
             this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktDstIpStr, pktSrcIpStr, dlPathId);
         }
     }
@@ -289,13 +290,14 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
      */
     private void purgePktInBuffer() {
         long currentMillis = System.currentTimeMillis();
-        Set<String> keySet = pktInBuffer.keySet();
-        for (String key : keySet) {
-            Long bufferedTime = pktInBuffer.get(key);
+        Iterator<Entry<String, Long>> iter = pktInBuffer.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, Long> entry = iter.next();
+            Long bufferedTime = entry.getValue();
             if (currentMillis - bufferedTime.longValue() > maxBufferTime) {
                 // This also removes the entry from the pktInBuffer map and
                 // doesnt invalidate iteration
-                keySet.remove(key);
+                iter.remove();
             }
         }
     }

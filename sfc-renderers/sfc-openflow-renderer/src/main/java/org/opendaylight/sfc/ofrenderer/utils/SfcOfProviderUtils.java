@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -32,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -51,7 +47,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
     // Since this class can be called by multiple threads,
     // store these objects per RSP id to avoid collisions
-    private class RspContext {
+    private static class RspContext {
 
         // store the SFs and SFFs internally so we dont have to
         // query the DataStore repeatedly for the same thing
@@ -67,7 +63,6 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     }
 
     private final Map<Long, RspContext> rspIdToContext;
-    protected static ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public SfcOfProviderUtils() {
         rspIdToContext = new HashMap<>();
@@ -198,19 +193,6 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
             ofPort = port.getOfport();
         }
         return ofPort;
-    }
-
-    // internal support method for getPortNumberFromName() and related methods
-    private OvsdbTerminationPointAugmentation extractTerminationPointAugmentation(Node bridgeNode, String portName) {
-        if (bridgeNode.getAugmentation(OvsdbBridgeAugmentation.class) != null) {
-            List<OvsdbTerminationPointAugmentation> tpAugmentations = extractTerminationPointAugmentations(bridgeNode);
-            for (OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation : tpAugmentations) {
-                if (ovsdbTerminationPointAugmentation.getName().equals(portName)) {
-                    return ovsdbTerminationPointAugmentation;
-                }
-            }
-        }
-        return null;
     }
 
     // internal support method for getPortNumberFromName() and related methods

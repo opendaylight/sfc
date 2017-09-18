@@ -144,10 +144,6 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
                 continue;
             }
             ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(sffName);
-            RspsForDpnidBuilder builder = new RspsForDpnidBuilder();
-            List<Rsps> values = new ArrayList<>();
-            values.add(new RspsBuilder().setKey(new RspsKey(new SfpName(rsp.getName().getValue()))).build());
-            builder.setRsps(values);
 
             InstanceIdentifier<Rsps> dpnidIif = InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
                     .child(ServiceFunctionForwarderState.class, sffKey).augmentation(SffLogicalSffAugmentation.class)
@@ -204,7 +200,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
      *            The transaction to submit
      */
     private void commitChangesAsync(WriteTransaction trans) {
-        threadPoolExecutorService.submit(() -> {
+        threadPoolExecutorService.execute(() -> {
             ListenableFuture<Void> submitFuture = trans.submit();
             try {
                 submitFuture.get();

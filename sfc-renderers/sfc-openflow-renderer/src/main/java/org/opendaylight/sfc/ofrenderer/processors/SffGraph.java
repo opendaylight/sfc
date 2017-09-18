@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -36,7 +35,7 @@ public class SffGraph {
     /**
      * Internal class to hold each SffGraph entry.
      */
-    public class SffGraphEntry {
+    public static class SffGraphEntry {
 
         private final SffName srcSff;
         private final SffName dstSff;
@@ -93,15 +92,14 @@ public class SffGraph {
 
         @Override
         public String toString() {
-            StringBuffer returnValue = new StringBuffer(
-                    "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", prevSf=" + prevSf
-                            + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex);
+            String str = "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", prevSf=" + prevSf
+                    + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex;
             if (getSrcDpnId() != null || getDstDpnId() != null) {
-                returnValue.append(
-                        ", Logical SFF params: src dpnid [" + getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]");
+                str += ", Logical SFF params: src dpnid [" + getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]";
             }
-            returnValue.append("]");
-            return returnValue.toString();
+
+            str += "]";
+            return str;
         }
 
         public DpnIdType getDstDpnId() {
@@ -133,7 +131,7 @@ public class SffGraph {
      * Internal class to hold the ingress and egress DPLs for an SFF for a
      * particular pathId.
      */
-    public class SffDataPlaneLocators {
+    public static class SffDataPlaneLocators {
 
         private final SffName sffName;
         private final long pathId;
@@ -323,9 +321,7 @@ public class SffGraph {
         Set<Long> dplKeys = this.getSffDplKeys();
         for (Long key : dplKeys) {
             Map<SffName, SffDataPlaneLocators> sffDpls = this.getSffDplsForPath(key);
-            Set<SffName> sffDplKeys = sffDpls.keySet();
-            for (SffName sffDplKey : sffDplKeys) {
-                SffDataPlaneLocators sffDpl = sffDpls.get(sffDplKey);
+            for (SffDataPlaneLocators sffDpl: sffDpls.values()) {
                 // TODO need to get the locator details for any/all transport
                 LOG.info(
                         "SFF [{}] pathId [{}] IngressDpl [{}] EgressDpl [{}] IngressHopDpl Transport [{}] Vlan ID [{}]",

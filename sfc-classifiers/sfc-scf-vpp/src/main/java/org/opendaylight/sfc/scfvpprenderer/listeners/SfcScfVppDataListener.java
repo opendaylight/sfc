@@ -31,7 +31,7 @@ public class SfcScfVppDataListener extends AbstractDataTreeChangeListener<Servic
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfVppDataListener.class);
 
-    private VppClassifierProcessor classifierProcessor;
+    private final VppClassifierProcessor classifierProcessor;
 
     private final DataBroker dataBroker;
     private ListenerRegistration<SfcScfVppDataListener> listenerRegistration;
@@ -72,7 +72,7 @@ public class SfcScfVppDataListener extends AbstractDataTreeChangeListener<Servic
                           ServiceFunctionClassifier updatedServiceFunctionClassifier) {
 
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
-                && !(originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier))) {
+                && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
             LOG.debug("Updated ServiceFunctionClassifier name: {}\n", updatedServiceFunctionClassifier.getName());
             this.classifierProcessor.removeScf(originalServiceFunctionClassifier);
             this.classifierProcessor.addScf(updatedServiceFunctionClassifier);
@@ -81,7 +81,7 @@ public class SfcScfVppDataListener extends AbstractDataTreeChangeListener<Servic
 
     // Classifier DELETION
     @Override
-    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier){
+    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier) {
         if (serviceFunctionClassifier != null) {
             LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
             this.classifierProcessor.removeScf(serviceFunctionClassifier);
@@ -89,7 +89,7 @@ public class SfcScfVppDataListener extends AbstractDataTreeChangeListener<Servic
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Closing listener...");
         if (listenerRegistration != null) {
             listenerRegistration.close();

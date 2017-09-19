@@ -8,22 +8,20 @@
 
 package org.opendaylight.sfc.scfvpprenderer;
 
-import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.sfc.scfvpprenderer.processors.VppNodeManager;
-import org.opendaylight.sfc.scfvpprenderer.processors.VppClassifierProcessor;
 import org.opendaylight.sfc.scfvpprenderer.listeners.SfcScfVppDataListener;
+import org.opendaylight.sfc.scfvpprenderer.processors.VppClassifierProcessor;
+import org.opendaylight.sfc.scfvpprenderer.processors.VppNodeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for the sfc-scf-vpp (blueprint-instantiated)
+ * Entry point for the sfc-scf-vpp (blueprint-instantiated).
  */
 public class SfcScfVppRenderer implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfVppRenderer.class);
-    private SfcScfVppDataListener sfcScfListener;
+    private final SfcScfVppDataListener sfcScfListener;
 
     public SfcScfVppRenderer(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
         VppNodeManager vppNodeManager = new VppNodeManager(dataBroker, bindingAwareBroker);
@@ -37,12 +35,8 @@ public class SfcScfVppRenderer implements AutoCloseable {
      * Implemented from the AutoCloseable interface.
      */
     @Override
-    public void close() throws ExecutionException, InterruptedException {
+    public void close() {
         LOG.info("SfcScfVppRenderer auto-closed");
-        try {
-            sfcScfListener.close();
-        } catch(Exception e) {
-            LOG.error("SfcScfVppRenderer auto-closed exception {}", e.getMessage());
-        }
+        sfcScfListener.close();
     }
 }

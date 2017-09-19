@@ -9,10 +9,8 @@
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import com.google.common.collect.Iterables;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -37,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 
 
 public class MacChainingClassifier {
-    private ServiceFunctionForwarder sff;
+    private ServiceFunctionForwarder serviceFunctionForwarder;
 
     private final ClassifierHandler classifierHandler;
 
@@ -47,11 +45,11 @@ public class MacChainingClassifier {
 
     public MacChainingClassifier(ServiceFunctionForwarder theSff) {
         this();
-        sff = theSff;
+        serviceFunctionForwarder = theSff;
     }
 
     public MacChainingClassifier setSff(ServiceFunctionForwarder theSff) {
-        sff = theSff;
+        serviceFunctionForwarder = theSff;
         return this;
     }
 
@@ -167,7 +165,7 @@ public class MacChainingClassifier {
 
 
     public Optional<String> getNodeName(String theInterfaceName) {
-        return Optional.ofNullable(sff)
+        return Optional.ofNullable(serviceFunctionForwarder)
                 .filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
                 .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }

@@ -86,7 +86,7 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Closing listener...");
         if (listenerRegistration != null) {
             listenerRegistration.close();

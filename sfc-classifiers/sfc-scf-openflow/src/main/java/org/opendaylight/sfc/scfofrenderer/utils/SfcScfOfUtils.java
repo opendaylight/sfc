@@ -36,6 +36,9 @@ public class SfcScfOfUtils {
     public static final short NSH_MDTYPE_ONE = 0x1;
     public static final short NSH_NP_ETH = 0x3;
 
+    private SfcScfOfUtils() {
+    }
+
     /**
      * Get a FlowBuilder object that install the table-miss in the classifier
      * table.
@@ -255,13 +258,13 @@ public class SfcScfOfUtils {
 
         VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
 
-        if ((nodeName == null) || (flowKey == null)) {
+        if (nodeName == null || flowKey == null) {
             return null;
         }
 
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
 
-        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);
 
 
         FlowBuilder flowb = new FlowBuilder();
@@ -274,7 +277,6 @@ public class SfcScfOfUtils {
                         .createActionsInstructionBuilder(macDst, out))
                         .build());
         return flowb;
-        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
     }
 
     /**
@@ -296,7 +298,7 @@ public class SfcScfOfUtils {
 
         VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
 
-        if ((nodeName == null) || (flowKey == null)) {
+        if (nodeName == null || flowKey == null) {
             return null;
         }
 
@@ -306,7 +308,7 @@ public class SfcScfOfUtils {
 
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
 
-        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
@@ -319,11 +321,7 @@ public class SfcScfOfUtils {
                         .build());
 
         return flowb;
-        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
-
     }
-
-
 
     /**
      * create classifier out flow for MAC Chaining.
@@ -344,7 +342,7 @@ public class SfcScfOfUtils {
 
         VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
 
-        if ((nodeName == null) || (flowKey == null)) {
+        if (nodeName == null || flowKey == null) {
             return null;
         }
 
@@ -354,7 +352,7 @@ public class SfcScfOfUtils {
 
         //set here the gateway MAC to end the chain
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(gwMac, order++);
-        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order++);
+        Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
@@ -367,7 +365,5 @@ public class SfcScfOfUtils {
                         .build());
 
         return flowb;
-        //return SfcOpenflowUtils.writeFlowToDataStore(nodeName, flowb);
     }
-
 }

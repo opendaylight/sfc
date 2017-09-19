@@ -132,13 +132,13 @@ public class SfcScfMatch {
                 Ipv4Prefix src = ipv4.getSourceIpv4Network();
                 if (src != null) {
                     String[] source = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv4(mb, source[0], Integer.valueOf(source[1]));
+                    SfcOpenflowUtils.addMatchSrcIpv4(mb, source[0], Integer.parseInt(source[1]));
                 }
 
                 Ipv4Prefix dst = ipv4.getDestinationIpv4Network();
                 if (dst != null) {
                     String[] destination = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv4(mb, destination[0], Integer.valueOf(destination[1]));
+                    SfcOpenflowUtils.addMatchDstIpv4(mb, destination[0], Integer.parseInt(destination[1]));
                 }
             }
             if (aceip.getAceIpVersion() instanceof AceIpv6) {
@@ -148,13 +148,13 @@ public class SfcScfMatch {
                 Ipv6Prefix src = ipv6.getSourceIpv6Network();
                 if (src != null) {
                     String[] source = src.getValue().split("/");
-                    SfcOpenflowUtils.addMatchSrcIpv6(mb, source[0], Integer.valueOf(source[1]));
+                    SfcOpenflowUtils.addMatchSrcIpv6(mb, source[0], Integer.parseInt(source[1]));
                 }
 
                 Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
                 if (dst != null) {
                     String[] destination = dst.getValue().split("/");
-                    SfcOpenflowUtils.addMatchDstIpv6(mb, destination[0], Integer.valueOf(destination[1]));
+                    SfcOpenflowUtils.addMatchDstIpv6(mb, destination[0], Integer.parseInt(destination[1]));
                 }
             }
         }

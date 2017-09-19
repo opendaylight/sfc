@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.scfofrenderer.renderers;
 
-import java.util.concurrent.ExecutionException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
@@ -76,14 +75,9 @@ public class SfcScfOfRenderer implements AutoCloseable {
      * Implemented from the AutoCloseable interface.
      */
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
-    public void close() throws ExecutionException, InterruptedException {
+    public void close()  {
         LOG.info("SfcScfOfRenderer auto-closed");
-        try {
-            sfcScfDataListener.close();
-            classifierRspsUpdateListener.close();
-        } catch (Exception e) {
-            LOG.error("SfcScfOfRenderer auto-closed exception {}", e.getMessage());
-        }
+        sfcScfDataListener.close();
+        classifierRspsUpdateListener.close();
     }
 }

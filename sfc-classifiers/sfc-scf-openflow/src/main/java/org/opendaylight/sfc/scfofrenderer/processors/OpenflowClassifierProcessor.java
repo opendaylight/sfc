@@ -177,7 +177,7 @@ public class OpenflowClassifierProcessor {
 
         ClassifierProcessorInterface classifierProcessor;
 
-        Optional<String> nodeName = Optional.empty();
+        final Optional<String> nodeName;
         if (rsp.getSfcEncapsulation() == MacChaining.class) {
             nodeName = Optional.of(theSff.getServiceNode().getValue());
             classifierProcessor = new MacChainingProcessor(

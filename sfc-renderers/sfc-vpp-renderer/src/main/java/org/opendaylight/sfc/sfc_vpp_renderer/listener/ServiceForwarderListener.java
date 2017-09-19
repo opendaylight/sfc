@@ -17,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,7 @@ public class ServiceForwarderListener extends AbstractDataTreeChangeListener<Ser
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Closing listener...");
         if (vppSffListenerRegistration != null) {
             vppSffListenerRegistration.close();

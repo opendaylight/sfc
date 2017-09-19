@@ -105,7 +105,7 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         listenerRegistration.close();
     }
 }

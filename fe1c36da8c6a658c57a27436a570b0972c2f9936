@@ -1,0 +1,334 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_cf2eb1a4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Field not initialized in constructor but dereferenced without null check\" - \u0027dataBroker\u0027. Neither dataBroker or instanceIdentifier needs to be stored so pass as params.",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_af29bd9c",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfRendererDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - \u0027submit\u0027 returns a Future which isn\u0027t used here so just use the \u0027execute\u0027 instead.",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0f1c4977",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/listeners/SfcOfRendererDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Either log or rethrow this exception\" - it\u0027s good practice to log the stack trace",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ef1e156f",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcIpv4PacketInHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient Number constructor; use static valueOf instead\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4f12c162",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcIpv4PacketInHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Inefficient use of keySet iterator instead of entrySet iterator\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2f15cd48",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Consider using Locale parameterized version of invoked method\" - it will use the default locale by default but this avoids the FB violation.",
+      "range": {
+        "startLine": 257,
+        "startChar": 33,
+        "endLine": 257,
+        "endChar": 44
+      },
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8f0f9936",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Dead store to local variable\" - \u0027order\u0027 is incremented after but not used again. We could just pass in 0....",
+      "range": {
+        "startLine": 312,
+        "startChar": 72,
+        "endLine": 312,
+        "endChar": 79
+      },
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6f0a2527",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/openflow/SfcOfFlowProgrammerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 699,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Method invokes toString() method on a String\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_cf051115",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorMacChaining.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Method call passes null for non-null parameter\".  One caller of this method explicitly passes in null for dstSfDpl which would cause an NPE in getSfDplMac.",
+      "range": {
+        "startLine": 164,
+        "startChar": 43,
+        "endLine": 164,
+        "endChar": 64
+      },
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8f615907",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspProcessorMpls.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Write to static field from instance method\".  This is unsafe in a multi-threaded environment.",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6f5ce54b",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcRspTransportProcessorBase.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_cf57d124",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Should be a static inner class\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_af525d32",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Synchronized class StringBuffer should not be used\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0f3569f7",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SffGraph.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Inefficient use of keySet iterato\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ef3735fd",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/SfcOfBaseProviderUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4f3be1ea",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/SfcOfProviderUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Unread public/protected field\" - not used anywhere",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2f3e6dda",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/SfcOfProviderUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Private method is never called\"",
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8f28399b",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/utils/operdsupdate/OperDsUpdateHandlerLSFFImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T00:52:11Z",
+      "side": 0,
+      "message": "\"Useless object created\"",
+      "range": {
+        "startLine": 147,
+        "startChar": 32,
+        "endLine": 147,
+        "endChar": 39
+      },
+      "revId": "fe1c36da8c6a658c57a27436a570b0972c2f9936",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

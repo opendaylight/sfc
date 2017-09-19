@@ -11,8 +11,6 @@ package org.opendaylight.sfc.pot.netconf.renderer.provider.api;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to store PoT configuration for SFC .
@@ -22,8 +20,6 @@ import org.slf4j.LoggerFactory;
  * @since 2016-05-01
  */
 public class SfcPotPolyClassAPI {
-    private static final Logger LOG = LoggerFactory.getLogger(SfcPotPolyAPI.class);
-
     private long numProfiles;
     private long startIndex;
 

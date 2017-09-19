@@ -9,29 +9,29 @@ package org.opendaylight.sfc.scfvpprenderer.processors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.util.vpp.SfcVppUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.Actions1;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.acl.access.list.entries.ace.actions.sfc.action.AclRenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.attachment.point.attachment.point.type.Interface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.AccessListEntries;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
@@ -40,15 +40,14 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.AceIp;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv4;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.ace.matches.ace.type.ace.ip.ace.ip.version.AceIpv6;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6AddressNoZone;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Prefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.HexString;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.classify.table.base.attributes.ClassifySessionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.classifier.rev161214.vpp.classifier.ClassifyTableBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,45 +56,41 @@ public class VppClassifierProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(VppClassifierProcessor.class);
 
     private final VppNodeManager nodeManager;
-    private static final String SFC_BD_NAME = new String("SFCVPP");
-    private static final String DUMMY_BD_NAME = new String("SFCDUMMY");
+    private static final String SFC_BD_NAME = "SFCVPP";
+    private static final String DUMMY_BD_NAME = "SFCDUMMY";
     private final Map<String, String> bridgeDomainCreated = new HashMap<>();
 
-    class Pair<T> {
-        private final T m_mask;
-        private final T m_match;
+    private static class Pair<T> {
+        private final T mask;
+        private final T match;
 
-        public Pair(T mask, T match) {
-            m_mask = mask;
-            m_match = match;
+        Pair(T mask, T match) {
+            this.mask = mask;
+            this.match = match;
         }
 
-        public T getMask() {
-            return m_mask;
+        T getMask() {
+            return mask;
         }
 
-        public T getMatch() {
-            return m_match;
+        T getMatch() {
+            return match;
         }
     }
 
-    class SffInfo {
-        public DataBroker mountPoint;
-        public SffName sffName;
-        public String bridgeDomainName;
-        public IpAddress ip;
-        public Long pathId;
-        public Short serviceIndex;
-        public Short reverseServiceIndex;
+    private static class SffInfo {
+        private final DataBroker mountPoint;
+        private final SffName sffName;
+        private final IpAddress ip;
+        private final Long pathId;
+        private final Short serviceIndex;
 
-        public SffInfo(DataBroker mountPoint, SffName sffName, String bridgeDomainName, IpAddress ip, Long pathId, Short serviceIndex, Short reverseServiceIndex) {
+        SffInfo(DataBroker mountPoint, SffName sffName, IpAddress ip, Long pathId, Short serviceIndex) {
             this.mountPoint = mountPoint;
             this.sffName = sffName;
-            this.bridgeDomainName = bridgeDomainName;
             this.ip = ip;
             this.pathId = pathId;
             this.serviceIndex = serviceIndex;
-            this.reverseServiceIndex = reverseServiceIndex;
         }
     }
 
@@ -139,7 +134,7 @@ public class VppClassifierProcessor {
         byte[] retval = new byte[4];
         String[] address = ipv4Prefix.getValue().substring(0, ipv4Prefix.getValue().indexOf('/')).split("\\.");
         String prefix = ipv4Prefix.getValue().substring(ipv4Prefix.getValue().indexOf('/') + 1);
-        int mask = (int) Short.parseShort(prefix);
+        int mask = Short.parseShort(prefix);
         for (int i = mask % 8; i < 4; i++) {
             address[i] = "0";
         }
@@ -169,10 +164,10 @@ public class VppClassifierProcessor {
             if ("00".equals(firstPart)) {
                 index++;
             } else {
-                retval[index++] = ((byte) Short.parseShort(firstPart, 16));
+                retval[index++] = (byte) Short.parseShort(firstPart, 16);
             }
 
-            retval[index++] = ((byte) Short.parseShort(secondPart, 16));
+            retval[index++] = (byte) Short.parseShort(secondPart, 16);
         }
 
         return retval;
@@ -184,13 +179,13 @@ public class VppClassifierProcessor {
     }
 
     private Pair<HexString> getMaskAndMatch(Matches matches) {
-        int maskLength = 0;
-        String mask = new String("");
-        String match = new String("");
         if (matches == null) {
             return null;
         }
 
+        int maskLength = 0;
+        String mask = "";
+        String match = "";
         if (matches.getAceType() instanceof AceEth) {
             AceEth eth = (AceEth) matches.getAceType();
 
@@ -231,14 +226,17 @@ public class VppClassifierProcessor {
                 Ipv4Prefix src = ipv4.getSourceIpv4Network();
                 if (src != null) {
                     byte[] retval = ipv4AddressPrefixToBytes(src);
+                    StringBuilder maskBuf = new StringBuilder(mask);
                     for (int i = 0; i < 4; i++) {
                         if (retval[i] == 0) {
-                            mask = mask + ":00";
+                            maskBuf.append(":00");
                         } else {
-                            mask = mask + ":ff";
+                            maskBuf.append(":ff");
                         }
                     }
-                    match = match + String.format(":%1$02x:%2$02x:%3$02x:%4$02x", retval[0], retval[1], retval[2], retval[3]);
+
+                    mask = maskBuf.toString();
+                    match += String.format(":%1$02x:%2$02x:%3$02x:%4$02x", retval[0], retval[1], retval[2], retval[3]);
                 } else {
                     mask = mask + ":00:00:00:00";
                     match = match + ":00:00:00:00";
@@ -248,14 +246,17 @@ public class VppClassifierProcessor {
                 Ipv4Prefix dst = ipv4.getDestinationIpv4Network();
                 if (dst != null) {
                     byte[] retval = ipv4AddressPrefixToBytes(dst);
+                    StringBuilder maskBuf = new StringBuilder(mask);
                     for (int i = 0; i < 4; i++) {
                         if (retval[i] == 0) {
-                            mask = mask + ":00";
+                            maskBuf.append(":00");
                         } else {
-                            mask = mask + ":ff";
+                            maskBuf.append(":ff");
                         }
                     }
-                    match = match + String.format(":%1$02x:%2$02x:%3$02x:%4$02x", retval[0], retval[1], retval[2], retval[3]);
+
+                    mask = maskBuf.toString();
+                    match += String.format(":%1$02x:%2$02x:%3$02x:%4$02x", retval[0], retval[1], retval[2], retval[3]);
                 } else {
                     mask = mask + ":00:00:00:00";
                     match = match + ":00:00:00:00";
@@ -278,7 +279,10 @@ public class VppClassifierProcessor {
                 if (src != null) {
                     byte[] retval = ipv6AddressPrefixToBytes(src);
                     mask = mask + ":ff:ff:ff:ff:ff:ff:ff:ff::ff:ff:ff:ff:ff:ff:ff:ff";
-                    match = match + String.format(":%1$02x:%2$02x:%3$02x:%4$02x:%5$02x:%6$02x:%7$02x:%8$02x:%9$02x:%10$02x:%11$02x:%12$02x:%13$02x:%14$02x:%15$02x:%16$02x", retval[0], retval[1], retval[2], retval[3], retval[4], retval[5], retval[6], retval[7], retval[8], retval[9], retval[10], retval[11], retval[12], retval[13], retval[14], retval[15]);
+                    match += String.format(":%1$02x:%2$02x:%3$02x:%4$02x:%5$02x:%6$02x:%7$02x:%8$02x:%9$02x:%10$02x:"
+                            + "%11$02x:%12$02x:%13$02x:%14$02x:%15$02x:%16$02x", retval[0], retval[1], retval[2],
+                            retval[3], retval[4], retval[5], retval[6], retval[7], retval[8], retval[9], retval[10],
+                            retval[11], retval[12], retval[13], retval[14], retval[15]);
                 } else {
                     mask = mask + ":00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
                     match = match + ":00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
@@ -286,10 +290,13 @@ public class VppClassifierProcessor {
                 maskLength += 16;
 
                 Ipv6Prefix dst = ipv6.getDestinationIpv6Network();
-                if (dst != null ) {
+                if (dst != null) {
                     byte[] retval = ipv6AddressPrefixToBytes(dst);
                     mask = mask + ":ff:ff:ff:ff:ff:ff:ff:ff::ff:ff:ff:ff:ff:ff:ff:ff";
-                    match = match + String.format(":%1$02x:%2$02x:%3$02x:%4$02x:%5$02x:%6$02x:%7$02x:%8$02x:%9$02x:%10$02x:%11$02x:%12$02x:%13$02x:%14$02x:%15$02x:%16$02x", retval[0], retval[1], retval[2], retval[3], retval[4], retval[5], retval[6], retval[7], retval[8], retval[9], retval[10], retval[11], retval[12], retval[13], retval[14], retval[15]);
+                    match += String.format(":%1$02x:%2$02x:%3$02x:%4$02x:%5$02x:%6$02x:%7$02x:%8$02x:%9$02x:%10$02x"
+                            + ":%11$02x:%12$02x:%13$02x:%14$02x:%15$02x:%16$02x", retval[0], retval[1], retval[2],
+                            retval[3], retval[4], retval[5], retval[6], retval[7], retval[8], retval[9], retval[10],
+                            retval[11], retval[12], retval[13], retval[14], retval[15]);
                 } else {
                     mask = mask + ":00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
                     match = match + ":00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
@@ -303,23 +310,21 @@ public class VppClassifierProcessor {
                 Integer srcPort = null;
                 Integer dstPort = null;
 
-                if (aceip.getSourcePortRange() != null &&
-                    aceip.getSourcePortRange().getLowerPort() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != null &&
-                    aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
+                if (aceip.getSourcePortRange() != null && aceip.getSourcePortRange().getLowerPort() != null
+                        && aceip.getSourcePortRange().getLowerPort().getValue() != null
+                        && aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
                     srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
                 }
-                if (aceip.getDestinationPortRange() != null &&
-                    aceip.getDestinationPortRange().getLowerPort() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != null &&
-                    aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
+                if (aceip.getDestinationPortRange() != null && aceip.getDestinationPortRange().getLowerPort() != null
+                        && aceip.getDestinationPortRange().getLowerPort().getValue() != null
+                        && aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
                     dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
                 }
 
                 // don't support port range
                 if (srcPort != null) {
                     mask = mask + ":ff:ff";
-                    match = match + String.format(":%1$02x:%2$02x", srcPort.intValue() & 0xFF00, srcPort.intValue() & 0x00FF);
+                    match += String.format(":%1$02x:%2$02x", srcPort.intValue() & 0xFF00, srcPort.intValue() & 0x00FF);
                 } else {
                     mask = mask + ":00:00";
                     match = match + ":00:00";
@@ -328,7 +333,7 @@ public class VppClassifierProcessor {
 
                 if (dstPort != null) {
                     mask = mask + ":ff:ff";
-                    match = match + String.format(":%1$02x:%2$02x", dstPort.intValue() & 0xFF00, dstPort.intValue() & 0x00FF);
+                    match += String.format(":%1$02x:%2$02x", dstPort.intValue() & 0xFF00, dstPort.intValue() & 0x00FF);
                 } else {
                     mask = mask + ":00:00";
                     match = match + ":00:00";
@@ -344,7 +349,7 @@ public class VppClassifierProcessor {
                 mask = mask + StringUtils.repeat(":00", padLength);
                 match = match + StringUtils.repeat(":00", padLength);
             }
-            return new Pair(new HexString(mask), new HexString(match));
+            return new Pair<>(new HexString(mask), new HexString(match));
         }
     }
 
@@ -381,18 +386,16 @@ public class VppClassifierProcessor {
         }
 
         RenderedServicePathHop firstRspHop = hopList.get(0);
-        RenderedServicePathHop lastRspHop = Iterables.getLast(hopList);
         if (firstRspHop == null) {
             LOG.error("first rsp hop is null\n");
             return null;
         }
 
         Short serviceIndex = firstRspHop.getServiceIndex();
-        Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
         SffName sffName = firstRspHop.getServiceFunctionForwarder();
         IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
         DataBroker mountPoint = SfcVppUtils.getSffMountpoint(this.nodeManager.getMountPointService(), sffName);
-        return new SffInfo(mountPoint, sffName, SFC_BD_NAME, sffIp, pathId, serviceIndex, reverseServiceIndex);
+        return new SffInfo(mountPoint, sffName, sffIp, pathId, serviceIndex);
     }
 
     private boolean configureVxlanGpeClassifier(ServiceFunctionClassifier scf) {
@@ -401,7 +404,7 @@ public class VppClassifierProcessor {
             LOG.error("Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
-        Map<RspName, List<Pair<HexString>>> rspPairList = new HashMap<RspName, List<Pair<HexString>>>();
+        Map<RspName, List<Pair<HexString>>> rspPairList = new HashMap<>();
         List<Ace> aceList = theAcl.get().getAccessListEntries().getAce();
         for (Ace ace : aceList) {
             Optional<RspName> rspName = Optional.ofNullable(ace.getActions())
@@ -438,11 +441,12 @@ public class VppClassifierProcessor {
             if (!bridgeDomainCreated.containsKey(sffName.getValue())) {
                 SfcVppUtils.addDummyBridgeDomain(mountPoint, DUMMY_BD_NAME, sffName.getValue());
                 SfcVppUtils.addDummyNshEntry(mountPoint, 0L, (short)1, sffName.getValue());
-                SfcVppUtils.addDummyNshMap(mountPoint, 0L, (short)1, 0L, (short)1, new String("local0"), sffName.getValue());
+                SfcVppUtils.addDummyNshMap(mountPoint, 0L, (short)1, 0L, (short)1, "local0", sffName.getValue());
                 SfcVppUtils.addBridgeDomain(mountPoint, SFC_BD_NAME, sffName.getValue());
                 bridgeDomainCreated.put(sffName.getValue(), SFC_BD_NAME);
             }
-            for (RspName rsp : rspPairList.keySet()) {
+            for (Entry<RspName, List<Pair<HexString>>> entry : rspPairList.entrySet()) {
+                RspName rsp = entry.getKey();
                 SffInfo sffInfo = getFirstSffInfoInRsp(rsp);
                 RspName reverseRspName = getReverseRspName(rsp);
                 RenderedServicePath reverseRenderedServicePath = getRenderedServicePath(reverseRspName);
@@ -451,10 +455,11 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                Long reversePathId = reverseRenderedServicePath.getPathId();
+                final Long reversePathId = reverseRenderedServicePath.getPathId();
                 List<RenderedServicePathHop> hopList = reverseRenderedServicePath.getRenderedServicePathHop();
                 if (hopList == null || hopList.isEmpty()) {
-                    LOG.error("Rendered path {} does not contain any hop", reverseRenderedServicePath.getName().getValue());
+                    LOG.error("Rendered path {} does not contain any hop",
+                            reverseRenderedServicePath.getName().getValue());
                     return false;
                 }
 
@@ -464,40 +469,45 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
-                List<Pair<HexString>> pairList = rspPairList.get(rsp);
+                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
+                List<Pair<HexString>> pairList = entry.getValue();
                 int length = pairList.size();
                 int index = 0;
 
                 // Configure VPP classfier classify tables, sessions and enable ingress ACL
                 List<ClassifyTableBuilder> classifyTableList = new ArrayList<>();
-                List<ClassifySessionBuilder> classifySessionList = new ArrayList<>(
-);
+                List<ClassifySessionBuilder> classifySessionList = new ArrayList<>();
                 for (Pair<HexString> maskMatch : pairList) {
-                     boolean hasNext = false;
-                     if (index < length - 1) {
-                         hasNext = true;
-                     }
-                     ClassifyTableBuilder classifyTableBuilder = SfcVppUtils.buildVppClassifyTable(sffName, rsp.getValue(), maskMatch.getMask(), hasNext);
-                     classifyTableList.add(classifyTableBuilder);
-                     classifySessionList.add(SfcVppUtils.buildVppClassifySession(classifyTableBuilder, maskMatch.getMatch(), sffInfo.pathId, sffInfo.serviceIndex));
-                     SfcVppUtils.increaseNextTableIndex(sffName.getValue());
-                     index++;
+                    boolean hasNext = false;
+                    if (index < length - 1) {
+                        hasNext = true;
+                    }
+                    ClassifyTableBuilder classifyTableBuilder = SfcVppUtils.buildVppClassifyTable(sffName,
+                            rsp.getValue(), maskMatch.getMask(), hasNext);
+                    classifyTableList.add(classifyTableBuilder);
+                    classifySessionList.add(SfcVppUtils.buildVppClassifySession(classifyTableBuilder,
+                            maskMatch.getMatch(), sffInfo.pathId, sffInfo.serviceIndex));
+                    SfcVppUtils.increaseNextTableIndex(sffName.getValue());
+                    index++;
                 }
                 SfcVppUtils.configureVppClassifier(mountPoint, sffName, classifyTableList, classifySessionList);
 
                 //Enable Ingress Acl on table 0
-                SfcVppUtils.enableIngressAcl(mountPoint, itfName.get(), SfcVppUtils.buildClassifyTableKey(0), sffName.getValue());
+                SfcVppUtils.enableIngressAcl(mountPoint, itfName.get(), SfcVppUtils.buildClassifyTableKey(0),
+                        sffName.getValue());
 
                 // Configure VPP classifier node
-                SfcVppUtils.configureClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip, sffInfo.pathId, sffInfo.serviceIndex);
+                SfcVppUtils.configureClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip,
+                        sffInfo.pathId, sffInfo.serviceIndex);
 
                 // For the traffic from the first SFF to VPP classifier node
                 SfcVppUtils.addNshEntry(mountPoint, reversePathId, reverseServiceIndex, sffName.getValue());
-                SfcVppUtils.addNshMapWithPop(mountPoint, reversePathId, reverseServiceIndex, reversePathId, reverseServiceIndex, null, sffName.getValue());
+                SfcVppUtils.addNshMapWithPop(mountPoint, reversePathId, reverseServiceIndex, reversePathId,
+                        reverseServiceIndex, null, sffName.getValue());
 
                 // Configure the first SFF, VPP renderer doesn't know this
-                SfcVppUtils.configureVxlanGpeNsh(sffInfo.mountPoint, sffInfo.sffName, SFC_BD_NAME, sffInfo.ip, sffIp, reversePathId, reverseServiceIndex);
+                SfcVppUtils.configureVxlanGpeNsh(sffInfo.mountPoint, sffInfo.sffName, SFC_BD_NAME, sffInfo.ip, sffIp,
+                        reversePathId, reverseServiceIndex);
             }
         }
         return true;
@@ -505,11 +515,11 @@ public class VppClassifierProcessor {
 
     private boolean removeVxlanGpeClassifier(ServiceFunctionClassifier scf) {
         Optional<Acl> theAcl = extractAcl(scf);
-        if ( !theAcl.isPresent() || !validateInputs(theAcl.get()) ) {
+        if (!theAcl.isPresent() || !validateInputs(theAcl.get())) {
             LOG.error("Could not retrieve the ACL from the classifier: {}", scf);
             return false;
         }
-        Map<RspName, List<Pair<HexString>>> rspPairList = new HashMap<RspName, List<Pair<HexString>>>();
+        Map<RspName, List<Pair<HexString>>> rspPairList = new HashMap<>();
         List<Ace> aceList = theAcl.get().getAccessListEntries().getAce();
         for (Ace ace : aceList) {
             Optional<RspName> rspName = Optional.ofNullable(ace.getActions())
@@ -543,8 +553,9 @@ public class VppClassifierProcessor {
 
             IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
             DataBroker mountPoint = SfcVppUtils.getSffMountpoint(this.nodeManager.getMountPointService(), sffName);
-            for (RspName rsp : rspPairList.keySet()) {
-                SffInfo sffInfo = getFirstSffInfoInRsp(rsp);
+            for (Entry<RspName, List<Pair<HexString>>> entry : rspPairList.entrySet()) {
+                RspName rsp = entry.getKey();
+                final SffInfo sffInfo = getFirstSffInfoInRsp(rsp);
                 RspName reverseRspName = getReverseRspName(rsp);
                 RenderedServicePath reverseRenderedServicePath = getRenderedServicePath(reverseRspName);
                 if (reverseRenderedServicePath == null) {
@@ -552,10 +563,11 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                Long reversePathId = reverseRenderedServicePath.getPathId();
+                final Long reversePathId = reverseRenderedServicePath.getPathId();
                 List<RenderedServicePathHop> hopList = reverseRenderedServicePath.getRenderedServicePathHop();
                 if (hopList == null || hopList.isEmpty()) {
-                    LOG.error("Rendered path {} does not contain any hop", reverseRenderedServicePath.getName().getValue());
+                    LOG.error("Rendered path {} does not contain any hop",
+                            reverseRenderedServicePath.getName().getValue());
                     return false;
                 }
 
@@ -565,36 +577,39 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
+                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
 
                 // Remove VPP classfier classify tables, sessions and disable ingress ACL
-                List<Pair<HexString>> pairList = rspPairList.get(rsp);
-                int length = pairList.size();
+                List<Pair<HexString>> pairList = entry.getValue();
                 int index = 0;
                 List<String> tableKeyList = new ArrayList<>();
-                List<HexString> matchList = new ArrayList<>(
-);
+                List<HexString> matchList = new ArrayList<>();
                 for (Pair<HexString> maskMatch : pairList) {
-                     String classifyTableKey = SfcVppUtils.getSavedClassifyTableKey(sffName.getValue(), rsp.getValue(), index);
-                     tableKeyList.add(classifyTableKey);
-                     matchList.add(maskMatch.getMatch());
-                     index++;
+                    String classifyTableKey = SfcVppUtils.getSavedClassifyTableKey(sffName.getValue(), rsp.getValue(),
+                            index);
+                    tableKeyList.add(classifyTableKey);
+                    matchList.add(maskMatch.getMatch());
+                    index++;
                 }
                 // Disable Ingress Acl
-                SfcVppUtils.disableIngressAcl(mountPoint, itfName.get(), SfcVppUtils.buildClassifyTableKey(0), sffName.getValue());
+                SfcVppUtils.disableIngressAcl(mountPoint, itfName.get(), SfcVppUtils.buildClassifyTableKey(0),
+                        sffName.getValue());
 
                 // Remove classify sessions and tables
                 SfcVppUtils.removeVppClassifier(mountPoint, sffName, tableKeyList, matchList);
 
                 // Remove NSH entry and map for the traffic from the first SFF to VPP classifier node
-                SfcVppUtils.removeNshMap(mountPoint, reversePathId, reverseServiceIndex, reversePathId, reverseServiceIndex, sffName.getValue());
+                SfcVppUtils.removeNshMap(mountPoint, reversePathId, reverseServiceIndex, reversePathId,
+                        reverseServiceIndex, sffName.getValue());
                 SfcVppUtils.removeNshEntry(mountPoint, reversePathId, reverseServiceIndex, sffName.getValue());
 
                 // Remove configuration for the first SFF, VPP renderer doesn't know this
-                SfcVppUtils.removeVxlanGpeNsh(sffInfo.mountPoint, sffInfo.sffName, sffInfo.ip, sffIp, reversePathId, reverseServiceIndex);
+                SfcVppUtils.removeVxlanGpeNsh(sffInfo.mountPoint, sffInfo.sffName, sffInfo.ip, sffIp, reversePathId,
+                        reverseServiceIndex);
 
                 // Remove vxlan-gpe port and nsh entry and map for classifier
-                SfcVppUtils.removeClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip, sffInfo.pathId, sffInfo.serviceIndex);
+                SfcVppUtils.removeClassifierVxlanGpeNsh(mountPoint, sffName, SFC_BD_NAME, sffIp, sffInfo.ip,
+                        sffInfo.pathId, sffInfo.serviceIndex);
             }
         }
         return true;

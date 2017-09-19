@@ -9,18 +9,13 @@
 package org.opendaylight.sfc.scfvpprenderer.processors;
 
 import com.google.common.base.Preconditions;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class VppNodeManager implements BindingAwareProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger(VppNodeManager.class);
 
     private MountPointService mountService = null;
 

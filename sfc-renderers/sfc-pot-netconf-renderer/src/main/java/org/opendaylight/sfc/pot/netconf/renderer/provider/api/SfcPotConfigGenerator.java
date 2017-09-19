@@ -181,12 +181,9 @@ public class SfcPotConfigGenerator {
         return noOfBits;
     }
 
-    public void setNoOfBits(short noOfBits) {
-        if (noOfBits > 64) {
-            noOfBits = 64;
-        }
-        this.noOfBits = noOfBits;
-        this.numLimit = (long) Math.pow(2, noOfBits);
+    public void setNoOfBits(final short noOfBits) {
+        this.noOfBits = (short) Math.min(64, noOfBits);
+        this.numLimit = (long) Math.pow(2, this.noOfBits);
     }
 
     public String getVersion() {
@@ -227,11 +224,8 @@ public class SfcPotConfigGenerator {
         return preEvalPoly2[index];
     }
 
-    public void setNumLimit(long numLimit) {
-        if (numLimit < 2) {
-            numLimit = 2;
-        }
-        short numofbits = (short) Math.ceil(Math.log(numLimit) / Math.log(2));
+    public void setNumLimit(final long numLimit) {
+        short numofbits = (short) Math.ceil(Math.log(Math.max(2, numLimit)) / Math.log(2));
         setNoOfBits(numofbits);
     }
 

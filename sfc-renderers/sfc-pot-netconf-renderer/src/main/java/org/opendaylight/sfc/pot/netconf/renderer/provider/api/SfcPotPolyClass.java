@@ -11,8 +11,6 @@ package org.opendaylight.sfc.pot.netconf.renderer.provider.api;
 import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.Coeffs;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.sb.pot.params.rev161205.poly.parameters.poly.parameter.Lpcs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This template class is used to store south-bound configuration for SFC
@@ -23,8 +21,6 @@ import org.slf4j.LoggerFactory;
  * @since 2016-05-01
  */
 public class SfcPotPolyClass {
-    private static final Logger LOG = LoggerFactory.getLogger(SfcPotPolyClass.class);
-
     private final long prime;
     private final long secret;
     private final long sfcsize;

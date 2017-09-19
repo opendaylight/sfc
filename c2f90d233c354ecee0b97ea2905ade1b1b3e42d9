@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_3d122009",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/SfcScfVppRenderer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "Eliminate \" Exception handlers should preserve the original exception\" - no need to declare/propagate Exceptions from close()",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7df778d3",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_dd02e4b2",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Should be a static inner class\" and private",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_fd3248a5",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\" Field names should comply with a naming convention\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3d298037",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Dead store to local variable\" - unused",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9d234c55",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Dead store to local variable\" - unused",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_bd1450e9",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_fdd9a857",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Method concatenates strings using + in a loop\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3de060f9",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Method concatenates strings using + in a loop\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ddf024cb",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 445,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Inefficient use of keySet iterator instead of entrySet iterator\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_bdebb0da",
+        "filename": "sfc-classifiers/sfc-scf-vpp/src/main/java/org/opendaylight/sfc/scfvpprenderer/processors/VppClassifierProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 546,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-19T22:33:25Z",
+      "side": 0,
+      "message": "\"Inefficient use of keySet iterator instead of entrySet iterator\"",
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

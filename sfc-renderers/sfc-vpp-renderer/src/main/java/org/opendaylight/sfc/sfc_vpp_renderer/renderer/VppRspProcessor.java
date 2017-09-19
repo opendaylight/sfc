@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.util.vpp.SfcVppUtils;
@@ -22,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +40,6 @@ public class VppRspProcessor {
     public void updateRsp(RenderedServicePath renderedServicePath) {
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
-        Short serviceIndex = renderedServicePath.getStartingIndex();
         DataBroker previousMountPoint = null;
         DataBroker currentMountpoint = null;
         SffName previousSffName = null;
@@ -76,7 +73,7 @@ public class VppRspProcessor {
             }
 
             sfName = hop.getServiceFunctionName();
-            serviceIndex = hop.getServiceIndex();
+            final Short serviceIndex = hop.getServiceIndex();
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if (serviceFunction == null) {
                 LOG.error("Service function {} not present in datastore", sfName.getValue());
@@ -128,7 +125,6 @@ public class VppRspProcessor {
         boolean ret = false;
         Preconditions.checkNotNull(renderedServicePath);
         Long pathId = renderedServicePath.getPathId();
-        Short serviceIndex = renderedServicePath.getStartingIndex();
         DataBroker previousMountPoint = null;
         DataBroker currentMountpoint = null;
         SffName previousSffName = null;
@@ -161,7 +157,7 @@ public class VppRspProcessor {
             }
 
             sfName = hop.getServiceFunctionName();
-            serviceIndex = hop.getServiceIndex();
+            final Short serviceIndex = hop.getServiceIndex();
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if (serviceFunction == null) {
                 LOG.error("Service function {} not present in datastore", sfName.getValue());

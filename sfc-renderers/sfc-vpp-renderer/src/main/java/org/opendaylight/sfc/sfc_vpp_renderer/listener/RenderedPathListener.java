@@ -37,7 +37,7 @@ public class RenderedPathListener extends AbstractDataTreeChangeListener<Rendere
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Closing listener...");
         if (vppRspListenerRegistration != null) {
             vppRspListenerRegistration.close();

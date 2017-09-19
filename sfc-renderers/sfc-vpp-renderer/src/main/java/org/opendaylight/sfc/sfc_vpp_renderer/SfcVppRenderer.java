@@ -36,7 +36,7 @@ public class SfcVppRenderer {
         rspListener = new RenderedPathListener(dataBroker, rspProcessor);
     }
 
-    public void close() throws Exception {
+    public void close() {
         vppNodeListener.close();
         rspListener.close();
         sffListener.close();

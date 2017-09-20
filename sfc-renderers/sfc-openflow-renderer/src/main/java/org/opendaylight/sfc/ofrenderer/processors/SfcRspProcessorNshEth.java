@@ -125,7 +125,9 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
             LOG.error("configureNextHopFlow SFF-SF: Source MAC address is null, cant continue");
             return;
         }
-        String srcMac = srcMacAddress.getValue();
+        String srcMac2 = srcMacAddress.getValue();
+        LOG.info("This is the original source MAC: {}", srcMac2);
+        String srcMac = "ff:ff:ff:ff:ff:ff";
 
         if (((MacAddressLocator) dstSfDpl.getLocatorType()).getMac() == null) {
             LOG.error("configureNextHopFlow SFF-SF: Dest MAC address is null, cant continue");

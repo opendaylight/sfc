@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_9b66b4eb",
+        "filename": "sfc-classifiers/sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/renderers/SfcScfOfRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-20T10:38:11Z",
+      "side": 1,
+      "message": "Let\u0027s remove this",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 48
+      },
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

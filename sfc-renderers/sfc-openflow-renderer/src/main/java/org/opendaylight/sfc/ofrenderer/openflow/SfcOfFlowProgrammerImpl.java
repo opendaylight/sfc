@@ -1118,6 +1118,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureNshEthNextHopFlow(String sffNodeName, String srcMac, String dstMac, long nsp, short nsi) {
 
         List<Action> actionList = new ArrayList<>();
+        // Temporary patch to avoid having same source and destination mac address
+        srcMac = "fb:ff:bf:fb:ff:bf";
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthSrc(srcMac, actionList.size()));
         actionList.add(SfcOpenflowUtils.createActionNxLoadEncapEthDst(dstMac, actionList.size()));
 

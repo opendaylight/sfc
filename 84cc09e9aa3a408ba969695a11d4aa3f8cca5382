@@ -94,6 +94,30 @@
       "revId": "84cc09e9aa3a408ba969695a11d4aa3f8cca5382",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9193335a",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/listener/VppNodeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-20T17:33:10Z",
+      "side": 1,
+      "message": "Sure :) sorry for kidnapping the commit with that question.",
+      "parentUuid": "ba1f61a0_71f31f0a",
+      "range": {
+        "startLine": 48,
+        "startChar": 7,
+        "endLine": 50,
+        "endChar": 9
+      },
+      "revId": "84cc09e9aa3a408ba969695a11d4aa3f8cca5382",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

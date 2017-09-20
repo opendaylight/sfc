@@ -22,6 +22,30 @@
       "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7bb4a0f1",
+        "filename": "sfc-classifiers/sfc-scf-openflow/src/main/java/org/opendaylight/sfc/scfofrenderer/renderers/SfcScfOfRenderer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:37:34Z",
+      "side": 1,
+      "message": "Right - missed that",
+      "parentUuid": "ba1f61a0_9b66b4eb",
+      "range": {
+        "startLine": 78,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 48
+      },
+      "revId": "c2f90d233c354ecee0b97ea2905ade1b1b3e42d9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

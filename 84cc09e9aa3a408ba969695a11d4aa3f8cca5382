@@ -22,6 +22,30 @@
       "revId": "84cc09e9aa3a408ba969695a11d4aa3f8cca5382",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_f69ee561",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/listener/VppNodeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T15:03:59Z",
+      "side": 1,
+      "message": "I\u0027m not sure I follow. All such registrations should be closed when no longer needed. That\u0027s just proper cleanup - I guess wouldn\u0027t call it a pattern per se. In this case, listenerRegistration is obtained in the ctor so null check isn\u0027t needed here. Is that what you\u0027re referring to?",
+      "parentUuid": "ba1f61a0_7bfe606c",
+      "range": {
+        "startLine": 48,
+        "startChar": 7,
+        "endLine": 50,
+        "endChar": 9
+      },
+      "revId": "84cc09e9aa3a408ba969695a11d4aa3f8cca5382",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

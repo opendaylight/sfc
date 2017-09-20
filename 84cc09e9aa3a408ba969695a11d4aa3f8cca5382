@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_7bfe606c",
+        "filename": "sfc-renderers/sfc-vpp-renderer/src/main/java/org/opendaylight/sfc/sfc_vpp_renderer/listener/VppNodeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-20T12:06:29Z",
+      "side": 1,
+      "message": "Taking advantage you are here, just one question: is this code block still needed. I can see the listenerRegistration.close patter in many places, but it is missing in many others. So I wonder if it was a common and old pattern or is still current.",
+      "range": {
+        "startLine": 48,
+        "startChar": 7,
+        "endLine": 50,
+        "endChar": 9
+      },
+      "revId": "84cc09e9aa3a408ba969695a11d4aa3f8cca5382",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

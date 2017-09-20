@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_dbc2ec51",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:41:13Z",
+      "side": 0,
+      "message": "\"Method parameters should not be reassigned\"",
+      "revId": "9a3889a12f838f8ac6546c3e200b5ed40622d0cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3ba508b6",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotConfigGenerator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:41:13Z",
+      "side": 0,
+      "message": "\"Method parameters should not be reassigned\"",
+      "revId": "9a3889a12f838f8ac6546c3e200b5ed40622d0cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_5baefc98",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyClass.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:41:13Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "9a3889a12f838f8ac6546c3e200b5ed40622d0cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9b93545a",
+        "filename": "sfc-renderers/sfc-pot-netconf-renderer/src/main/java/org/opendaylight/sfc/pot/netconf/renderer/provider/api/SfcPotPolyClassAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:41:13Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "9a3889a12f838f8ac6546c3e200b5ed40622d0cb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

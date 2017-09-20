@@ -22,6 +22,30 @@
       "revId": "f4bbb9367a85ecc3f464fe383b6b554aef340ec6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_fbc7f061",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-20T11:41:13Z",
+      "side": 1,
+      "message": "It is - I\u0027ll inline comments",
+      "parentUuid": "ba1f61a0_1ba2c4fc",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 41
+      },
+      "revId": "f4bbb9367a85ecc3f464fe383b6b554aef340ec6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

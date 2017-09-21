@@ -101,7 +101,7 @@ define([].concat(modules).concat(services).concat(directives).concat(controllers
     {
       "ace-type": ["ip", "eth", "ipfix"],
       "ace-ip": ["IPv4", "IPv6"],
-      "acl-type": ["IPv4", "IPv6", "eth"]  
+      "acl-type": ["IPv4", "IPv6", "eth"]
     };
 
     $rootScope.classifierConstants =

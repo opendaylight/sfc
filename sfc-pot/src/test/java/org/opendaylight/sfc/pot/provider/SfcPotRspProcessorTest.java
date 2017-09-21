@@ -263,8 +263,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
     @Before
     public void init() {
         dataBroker = getDataBroker();
-        sfcProviderRpc = new SfcProviderRpc();
-        SfcProviderRpc.setDataProviderAux(dataBroker);
+        sfcProviderRpc = new SfcProviderRpc(dataBroker);
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
     }
 

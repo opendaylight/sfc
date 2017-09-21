@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
@@ -47,9 +48,10 @@ public final class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFu
         int countRoundRobin = 0;
 
         if (mapCountRoundRobin.size() != 0) {
-            for (SftTypeName sfType : mapCountRoundRobin.keySet()) {
+            for (Entry<SftTypeName, Integer> entry : mapCountRoundRobin.entrySet()) {
+                SftTypeName sfType = entry.getKey();
                 if (sfType.equals(serviceFunctionType.getType())) {
-                    countRoundRobin = mapCountRoundRobin.get(sfType);
+                    countRoundRobin = entry.getValue();
                     LOG.debug("countRoundRobin: {}", countRoundRobin);
                     break;
                 }

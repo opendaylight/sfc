@@ -113,7 +113,7 @@ public final class SfcProviderServiceFunctionGroupAPI {
             }
         }
         if (sfg == null) {
-            LOG.debug("didn't found group {} that matches type {}", sfg, serviceFunctionType);
+            LOG.debug("didn't found group that matches type {}", serviceFunctionType);
         }
         printTraceStop(LOG);
         return sfg;

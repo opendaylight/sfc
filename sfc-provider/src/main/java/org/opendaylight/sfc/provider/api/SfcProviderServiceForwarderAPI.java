@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -34,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ConnectedSffDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePathBuilder;
@@ -196,8 +194,6 @@ public final class SfcProviderServiceForwarderAPI {
         printTraceStart(LOG);
 
         boolean ret = true;
-        ServiceFunctionForwarderStateBuilder serviceFunctionForwarderStateBuilder =
-                new ServiceFunctionForwarderStateBuilder();
 
         // TODO another example of strings being used to interchange types. Note
         // the constructor of
@@ -216,7 +212,6 @@ public final class SfcProviderServiceForwarderAPI {
                     InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
                             .child(ServiceFunctionForwarderState.class, serviceFunctionForwarderStateKey)
                             .child(SffServicePath.class, sffServicePathKey).build();
-            serviceFunctionForwarderStateBuilder.setName(renderedServicePathHop.getServiceFunctionForwarder());
 
             if (!SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sffServicePathBuilder.build(),
                     LogicalDatastoreType.OPERATIONAL)) {
@@ -272,10 +267,9 @@ public final class SfcProviderServiceForwarderAPI {
                                 sffName);
                     }
                     List<SffServicePath> sffServicePathList = readSffState(sffName);
-                    if (sffServicePathList != null && sffServicePathList.isEmpty()) {
-                        if (!deleteServiceFunctionForwarderState(sffName)) {
-                            ret = false;
-                        }
+                    if (sffServicePathList != null && sffServicePathList.isEmpty()
+                            && !deleteServiceFunctionForwarderState(sffName)) {
+                        ret = false;
                     }
                 }
             }
@@ -353,10 +347,8 @@ public final class SfcProviderServiceForwarderAPI {
                                 sffname);
                     }
                     List<SffServicePath> sffServicePathList = readSffState(sffname);
-                    if (sffServicePathList.isEmpty()) {
-                        if (!deleteServiceFunctionForwarderState(sffname)) {
-                            ret = false;
-                        }
+                    if (sffServicePathList.isEmpty() && !deleteServiceFunctionForwarderState(sffname)) {
+                        ret = false;
                     }
                 }
             }

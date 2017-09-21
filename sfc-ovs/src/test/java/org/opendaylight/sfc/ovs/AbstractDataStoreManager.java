@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
-import org.opendaylight.sfc.provider.SfcProviderRpc;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
@@ -52,7 +51,6 @@ public class AbstractDataStoreManager extends AbstractDataBrokerTest {
     protected void setupSfc() {
         dataBroker = getDataBroker();
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
-        SfcProviderRpc.setDataProviderAux(dataBroker);
         sfcIids = new SfcInstanceIdentifiers();
     }
 

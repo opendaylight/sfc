@@ -91,6 +91,7 @@ public class ServiceFunctionPathValidator {
                 sfChainTypes = SfcDatastoreCache.getSfChainToSfTypeList()
                         .get(serviceFunctionPath.getServiceChainName());
             } catch (ExecutionException e) {
+                LOG.debug("validateServiceFunctionPath - getSfChainToSfTypeList failed", e);
                 throw ValidationConstants.SFP_FAILED_CAN_COMMIT_EXCEPTION_SFC_MISSING;
             }
 
@@ -129,6 +130,7 @@ public class ServiceFunctionPathValidator {
                 try {
                     sfTypeNameFromSFP = SfcDatastoreCache.getSfToSfTypeCache().get(sfName);
                 } catch (ExecutionException e) {
+                    LOG.debug("validateServiceFunctionPath - getSfToSfTypeCache failed", e);
                     throw ValidationConstants.SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_MISSING;
                 }
 

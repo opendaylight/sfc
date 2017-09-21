@@ -102,7 +102,8 @@ public final class SfcServiceFunctionShortestPathSchedulerAPI extends SfcService
                 }
             }
             LOG.debug("The first ServiceFunction name: {}", sfcProviderTopologyNodeName);
-            return sfcProviderTopologyNodeName; // The first hop
+            // The first hop
+            return sfcProviderTopologyNodeName;
         }
 
         SfcProviderTopologyNode preSfcProviderTopologyNode = sfcProviderGraph.getNode(preSfName.getValue());

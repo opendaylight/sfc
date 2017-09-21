@@ -16,7 +16,7 @@
         "nsh-aware": true,
         "ip-mgmt-address": "127.0.0.1",
         "type": "service-function-type:dpi"
-      } 
+      }
     ]
   }
 }

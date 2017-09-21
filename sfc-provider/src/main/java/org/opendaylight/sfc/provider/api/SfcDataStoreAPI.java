@@ -10,6 +10,7 @@ package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -31,10 +32,12 @@ import org.slf4j.LoggerFactory;
  * @since 2014-11-22
  */
 public final class SfcDataStoreAPI {
-    protected static DataBroker dataProvider = null;
+    private static DataBroker dataProvider = null;
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
 
     // blueprint setter
+    // FIXME - Suppress FB violation. This class should really be a normal instance and not use statics.
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void setDataProvider(DataBroker broker) {
         dataProvider = broker;
     }
@@ -61,7 +64,7 @@ public final class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            LOG.error("deleteTransactionAPI: Transaction failed", e);
         }
         return ret;
     }
@@ -80,7 +83,7 @@ public final class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("writeMergeTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            LOG.error("writeMergeTransactionAPI: Transaction failed", e);
         }
         return ret;
     }
@@ -99,7 +102,7 @@ public final class SfcDataStoreAPI {
             submitFuture.checkedGet();
             ret = true;
         } catch (TransactionCommitFailedException e) {
-            LOG.error("writePutTransactionAPI: Transaction failed. Message: {}", e.getMessage());
+            LOG.error("writePutTransactionAPI: Transaction failed", e);
         }
         return ret;
     }

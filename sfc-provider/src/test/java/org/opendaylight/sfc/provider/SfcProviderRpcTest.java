@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,8 +178,8 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
     @Before
     public void setUp() {
-        sfcProviderRpc = new SfcProviderRpc();
         setupSfc();
+        sfcProviderRpc = new SfcProviderRpc(dataBroker);
     }
 
     @After

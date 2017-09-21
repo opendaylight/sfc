@@ -58,7 +58,6 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
     protected void setupSfc() {
         dataBroker = getDataBroker();
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
-        SfcProviderRpc.setDataProviderAux(dataBroker);
         sfcIids = new SfcInstanceIdentifiers();
     }
 

@@ -121,7 +121,7 @@ public class SfcProviderGraph {
         sfcProviderTopologyNode.setParent(null);
 
         Queue<SfcProviderTopologyNode> queue = new LinkedList<>();
-        queue.offer(sfcProviderTopologyNode);
+        offer(queue, sfcProviderTopologyNode);
 
         while (!queue.isEmpty()) {
             SfcProviderTopologyNode sfcProviderNode = queue.poll();
@@ -129,13 +129,20 @@ public class SfcProviderGraph {
                 if (sfcNode.getColor() == WHITE) {
                     sfcNode.setColor(GRAY);
                     sfcNode.setDist(sfcProviderNode.getDist() + 1);
-                    queue.offer(sfcNode);
+                    offer(queue, sfcNode);
                     sfcNode.setParent(sfcProviderNode);
                 }
             }
             sfcProviderNode.setColor(BLACK);
         }
         return;
+    }
+
+    private void offer(Queue<SfcProviderTopologyNode> queue, SfcProviderTopologyNode node) {
+        if (!queue.offer(node)) {
+            // Shouldn't happen since the queue is (currently) unbounded but checking avoids findbugs violation.
+            LOG.warn("Could not offer to queue");
+        }
     }
 
     public List<SfcProviderTopologyNode> getShortestPath(String fromNodeName, String toNodeName) {

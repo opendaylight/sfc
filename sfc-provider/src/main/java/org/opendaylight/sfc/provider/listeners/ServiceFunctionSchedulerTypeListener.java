@@ -62,14 +62,12 @@ public class ServiceFunctionSchedulerTypeListener extends AbstractDataTreeChange
                     List<ServiceFunctionSchedulerType> sfScheduleTypeList = serviceFunctionSchedulerTypes
                             .getServiceFunctionSchedulerType();
                     for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                        if (sfst.isEnabled()) {
-                            if (!sfst.getType().equals(serviceFunctionSchedulerType.getType())) {
-                                ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
-                                        .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
+                        if (sfst.isEnabled() && !sfst.getType().equals(serviceFunctionSchedulerType.getType())) {
+                            ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                    .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
 
-                                SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
-                                break;
-                            }
+                            SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
+                            break;
                         }
                     }
                 }
@@ -104,15 +102,12 @@ public class ServiceFunctionSchedulerTypeListener extends AbstractDataTreeChange
                     List<ServiceFunctionSchedulerType> sfScheduleTypeList = serviceFunctionSchedulerTypes
                             .getServiceFunctionSchedulerType();
                     for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                        if (sfst.isEnabled()) {
-                            if (!sfst.getType().equals(updatedServiceFunctionSchedulerType.getType())) {
-                                ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
-                                        .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
+                        if (sfst.isEnabled() && !sfst.getType().equals(updatedServiceFunctionSchedulerType.getType())) {
+                            ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                    .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
 
-                                SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
-                                break;
-
-                            }
+                            SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
+                            break;
                         }
                     }
                 }

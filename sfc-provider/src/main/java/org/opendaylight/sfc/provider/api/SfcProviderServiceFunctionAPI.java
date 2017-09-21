@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionStateKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePathBuilder;
@@ -191,7 +190,6 @@ public final class SfcProviderServiceFunctionAPI {
         boolean ret = false;
         printTraceStart(LOG);
 
-        ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
         // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
         SfpName sfpName = new SfpName(renderedServicePath.getName().getValue());
         SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpName);
@@ -211,7 +209,6 @@ public final class SfcProviderServiceFunctionAPI {
                 InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
                         .child(ServiceFunctionState.class, serviceFunctionStateKey)
                         .child(SfServicePath.class, sfServicePathKey).build();
-                serviceFunctionStateBuilder.setName(renderedServicePathHop.getServiceFunctionName());
 
                 if (SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfServicePathBuilder.build(),
                         LogicalDatastoreType.OPERATIONAL)) {
@@ -353,9 +350,6 @@ public final class SfcProviderServiceFunctionAPI {
                 // alagalah
                 SfpName sfpNameFromRspName = new SfpName(rspName.getValue());
                 SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpNameFromRspName);
-                SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
-                sfServicePathBuilder.setKey(sfServicePathKey);
-                sfServicePathBuilder.setName(sfpNameFromRspName);
 
                 ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfName);
                 InstanceIdentifier<SfServicePath> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)

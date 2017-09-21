@@ -123,14 +123,12 @@ public final class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServic
                 LOG.error("Failed to get one available ServiceFunction for {}", serviceFunctionType.getType());
             }
 
-            SfcProviderTopologyNode firstHopNode;
             sfcProviderTopologyNodeName = sftServiceFunctionName;
             /*
              * XXX noticed that SfcProviderGraph sometimes refers to SFFs as
              * well so leaving that alone for now until a general discussion
              * about Schedulers can be had.
              */
-            firstHopNode = sfcProviderGraph.getNode(sfcProviderTopologyNodeName.getValue());
             LOG.debug("The first ServiceFunction name: {}", sfcProviderTopologyNodeName);
             return sfcProviderTopologyNodeName;
         }

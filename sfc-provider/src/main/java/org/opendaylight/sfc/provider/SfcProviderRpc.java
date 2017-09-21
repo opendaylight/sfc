@@ -14,7 +14,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
-import java.util.Collections;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -22,7 +22,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.common.util.Rpcs;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
@@ -44,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.SetGenerationAlgorithmOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
@@ -80,11 +78,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -105,20 +100,10 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         ServicePathIdService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
-    private static DataBroker dataBroker = null;
+    private DataBroker dataBroker = null;
 
-    public static SfcProviderRpc getSfcProviderRpc() {
-        return new SfcProviderRpc();
-    }
-
-    // blueprint setter
-    public void setDataProvider(DataBroker broker) {
-        dataBroker = broker;
-    }
-
-    // aux setter just for test
-    public static void setDataProviderAux(DataBroker broker) {
-        dataBroker = broker;
+    public SfcProviderRpc(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
     }
 
     @Override
@@ -156,7 +141,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
         return Futures.transform(writeTx.submit(),
-                (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build());
+                (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build(),
+                MoreExecutors.directExecutor());
     }
 
     @Override
@@ -174,7 +160,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
             } catch (InterruptedException | ExecutionException e) {
-                LOG.debug("Failed to readServiceFunction : {}", e.getMessage());
+                LOG.debug("Failed to readServiceFunction", e);
             }
             if (dataObject != null && dataObject.isPresent()) {
                 ServiceFunction serviceFunction = dataObject.get();
@@ -186,17 +172,14 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                         .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
                 readServiceFunctionOutput = outputBuilder.build();
                 printTraceStop(LOG);
-                return Futures.immediateFuture(Rpcs.<ReadServiceFunctionOutput>getRpcResult(true,
-                        readServiceFunctionOutput, Collections.<RpcError>emptySet()));
+                return RpcResultBuilder.<ReadServiceFunctionOutput>success(readServiceFunctionOutput).buildFuture();
             }
             printTraceStop(LOG);
-            return Futures.immediateFuture(
-                    Rpcs.<ReadServiceFunctionOutput>getRpcResult(true, null, Collections.<RpcError>emptySet()));
+            return RpcResultBuilder.<ReadServiceFunctionOutput>success().buildFuture();
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
             printTraceStop(LOG);
-            return Futures.immediateFuture(
-                    Rpcs.<ReadServiceFunctionOutput>getRpcResult(true, null, Collections.<RpcError>emptySet()));
+            return RpcResultBuilder.<ReadServiceFunctionOutput>success().buildFuture();
         }
     }
 
@@ -218,22 +201,23 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }
-        return Futures.immediateFuture(Rpcs.<Void>getRpcResult(true, Collections.<RpcError>emptySet()));
+        return RpcResultBuilder.<Void>success().buildFuture();
     }
 
-    @SuppressWarnings("unused")
-    private ServiceFunctionChain findServiceFunctionChain(SfcName name) {
-        ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
-        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier = InstanceIdentifier
-                .builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class, key).build();
-
-        ServiceFunctionChain serviceFunctionChain = SfcDataStoreAPI
-                .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
-        if (serviceFunctionChain == null) {
-            LOG.error("Failed to find Service Function Chain: {}", name);
-        }
-        return serviceFunctionChain;
-    }
+    // FIXME - remove this unused method?
+//    @SuppressWarnings("unused")
+//    private ServiceFunctionChain findServiceFunctionChain(SfcName name) {
+//        ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
+//        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier = InstanceIdentifier
+//                .builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class, key).build();
+//
+//        ServiceFunctionChain serviceFunctionChain = SfcDataStoreAPI
+//                .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
+//        if (serviceFunctionChain == null) {
+//            LOG.error("Failed to find Service Function Chain: {}", name);
+//        }
+//        return serviceFunctionChain;
+//    }
 
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(

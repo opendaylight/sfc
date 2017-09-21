@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.provider.topology;
 
+import com.google.common.base.Objects;
+
 /**
  * This class represents a node/vertex in the topology graph that composes of SFs
  * (Service Functions) and SFFs (Service Function Forwarders) , a node may be SF
@@ -63,7 +65,7 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
     }
 
     @Override
-    public boolean equals(java.lang.Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -72,7 +74,8 @@ public class SfcProviderTopologyNode implements Comparable<SfcProviderTopologyNo
             return false;
         }
 
-        return this.name == ((SfcProviderTopologyNode) obj).getName();
+        SfcProviderTopologyNode other = (SfcProviderTopologyNode) obj;
+        return Objects.equal(this.name, other.getName());
     }
 
     @Override

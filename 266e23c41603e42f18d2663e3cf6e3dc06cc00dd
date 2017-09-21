@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_06ab8489",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 1,
+      "message": "suppress \"Write to static field from instance method\" for now",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4698dc77",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 1,
+      "message": "Ensure defaultScheduler can only be created once and is thread-safe",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a6955834",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionGroupAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 1,
+      "message": "\"Load of known null value\"",
+      "range": {
+        "startLine": 115,
+        "startChar": 12,
+        "endLine": 115,
+        "endChar": 15
+      },
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a6bc38bc",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/validators/ServiceFunctionPathValidator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 1,
+      "message": "\"Exception handlers should preserve the original exception\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

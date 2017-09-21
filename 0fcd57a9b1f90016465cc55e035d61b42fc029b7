@@ -1,0 +1,418 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_46d1fc21",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Write to static field from instance method\" - this class is not used statically so dataBroker need not be static and can be passed in the ctor.",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c6a4ccbb",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Exception handlers should preserve the original exception\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_66c24054",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "Rpcs is deprecated - use RpcResultBuilder",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a6a718bc",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Field should be package protected (malicious code vulnerability)\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e6ad909c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Exception handlers should preserve the original exception\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2693285c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Method parameters should not be reassigned\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_869e5461",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Null value is guaranteed to be dereferenced\" - revRenderedServicePath",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6699a078",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Possible null pointer dereference\" - revRenderedServicePath",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c68b2c1d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Method parameters should not be reassigned\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a68ef82b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_068264ff",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 812,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Redundant nullcheck of value known to be non-null\" - getSimpleName() cannot be null",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e684700c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 960,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Null value is guaranteed to be dereferenced\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_467f3c15",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Useless object created\" - unused",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_267a0824",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8675b433",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_66708040",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Useless object created\" - unused.",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c6920c4b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceFunctionAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Useless object created\" - unused.",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0699c46d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionLoadPathAwareSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Unused local variables should be removed\"",
+      "range": {
+        "startLine": 133,
+        "startChar": 12,
+        "endLine": 133,
+        "endChar": 24
+      },
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e69bd063",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionRoundRobinSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Inefficient use of keySet iterator instead of entrySet iterator\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_46a61caf",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionShortestPathSchedulerAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Comments should not be located at the end of lines of code\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_26a16894",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_86ac948d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_66a7e0a7",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c6b96ccd",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderTopologyNode.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:34Z",
+      "side": 0,
+      "message": "Comparison of String objects using \u003d\u003d or !\u003d",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

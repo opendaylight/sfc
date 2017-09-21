@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
@@ -29,13 +30,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<Servi
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
     private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestScfEntryDataListener() {
-        setInstanceIdentifier(SfcInstanceIdentifiers.SCF_ENTRY_IID);
-    }
-
-    public void setDataProvider(DataBroker dataBroker) {
-        setDataBroker(dataBroker);
-        registerAsDataChangeListener();
+    public SbRestScfEntryDataListener(DataBroker dataBroker) {
+        super(dataBroker, SfcInstanceIdentifiers.SCF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
     }
 
     @Override

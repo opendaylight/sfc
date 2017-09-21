@@ -28,14 +28,8 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<Rende
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
     private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestRspEntryDataListener() {
-        setInstanceIdentifier(SfcInstanceIdentifiers.RSP_ENTRY_IID);
-        setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-    }
-
-    public void setDataProvider(DataBroker dataBroker) {
-        setDataBroker(dataBroker);
-        registerAsDataChangeListener();
+    public SbRestRspEntryDataListener(DataBroker dataBroker) {
+        super(dataBroker, SfcInstanceIdentifiers.RSP_ENTRY_IID, LogicalDatastoreType.OPERATIONAL);
     }
 
     @Override

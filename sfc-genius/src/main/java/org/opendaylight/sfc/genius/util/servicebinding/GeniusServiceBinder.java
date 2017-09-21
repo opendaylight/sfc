@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.genius.util.servicebinding;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.servicebinding.rev160406.service.bindings.services.info.BoundServicesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+// Invalid violation for completedFuture(null) - https://sourceforge.net/p/findbugs/bugs/1403/
+@SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
 public class GeniusServiceBinder {
 
     public CompletableFuture<Void> bindService(WriteTransaction theTx, String theInterfaceName, short theServiceId,

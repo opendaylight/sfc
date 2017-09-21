@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.genius.impl.handlers.writers;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.CompletableFuture;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -54,6 +55,8 @@ public class SfcGeniusRspWriter {
      * @param renderedServicePath the rendered service path.
      * @return future signaling completion of the operation.
      */
+    // Invalid violation for completedFuture(null) - https://sourceforge.net/p/findbugs/bugs/1403/
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public CompletableFuture<Void> createRsp(RenderedServicePath renderedServicePath) {
         InstanceIdentifier<RenderedServicePath> rspId = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, renderedServicePath.getKey())

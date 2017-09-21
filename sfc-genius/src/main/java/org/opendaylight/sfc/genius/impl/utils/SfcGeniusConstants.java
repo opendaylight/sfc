@@ -31,4 +31,7 @@ public class SfcGeniusConstants {
 
     // Key for the MAC address of the SF within the external interface info map
     public static final String MAC_KEY = "attached-mac";
+
+    private SfcGeniusConstants() {
+    }
 }

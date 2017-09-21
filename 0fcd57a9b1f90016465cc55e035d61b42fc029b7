@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_52fc1ab8",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/utils/SfcGeniusConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T18:28:58Z",
+      "side": 1,
+      "message": "\"Utility classes should not have public constructors\"",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

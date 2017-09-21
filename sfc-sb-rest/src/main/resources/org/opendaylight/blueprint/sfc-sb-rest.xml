@@ -9,50 +9,50 @@
 
   <bean id="sbRestSfEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestSfgEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestSffEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestRspEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestAclEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestScfEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestSfstEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sbRestSfstateEntryDataListener"
     class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstateEntryDataListener"
-    destroy-method="closeDataChangeListener">
-    <property name="dataProvider" ref="dataBroker"/>
+    destroy-method="close">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcSbRestProviderModule"

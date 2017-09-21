@@ -100,7 +100,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
 
                         pathElem = createPathElement(item, identifier, prefixConverter, lastUsedModule);
                         // do we want to update? in api path should not, in other it shouldnt matter
-                        // lastUsedModule = (pathElem.module ? pathElem.module : lastUsedModule); 
+                        // lastUsedModule = (pathElem.module ? pathElem.module : lastUsedModule);
 
                         return pathElem;
                     }
@@ -153,7 +153,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
             for(var i = 0, j = 0; i < pathArrayIn.length; i++) {
                 var pathElem = pathArrayIn[i],
                     inc = 1;
-                    
+
                 if(pathElem.hasIdentifier()) {
                     pathElem.identifierValue = pathArray[j+1].name;
                     inc = 2;
@@ -182,7 +182,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
 
             if(selectedTreeApi && pathArray.length) {
                 var actElem = selectedTreeApi;
-                
+
                 for(i = 0; i < pathArray.length && actElem; ) {
                     expandTreeDataNode(actElem, treeData);
                     actElem = getActElementChild(actElem, pathArray[i].name);
@@ -374,7 +374,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                                 return condition;
                             });
                         };
-                    
+
                     var patternCondition = patternRestrictions.length ? patternCheck(value) : true,
                         lengthCondition = lengthRestrictions.length && value.length? lengthRangeCheck(lengthRestrictions, value.length) : true,
                         rangeCondition = rangeRestrictions.length ? lengthRangeCheck(rangeRestrictions, value) : true;
@@ -406,7 +406,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
             enumeration: function (node) {
                 node.selEnum = null;
                 node.leafParent = findLeafParent(node);
-                
+
                 var childNames = [];
                 node.getChildren('enum').forEach(function(child) {
                     childNames.push(child.label);
@@ -418,7 +418,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                         node.leafParent.value = value;
                     }
                 };
-                
+
                 node.clear = function () {
                     node.selEnum = null;
                 };
@@ -450,13 +450,13 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                 };
 
                 node.fill = function () {
-                    
+
                     var parseIntVal = parseInt(node.leafParent.value, 10),
                         intVal = isNaN(parseIntVal) === false ? parseIntVal : 0;
-                    
+
                     node.bitsValues = intVal.toString(2).split('').slice().reverse();
                     actBitsLen = node.bitsValues.length;
-                    
+
                     for (i = actBitsLen; i < node.maxBitsLen; i++) {
                         node.bitsValues.push('');
                     }
@@ -661,7 +661,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
             leaf: function (node) {
                 node.value = '';
                 node.valueIsValid = true;
-                
+
                 var typeChild = node.getChildren('type')[0];
 
                 var fnToString = function (string) {
@@ -829,7 +829,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
 
                 node.clear = function () {
                     var nodesToClear = node.getChildren(null, null, constantsSfc.NODE_UI_DISPLAY);
-                    
+
                     if (nodesToClear.length) {
                         nodesToClear.forEach(function (child) {
                             child.clear();
@@ -887,7 +887,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
 
                 node.clear = function () {
                     var nodesToClear = node.getChildren(null, null, constantsSfc.NODE_UI_DISPLAY);
-                    
+
                     if (nodesToClear.length) {
                         nodesToClear.forEach(function (child) {
                             child.clear();
@@ -1196,7 +1196,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                         }else{
                             filterResult = element ? element[i] === filterValue[i] : false;
                         }
-                    } 
+                    }
                 };
 
                 node.applyFilter = function () {
@@ -1243,7 +1243,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                 node.getActElementFilter = function () {
 
                     var actData = [];
-                    
+
                     if(node.filteredListData && node.filteredListData.length){
                         node.actElemIndex = 0;
                         actData = node.filteredListData[node.actElemIndex];
@@ -1251,7 +1251,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
                         node.actElemIndex = 0;
                         actData = node.listData[node.actElemIndex];
                     }
-                    
+
 
                     node.actElemStructure.clear();
                     for (var prop in actData) {
@@ -1522,7 +1522,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
 
         restrictions.getEqualsFnc = function (target) {
             var intTarget = parseInt(target);
-            
+
             return new RestrictionObject(
                 function (value) {
                     var intVal = convertToInteger(value);
@@ -1535,7 +1535,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
         restrictions.getMinMaxFnc = function (min, max) {
             var intMin = parseInt(min),
                 intMax = parseInt(max);
-            
+
             return new RestrictionObject(
                 function (value) {
                     var intVal = convertToInteger(value);
@@ -2722,7 +2722,7 @@ define(['app/sfc/utils/yangutils-sfc/yangutils-sfc.module'], function (yangUtils
             }
             return reqStr;
         };
-        
+
         utils.getPathString = function(basePath, selSubApi) {
             return basePath+'/'+selSubApi.buildApiRequestString();
         };

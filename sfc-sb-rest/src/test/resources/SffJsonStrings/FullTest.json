@@ -2,7 +2,7 @@
   "service-function-forwarder": [
     {
       "name": "NAME",
-      "rest-uri": "REST_URI", 
+      "rest-uri": "REST_URI",
       "ip-mgmt-address": "IP_MGMT_ADDRESS",
       "service-node": "SERVICE_NODE",
       "sff-data-plane-locator": [

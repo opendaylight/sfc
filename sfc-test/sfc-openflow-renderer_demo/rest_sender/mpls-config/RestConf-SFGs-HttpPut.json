@@ -1,7 +1,7 @@
 {
-	"service-function-groups": {
-    	"service-function-group": [
-	        {
+    "service-function-groups": {
+        "service-function-group": [
+            {
                 "name": "SFG-http-header-enrichment",
                 "groupId": 1,
                 "algorithm": "alg1",
@@ -13,8 +13,8 @@
                         "name": "sf1"
                     }
                 ]
-	        },
-	        {
+            },
+            {
                 "name": "SFG-firewall",
                 "groupId": 2,
                 "algorithm": "alg1",
@@ -26,7 +26,7 @@
                         "name": "sf2"
                     }
                 ]
-	        }
+            }
         ]
-	}
+    }
 }

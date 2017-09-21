@@ -13,7 +13,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         sorting: {
           name: 'asc'     // initial sorting
         }
-        
+
       },
       {
         total: $scope.sffs.length,
@@ -108,7 +108,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
         if (angular.isDefined(createOvsBridgeInput['name']) && angular.isDefined(createOvsBridgeInput['ovs-node']['ip'])) {
           SfcServiceForwarderOvsSvc.executeRpcOperation({input: createOvsBridgeInput}, 'create-ovs-bridge', null, function (result) {
             if (angular.isDefined(result) && result['result'] === true) {
-        
+
               var modalBody = $scope.$eval('"SFC_FORWARDER_MODAL_CREATE_OVS_RPC_SUCCESS_BODY" | translate') + ": <b>'" + createOvsBridgeInput['name'] + "'</b>.";
 
               ModalInfoSvc.open({
@@ -169,7 +169,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
 
       ServiceFunctionSvc.getArray(function (data) {
         $scope.sfs = data;
-        
+
         if (angular.isDefined($stateParams.sff)) {
           $scope.data = JSON.parse($stateParams.sff);
           ServiceForwarderHelper.removeNonExistentSn($scope.data, $scope.sns);

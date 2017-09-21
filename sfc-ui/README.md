@@ -15,7 +15,7 @@ $ mvn clean install
 #merged with dlux-web sources. Thus, after changing sources located in 'src/main/resources/pages/'
 #maven build is required to regenerate the test target.
 
-#Once test run is completed, new directory 'coverage/' will be created in sfc-ui project root. 
+#Once test run is completed, new directory 'coverage/' will be created in sfc-ui project root.
 #Inside it, a folder with browser name will be located. Finally, this browser's folder contains
 #index.html, which shows the test code coverage.
 

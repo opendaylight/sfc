@@ -1,8 +1,8 @@
 {
   "service-function-forwarders": {
     "service-function-forwarder": [
-      { 
-		"name": "SFF1",
+      {
+        "name": "SFF1",
         "sff-data-plane-locator": [
           {
             "name": "eth0",

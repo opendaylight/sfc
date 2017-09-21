@@ -10,6 +10,7 @@ package org.opendaylight.sfc.sbrest.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Locale;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -46,7 +47,8 @@ class SfExporter extends AbstractExporter implements Exporter {
                 sfNode.put(REST_URI, sf.getRestUri().getValue());
             }
             if (sf.getType() != null) {
-                sfNode.put(TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sf.getType().getValue().toLowerCase());
+                sfNode.put(TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sf.getType().getValue()
+                        .toLowerCase(Locale.getDefault()));
             }
 
             if (sf.getSfDataPlaneLocator() != null) {

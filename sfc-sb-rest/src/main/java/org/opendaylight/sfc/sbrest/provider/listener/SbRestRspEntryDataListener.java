@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<RenderedServicePath> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SbRestRspEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.RSP_ENTRY_IID);
@@ -50,13 +50,13 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<Rende
                     LOG.debug("\nUpdated Rendered Service Path: {}", updatedPath.getName());
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor.submit(new SbRestRspTask(restOp, updatedPath, executor));
+                    executor.execute(new SbRestRspTask(restOp, updatedPath, executor));
                     break;
                 case DELETE:
                     RenderedServicePath originalPath = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Rendered Service Path Name: {}", originalPath.getName());
 
-                    executor.submit(new SbRestRspTask(RestOperation.DELETE, originalPath, executor));
+                    executor.execute(new SbRestRspTask(RestOperation.DELETE, originalPath, executor));
                     break;
                 default:
                     break;

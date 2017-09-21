@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSffEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionForwarder> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SbRestSffEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.SFF_ENTRY_IID);
@@ -50,14 +50,14 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener<Servi
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST
                             : RestOperation.PUT;
-                    executor.submit(new SbRestSffTask(restOp, updatedServiceFunctionForwarder, executor));
+                    executor.execute(new SbRestSffTask(restOp, updatedServiceFunctionForwarder, executor));
                     break;
                 case DELETE:
                     ServiceFunctionForwarder originalServiceFunctionForwarder = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Forwarder Name: {}",
                             originalServiceFunctionForwarder.getName());
 
-                    executor.submit(new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
+                    executor.execute(new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
                             executor));
                     break;
                 default:

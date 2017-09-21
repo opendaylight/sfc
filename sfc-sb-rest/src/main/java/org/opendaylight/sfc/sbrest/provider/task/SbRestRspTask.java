@@ -60,7 +60,7 @@ public class SbRestRspTask extends SbRestAbstractTask {
             }
         }
 
-        if (this.restUriList != null && this.restUriList.isEmpty()) {
+        if (this.restUriList.isEmpty()) {
             this.restUriList = null;
         }
     }

@@ -16,10 +16,10 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class SbRestAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
-    protected DataBroker dataBroker;
-    protected InstanceIdentifier<T> instanceIdentifier;
-    protected ListenerRegistration<SbRestAbstractDataListener<T>> dataChangeListenerRegistration;
-    protected LogicalDatastoreType dataStoreType;
+    private DataBroker dataBroker;
+    private InstanceIdentifier<T> instanceIdentifier;
+    private ListenerRegistration<SbRestAbstractDataListener<T>> dataChangeListenerRegistration;
+    private LogicalDatastoreType dataStoreType;
 
     public SbRestAbstractDataListener() {
         this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
@@ -42,11 +42,14 @@ public abstract class SbRestAbstractDataListener<T extends DataObject> implement
     }
 
     public void registerAsDataChangeListener() {
+        assert dataBroker != null;
         dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
                 dataStoreType, instanceIdentifier), this);
     }
 
     public void closeDataChangeListener() {
-        dataChangeListenerRegistration.close();
+        if (dataChangeListenerRegistration != null) {
+            dataChangeListenerRegistration.close();
+        }
     }
 }

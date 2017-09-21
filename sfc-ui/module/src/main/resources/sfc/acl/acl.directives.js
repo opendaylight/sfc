@@ -156,7 +156,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
             }
             for (var i = 0, len = $scope.appid.length; i < len; i++) {
               // Check the class-id and if the applicationId is not already selected
-              if($scope.appid[i]['class-id'] == cid && 
+              if($scope.appid[i]['class-id'] == cid &&
                   matches['service-function-acl:application-id'].indexOf($scope.appid[i]['applicationName']) == -1 ) {
                 $scope.appid_filtered.push($scope.appid[i]);
               }

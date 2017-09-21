@@ -1,0 +1,446 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_61eb4adc",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/AclExporter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method uses the same code for two switch clauses\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c1bdd6d9",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/ExporterUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Consider using Locale parameterized version of invoked method\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a1c0a250",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/SfExporter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Consider using Locale parameterized version of invoked method\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_01b40ef0",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/SfgExporter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Consider using Locale parameterized version of invoked method\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e1b61af8",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/json/SfstExporter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Consider using Locale parameterized version of invoked method\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_41d1e621",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field not initialized in constructor but dereferenced without null check\" - dataBroker could be null.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_21ccb288",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field not initialized in constructor but dereferenced without null check\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a1a702bc",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestAclEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_61a7caa7",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestAclEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_01ab6e89",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestRspEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_81ac7e8d",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestRspEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4198c677",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestScfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_41a606af",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestScfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2193125c",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e19bba63",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_819e3e61",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSffEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0199ae6d",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSffEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_61998a78",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a1954234",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfgEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c18b161d",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c192f64a",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfstEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_01824eff",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfstateEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be (malicious code vulnerability)\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_61706a40",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestSfstateEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_01e7eee4",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestAbstractTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Unread public/protected field \" -  it seems this should use the odlExecutor that\u0027s passed in instead of using an internal taskExecutor (not to mention that taskExecutor uses a fixed 50 threads which is a lot and they\u0027re not reclaimed when idle).",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c1b956cd",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestAbstractTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Method ignores exceptional return value\" - submit returns a Future which isn\u0027t used so use execute instead.",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_41d446eb",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/task/SbRestRspTask.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-21T21:54:10Z",
+      "side": 0,
+      "message": "\"Redundant nullcheck of value known to be non-null\"",
+      "revId": "266e23c41603e42f18d2663e3cf6e3dc06cc00dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

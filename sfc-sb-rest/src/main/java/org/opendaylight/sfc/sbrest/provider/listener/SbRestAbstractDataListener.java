@@ -15,41 +15,25 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SbRestAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
-    private DataBroker dataBroker;
-    private InstanceIdentifier<T> instanceIdentifier;
-    private ListenerRegistration<SbRestAbstractDataListener<T>> dataChangeListenerRegistration;
-    private LogicalDatastoreType dataStoreType;
+public abstract class SbRestAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T>,
+        AutoCloseable {
+    private final DataBroker dataBroker;
+    private final ListenerRegistration<SbRestAbstractDataListener<T>> dataChangeListenerRegistration;
 
-    public SbRestAbstractDataListener() {
-        this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
+    protected SbRestAbstractDataListener(DataBroker dataBroker, InstanceIdentifier<T> instanceIdentifier,
+            LogicalDatastoreType dataStoreType) {
+        this.dataBroker = dataBroker;
+
+        dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                dataStoreType, instanceIdentifier), this);
     }
 
     public DataBroker getDataBroker() {
         return dataBroker;
     }
 
-    public void setDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    public void setDataStoreType(LogicalDatastoreType dataStoreType) {
-        this.dataStoreType = dataStoreType;
-    }
-
-    public void setInstanceIdentifier(InstanceIdentifier<T> instanceIdentifier) {
-        this.instanceIdentifier = instanceIdentifier;
-    }
-
-    public void registerAsDataChangeListener() {
-        assert dataBroker != null;
-        dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
-                dataStoreType, instanceIdentifier), this);
-    }
-
-    public void closeDataChangeListener() {
-        if (dataChangeListenerRegistration != null) {
-            dataChangeListenerRegistration.close();
-        }
+    @Override
+    public void close() {
+        dataChangeListenerRegistration.close();
     }
 }

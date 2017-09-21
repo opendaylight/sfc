@@ -10,6 +10,7 @@ package org.opendaylight.sfc.sbrest.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Locale;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Function;
@@ -80,7 +81,8 @@ public class ExporterUtil {
 
         if (dataPlaneLocator.getLocatorType() != null) {
             locatorNode = mapper.createObjectNode();
-            String type = dataPlaneLocator.getLocatorType().getImplementedInterface().getSimpleName().toLowerCase();
+            String type = dataPlaneLocator.getLocatorType().getImplementedInterface().getSimpleName()
+                    .toLowerCase(Locale.getDefault());
             switch (type) {
                 case FUNCTION:
                     Function functionLocator = (Function) dataPlaneLocator.getLocatorType();
@@ -129,7 +131,7 @@ public class ExporterUtil {
         }
 
         String transport = null;
-        switch (dataPlaneLocator.getTransport().getSimpleName().toLowerCase()) {
+        switch (dataPlaneLocator.getTransport().getSimpleName().toLowerCase(Locale.getDefault())) {
             case VXLAN_GPE:
                 transport = SERVICE_LOCATOR_PREFIX + VXLAN_GPE_DPL;
                 break;

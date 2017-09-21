@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionClassifier> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SbRestScfEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.SCF_ENTRY_IID);
@@ -57,7 +57,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<Servi
                                 : RestOperation.PUT;
                         Runnable task = new SbRestAclTask(restOp, accessList,
                                 updatedClassifier.getSclServiceFunctionForwarder(), executor);
-                        executor.submit(task);
+                        executor.execute(task);
                     }
                     break;
                 case DELETE:
@@ -68,7 +68,7 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<Servi
                         Runnable task = new SbRestAclTask(RestOperation.DELETE, originalClassifier.getAcl().getName(),
                                 originalClassifier.getAcl().getType(),
                                 originalClassifier.getSclServiceFunctionForwarder(), executor);
-                        executor.submit(task);
+                        executor.execute(task);
                     }
                     break;
                 default:

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfEntryDataListener extends SbRestAbstractDataListener<ServiceFunction> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SbRestSfEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.SF_ENTRY_IID);
@@ -47,13 +47,13 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener<Servic
                     ServiceFunction updatedServiceFunction = rootNode.getDataAfter();
                     LOG.debug("\nUpdated Service Function Name: {}", updatedServiceFunction.getName());
 
-                    executor.submit(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executor));
+                    executor.execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executor));
                     break;
                 case DELETE:
                     ServiceFunction originalServiceFunction = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunction.getName());
 
-                    executor.submit(new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, executor));
+                    executor.execute(new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, executor));
                     break;
                 default:
                     break;

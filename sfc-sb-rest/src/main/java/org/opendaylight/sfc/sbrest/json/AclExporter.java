@@ -300,12 +300,10 @@ class AclExporter extends AbstractExporter implements Exporter {
             String actionType = actions.getPacketHandling().getImplementedInterface().getSimpleName();
 
             switch (actionType) {
-                case DENY:
-                    actionsNode.put(DENY, "");
-                    break;
                 case PERMIT:
                     actionsNode.put(PERMIT, "");
                     break;
+                case DENY:
                 default:
                     actionsNode.put(DENY, "");
                     break;

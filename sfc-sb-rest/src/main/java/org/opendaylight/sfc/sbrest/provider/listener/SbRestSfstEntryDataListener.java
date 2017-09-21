@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionSchedulerType> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public SbRestSfstEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.SFST_ENTRY_IID);
@@ -48,7 +48,7 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<Serv
                     LOG.debug("\nUpdated Service Function Schedule Type Name: {}",
                             updatedServiceFunctionSchedulerType.getName());
 
-                    executor.submit(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType,
+                    executor.execute(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType,
                             executor));
                     break;
                 case DELETE:
@@ -56,7 +56,7 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<Serv
                     LOG.debug("\nDeleted Service Function Schedule Type Name: {}",
                             originalServiceFunctionSchedulerType.getName());
 
-                    executor.submit(new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
+                    executor.execute(new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
                             executor));
                     break;
                 default:

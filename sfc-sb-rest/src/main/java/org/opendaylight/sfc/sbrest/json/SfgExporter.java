@@ -10,6 +10,7 @@ package org.opendaylight.sfc.sbrest.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Locale;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -45,7 +46,8 @@ class SfgExporter extends AbstractExporter implements Exporter {
                 sfgNode.put(REST_URI, sfg.getRestUri().getValue());
             }
             if (sfg.getType() != null) {
-                sfgNode.put(TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getValue().toLowerCase());
+                sfgNode.put(TYPE, SERVICE_FUNCTION_TYPE_PREFIX + sfg.getType().getValue()
+                        .toLowerCase(Locale.getDefault()));
             }
 
             // this should be revamped

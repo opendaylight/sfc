@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(10);
+    private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public SbRestAclEntryDataListener() {
         setInstanceIdentifier(SfcInstanceIdentifiers.ACL_ENTRY_IID);
@@ -48,13 +48,13 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> 
                     LOG.debug("\nUpdated Access List Name: {}", updatedAcl.getAclName());
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor.submit(new SbRestAclTask(restOp, updatedAcl, executor));
+                    executor.execute(new SbRestAclTask(restOp, updatedAcl, executor));
                     break;
                 case DELETE:
                     Acl originalAcl = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
 
-                    executor.submit(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor));
+                    executor.execute(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor));
                     break;
                 default:
                     break;

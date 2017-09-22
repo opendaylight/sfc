@@ -382,6 +382,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_07e89e7a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-09-22T15:24:47Z",
+      "side": 0,
+      "message": "This is ok, but personally, I think the code is more readable as it was before. And if its a performance issue, any good compiler should fix it. This is just my personal opinion, I wont block this :)",
+      "parentUuid": "ba1f61a0_86ac948d",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_66a7e0a7",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
         "patchSetId": 2

@@ -7,11 +7,9 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.sbrest.json.SfstExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,23 +20,13 @@ public class SbRestSfstTask extends SbRestAbstractTask {
 
     public SbRestSfstTask(RestOperation restOperation, ServiceFunctionSchedulerType dataObject,
             ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
-        this.exporterFactory = new SfstExporterFactory();
-        if (restOperation.equals(RestOperation.DELETE)) {
-            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
-        } else {
-            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
-        }
+        super(restOperation, new SfstExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject);
     }
 
-    @Override
-    protected void setRestUriList(DataObject dataObject) {
-        ServiceFunctionSchedulerType obj = (ServiceFunctionSchedulerType) dataObject;
-
+    private void setRestUriList(ServiceFunctionSchedulerType obj) {
         String restUri = SFST_REST_URI + obj.getName();
-        this.restUriList = new ArrayList<>();
-        this.restUriList.add(restUri);
+        addRestUri(restUri);
         LOG.info("SF Schedule Type will be send to REST URI {}", restUri);
     }
 }

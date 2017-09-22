@@ -7,11 +7,9 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.sbrest.json.SfgExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,27 +20,15 @@ public class SbRestSfgTask extends SbRestAbstractTask {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgTask.class);
 
     public SbRestSfgTask(RestOperation restOperation, ServiceFunctionGroup dataObject, ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
-        this.exporterFactory = new SfgExporterFactory();
-        if (restOperation.equals(RestOperation.DELETE)) {
-            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
-        } else {
-            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
-        }
+        super(restOperation, new SfgExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject);
     }
 
-    @Override
-    protected void setRestUriList(DataObject dataObject) {
-        ServiceFunctionGroup obj = (ServiceFunctionGroup) dataObject;
-
+    private void setRestUriList(ServiceFunctionGroup obj) {
         if (obj.getRestUri() != null) {
             String restUri = obj.getRestUri().getValue() + SFG_REST_URI + obj.getName();
-            this.restUriList = new ArrayList<>();
-            this.restUriList.add(restUri);
+            addRestUri(restUri);
             LOG.info("SFG will be send to REST URI {}", restUri);
-        } else {
-            this.restUriList = null;
         }
     }
 }

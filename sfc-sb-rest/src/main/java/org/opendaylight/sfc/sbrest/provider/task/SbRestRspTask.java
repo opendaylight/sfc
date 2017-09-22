@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -16,7 +15,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,23 +25,12 @@ public class SbRestRspTask extends SbRestAbstractTask {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspTask.class);
 
     public SbRestRspTask(RestOperation restOperation, RenderedServicePath dataObject, ExecutorService odlExecutor) {
-
-        super(restOperation, odlExecutor);
-        this.exporterFactory = new RspExporterFactory();
-        if (restOperation.equals(RestOperation.DELETE)) {
-            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
-        } else {
-            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
-        }
+        super(restOperation, new RspExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject);
     }
 
-    @Override
-    protected void setRestUriList(DataObject dataObject) {
-        RenderedServicePath obj = (RenderedServicePath) dataObject;
+    private void setRestUriList(RenderedServicePath obj) {
         List<RenderedServicePathHop> hopList = obj.getRenderedServicePathHop();
-
-        this.restUriList = new ArrayList<>();
 
         if (hopList != null) {
             for (RenderedServicePathHop hop : hopList) {
@@ -53,15 +40,11 @@ public class SbRestRspTask extends SbRestAbstractTask {
                     RspName rspName = obj.getName();
                     if (rspName != null) {
                         String restUri = sff.getRestUri().getValue() + RSP_REST_URI + rspName.getValue();
-                        this.restUriList.add(restUri);
+                        addRestUri(restUri);
                         LOG.info("RSP will be send to REST URI {}", restUri);
                     }
                 }
             }
-        }
-
-        if (this.restUriList.isEmpty()) {
-            this.restUriList = null;
         }
     }
 }

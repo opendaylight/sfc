@@ -10,7 +10,6 @@ package org.opendaylight.sfc.sbrest.provider.task;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,10 +57,10 @@ public class SbRestSfgTaskTest {
         SbRestSfgTask sbRestSfgTask = new SbRestSfgTask(RestOperation.PUT, this.buildServiceFunctionGroup(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfgTask.jsonObject);
-        assertNotNull("Must not be null", sbRestSfgTask.restUriList);
+        JsonNode jsonObject = mapper.readTree(sbRestSfgTask.getJsonObject());
+        assertNotNull("Must not be null", sbRestSfgTask.getRestUriListCopy());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionGroupObjectNode()));
-        assertTrue("Must be true", sbRestSfgTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestSfgTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -69,8 +68,8 @@ public class SbRestSfgTaskTest {
         SbRestSfgTask sbRestSfgTask = new SbRestSfgTask(RestOperation.DELETE, this.buildServiceFunctionGroup1(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfgTask.jsonObject);
-        assertNull("Must be null", sbRestSfgTask.restUriList);
+        JsonNode jsonObject = mapper.readTree(sbRestSfgTask.getJsonObject());
+        assertTrue("Must be empty", sbRestSfgTask.getRestUriListCopy().isEmpty());
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionGroupObjectNode1()));
     }
 

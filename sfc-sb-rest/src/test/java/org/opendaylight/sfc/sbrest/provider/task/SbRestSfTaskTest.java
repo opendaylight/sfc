@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,9 +49,9 @@ public class SbRestSfTaskTest {
     public void testSbRestSfTask() throws IOException {
         SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.PUT, this.buildServiceFunction(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionObjectNode()));
-        assertTrue("Must be true", sbRestSfTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestSfTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -60,9 +59,9 @@ public class SbRestSfTaskTest {
         SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.DELETE, this.buildServiceFunction(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionObjectNode1()));
-        assertTrue("Must be true", sbRestSfTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestSfTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -70,9 +69,9 @@ public class SbRestSfTaskTest {
         SbRestSfTask sbRestSfTask = new SbRestSfTask(RestOperation.PUT, new ServiceFunctionBuilder().build(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionTopNode()));
-        assertNull("Must be null", sbRestSfTask.restUriList);
+        assertTrue("Must be empty", sbRestSfTask.getRestUriListCopy().isEmpty());
     }
 
     // build service function, which is needed to create SbRestSfTask object

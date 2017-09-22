@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -71,9 +70,9 @@ public class SbRestRspTaskTest {
         SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.PUT, this.buildRenderedServicePath(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestRspTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode()));
-        assertTrue("Must be true", sbRestRspTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestRspTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -81,9 +80,9 @@ public class SbRestRspTaskTest {
         SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.DELETE, this.buildRenderedServicePath(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestRspTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathObjectNode1()));
-        assertTrue("Must be true", sbRestRspTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestRspTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -95,9 +94,9 @@ public class SbRestRspTaskTest {
         SbRestRspTask sbRestRspTask = new SbRestRspTask(RestOperation.PUT, new RenderedServicePathBuilder().build(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestRspTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestRspTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildRenderedServicePathTopNode()));
-        assertNull("Must be null", sbRestRspTask.restUriList);
+        assertTrue("Must be empty", sbRestRspTask.getRestUriListCopy().isEmpty());
     }
 
     // build rendered service path, which is needed to create SbRestRspTask

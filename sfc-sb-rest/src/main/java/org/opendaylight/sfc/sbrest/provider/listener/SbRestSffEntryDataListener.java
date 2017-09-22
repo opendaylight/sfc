@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSffEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionForwarder> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestSffEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.SFF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestSffEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.SFF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -46,15 +44,15 @@ public class SbRestSffEntryDataListener extends SbRestAbstractDataListener<Servi
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST
                             : RestOperation.PUT;
-                    executor.execute(new SbRestSffTask(restOp, updatedServiceFunctionForwarder, executor));
+                    executor().execute(new SbRestSffTask(restOp, updatedServiceFunctionForwarder, executor()));
                     break;
                 case DELETE:
                     ServiceFunctionForwarder originalServiceFunctionForwarder = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Forwarder Name: {}",
                             originalServiceFunctionForwarder.getName());
 
-                    executor.execute(new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
-                            executor));
+                    executor().execute(new SbRestSffTask(RestOperation.DELETE, originalServiceFunctionForwarder,
+                            executor()));
                     break;
                 default:
                     break;

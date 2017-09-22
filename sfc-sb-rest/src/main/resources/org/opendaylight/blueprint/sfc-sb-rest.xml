@@ -1,58 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
   odl:use-default-for-reference-types="true">
 
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
+  <cm:property-placeholder persistent-id="org.opendaylight.sfc.sbrest">
+    <cm:default-properties>
+      <cm:property name="max-pool-size" value="10"/>
+      <cm:property name="max-queue-size" value="1000"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="executor" class="org.opendaylight.yangtools.util.concurrent.SpecialExecutors"
+      factory-method="newBlockingBoundedCachedThreadPool" destroy-method="shutdown">
+    <argument value="${max-pool-size}"/>
+    <argument value="${max-queue-size}"/>
+    <argument value="SfcSbRestDataListener"/>
+  </bean>
+
   <bean id="sbRestSfEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestSfgEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestSffEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestRspEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestAclEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestScfEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestSfstEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sbRestSfstateEntryDataListener"
-    class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstateEntryDataListener"
-    destroy-method="close">
+      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstateEntryDataListener"
+      destroy-method="close">
     <argument ref="dataBroker"/>
+    <argument ref="executor"/>
   </bean>
 
   <bean id="sfcSbRestProviderModule"

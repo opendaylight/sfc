@@ -76,6 +76,14 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Import-Package>
+                *;
+                org.opendaylight.yangtools.util.concurrent
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.opendaylight.yangtools</groupId>

@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionGroup> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestSfgEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.SFG_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestSfgEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.SFG_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -43,13 +41,14 @@ public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener<Servi
                     ServiceFunctionGroup updatedServiceFunctionGroup = rootNode.getDataAfter();
                     LOG.debug("\nModified Service Function Name: {}", updatedServiceFunctionGroup.getName());
 
-                    executor.execute(new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executor));
+                    executor().execute(new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executor()));
                     break;
                 case DELETE:
                     ServiceFunctionGroup originalServiceFunctionGroup = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunctionGroup.getName());
 
-                    executor.execute(new SbRestSfgTask(RestOperation.DELETE, originalServiceFunctionGroup, executor));
+                    executor().execute(new SbRestSfgTask(RestOperation.DELETE, originalServiceFunctionGroup,
+                            executor()));
                     break;
                 default:
                     break;

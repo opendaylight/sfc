@@ -7,39 +7,55 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
+import com.google.common.annotations.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.opendaylight.sfc.sbrest.json.ExporterFactory;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 public abstract class SbRestAbstractTask implements Runnable {
 
-    protected ExecutorService odlExecutor;
+    private final ExecutorService odlExecutor;
+    private final RestOperation restOperation;
+    private final String jsonObject;
+    private final List<String> restUriList = new ArrayList<>();
 
-    protected RestOperation restOperation;
-    protected ExporterFactory exporterFactory;
-    protected String jsonObject = null;
-
-    protected List<String> restUriList = null;
-
-    public SbRestAbstractTask(RestOperation restOperation, ExecutorService odlExecutor) {
-
+    public SbRestAbstractTask(@Nonnull RestOperation restOperation, @Nonnull ExporterFactory exporterFactory,
+            @Nullable DataObject dataObject, @Nonnull ExecutorService odlExecutor) {
         this.restOperation = restOperation;
         this.odlExecutor = odlExecutor;
+
+        if (dataObject == null) {
+            this.jsonObject = null;
+        } else if (restOperation.equals(RestOperation.DELETE)) {
+            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
+        } else {
+            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
+        }
     }
 
     @Override
     public void run() {
-        submitTasks(jsonObject);
-    }
-
-    private void submitTasks(String json) {
-        if (this.restUriList != null && this.restUriList.size() > 0) {
-            for (String restUri : this.restUriList) {
-                odlExecutor.execute(new WsTask(restUri, restOperation, json));
-            }
+        for (String restUri : this.restUriList) {
+            odlExecutor.execute(new WsTask(restUri, restOperation, jsonObject));
         }
     }
 
-    protected abstract void setRestUriList(DataObject dataObject);
+    protected void addRestUri(String uri) {
+        restUriList.add(uri);
+    }
+
+    @VisibleForTesting
+    String getJsonObject() {
+        return jsonObject;
+    }
+
+    @VisibleForTesting
+    List<String> getRestUriListCopy() {
+        return Collections.unmodifiableList(restUriList);
+    }
 }

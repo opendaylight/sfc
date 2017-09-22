@@ -91,18 +91,18 @@ public class SbRestAclTaskTest {
     public void testSbRestAclTask() throws IOException {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.getJsonObject());
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
-        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+        assertTrue(sbRestAclTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
     public void testSbRestAclTask1() throws IOException {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.DELETE, this.buildAccessList(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.getJsonObject());
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
-        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+        assertTrue(sbRestAclTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -113,9 +113,9 @@ public class SbRestAclTaskTest {
 
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.getJsonObject());
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
-        assertNull(sbRestAclTask.restUriList);
+        assertTrue(sbRestAclTask.getRestUriListCopy().isEmpty());
     }
 
     @Test
@@ -123,8 +123,8 @@ public class SbRestAclTaskTest {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, ACL_NAME, ACL_TYPE,
                 this.buildServiceFunctionClassifier().getSclServiceFunctionForwarder(), executorService);
 
-        assertNull(sbRestAclTask.jsonObject);
-        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+        assertNull(sbRestAclTask.getJsonObject());
+        assertTrue(sbRestAclTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -132,9 +132,9 @@ public class SbRestAclTaskTest {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(),
                 this.buildServiceFunctionClassifier().getSclServiceFunctionForwarder(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.getJsonObject());
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
-        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+        assertTrue(sbRestAclTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -149,9 +149,9 @@ public class SbRestAclTaskTest {
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(),
                 sclServiceFunctionForwarderList, executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestAclTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestAclTask.getJsonObject());
         assertTrue(jsonObject.equals(this.buildAccessListObjectNode()));
-        assertTrue(sbRestAclTask.restUriList.get(0).contains(REST_URI));
+        assertTrue(sbRestAclTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     // build access list

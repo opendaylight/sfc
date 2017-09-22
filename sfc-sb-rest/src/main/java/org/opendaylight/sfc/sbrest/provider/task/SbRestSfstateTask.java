@@ -7,14 +7,12 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.sbrest.json.SfstateExporterFactory;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,37 +23,21 @@ public class SbRestSfstateTask extends SbRestAbstractTask {
 
     public SbRestSfstateTask(RestOperation restOperation, ServiceFunctionState dataObject,
             ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
-        this.exporterFactory = new SfstateExporterFactory();
-        if (restOperation.equals(RestOperation.DELETE)) {
-            this.jsonObject = exporterFactory.getExporter().exportJsonNameOnly(dataObject);
-        } else {
-            this.jsonObject = exporterFactory.getExporter().exportJson(dataObject);
-        }
+        super(restOperation, new SfstateExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject);
     }
 
-    @Override
-    protected void setRestUriList(DataObject dataObject) {
-        ServiceFunctionState obj = (ServiceFunctionState) dataObject;
-
-        this.restUriList = new ArrayList<>();
-
+    private void setRestUriList(ServiceFunctionState obj) {
         if (SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName()) != null) {
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(obj.getName());
             if (serviceFunction.getRestUri() != null) {
                 SfName sfName = obj.getName();
                 if (sfName != null) {
                     String restUri = serviceFunction.getRestUri().getValue() + SFSTATE_REST_URI + sfName.getValue();
-                    this.restUriList.add(restUri);
+                    addRestUri(restUri);
                     LOG.info("Service Function state will be sent to REST URI {}", restUri);
                 }
-            } else {
-                this.restUriList = null;
             }
-        } else {
-            this.restUriList = null;
         }
-
     }
 }

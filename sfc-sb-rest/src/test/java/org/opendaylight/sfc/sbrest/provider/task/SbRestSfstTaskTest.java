@@ -55,9 +55,9 @@ public class SbRestSfstTaskTest {
         SbRestSfstTask sbRestSfstTask = new SbRestSfstTask(RestOperation.PUT, this.buildServiceFunctionSchedulerType(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfstTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfstTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionSchedulerTypeObjectNode()));
-        assertTrue("Must be true", sbRestSfstTask.restUriList.get(0).contains(SFST_REST_URI));
+        assertTrue("Must be true", sbRestSfstTask.getRestUriListCopy().get(0).contains(SFST_REST_URI));
     }
 
     @Test
@@ -65,9 +65,9 @@ public class SbRestSfstTaskTest {
         SbRestSfstTask sbRestSfstTask = new SbRestSfstTask(RestOperation.DELETE,
                 this.buildServiceFunctionSchedulerType(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfstTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfstTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionSchedulerTypeObjectNode()));
-        assertTrue("Must be true", sbRestSfstTask.restUriList.get(0).contains(SFST_REST_URI));
+        assertTrue("Must be true", sbRestSfstTask.getRestUriListCopy().get(0).contains(SFST_REST_URI));
     }
 
     // build service function scheduler type, which is needed to create

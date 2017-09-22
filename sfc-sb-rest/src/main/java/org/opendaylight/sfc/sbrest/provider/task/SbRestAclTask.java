@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
@@ -22,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,36 +30,23 @@ public class SbRestAclTask extends SbRestAbstractTask {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclTask.class);
 
     public SbRestAclTask(RestOperation restOperation, Acl dataObject, ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
-        setJsonObject(restOperation, dataObject);
+        super(restOperation, new AclExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject);
     }
 
     public SbRestAclTask(RestOperation restOperation, Acl dataObject,
             List<SclServiceFunctionForwarder> sclServiceForwarderList, ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
-        setJsonObject(restOperation, dataObject);
+        super(restOperation, new AclExporterFactory(), dataObject, odlExecutor);
         setRestUriList(dataObject, sclServiceForwarderList);
     }
 
     public SbRestAclTask(RestOperation restOperation, String aclName, java.lang.Class<? extends AclBase> aclType,
             List<SclServiceFunctionForwarder> sclServiceForwarderList, ExecutorService odlExecutor) {
-        super(restOperation, odlExecutor);
+        super(restOperation, new AclExporterFactory(), null, odlExecutor);
         setRestUriList(aclName, aclType, sclServiceForwarderList);
     }
 
-    private void setJsonObject(RestOperation restOperation, Acl dataObject) {
-        this.exporterFactory = new AclExporterFactory();
-        if (restOperation.equals(RestOperation.DELETE)) {
-            this.jsonObject = this.exporterFactory.getExporter().exportJsonNameOnly(dataObject);
-        } else {
-            this.jsonObject = this.exporterFactory.getExporter().exportJson(dataObject);
-        }
-    }
-
-    @Override
-    protected void setRestUriList(DataObject dataObject) {
-        Acl accessList = (Acl) dataObject;
+    private void setRestUriList(Acl accessList) {
         String aclName = null;
         java.lang.Class<? extends AclBase> aclType = null;
 
@@ -91,35 +76,23 @@ public class SbRestAclTask extends SbRestAbstractTask {
                     if (serviceClassifier != null) {
                         List<SclServiceFunctionForwarder> sclServiceForwarderList = serviceClassifier
                                 .getSclServiceFunctionForwarder();
-                        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList,
-                                aclName, aclType);
+                        setRestUriList(aclName, aclType, sclServiceForwarderList);
                     }
                 }
             }
         }
     }
 
-    protected void setRestUriList(DataObject dataObject, List<SclServiceFunctionForwarder> sclServiceForwarderList) {
-        Acl accessList = (Acl) dataObject;
-
+    private void setRestUriList(Acl accessList, List<SclServiceFunctionForwarder> sclServiceForwarderList) {
         if (accessList != null) {
-            this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList,
-                    accessList.getAclName(), accessList.getAclType());
+            setRestUriList(accessList.getAclName(), accessList.getAclType(), sclServiceForwarderList);
         }
     }
 
-    protected void setRestUriList(String aclName, java.lang.Class<? extends AclBase> aclType,
+    private void setRestUriList(String aclName, java.lang.Class<? extends AclBase> aclType,
             List<SclServiceFunctionForwarder> sclServiceForwarderList) {
-        this.restUriList = this.getRestUriListFromSclServiceForwarderList(sclServiceForwarderList, aclName, aclType);
-    }
-
-    private ArrayList<String> getRestUriListFromSclServiceForwarderList(
-            List<SclServiceFunctionForwarder> sclServiceForwarderList, String aclName,
-            java.lang.Class<? extends AclBase> aclType) {
-
         // rest uri list should be created from Classifier SFFs. Classifier will
         // be taken from ACL
-        ArrayList<String> sffRestUriList = new ArrayList<>();
         if (sclServiceForwarderList != null && aclName != null && aclType != null) {
             for (SclServiceFunctionForwarder sclServiceForwarder : sclServiceForwarderList) {
                 SffName sffName = new SffName(sclServiceForwarder.getName());
@@ -129,11 +102,10 @@ public class SbRestAclTask extends SbRestAbstractTask {
                 if (serviceForwarder != null && serviceForwarder.getRestUri() != null
                         && !serviceForwarder.getRestUri().getValue().isEmpty()) {
                     String restUri = serviceForwarder.getRestUri().getValue() + ACL_REST_URI + aclName;
-                    sffRestUriList.add(restUri);
+                    addRestUri(restUri);
                     LOG.info("ACL will be send to REST URI {}", restUri);
                 }
             }
         }
-        return sffRestUriList.isEmpty() ? null : sffRestUriList;
     }
 }

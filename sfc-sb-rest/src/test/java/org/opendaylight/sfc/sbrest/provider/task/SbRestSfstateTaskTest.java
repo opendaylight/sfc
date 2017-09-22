@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,9 +65,9 @@ public class SbRestSfstateTaskTest {
         SbRestSfstateTask sbRestSfstateTask = new SbRestSfstateTask(RestOperation.PUT, this.buildServiceFunctionState(),
                 executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionStateObjectNode()));
-        assertTrue("Must be true", sbRestSfstateTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestSfstateTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -76,9 +75,9 @@ public class SbRestSfstateTaskTest {
         SbRestSfstateTask sbRestSfstateTask = new SbRestSfstateTask(RestOperation.DELETE,
                 this.buildServiceFunctionState(), executorService);
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(buildServiceFunctionStateObjectNode1()));
-        assertTrue("Must be true", sbRestSfstateTask.restUriList.get(0).contains(REST_URI));
+        assertTrue("Must be true", sbRestSfstateTask.getRestUriListCopy().get(0).contains(REST_URI));
     }
 
     @Test
@@ -89,9 +88,9 @@ public class SbRestSfstateTaskTest {
         Mockito.when(SfcProviderServiceFunctionAPI.readServiceFunction(SFSTATE_NAME))
                 .thenReturn(new ServiceFunctionBuilder().build());
 
-        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.jsonObject);
+        JsonNode jsonObject = mapper.readTree(sbRestSfstateTask.getJsonObject());
         assertTrue("Must be true", jsonObject.equals(this.buildServiceFunctionStateTopNode()));
-        assertNull("Must be null", sbRestSfstateTask.restUriList);
+        assertTrue("Must be empty", sbRestSfstateTask.getRestUriListCopy().isEmpty());
     }
 
     private ServiceFunction buildServiceFunction() {

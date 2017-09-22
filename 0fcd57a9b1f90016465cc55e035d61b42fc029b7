@@ -400,6 +400,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_67523a36",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionSchedulerTypeListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-22T15:40:46Z",
+      "side": 0,
+      "message": "I guess this one is a matter of opinion. From sonar \"Merging collapsible if statements increases the code\u0027s readability.\".  I think more nesting can reduce readability with increased indentation.",
+      "parentUuid": "ba1f61a0_07e89e7a",
+      "revId": "0fcd57a9b1f90016465cc55e035d61b42fc029b7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_66a7e0a7",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/topology/SfcProviderGraph.java",
         "patchSetId": 2

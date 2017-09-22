@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<RenderedServicePath> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestRspEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.RSP_ENTRY_IID, LogicalDatastoreType.OPERATIONAL);
+    public SbRestRspEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.RSP_ENTRY_IID, LogicalDatastoreType.OPERATIONAL, executor);
     }
 
     @Override
@@ -44,13 +42,13 @@ public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<Rende
                     LOG.debug("\nUpdated Rendered Service Path: {}", updatedPath.getName());
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor.execute(new SbRestRspTask(restOp, updatedPath, executor));
+                    executor().execute(new SbRestRspTask(restOp, updatedPath, executor()));
                     break;
                 case DELETE:
                     RenderedServicePath originalPath = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Rendered Service Path Name: {}", originalPath.getName());
 
-                    executor.execute(new SbRestRspTask(RestOperation.DELETE, originalPath, executor));
+                    executor().execute(new SbRestRspTask(RestOperation.DELETE, originalPath, executor()));
                     break;
                 default:
                     break;

@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfEntryDataListener extends SbRestAbstractDataListener<ServiceFunction> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestSfEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.SF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestSfEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.SF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -43,13 +41,13 @@ public class SbRestSfEntryDataListener extends SbRestAbstractDataListener<Servic
                     ServiceFunction updatedServiceFunction = rootNode.getDataAfter();
                     LOG.debug("\nUpdated Service Function Name: {}", updatedServiceFunction.getName());
 
-                    executor.execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executor));
+                    executor().execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executor()));
                     break;
                 case DELETE:
                     ServiceFunction originalServiceFunction = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunction.getName());
 
-                    executor.execute(new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, executor));
+                    executor().execute(new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, executor()));
                     break;
                 default:
                     break;

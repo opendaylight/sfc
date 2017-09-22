@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -28,10 +27,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionClassifier> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestScfEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.SCF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestScfEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.SCF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -52,8 +50,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<Servi
                         RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST
                                 : RestOperation.PUT;
                         Runnable task = new SbRestAclTask(restOp, accessList,
-                                updatedClassifier.getSclServiceFunctionForwarder(), executor);
-                        executor.execute(task);
+                                updatedClassifier.getSclServiceFunctionForwarder(), executor());
+                        executor().execute(task);
                     }
                     break;
                 case DELETE:
@@ -63,8 +61,8 @@ public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<Servi
                     if (originalClassifier.getAcl() != null) {
                         Runnable task = new SbRestAclTask(RestOperation.DELETE, originalClassifier.getAcl().getName(),
                                 originalClassifier.getAcl().getType(),
-                                originalClassifier.getSclServiceFunctionForwarder(), executor);
-                        executor.execute(task);
+                                originalClassifier.getSclServiceFunctionForwarder(), executor());
+                        executor().execute(task);
                     }
                     break;
                 default:

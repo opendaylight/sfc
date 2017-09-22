@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    public SbRestAclEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.ACL_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestAclEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.ACL_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -44,13 +42,13 @@ public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> 
                     LOG.debug("\nUpdated Access List Name: {}", updatedAcl.getAclName());
 
                     RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor.execute(new SbRestAclTask(restOp, updatedAcl, executor));
+                    executor().execute(new SbRestAclTask(restOp, updatedAcl, executor()));
                     break;
                 case DELETE:
                     Acl originalAcl = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
 
-                    executor.execute(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor));
+                    executor().execute(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor()));
                     break;
                 default:
                     break;

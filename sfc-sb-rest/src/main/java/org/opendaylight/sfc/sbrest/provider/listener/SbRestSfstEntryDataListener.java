@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -26,10 +25,9 @@ import org.slf4j.LoggerFactory;
 
 public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionSchedulerType> {
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstEntryDataListener.class);
-    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    public SbRestSfstEntryDataListener(DataBroker dataBroker) {
-        super(dataBroker, SfcInstanceIdentifiers.SFST_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
+    public SbRestSfstEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
+        super(dataBroker, SfcInstanceIdentifiers.SFST_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
     }
 
     @Override
@@ -44,16 +42,16 @@ public class SbRestSfstEntryDataListener extends SbRestAbstractDataListener<Serv
                     LOG.debug("\nUpdated Service Function Schedule Type Name: {}",
                             updatedServiceFunctionSchedulerType.getName());
 
-                    executor.execute(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType,
-                            executor));
+                    executor().execute(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType,
+                            executor()));
                     break;
                 case DELETE:
                     ServiceFunctionSchedulerType originalServiceFunctionSchedulerType = rootNode.getDataBefore();
                     LOG.debug("\nDeleted Service Function Schedule Type Name: {}",
                             originalServiceFunctionSchedulerType.getName());
 
-                    executor.execute(new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
-                            executor));
+                    executor().execute(new SbRestSfstTask(RestOperation.DELETE, originalServiceFunctionSchedulerType,
+                            executor()));
                     break;
                 default:
                     break;

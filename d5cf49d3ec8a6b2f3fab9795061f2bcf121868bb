@@ -46,6 +46,30 @@
       "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6d4e983c",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-25T18:08:50Z",
+      "side": 1,
+      "message": "Ok. I meant if I might use this SpecialExecutor in Genius\u0027s listeners, for example. Anyway I really like the approach of using it as an OSGi service once moved to infrautils.",
+      "parentUuid": "ba1f61a0_0df6fcf8",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

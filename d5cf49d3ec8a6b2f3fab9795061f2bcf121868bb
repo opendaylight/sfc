@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_4d6634ee",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-09-25T17:45:39Z",
+      "side": 1,
+      "message": "Tom, is this ExecutorService a \"service\" that can be shared by any project?\n\nMichael, this could be the ExecutorService we were talking about when reviewing this commit [1].\n\n[1] https://git.opendaylight.org/gerrit/#/c/59177/\n\nWe might either use this Service or create a new one in Infrautils.\n\n-1, just to start the discussion.",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

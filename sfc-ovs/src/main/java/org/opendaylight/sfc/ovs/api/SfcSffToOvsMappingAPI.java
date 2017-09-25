@@ -60,6 +60,9 @@ public class SfcSffToOvsMappingAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcSffToOvsMappingAPI.class);
     private static final String OF_PORT = "6653";
 
+    private SfcSffToOvsMappingAPI() {
+    }
+
     /**
      * Builds OvsdbBridgeAugmentation from ServiceFunctionForwarder object. Built augmentation is
      * intended to be written
@@ -210,7 +213,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsLocalIpBuilder.setValue(ovsOptions.getLocalIp());
                 options.add(optionsLocalIpBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_LOCAL_IP);
             }
 
             if (ovsOptions.getRemoteIp() != null) {
@@ -219,7 +222,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsDstIpBuilder.setValue(ovsOptions.getRemoteIp());
                 options.add(optionsDstIpBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP);
             }
 
             if (ovsOptions.getDstPort() != null) {
@@ -228,7 +231,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsDstPortBuilder.setValue(ovsOptions.getDstPort());
                 options.add(optionsDstPortBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_DST_PORT);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_DST_PORT);
             }
 
             if (ovsOptions.getKey() != null) {
@@ -237,7 +240,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsKeyBuilder.setValue(ovsOptions.getKey());
                 options.add(optionsKeyBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_KEY);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_KEY);
             }
 
             if (ovsOptions.getNsp() != null) {
@@ -246,7 +249,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsNspBuilder.setValue(ovsOptions.getNsp());
                 options.add(optionsNspBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSP);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSP);
             }
 
             if (ovsOptions.getNsi() != null) {
@@ -255,7 +258,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsNsiBuilder.setValue(ovsOptions.getNsi());
                 options.add(optionsNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSI);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSI);
             }
 
             if (ovsOptions.getExts() != null) {
@@ -264,7 +267,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsExtsBuilder.setValue(ovsOptions.getExts());
                 options.add(optionsExtsBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_EXTS);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_EXTS);
             }
 
             if (ovsOptions.getInNsp() != null) {
@@ -273,7 +276,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsInNspBuilder.setValue(ovsOptions.getInNsp());
                 options.add(optionsInNspBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_IN_NSP);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_IN_NSP);
             }
 
             if (ovsOptions.getInNsi() != null) {
@@ -282,7 +285,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsInNsiBuilder.setValue(ovsOptions.getInNsi());
                 options.add(optionsInNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_IN_NSI);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_IN_NSI);
             }
 
             if (ovsOptions.getOutNsp() != null) {
@@ -291,7 +294,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsOutNspBuilder.setValue(ovsOptions.getOutNsp());
                 options.add(optionsOutNspBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_OUT_NSP);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_OUT_NSP);
             }
 
             if (ovsOptions.getOutNsi() != null) {
@@ -300,7 +303,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsOutNsiBuilder.setValue(ovsOptions.getOutNsi());
                 options.add(optionsOutNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_OUT_NSI);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_OUT_NSI);
             }
 
             if (ovsOptions.getNshc1() != null) {
@@ -309,7 +312,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsNsiBuilder.setValue(ovsOptions.getNshc1());
                 options.add(optionsNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC1);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSHC1);
             }
 
             if (ovsOptions.getNshc2() != null) {
@@ -318,7 +321,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsNsiBuilder.setValue(ovsOptions.getNshc2());
                 options.add(optionsNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC2);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSHC2);
             }
 
             if (ovsOptions.getNshc3() != null) {
@@ -327,7 +330,7 @@ public class SfcSffToOvsMappingAPI {
                 optionsNsiBuilder.setValue(ovsOptions.getNshc3());
                 options.add(optionsNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC3);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSHC3);
             }
 
             if (ovsOptions.getNshc4() != null) {
@@ -336,11 +339,15 @@ public class SfcSffToOvsMappingAPI {
                 optionsNsiBuilder.setValue(ovsOptions.getNshc4());
                 options.add(optionsNsiBuilder.build());
             } else {
-                LOG.debug("Option: {} is null.", SfcOvsUtil.OVSDB_OPTION_NSHC4);
+                logNullOption(SfcOvsUtil.OVSDB_OPTION_NSHC4);
             }
         }
 
         return options;
+    }
+
+    private static void logNullOption(Object opt) {
+        LOG.debug("Option: {} is null.", opt);
     }
 
     private static Class<? extends InterfaceTypeBase> getDataPlaneLocatorInterfaceType(

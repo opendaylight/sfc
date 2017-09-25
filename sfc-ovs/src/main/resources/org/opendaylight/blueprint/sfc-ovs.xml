@@ -7,7 +7,7 @@
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
- <bean id="sfcOvsRpc" class="org.opendaylight.sfc.ovs.provider.SfcOvsRpc" />
+ <bean id="sfcOvsRpc" class="org.opendaylight.sfc.ovs.provider.SfcOvsRpc" destroy-method="close"/>
 
   <odl:rpc-implementation ref="sfcOvsRpc"/>
 

@@ -74,6 +74,8 @@ import org.slf4j.LoggerFactory;
 public class SfcOvsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
+    private static final String HEX = "0x";
+    private static final String OPENFLOW = "openflow:";
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/";
     public static final String OVSDB_OPTION_LOCAL_IP = "local_ip";
     public static final String OVSDB_OPTION_REMOTE_IP = "remote_ip";
@@ -98,7 +100,7 @@ public class SfcOvsUtil {
     public static final String DPL_NAME_INTERNAL = "Internal";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static ExecutorService executor = Executors.newFixedThreadPool(5);
 
     /**
      * Submits callable for execution by given ExecutorService. Thanks to this
@@ -112,11 +114,10 @@ public class SfcOvsUtil {
      *            ExecutorService
      * @return true if callable completed successfully, otherwise false.
      */
-    public static Object submitCallable(Callable callable, ExecutorService executor) {
-        Future future = null;
+    public static Object submitCallable(Callable<?> callable, ExecutorService executor) {
         Object result = null;
 
-        future = executor.submit(callable);
+        Future<?> future = executor.submit(callable);
 
         try {
             result = future.get();
@@ -163,7 +164,7 @@ public class SfcOvsUtil {
         String bridgeName = ovsdbBridge.getBridgeName().getValue();
         InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) ovsdbBridge.getManagedBy().getValue();
 
-        KeyedInstanceIdentifier keyedInstanceIdentifier = (KeyedInstanceIdentifier) nodeIID
+        KeyedInstanceIdentifier<?, ?> keyedInstanceIdentifier = (KeyedInstanceIdentifier<?, ?>) nodeIID
                 .firstIdentifierOf(Node.class);
         Preconditions.checkNotNull(keyedInstanceIdentifier,
                 "Cannot build getManagedByNodeId, parent OVS Node is null.");
@@ -352,14 +353,14 @@ public class SfcOvsUtil {
 
         try {
             return new IpAddress(new Ipv4Address(ipAddressString));
-        } catch (Exception e) {
-            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv4", ipAddressString);
+        } catch (RuntimeException e) {
+            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv4", ipAddressString, e);
         }
 
         try {
             return new IpAddress(new Ipv6Address(ipAddressString));
-        } catch (Exception e) {
-            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv6", ipAddressString);
+        } catch (RuntimeException e) {
+            LOG.debug("Supplied string value of ipAddress ({}) is not an instance of IPv6", ipAddressString, e);
         }
 
         LOG.error("Supplied string value of ipAddress ({}) cannot be converted to IpAddress object!", ipAddressString);
@@ -373,8 +374,8 @@ public class SfcOvsUtil {
         try {
             Preconditions.checkArgument(ipAddress.getIpv4Address().getValue() != null);
             return ipAddress.getIpv4Address().getValue();
-        } catch (Exception e) {
-            LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv4", ipAddress.toString());
+        } catch (RuntimeException e) {
+            LOG.debug("Supplied IpAddress value ({}) is not an instance of IPv4", ipAddress.toString(), e);
         }
 
         Preconditions.checkArgument(ipAddress.getIpv6Address().getValue() != null);
@@ -532,7 +533,7 @@ public class SfcOvsUtil {
         }
         Long macLong = getLongFromDpid(datapathId.getValue());
 
-        return "openflow:" + String.valueOf(macLong);
+        return OPENFLOW + macLong;
     }
 
     public static NodeId getOvsdbAugmentationNodeIdBySff(ServiceFunctionForwarder serviceFunctionForwarder) {
@@ -579,7 +580,6 @@ public class SfcOvsUtil {
     }
 
     private static Long getLongFromDpid(String dpid) {
-        final String HEX = "0x";
         String[] addressInBytes = dpid.split(":");
         Long address = Long.decode(HEX + addressInBytes[2]) << 40 | Long.decode(HEX + addressInBytes[3]) << 32
                 | Long.decode(HEX + addressInBytes[4]) << 24 | Long.decode(HEX + addressInBytes[5]) << 16
@@ -624,7 +624,7 @@ public class SfcOvsUtil {
             if (ovsdbNode != null) {
                 return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
             } else {
-                LOG.warn("Could not find ovsdb-node for connection for {}", ovsdbNode);
+                LOG.warn("Could not find ovsdb-node for connection for {}", nodeRef);
             }
         } else {
             LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
@@ -662,7 +662,7 @@ public class SfcOvsUtil {
             }
 
             Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals("openflow:" + String.valueOf(dpid))) {
+            if (nodeName.equals(OPENFLOW + dpid)) {
                 for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
                     if (comp.compare(otp)) {
@@ -684,26 +684,13 @@ public class SfcOvsUtil {
      * @return port number
      */
     public static Long getOfPortByName(String nodeName, String portName) {
-        class PortNameCompare implements OvsdbTPComp {
-            private final String portName;
-
-            PortNameCompare(String portName) {
-                this.portName = portName;
-            }
-
-            @Override
-            public boolean compare(OvsdbTerminationPointAugmentation otp) {
-                if (otp == null) {
-                    return false;
-                }
-                if (portName.equals(otp.getName())) {
-                    return true;
-                }
+        return getOvsPort(nodeName, otp -> {
+            if (otp == null) {
                 return false;
             }
-        }
 
-        return getOvsPort(nodeName, new PortNameCompare(portName));
+            return portName.equals(otp.getName());
+        });
     }
 
     /**
@@ -755,11 +742,10 @@ public class SfcOvsUtil {
                 List<Options> options = otp.getOptions();
                 if (options != null) {
                     for (Options option : options) {
-                        if (option.getValue() != null && option.getOption() != null) {
-                            if (option.getOption().equals(OVSDB_OPTION_EXTS)
-                                    && option.getValue().equals(OVSDB_OPTION_GPE)) {
-                                return true;
-                            }
+                        if (option.getValue() != null && option.getOption() != null
+                                && option.getOption().equals(OVSDB_OPTION_EXTS)
+                                && option.getValue().equals(OVSDB_OPTION_GPE)) {
+                            return true;
                         }
                     }
                 }
@@ -788,20 +774,14 @@ public class SfcOvsUtil {
             return null;
         }
 
-        if (dpdkPortName == null) {
-            dpdkPortName = new String("dpdk0");
+        String localDpdkPortName = dpdkPortName;
+        if (localDpdkPortName  == null) {
+            localDpdkPortName = "dpdk0";
         }
 
         InstanceIdentifier<Topology> topoIID = buildOvsdbTopologyIID();
 
-        Topology topo = null;
-        try {
-            topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
-        } catch (NullPointerException e) {
-            // Fix unit tests failure before SfcDataStoreAPI isn't initialized
-            topo = null;
-        }
-
+        Topology topo = SfcDataStoreAPI.readTransactionAPI(topoIID, LogicalDatastoreType.OPERATIONAL);
         if (topo == null) {
             return null;
         }
@@ -819,14 +799,14 @@ public class SfcOvsUtil {
             }
 
             Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals("openflow:" + String.valueOf(dpid))) {
+            if (nodeName.equals(OPENFLOW + dpid)) {
                 if (!ovsdbBridgeAugmentation.getDatapathType().equals(DatapathTypeNetdev.class)) {
                     break;
                 }
 
                 List<TerminationPoint> tpList = node.getTerminationPoint();
                 for (TerminationPoint tp : tpList) {
-                    if (tp.getTpId().getValue().equals(dpdkPortName)) {
+                    if (tp.getTpId().getValue().equals(localDpdkPortName)) {
                         OvsdbTerminationPointAugmentation otp = tp
                                 .getAugmentation(OvsdbTerminationPointAugmentation.class);
                         if (otp != null && otp.getInterfaceType().equals(InterfaceTypeDpdk.class)) {

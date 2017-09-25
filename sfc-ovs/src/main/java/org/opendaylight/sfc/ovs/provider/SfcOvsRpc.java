@@ -38,14 +38,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
+public class SfcOvsRpc implements ServiceFunctionForwarderOvsService, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsRpc.class);
     private static final String OVSDB_NODE_PREFIX = "ovsdb://";
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     /**
      * This method writes a new OVS Bridge into OVSDB Config DataStore. This write event triggers
@@ -112,5 +109,10 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService {
         }
 
         return Futures.immediateFuture(rpcResultBuilder.build());
+    }
+
+    @Override
+    public void close() {
+        executor.shutdown();
     }
 }

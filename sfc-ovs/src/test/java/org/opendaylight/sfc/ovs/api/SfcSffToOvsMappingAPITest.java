@@ -97,12 +97,6 @@ public class SfcSffToOvsMappingAPITest {
     private ConnectionInfoBuilder connectionInfoBuilder;
 
     @Test
-    public void testSfcSffToOvsMappingAPITest() {
-        SfcSffToOvsMappingAPI sfcSffToOvsMappingAPI = new SfcSffToOvsMappingAPI();
-        sfcSffToOvsMappingAPI.getClass();
-    }
-
-    @Test
     public void testBuildOvsdbBridgeAugmentation_NullOvsBridgeAugmentation() throws Exception {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
 

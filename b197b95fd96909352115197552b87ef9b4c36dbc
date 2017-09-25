@@ -1,0 +1,237 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_4df754d3",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/api/SfcSffToOvsMappingAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"String literals should not be duplicated\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_cd3224a6",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsRpc.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be\" (malicious code vulnerability)",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2d266068",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0d29dc36",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Exception handlers should preserve the original exception\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6d233856",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"String literals should not be duplicated\"",
+      "range": {
+        "startLine": 535,
+        "startChar": 15,
+        "endLine": 535,
+        "endChar": 26
+      },
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4d1e340d",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"String.valueOf() should not be appended to a String\"",
+      "range": {
+        "startLine": 535,
+        "startChar": 29,
+        "endLine": 535,
+        "endChar": 43
+      },
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ad19b023",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Local variable and method parameter names should comply with a naming convention\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8d14ace9",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 627,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Load of known null value\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0de0bcf8",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 688,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "portName hides enclosing variable",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2dddc042",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 706,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "Converted to a simple lambda,",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_6dea18dc",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_4de59407",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 792,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "\"Method parameters, caught exceptions and foreach variables should not be reassigned\"",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8deb0cdb",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/provider/SfcOvsUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 803,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 0,
+      "message": "Seems odd to catch NullPointerException. It\u0027s not thrown anyway from readTransactionAPI",
+      "revId": "b197b95fd96909352115197552b87ef9b4c36dbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

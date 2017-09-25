@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_2d0f80e2",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/api/SfcOvsDataStoreAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 1,
+      "message": "\"Exception handlers should preserve the original exception\"",
+      "revId": "db1649e3a1c873b37e3701da3cef9f73dd1bb72e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0d127c08",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/api/SfcSffToOvsMappingAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 1,
+      "message": "\"Utility classes should not have public constructors\"",
+      "revId": "db1649e3a1c873b37e3701da3cef9f73dd1bb72e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8dfdccb3",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-25T18:31:59Z",
+      "side": 1,
+      "message": "\"Parameter must be non-null but is marked as nullable\" - FutureCallback API marks it as @Nullable. It shouldn\u0027t be null but doesn\u0027t hurt to check anyway",
+      "revId": "db1649e3a1c873b37e3701da3cef9f73dd1bb72e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

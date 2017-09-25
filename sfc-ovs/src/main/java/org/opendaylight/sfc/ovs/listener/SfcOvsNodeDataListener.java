@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
@@ -95,7 +95,7 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
 
                     @Override
                     public void onSuccess(Optional<ServiceFunctionForwarders> optionalSffs) {
-                        if (optionalSffs.isPresent()) {
+                        if (optionalSffs != null && optionalSffs.isPresent()) {
                             ServiceFunctionForwarder sff = SfcOvsUtil.findSffByIp(optionalSffs.get(),
                                     connectionInfo.getRemoteIp());
                             if (sff != null) {
@@ -110,7 +110,7 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
                     public void onFailure(Throwable throwable) {
                         LOG.error("Failed to read SFFs from data store.");
                     }
-                });
+                }, MoreExecutors.directExecutor());
             }
         }
     }

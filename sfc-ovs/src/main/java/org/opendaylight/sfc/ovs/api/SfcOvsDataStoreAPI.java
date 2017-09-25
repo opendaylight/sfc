@@ -33,7 +33,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOvsDataStoreAPI implements Callable {
+public class SfcOvsDataStoreAPI implements Callable<Object> {
 
     public enum Method {
         READ_OVSDB_BRIDGE,
@@ -73,7 +73,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     LOG.error(
                             "Cannot call readOvsdbBridge, passed method argument "
                                     + "is not instance of InstanceIdentifier<OvsdbBridgeAugmentation>: {}",
-                            methodParameters[0].toString());
+                            methodParameters[0].toString(), e);
                 }
                 break;
             case PUT_OVSDB_BRIDGE:
@@ -82,7 +82,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     result = putOvsdbBridge(ovsdbBridge);
                 } catch (ClassCastException e) {
                     LOG.error("Cannot call putOvsdbBridge, passed method argument "
-                            + "is not instance of OvsdbBridgeAugmentation: {}", methodParameters[0].toString());
+                            + "is not instance of OvsdbBridgeAugmentation: {}", methodParameters[0].toString(), e);
                 }
                 break;
             case DELETE_OVSDB_NODE:
@@ -93,7 +93,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     LOG.error(
                             "Cannot call deleteOvsdbNode, passed method argument "
                                     + "is not instance of InstanceIdentifier<Node>: {}",
-                            methodParameters[0].toString());
+                            methodParameters[0].toString(), e);
                 }
                 break;
             case PUT_OVSDB_TERMINATION_POINT:
@@ -107,7 +107,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                             "Cannot call putOvsdbTerminationPoint, passed method arguments "
                                     + "are not instances of OvsdbBridgeAugmentation{} and"
                                     + "OvsdbTerminationPointAugmentation: {}",
-                            methodParameters[0].toString(), methodParameters[1].toString());
+                            methodParameters[0].toString(), methodParameters[1].toString(), e);
                 }
                 break;
             case DELETE_OVSDB_TERMINATION_POINT:
@@ -119,7 +119,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     LOG.error(
                             "Cannot call deleteOvsdbTerminationPoint, passed method argument "
                                     + "is not instance of InstanceIdentifier<TerminationPoint>: {}",
-                            methodParameters[0].toString());
+                            methodParameters[0].toString(), e);
                 }
                 break;
             case READ_OVSDB_NODE_BY_IP:
@@ -128,7 +128,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                 } catch (ClassCastException e) {
                     LOG.error(
                             "Cannot call readOvsdbNodeByIp, passed method argument " + "is not instance of String: {}",
-                            methodParameters[0].toString());
+                            methodParameters[0].toString(), e);
                 }
                 break;
             case READ_OVSDB_NODE_BY_REF:
@@ -136,7 +136,7 @@ public class SfcOvsDataStoreAPI implements Callable {
                     result = readOvsdbNodeByRef((OvsdbNodeRef) methodParameters[0]);
                 } catch (ClassCastException e) {
                     LOG.error("Cannot call readOvsdbNodeByIp, passed method argument "
-                            + "is not instance of OvsdbNodeRef: {}", methodParameters[0]);
+                            + "is not instance of OvsdbNodeRef: {}", methodParameters[0], e);
                 }
                 break;
             default:

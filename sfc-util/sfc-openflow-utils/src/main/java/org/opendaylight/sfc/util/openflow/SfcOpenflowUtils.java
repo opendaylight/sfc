@@ -586,7 +586,7 @@ public class SfcOpenflowUtils {
     }
 
     public static void addMatchInPort(MatchBuilder match, String nodeName, int value) {
-        match.setInPort(new NodeConnectorId(nodeName + ":" + String.valueOf(value)));
+        match.setInPort(new NodeConnectorId(nodeName + ":" + value));
     }
 
     //

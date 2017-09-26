@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.util.macchaining;
 
 import java.util.List;
-
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -20,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 
 public class SfcModelUtil {
 
+    private SfcModelUtil() {
+    }
 
     public static SffDataPlaneLocator searchSrcDplInConnectedSffs(SffName sffSrcName, SffName dstSffName) {
 
@@ -35,17 +36,15 @@ public class SfcModelUtil {
             List<SffDataPlaneLocator> dplsFromSrcSff = srcSff.getSffDataPlaneLocator();
 
             for (SffDataPlaneLocator srcSffDpl : dplsFromSrcSff) {
-                if (srcSffDpl.getDataPlaneLocator().getTransport().equals(
-                        connectedSffs.getSffSffDataPlaneLocator().getTransport())) {
-                    if (srcSffDpl.getDataPlaneLocator().getLocatorType() instanceof MacAddressLocator) {
-                        MacAddressLocator macSrcSff =
-                                (MacAddressLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
-                        MacAddressLocator macToNextSff =
-                                (MacAddressLocator) connectedSffs.getSffSffDataPlaneLocator().getLocatorType();
+                if (srcSffDpl.getDataPlaneLocator().getTransport()
+                        .equals(connectedSffs.getSffSffDataPlaneLocator().getTransport())
+                        && srcSffDpl.getDataPlaneLocator().getLocatorType() instanceof MacAddressLocator) {
+                    MacAddressLocator macSrcSff = (MacAddressLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
+                    MacAddressLocator macToNextSff = (MacAddressLocator) connectedSffs.getSffSffDataPlaneLocator()
+                            .getLocatorType();
 
-                        if (macSrcSff.getMac().equals(macToNextSff.getMac())) {
-                            return srcSffDpl;
-                        }
+                    if (macSrcSff.getMac().equals(macToNextSff.getMac())) {
+                        return srcSffDpl;
                     }
                 }
             }

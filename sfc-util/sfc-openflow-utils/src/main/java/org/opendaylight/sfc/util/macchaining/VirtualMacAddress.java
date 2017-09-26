@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.util.macchaining;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,8 +43,6 @@ public final class VirtualMacAddress {
     private static final Object LOCKER = new Object();
     private static final Deque<Integer> POOL;
     private static final boolean[] IN_USE;
-
-    private final int step = 1;
 
     static {
         MAPPING = new HashMap<>();
@@ -125,9 +124,11 @@ public final class VirtualMacAddress {
 
     private final byte[] macAddr;
     private final int chainId;
-    private final int flags;
     private final int port;
 
+    // Suppress FB warning ("Possible bad parsing of shift operation") for line "port << CID_LEN + SFID_LEN" as
+    // "x << (8 + y)" is intended.
+    @SuppressFBWarnings("BSHIFT_WRONG_ADD_PRIORITY")
     public VirtualMacAddress(int flags, long port, int chainId) {
         if (port >= MAX_PORT
                 || port < 0) {
@@ -147,7 +148,6 @@ public final class VirtualMacAddress {
 
         this.chainId = chainId;
         this.port = (int) port;
-        this.flags = flags;
         this.macAddr = toByte(
                         BASE_OUI
                        | flags

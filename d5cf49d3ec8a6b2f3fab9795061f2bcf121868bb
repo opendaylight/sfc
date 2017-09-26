@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ba1f61a0_fe46ac79",
+        "filename": "sfc-sb-rest/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-26T17:54:01Z",
+      "side": 1,
+      "message": "NOT the main point here so more FYI than real review feedback.. needing to do this seems strange to me and possibly an indication of another problem elsewhere - normally this is just automatic - the maven-bundle-plugin (through its internal use of BND, see http://bnd.bndtools.org) is more than smart enough to figure this out by itself... are you sure you really need this? Why?",
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_4d6634ee",
         "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
         "patchSetId": 1
@@ -61,6 +78,30 @@
       "side": 1,
       "message": "Ok. I meant if I might use this SpecialExecutor in Genius\u0027s listeners, for example. Anyway I really like the approach of using it as an OSGi service once moved to infrautils.",
       "parentUuid": "ba1f61a0_0df6fcf8",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_dc08112a",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-26T17:54:01Z",
+      "side": 1,
+      "message": "Yes, this looks interesting, if Tom says this is the way to go (entirely trusting you here...  ;) I\u0027m trying to think what really want to move - you can\u0027t advertise a single ExecutorService as an @OsgiService, can you?  Because if I understand what you guys are up to here correctly, then each (subclass of David\u0027s new) AbstractDataTreeChangeListener should have its own newBlockingBoundedCachedThreadPool, based on what you\u0027re doing here?  Or do you want to have a single ODL-wide ExecutorService for all AbstractDataTreeChangeListener? (I don\u0027t know yet what the right thing to do is.)\n\nI would certainly welcome any contribution either of you wants to make related to this into infrautils!  ;-) I\u0027m not crystal clear yet what exactly that would be... And remember infrautils cannot (does not want to) depend on yangtools, so... you just want to copy/paste that SpecialExecutors into org.opendaylight.infrautils.utils.concurrent? I don\u0027t want to block that - but why? yangtools is not going to depend on infrautils in the near future (Robert), so that\u0027s just duplicating code - why not let genius just use the SpecialExecutors from yangtools then?\n\nWhat may be useful could be some small abstraction to make it possible to use this easily in genius and netvirt... preferably without this XML (we much prefer the BP annotations, at least in genius and netvirt).  I think you\u0027ll actually want an interface and impl @Singleton @OsgiService class SpecialExecutorsProvider { ExecutorService newBlockingBoundedCachedThreadPool(String name) } ? With some way of globally, and/or per name, configure max-pool-size \u0026 max-queue-size?  And maybe some automatically JMX exposed monitoring of this (if it doesn\u0027t already automatically do that by itself) ?",
+      "parentUuid": "ba1f61a0_6d4e983c",
       "range": {
         "startLine": 18,
         "startChar": 29,

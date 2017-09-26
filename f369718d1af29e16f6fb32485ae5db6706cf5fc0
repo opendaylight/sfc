@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_3fc2ff52",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/SfcModelUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 0,
+      "message": "\"Collapsible \"if\" statements should be merged\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9fa4cbba",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_1f98db76",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_df8123fc",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/SfcOpenflowUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 589,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 0,
+      "message": "\"String.valueOf() should not be appended to a String\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

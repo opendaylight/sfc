@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_5fc7f363",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/SfcModelUtil.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 1,
+      "message": "\"Utility classes should not have public constructors\"",
+      "revId": "48e02d3c44c4389654b38b2acf179005e929cc2c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3f995f79",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/macchaining/VirtualMacAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-26T22:18:56Z",
+      "side": 1,
+      "message": "\"Possible bad parsing of shift operation\" - suppressed above as it\u0027s intended as written",
+      "revId": "48e02d3c44c4389654b38b2acf179005e929cc2c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

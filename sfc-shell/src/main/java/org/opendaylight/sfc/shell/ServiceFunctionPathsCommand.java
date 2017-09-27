@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Karaf command to show the Service Function Paths provisioned.
+ * Karaf CLI command to show the provisioned Service Function Paths.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 @Command(scope = "sfc", name = "sfp-list", description = "Show the provisioned Service Function Paths")
 public class ServiceFunctionPathsCommand extends AbstractCommand {
 
-    @Option(name = "-name", aliases = {
-            "--name" }, description = "Name of the Service Function Paths", required = false, multiValued = false)
+    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function Paths", required =
+            false, multiValued = false)
     private String name;
 
     private final ShellTable table;
@@ -56,9 +56,9 @@ public class ServiceFunctionPathsCommand extends AbstractCommand {
             renderContent(SfcProviderServicePathAPI.readServiceFunctionPath(new SfpName(name)));
         } else {
             LOG.debug("Getting the list of Service Function Paths");
-            ServiceFunctionPaths sfps = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
-            if (sfps != null) {
-                List<ServiceFunctionPath> serviceFunctionPaths = sfps.getServiceFunctionPath();
+            ServiceFunctionPaths allServiceFunctionPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
+            if (allServiceFunctionPaths != null) {
+                List<ServiceFunctionPath> serviceFunctionPaths = allServiceFunctionPaths.getServiceFunctionPath();
                 serviceFunctionPaths.forEach(this::renderContent);
             }
         }
@@ -70,11 +70,12 @@ public class ServiceFunctionPathsCommand extends AbstractCommand {
         if (serviceFunctionPath != null) {
             LOG.debug("Service Function Path data: {}", serviceFunctionPath);
             table.addRow().addContent(serviceFunctionPath.getName().getValue(), serviceFunctionPath.getPathId(),
-                    serviceFunctionPath.isSymmetric(), serviceFunctionPath.getServiceChainName().getValue(),
-                    serviceFunctionPath.getTransportType() == null ? NO_VALUE
-                            : serviceFunctionPath.getTransportType().getSimpleName(),
-                    serviceFunctionPath.getSfcEncapsulation() == null ? NO_VALUE
-                            : serviceFunctionPath.getSfcEncapsulation().getSimpleName());
+                                      serviceFunctionPath.isSymmetric(),
+                                      serviceFunctionPath.getServiceChainName().getValue(),
+                                      serviceFunctionPath.getTransportType() == null ? NO_VALUE : serviceFunctionPath
+                                              .getTransportType().getSimpleName(),
+                                      serviceFunctionPath.getSfcEncapsulation() == null ? NO_VALUE : serviceFunctionPath
+                                              .getSfcEncapsulation().getSimpleName());
         }
     }
 }

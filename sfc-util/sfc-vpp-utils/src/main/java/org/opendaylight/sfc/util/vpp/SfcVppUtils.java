@@ -10,6 +10,7 @@ package org.opendaylight.sfc.util.vpp;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -293,7 +294,7 @@ public class SfcVppUtils {
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public static void addDummyBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
@@ -336,7 +337,7 @@ public class SfcVppUtils {
     }
 
     public static String buildVxlanGpePortKey(final IpAddress remote) {
-        return new String("vxlanGpeTun" + "_" + remote.getIpv4Address().getValue());
+        return "vxlanGpeTun" + "_" + remote.getIpv4Address().getValue();
     }
 
     private static int incrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
@@ -429,7 +430,7 @@ public class SfcVppUtils {
     }
 
     private static String buildNshEntryKey(final Long nsp, final Short nsi) {
-        return new String("nsh_entry_" + nsp.toString() + "_" + nsi.toString());
+        return "nsh_entry_" + nsp + "_" + nsi;
     }
 
     public static void addDummyNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
@@ -508,8 +509,7 @@ public class SfcVppUtils {
     }
 
     private static String buildNshMapKey(final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi) {
-        return new String("nsh_map_" + nsp.toString() + "_" + nsi.toString() + "_to_" + mappedNsp.toString() + "_"
-                + mappedNsi.toString());
+        return "nsh_map_" + nsp + "_" + nsi + "_to_" + mappedNsp + "_" + mappedNsi;
     }
 
     private static NshMapBuilder buildNshMapBuilder(final Long nsp, final Short nsi, final Long mappedNsp,
@@ -615,7 +615,7 @@ public class SfcVppUtils {
 
     private static Integer getNextTableIndex(String vppNode) {
         if (TABLE_INDICE.get(vppNode) == null) {
-            TABLE_INDICE.put(vppNode, new Integer(0));
+            TABLE_INDICE.put(vppNode, Integer.valueOf(0));
         }
         Integer index = TABLE_INDICE.get(vppNode);
         return index;
@@ -628,7 +628,7 @@ public class SfcVppUtils {
     }
 
     public static String buildClassifyTableKey(final Integer tableIndex) {
-        return new String("table" + tableIndex.toString());
+        return "table" + tableIndex;
     }
 
     private static ClassifyTableBuilder buildClassifyTable(String classifyTableKey, String nextTableKey,
@@ -685,22 +685,9 @@ public class SfcVppUtils {
         ClassifySessionBuilder classifySessionBuilder = new ClassifySessionBuilder();
         classifySessionBuilder.setMatch(match);
         classifySessionBuilder.setHitNext(new VppNode(new VppNodeName("nsh-classifier")));
-        Long opaqueIndexValue = new Long(nsp.longValue() << 8 | nsi.intValue());
+        Long opaqueIndexValue = Long.valueOf(nsp.longValue() << 8 | nsi.intValue());
         classifySessionBuilder.setOpaqueIndex(new OpaqueIndex(opaqueIndexValue));
         return classifySessionBuilder;
-    }
-
-    private static void addClassifySession(final DataBroker dataBroker, String classifyTableKey,
-            ClassifySession classifySession, String vppNode) {
-        LOG.info("addClassifySession: {}", classifySession);
-
-        final DataBroker vppDataBroker = dataBroker;
-        final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<ClassifySession> classifySessionIid = InstanceIdentifier.create(VppClassifier.class)
-                .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey))
-                .child(ClassifySession.class, classifySession.getKey());
-        wTx.put(LogicalDatastoreType.CONFIGURATION, classifySessionIid, classifySession);
-        addFuturesCallback(wTx);
     }
 
     private static void removeClassifySession(final DataBroker dataBroker, final String classifyTableKey,

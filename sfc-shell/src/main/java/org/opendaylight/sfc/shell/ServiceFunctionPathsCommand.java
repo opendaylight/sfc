@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2017 Ericsson S.A. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -16,12 +16,13 @@ import org.apache.karaf.shell.support.table.ShellTable;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths
+        .ServiceFunctionPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Karaf command to show the Service Function Paths provisioned.
+ * Karaf CLI command to show the provisioned Service Function Paths.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
@@ -30,8 +31,8 @@ import org.slf4j.LoggerFactory;
 @Command(scope = "sfc", name = "sfp-list", description = "Show the provisioned Service Function Paths")
 public class ServiceFunctionPathsCommand extends AbstractCommand {
 
-    @Option(name = "-name", aliases = {
-            "--name" }, description = "Name of the Service Function Paths", required = false, multiValued = false)
+    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function Paths", required =
+            false, multiValued = false)
     private String name;
 
     private final ShellTable table;
@@ -56,9 +57,9 @@ public class ServiceFunctionPathsCommand extends AbstractCommand {
             renderContent(SfcProviderServicePathAPI.readServiceFunctionPath(new SfpName(name)));
         } else {
             LOG.debug("Getting the list of Service Function Paths");
-            ServiceFunctionPaths sfps = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
-            if (sfps != null) {
-                List<ServiceFunctionPath> serviceFunctionPaths = sfps.getServiceFunctionPath();
+            ServiceFunctionPaths allServiceFunctionPaths = SfcProviderServicePathAPI.readAllServiceFunctionPaths();
+            if (allServiceFunctionPaths != null) {
+                List<ServiceFunctionPath> serviceFunctionPaths = allServiceFunctionPaths.getServiceFunctionPath();
                 serviceFunctionPaths.forEach(this::renderContent);
             }
         }
@@ -70,11 +71,12 @@ public class ServiceFunctionPathsCommand extends AbstractCommand {
         if (serviceFunctionPath != null) {
             LOG.debug("Service Function Path data: {}", serviceFunctionPath);
             table.addRow().addContent(serviceFunctionPath.getName().getValue(), serviceFunctionPath.getPathId(),
-                    serviceFunctionPath.isSymmetric(), serviceFunctionPath.getServiceChainName().getValue(),
-                    serviceFunctionPath.getTransportType() == null ? NO_VALUE
-                            : serviceFunctionPath.getTransportType().getSimpleName(),
-                    serviceFunctionPath.getSfcEncapsulation() == null ? NO_VALUE
-                            : serviceFunctionPath.getSfcEncapsulation().getSimpleName());
+                                      serviceFunctionPath.isSymmetric(),
+                                      serviceFunctionPath.getServiceChainName().getValue(),
+                                      serviceFunctionPath.getTransportType() == null ? NO_VALUE : serviceFunctionPath
+                                              .getTransportType().getSimpleName(),
+                                      serviceFunctionPath.getSfcEncapsulation() == null ? NO_VALUE : serviceFunctionPath
+                                              .getSfcEncapsulation().getSimpleName());
         }
     }
 }

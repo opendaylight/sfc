@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2017 Ericsson S.A. and others.  All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -17,24 +17,22 @@ import org.apache.karaf.shell.support.table.ShellTable;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping
+        .ServiceFunctionChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Karaf command to show the Service Function provisioned.
+ * Karaf CLI command to show the provisioned Service Function Chains.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
- *
  */
 @Service
 @Command(scope = "sfc", name = "sc-list", description = "Show the provisioned Service Function Chains")
 public class ServiceFunctionChainsCommand extends AbstractCommand {
 
-    private static final String SEPARATOR = ", ";
-
-    @Option(name = "-name", aliases = {
-            "--name" }, description = "Name of the Service Function Chain", required = false, multiValued = false)
+    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function Chain", required =
+            false, multiValued = false)
     private String name;
 
     private final ShellTable table;
@@ -55,9 +53,9 @@ public class ServiceFunctionChainsCommand extends AbstractCommand {
             renderContent(SfcProviderServiceChainAPI.readServiceFunctionChain(new SfcName(name)));
         } else {
             LOG.debug("Getting the list of Service Function Chains");
-            ServiceFunctionChains sfcs = SfcProviderServiceChainAPI.readAllServiceFunctionChains();
-            if (sfcs != null) {
-                List<ServiceFunctionChain> serviceFunctionChains = sfcs.getServiceFunctionChain();
+            ServiceFunctionChains allServiceFunctionChains = SfcProviderServiceChainAPI.readAllServiceFunctionChains();
+            if (allServiceFunctionChains != null) {
+                List<ServiceFunctionChain> serviceFunctionChains = allServiceFunctionChains.getServiceFunctionChain();
                 serviceFunctionChains.forEach(this::renderContent);
             }
         }
@@ -69,9 +67,10 @@ public class ServiceFunctionChainsCommand extends AbstractCommand {
         if (serviceFunctionChain != null) {
             LOG.debug("Service Function Chain data: {}", serviceFunctionChain);
             table.addRow().addContent(serviceFunctionChain.getName().getValue(),
-                    serviceFunctionChain.getSfcServiceFunction() == null ? NO_VALUE
-                            : serviceFunctionChain.getSfcServiceFunction().stream().map(sf -> sf.getType().getValue())
-                                    .collect(Collectors.joining(SEPARATOR)));
+                                      serviceFunctionChain.getSfcServiceFunction()
+                                              == null ? NO_VALUE : serviceFunctionChain.getSfcServiceFunction().stream()
+                                              .map(sf -> sf.getType().getValue())
+                                              .collect(Collectors.joining(SEPARATOR)));
         }
     }
 }

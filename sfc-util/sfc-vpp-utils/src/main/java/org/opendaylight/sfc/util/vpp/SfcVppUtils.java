@@ -10,10 +10,11 @@ package org.opendaylight.sfc.util.vpp;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,10 +116,14 @@ public class SfcVppUtils {
     private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
             .builder(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName()))).build();
-    private static final Map<String, Integer> TABLE_INDICE = new HashMap<>();
-    private static final Map<String, String> FIRST_TABLE = new HashMap<>();
-    private static Map<String, List<String>> rspTblIdList = new HashMap<>();
-    private static final HashMap<String, HashMap<String, AtomicInteger>> VXLAN_GPER_PORT_REF_CNT = new HashMap<>();
+    private static final ConcurrentMap<String, Integer> TABLE_INDICE = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, String> FIRST_TABLE = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, List<String>> RSP_TABLE_ID_LIST = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, ConcurrentMap<String, AtomicInteger>> VXLAN_GPER_PORT_REF_CNT =
+            new ConcurrentHashMap<>();
+
+    private SfcVppUtils() {
+    }
 
     public static DataBroker getSffMountpoint(MountPointService mountService, SffName sffName) {
         final NodeId nodeId = new NodeId(sffName.getValue());
@@ -293,7 +298,7 @@ public class SfcVppUtils {
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
             }
-        });
+        }, MoreExecutors.directExecutor());
     }
 
     public static void addDummyBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
@@ -336,29 +341,28 @@ public class SfcVppUtils {
     }
 
     public static String buildVxlanGpePortKey(final IpAddress remote) {
-        return new String("vxlanGpeTun" + "_" + remote.getIpv4Address().getValue());
+        return "vxlanGpeTun" + "_" + remote.getIpv4Address().getValue();
     }
 
     private static int incrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
-        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode) == null) {
-            VXLAN_GPER_PORT_REF_CNT.put(vppNode, new HashMap<String, AtomicInteger>());
-        }
-        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey) == null) {
-            VXLAN_GPER_PORT_REF_CNT.get(vppNode).put(vxlanGpePortKey, new AtomicInteger(1));
-            return 1;
-        } else {
-            return VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey).incrementAndGet();
-        }
+        final ConcurrentMap<String, AtomicInteger> nodeMap = VXLAN_GPER_PORT_REF_CNT.computeIfAbsent(
+                vppNode, key -> new ConcurrentHashMap<>());
+
+        final AtomicInteger count = nodeMap.computeIfAbsent(vxlanGpePortKey, key -> new AtomicInteger(0));
+        return count.incrementAndGet();
     }
 
     private static int decrementVxlanGpeRefCnt(final String vxlanGpePortKey, final String vppNode) {
-        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode) == null) {
+        final ConcurrentMap<String, AtomicInteger> nodeMap = VXLAN_GPER_PORT_REF_CNT.get(vppNode);
+        if (nodeMap == null) {
             return 0;
         }
-        if (VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey) == null) {
+
+        final AtomicInteger count = nodeMap.get(vxlanGpePortKey);
+        if (count == null) {
             return 0;
         }
-        return VXLAN_GPER_PORT_REF_CNT.get(vppNode).get(vxlanGpePortKey).decrementAndGet();
+        return count.decrementAndGet();
     }
 
     private static void addVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote,
@@ -429,7 +433,7 @@ public class SfcVppUtils {
     }
 
     private static String buildNshEntryKey(final Long nsp, final Short nsi) {
-        return new String("nsh_entry_" + nsp.toString() + "_" + nsi.toString());
+        return "nsh_entry_" + nsp + "_" + nsi;
     }
 
     public static void addDummyNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
@@ -508,8 +512,7 @@ public class SfcVppUtils {
     }
 
     private static String buildNshMapKey(final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi) {
-        return new String("nsh_map_" + nsp.toString() + "_" + nsi.toString() + "_to_" + mappedNsp.toString() + "_"
-                + mappedNsi.toString());
+        return "nsh_map_" + nsp + "_" + nsi + "_to_" + mappedNsp + "_" + mappedNsi;
     }
 
     private static NshMapBuilder buildNshMapBuilder(final Long nsp, final Short nsi, final Long mappedNsp,
@@ -614,21 +617,16 @@ public class SfcVppUtils {
     }
 
     private static Integer getNextTableIndex(String vppNode) {
-        if (TABLE_INDICE.get(vppNode) == null) {
-            TABLE_INDICE.put(vppNode, new Integer(0));
-        }
-        Integer index = TABLE_INDICE.get(vppNode);
-        return index;
+        return TABLE_INDICE.computeIfAbsent(vppNode, key -> Integer.valueOf(0));
     }
 
     public static Integer increaseNextTableIndex(String vppNode) {
-        Integer index = getNextTableIndex(vppNode);
-        TABLE_INDICE.put(vppNode, index + 1);
-        return TABLE_INDICE.get(vppNode);
+        getNextTableIndex(vppNode);
+        return TABLE_INDICE.computeIfPresent(vppNode, (key, oldValue) -> Integer.valueOf(oldValue + 1));
     }
 
     public static String buildClassifyTableKey(final Integer tableIndex) {
-        return new String("table" + tableIndex.toString());
+        return "table" + tableIndex;
     }
 
     private static ClassifyTableBuilder buildClassifyTable(String classifyTableKey, String nextTableKey,
@@ -650,8 +648,7 @@ public class SfcVppUtils {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
 
-        if (FIRST_TABLE.get(vppNode) == null) {
-            FIRST_TABLE.put(vppNode, classifyTable.getName());
+        if (FIRST_TABLE.putIfAbsent(vppNode, classifyTable.getName()) == null) {
             VppClassifierBuilder vppClassifierBuilder = new VppClassifierBuilder();
             List<ClassifyTable> classifyTableList = new ArrayList<>();
             classifyTableList.add(classifyTable);
@@ -685,22 +682,9 @@ public class SfcVppUtils {
         ClassifySessionBuilder classifySessionBuilder = new ClassifySessionBuilder();
         classifySessionBuilder.setMatch(match);
         classifySessionBuilder.setHitNext(new VppNode(new VppNodeName("nsh-classifier")));
-        Long opaqueIndexValue = new Long(nsp.longValue() << 8 | nsi.intValue());
+        Long opaqueIndexValue = Long.valueOf(nsp.longValue() << 8 | nsi.intValue());
         classifySessionBuilder.setOpaqueIndex(new OpaqueIndex(opaqueIndexValue));
         return classifySessionBuilder;
-    }
-
-    private static void addClassifySession(final DataBroker dataBroker, String classifyTableKey,
-            ClassifySession classifySession, String vppNode) {
-        LOG.info("addClassifySession: {}", classifySession);
-
-        final DataBroker vppDataBroker = dataBroker;
-        final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
-        final InstanceIdentifier<ClassifySession> classifySessionIid = InstanceIdentifier.create(VppClassifier.class)
-                .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey))
-                .child(ClassifySession.class, classifySession.getKey());
-        wTx.put(LogicalDatastoreType.CONFIGURATION, classifySessionIid, classifySession);
-        addFuturesCallback(wTx);
     }
 
     private static void removeClassifySession(final DataBroker dataBroker, final String classifyTableKey,
@@ -744,29 +728,28 @@ public class SfcVppUtils {
 
     private static void saveClassifyTableKey(String vppNode, String rsp, String classifyTableKey) {
         String rspKey = vppNode + "_" + rsp;
+        List<String> tblIdList = RSP_TABLE_ID_LIST.computeIfAbsent(rspKey, key -> new ArrayList<>());
 
-        if (rspTblIdList.get(rspKey) == null) {
-            List<String> strList = new ArrayList<>();
-            rspTblIdList.put(rspKey, strList);
+        synchronized (tblIdList) {
+            tblIdList.add(classifyTableKey);
         }
-
-        List<String> tblIdList = rspTblIdList.get(rspKey);
-        tblIdList.add(classifyTableKey);
     }
 
     public static String getSavedClassifyTableKey(String vppNode, String rsp, int index) {
         String rspKey = vppNode + "_" + rsp;
 
-        if (rspTblIdList.get(rspKey) == null) {
+        List<String> tblIdList = RSP_TABLE_ID_LIST.get(rspKey);
+        if (tblIdList == null) {
             return null;
         }
 
-        List<String> tblIdList = rspTblIdList.get(rspKey);
-        if (tblIdList.size() <= index) {
-            return null;
-        }
+        synchronized (tblIdList) {
+            if (tblIdList.size() <= index) {
+                return null;
+            }
 
-        return tblIdList.get(index);
+            return tblIdList.get(index);
+        }
     }
 
     public static ClassifyTableBuilder buildVppClassifyTable(SffName sffName, String rsp, HexString mask,

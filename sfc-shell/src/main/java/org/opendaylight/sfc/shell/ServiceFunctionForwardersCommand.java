@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Karaf command to show the Service Function Forwarders provisioned.
+ * Karaf CLI command to show the provisioned Service Function Forwarders.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  *
@@ -32,8 +32,8 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
 
     private static final String LOGICAL_SFF = "(Logical)";
 
-    @Option(name = "-name", aliases = {
-            "--name" }, description = "Name of the Service Function", required = false, multiValued = false)
+    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function", required = false,
+            multiValued = false)
     private String name;
 
     private final ShellTable table;
@@ -56,9 +56,11 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
             renderContent(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(new SffName(name)));
         } else {
             LOG.debug("Getting the list of Service Function Forwarders");
-            ServiceFunctionForwarders sffs = SfcProviderServiceForwarderAPI.readAllServiceFunctionForwarders();
-            if (sffs != null) {
-                List<ServiceFunctionForwarder> serviceFunctionForwarders = sffs.getServiceFunctionForwarder();
+            ServiceFunctionForwarders allServiceFunctionForwarders = SfcProviderServiceForwarderAPI
+                    .readAllServiceFunctionForwarders();
+            if (allServiceFunctionForwarders != null) {
+                List<ServiceFunctionForwarder> serviceFunctionForwarders = allServiceFunctionForwarders
+                        .getServiceFunctionForwarder();
                 serviceFunctionForwarders.forEach(this::renderContent);
             }
         }
@@ -70,13 +72,14 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
         if (serviceFunctionForwarder != null) {
             LOG.debug("Service Function Forwarder data: {}", serviceFunctionForwarder);
             table.addRow().addContent(serviceFunctionForwarder.getName().getValue(),
-                    serviceFunctionForwarder.getIpMgmtAddress() == null ? LOGICAL_SFF
-                            : serviceFunctionForwarder.getIpMgmtAddress().getValue(),
-                    serviceFunctionForwarder.getRestUri() == null ? LOGICAL_SFF
-                            : serviceFunctionForwarder.getRestUri().getValue(),
-                    serviceFunctionForwarder.getSffDataPlaneLocator() == null
-                            || serviceFunctionForwarder.getSffDataPlaneLocator().get(0) == null ? LOGICAL_SFF
-                                    : serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getName());
+                                      serviceFunctionForwarder.getIpMgmtAddress()
+                                              == null ? LOGICAL_SFF : serviceFunctionForwarder.getIpMgmtAddress()
+                                              .getValue(), serviceFunctionForwarder.getRestUri()
+                                              == null ? LOGICAL_SFF : serviceFunctionForwarder.getRestUri().getValue(),
+                                      serviceFunctionForwarder.getSffDataPlaneLocator() == null
+                                              || serviceFunctionForwarder.getSffDataPlaneLocator().get(0)
+                                              == null ? LOGICAL_SFF : serviceFunctionForwarder.getSffDataPlaneLocator()
+                                              .get(0).getName());
         }
     }
 }

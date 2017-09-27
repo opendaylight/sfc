@@ -13,7 +13,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.console.Session;
 
 /**
- * Abstract command with some common functionality to be inherited by the rest
+ * Abstract command with some common functionality shared by the rest
  * of the commands.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
@@ -23,6 +23,8 @@ public abstract class AbstractCommand implements Action {
 
     // Default value for fields that are not present
     protected static final String NO_VALUE = "------";
+
+    protected static final String SEPARATOR = ", ";
 
     @Reference
     protected Session session;

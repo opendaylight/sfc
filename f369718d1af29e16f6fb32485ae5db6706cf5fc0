@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_d143d210",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_1149ea30",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_7154a6c9",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 511,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_9164bab9",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient new String(String) constructor\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_716b0685",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 688,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Method invokes inefficient Number constructor; use static valueOf instead\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_b108deda",
+        "filename": "sfc-util/sfc-vpp-utils/src/main/java/org/opendaylight/sfc/util/vpp/SfcVppUtils.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 703,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-27T15:09:16Z",
+      "side": 0,
+      "message": "\"Private method is never called\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

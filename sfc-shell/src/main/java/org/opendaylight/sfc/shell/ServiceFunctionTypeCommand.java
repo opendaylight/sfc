@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Karaf command to show the Service Function Type provisioned.
+ * Karaf CLI command to show the provisioned Service Function Types.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  *

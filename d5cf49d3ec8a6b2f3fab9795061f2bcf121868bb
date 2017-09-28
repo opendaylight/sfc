@@ -237,6 +237,47 @@
       "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_d148e82e",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-28T22:02:16Z",
+      "side": 1,
+      "message": "OK. I don\u0027t want to further hold up review any further..",
+      "parentUuid": "ba1f61a0_ae34f549",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_114f2035",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-28T22:02:16Z",
+      "side": 1,
+      "message": "Just one more last other point here: I\u0027ve just looked (for the first time) more through your various SpecialExecutors, and was wondering why you would use the newBlockingBoundedCachedThreadPool variant here.. \n\nBut in the theoretical case of the queue ever becoming full in production, if I understand things correctly, this would then block on the CDS DataBroker internal change listener notification delivery thread, and thus probably block delivery of unrelated changes for the entire system.  Is this really what one would want in such a (probably hypothetical, but still...) case?  Seeing that you also have bounded non blocking variants which would reject with exceptions, would that not be better?  Things wouldn\u0027t work anyway, but there would be clear failures visible in the LOG... better, IMHO? \n\nAlso, and orthogonal, I see that you have *Fast* and *Cached* variants.  For such DTCL listeners, the *Fast* sound more appropriate to me (don\u0027t care about a bit more memory; we\u0027d want these to be as fast as possible?), so how about using your newBoundedFastThreadPool() instead of newBlockingBoundedCachedThreadPool?",
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

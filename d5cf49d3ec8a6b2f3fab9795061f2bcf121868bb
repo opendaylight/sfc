@@ -55,6 +55,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_8ee931b9",
+        "filename": "sfc-sb-rest/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T17:18:02Z",
+      "side": 1,
+      "message": "yeah it handles blueprint - but I think blueprint plugs into it somehow. Spring DM did the same thing. But unfortunately it only recognizes the default dir and I haven\u0027t seen anyway to configure it.",
+      "parentUuid": "ba1f61a0_6895d431",
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_4d6634ee",
         "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
         "patchSetId": 1
@@ -186,6 +204,30 @@
       "side": 1,
       "message": "OK, I see. The only question I have then is whether there should be a multi threaded Executor per bundle, like here - or if each async DTCL listener class should have its own  single threaded Executor - which is what genius is doing today.\n\nAfter having had a closer look here I only now understand that SFC already had multi threaded Executors, just before each listener had its own, and in this change you\u0027re centralizing it, at granularity bundle (not project or even global).\n\nBased on this, I no longer see why a global ExecutorService advertised as an OSGi service would be useful, or to who - if it\u0027s bundle local anyway.",
       "parentUuid": "ba1f61a0_bc11dd05",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_ae34f549",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T17:18:02Z",
+      "side": 1,
+      "message": "My intention here was to just centralize an executor for these set of listeners  as an improvement over an executor per listener. If there\u0027s no objections to the shared executor here then I\u0027d like to get this moved forward. Whether it should be a single thread executor or possibly use a global executor - I don\u0027t have a clear answer at this point but that could be investigated with future patches if needed.",
+      "parentUuid": "ba1f61a0_8eb651f7",
       "range": {
         "startLine": 18,
         "startChar": 29,

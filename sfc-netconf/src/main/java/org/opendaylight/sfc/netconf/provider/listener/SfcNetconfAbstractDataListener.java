@@ -25,39 +25,18 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public abstract class SfcNetconfAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T> {
-    protected DataBroker dataBroker;
-    protected InstanceIdentifier<T> instanceIdentifier;
-    protected ListenerRegistration<SfcNetconfAbstractDataListener<T>> dataChangeListenerRegistration;
-    protected LogicalDatastoreType dataStoreType;
+public abstract class SfcNetconfAbstractDataListener<T extends DataObject> implements DataTreeChangeListener<T>,
+        AutoCloseable {
+    private final ListenerRegistration<SfcNetconfAbstractDataListener<T>> dataChangeListenerRegistration;
 
-    public SfcNetconfAbstractDataListener() {
-        this.dataStoreType = LogicalDatastoreType.CONFIGURATION;
-    }
-
-    public DataBroker getDataBroker() {
-        return dataBroker;
-    }
-
-    public void setDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    public void setDataStoreType(LogicalDatastoreType dataStoreType) {
-        this.dataStoreType = dataStoreType;
-    }
-
-    public void setInstanceIdentifier(InstanceIdentifier<T> instanceIdentifier) {
-        this.instanceIdentifier = instanceIdentifier;
-    }
-
-
-    public void registerAsDataChangeListener() {
+    public SfcNetconfAbstractDataListener(DataBroker dataBroker, InstanceIdentifier<T> instanceIdentifier,
+            LogicalDatastoreType dataStoreType) {
         dataChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
                 dataStoreType, instanceIdentifier), this);
     }
 
-    public void closeDataChangeListener() {
+    @Override
+    public void close() {
         dataChangeListenerRegistration.close();
     }
 }

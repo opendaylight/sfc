@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "ba1f61a0_6895d431",
+        "filename": "sfc-sb-rest/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-28T16:56:40Z",
+      "side": 1,
+      "message": "Oh! Now I got it - thanks for explaining!  Perhaps that\u0027s another reason why an abstraction for this would be useful if more projects were to consume this.. to save this headache. (BTW: Curious that that this even works with the default blueprint directory, I\u0027m surprised that the maven-bundle-plugin is even that smart, in this particular case; it KNOWS about blueprint?! Wow.)",
+      "parentUuid": "ba1f61a0_1c758963",
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba1f61a0_4d6634ee",
         "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
         "patchSetId": 1
@@ -144,6 +162,30 @@
       "side": 1,
       "message": "You certainly can advertise an ExecutorService as an OSGi service via \u003cservice\u003e. You\u0027d want to use a specific service property to distinguish it.\n\nnewBlockingBoundedCachedThreadPool is a ThreadPoolExecutor under the hood with some specific configuration and behavior. It\u0027s basically similar to Executors.newCachedThreadPool except it adds a bounded queue. \n\nI don\u0027t know if it\u0027s really necessary to have a global executor across projects. What if one project has higher load and starves another projects\u0027s tasks.  I don\u0027t think we need to worry about reusing an executor across sfc, genius, netvirt etc as long as projects don\u0027t use fixed thread pools that don\u0027t cleanup when idle. That\u0027s mainly why I made this change as each listener created it\u0027s own fixed thread pool which is wasteful as once all the threads are created they remain in memory for the life of the process even if they\u0027re never used again.",
       "parentUuid": "ba1f61a0_dc08112a",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 88
+      },
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8eb651f7",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-09-28T16:56:40Z",
+      "side": 1,
+      "message": "OK, I see. The only question I have then is whether there should be a multi threaded Executor per bundle, like here - or if each async DTCL listener class should have its own  single threaded Executor - which is what genius is doing today.\n\nAfter having had a closer look here I only now understand that SFC already had multi threaded Executors, just before each listener had its own, and in this change you\u0027re centralizing it, at granularity bundle (not project or even global).\n\nBased on this, I no longer see why a global ExecutorService advertised as an OSGi service would be useful, or to who - if it\u0027s bundle local anyway.",
+      "parentUuid": "ba1f61a0_bc11dd05",
       "range": {
         "startLine": 18,
         "startChar": 29,

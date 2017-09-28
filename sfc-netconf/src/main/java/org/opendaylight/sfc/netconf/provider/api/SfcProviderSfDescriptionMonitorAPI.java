@@ -12,15 +12,11 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ConsumerContext;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.sfc.netconf.provider.SfcNetconfDataProvider;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionDescriptionMonitorReportService;
@@ -39,30 +35,15 @@ import org.slf4j.LoggerFactory;
 
 public class SfcProviderSfDescriptionMonitorAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderSfDescriptionMonitorAPI.class);
-    private static BindingAwareBroker bindingAwareBroker = null;
-    private static ConsumerContext sessionData;
     private static final InstanceIdentifier<Topology> NETCONF_TOPO_IID = InstanceIdentifier
             .create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())));
 
-    public SfcProviderSfDescriptionMonitorAPI() {
-        setSessionHelper();
+    private final MountPointService mountService;
+
+    public SfcProviderSfDescriptionMonitorAPI(MountPointService mountService) {
+        this.mountService = mountService;
         LOG.info("SfcProviderSfDescriptionMonitorAPI bean initialized.");
-    }
-
-    private void setSessionHelper() {
-        printTraceStart(LOG);
-        if (bindingAwareBroker != null) {
-            if (sessionData == null) {
-                sessionData = bindingAwareBroker.registerConsumer(SfcNetconfDataProvider.getNetconfDataProvider());
-                Preconditions.checkState(sessionData != null, "SfcNetconfDataProvider register is not available.");
-            }
-        }
-        printTraceStop(LOG);
-    }
-
-    protected void setSession() {
-        setSessionHelper();
     }
 
     public GetSFDescriptionOutput getSFDescriptionInfoFromNetconf(String nodeName) {
@@ -115,11 +96,7 @@ public class SfcProviderSfDescriptionMonitorAPI {
 
     private ServiceFunctionDescriptionMonitorReportService getSfDescriptionMonitorService(String nodeName) {
         InstanceIdentifier<?> nodeIID = NETCONF_TOPO_IID.child(Node.class, new NodeKey(new NodeId(nodeName)));
-        MountPointService mountService = SfcNetconfDataProvider.getNetconfDataProvider().getMountService();
-        if (mountService == null) {
-            LOG.error("Mount service is null");
-            return null;
-        }
+
         Optional<MountPoint> mountPoint = mountService.getMountPoint(nodeIID);
         if (!mountPoint.isPresent()) {
             LOG.error("Mount point for node {} doesn't exist", nodeName);
@@ -131,10 +108,5 @@ public class SfcProviderSfDescriptionMonitorAPI {
             return null;
         }
         return service.get().getRpcService(ServiceFunctionDescriptionMonitorReportService.class);
-    }
-
-    // blueprint setter
-    public void setBindingRegistry(BindingAwareBroker broker) {
-        bindingAwareBroker = broker;
     }
 }

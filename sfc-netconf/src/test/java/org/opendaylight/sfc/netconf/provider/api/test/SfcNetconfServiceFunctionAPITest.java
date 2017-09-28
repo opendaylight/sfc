@@ -63,11 +63,13 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
     private static final SfName SF_NAME = new SfName("dummySF");
     private static final SfName SF_STATE_NAME = new SfName("dummySFS");
 
+    private SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI;
+
     @Before
     public void before() {
         DataBroker dataBroker = getDataBroker();
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
-        SfcNetconfServiceFunctionAPI.setDataProvider(dataBroker);
+        sfcNetconfServiceFunctionAPI = new SfcNetconfServiceFunctionAPI(null);
     }
 
     public void testCreateReadServiceFunctionDescription() {
@@ -207,10 +209,10 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         boolean transactionSuccessful = writeServiceFunctionStateAugmentation();
         assertTrue("Must be true", transactionSuccessful);
 
-        boolean result = SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, SF_NAME);
+        boolean result = sfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, SF_NAME);
         assertTrue("Must be true", result);
 
-        result = SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, SF_NAME);
+        result = sfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, SF_NAME);
         assertTrue("Must be true", result);
     }
 

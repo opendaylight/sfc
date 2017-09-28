@@ -28,7 +28,6 @@ import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI;
-import org.opendaylight.sfc.netconf.provider.api.SfcProviderSfDescriptionMonitorAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
@@ -55,27 +54,22 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<Node> implements AutoCloseable {
+public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<Node> {
 
     private static final String CONTROLLER_CONFIG = "controller-config";
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
-    private static SfcProviderSfDescriptionMonitorAPI getSfDescMon = null;
-
     public static final InstanceIdentifier<Node> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
             .child(Node.class);
 
-    public SfcNetconfNodeDataListener(DataBroker dataprovider) {
-        setDataBroker(dataprovider);
-        setInstanceIdentifier(NETCONF_TOPO_IID);
-        setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-        registerAsDataChangeListener();
-    }
+    private final SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI;
 
-    public void setSfcProviderSfDescriptionMonitorAPI(SfcProviderSfDescriptionMonitorAPI descriptionMonitorAPI) {
-        getSfDescMon = descriptionMonitorAPI;
+    public SfcNetconfNodeDataListener(DataBroker dataBroker,
+            SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI) {
+        super(dataBroker, NETCONF_TOPO_IID, LogicalDatastoreType.OPERATIONAL);
+        this.sfcNetconfServiceFunctionAPI = sfcNetconfServiceFunctionAPI;
     }
 
     private static boolean isServiceFunction(NetconfNode netconfNode) {
@@ -135,8 +129,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
 
                     /* Identify it is SF or SFF */
                     if (isServiceFunction(nnode)) { // SF
-                        DescriptionInfo descInfo = SfcNetconfServiceFunctionAPI
-                                .getServiceFunctionDescription(nodeName);
+                        DescriptionInfo descInfo = sfcNetconfServiceFunctionAPI.getServiceFunctionDescription(nodeName);
                         String type = descInfo.getType();
                         if (type == null || type.isEmpty()) {
                             LOG.error("SF type is empty");
@@ -153,11 +146,10 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
                                 sfNodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
                         if (SfcProviderServiceFunctionAPI.putServiceFunction(sf)) {
                             LOG.info("Successfully created SF from Netconf node {}", nodeName);
-                            SfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, sfNodeName);
-                            MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI
-                                    .getServiceFunctionMonitor(nodeName);
+                            sfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, sfNodeName);
+                            MonitoringInfo monInfo = sfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
                             if (monInfo != null) {
-                                SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
+                                sfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
                             }
                         } else {
                             LOG.error("Failed to create SF from Netconf node {}", nodeName);
@@ -211,23 +203,19 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private NodeId getNodeId(final InstanceIdentifier<?> iid) {
         NodeId nodeId = null;
         for (InstanceIdentifier.PathArgument pathArgument : iid.getPathArguments()) {
             if (pathArgument instanceof InstanceIdentifier.IdentifiableItem<?, ?>) {
 
-                final Identifier key = ((InstanceIdentifier.IdentifiableItem) pathArgument).getKey();
+                final Identifier<?> key = ((InstanceIdentifier.IdentifiableItem) pathArgument).getKey();
                 if (key instanceof NodeKey) {
                     nodeId = ((NodeKey) key).getNodeId();
                 }
             }
         }
         return nodeId;
-    }
-
-    @Override
-    public void close() throws Exception {
-        closeDataChangeListener();
     }
 
     class SfDescriptionMonitoringThread implements Runnable {
@@ -241,10 +229,10 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
         public void run() {
             while (true) {
                 printTraceStart(LOG);
-                MonitoringInfo monInfo = SfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
+                MonitoringInfo monInfo = sfcNetconfServiceFunctionAPI.getServiceFunctionMonitor(nodeName);
                 if (monInfo != null) {
                     SfName sfNodeName = new SfName(nodeName);
-                    SfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
+                    sfcNetconfServiceFunctionAPI.putServiceFunctionMonitor(monInfo, sfNodeName);
                 }
                 try {
                     Thread.sleep(5000);

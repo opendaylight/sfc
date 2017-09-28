@@ -9,17 +9,11 @@
 package org.opendaylight.sfc.netconf.provider.api;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * This class has the APIs to map Netconf to SFC Service Function Forwarder
@@ -35,8 +29,6 @@ public class SfcNetconfServiceForwarderAPI {
         // prevents calls from subclass
         throw new UnsupportedOperationException();
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfServiceForwarderAPI.class);
 
     /**
      * Returns an Service Function Forwarder object which can be stored in
@@ -55,11 +47,8 @@ public class SfcNetconfServiceForwarderAPI {
         Preconditions.checkNotNull(nnode);
 
         SffName sffName = new SffName(nodeName);
-        SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        // TODO: should be replaced once OVS interface name will be available
 
-        List<SffDataPlaneLocator> sffDataPlaneLocatorList = new ArrayList<>();
-        sffDataPlaneLocatorList.add(sffDataPlaneLocatorBuilder.build());
+        // TODO: should be replaced once OVS interface name will be available
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(sffName);

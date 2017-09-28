@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_0629afe5",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/SfcNetconfDataProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "This class appears to be a remnant from when the CSS was used. All this class does is obtain the MountPointService for another class which can easily be done by obtaining via blueprint and injecting.",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_461f27b7",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/api/SfcNetconfServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e623bb02",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/api/SfcNetconfServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "\"Useless object created\"",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_667fcbe0",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/api/SfcNetconfServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "\"Write to static field from instance method\" - statics are problematic. Converted this class to non-static with the SfcProviderSfDescriptionMonitorAPI injected.",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_261af3c5",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/api/SfcNetconfServiceFunctionAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "not used - removed",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a68543d0",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/api/SfcProviderSfDescriptionMonitorAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "Simplified to inject the MountPointService via BP which eliminates the need for the BindingAwareBroker and SfcNetconfDataProvider which eliminates the problematic static fields.",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_2671530c",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/listener/SfcNetconfNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 0,
+      "message": "not used",
+      "revId": "f369718d1af29e16f6fb32485ae5db6706cf5fc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

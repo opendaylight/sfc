@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_e66a9b18",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/listener/SfcNetconfAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T00:28:55Z",
+      "side": 1,
+      "message": "Simplified this class by passing params in the ctor instead of setters and having to deal with null fields (and resulting findbugs violations).",
+      "revId": "8c12e698b5743b1b88c1a1041e60510db40b92c4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

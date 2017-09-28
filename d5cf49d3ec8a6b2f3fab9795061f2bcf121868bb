@@ -278,6 +278,24 @@
       "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_712e5cfc",
+        "filename": "sfc-sb-rest/src/main/resources/org/opendaylight/blueprint/sfc-sb-rest.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-28T23:33:25Z",
+      "side": 1,
+      "message": "In CDS each listener gets its own actor and thus dedicated queue so if the listener blocks in the callback then it\u0027s blocking its own queue and does not affect other listeners. I think a last ditch calling thread executor in this case is better then rejecting b/c there\u0027s no recovery from the latter.  The other option is to use an unbounded queue and risk exhausiting memory as it did before but that makes me wary.\n\nThe \"Fast\" part really would only apply to the initial notifications that first spawn threads. With a \"fast\" configuration, when the thread count is less than the max, the thread pool prefers creating a new thread rather than possibly reusing an existing idle thread that was previously created in the pool. So if you have a \"fast\" pool with 5 threads, each of the first 5 tasks submitted will always spawn a new thread regardless if there\u0027s an idle thread. However after the 5 threads have been created, subsequent task are queued in the same manner as a \"cached\" thread pool. Therefore a \"fast\" pool wouldn\u0027t buy much here.",
+      "parentUuid": "ba1f61a0_114f2035",
+      "revId": "d5cf49d3ec8a6b2f3fab9795061f2bcf121868bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

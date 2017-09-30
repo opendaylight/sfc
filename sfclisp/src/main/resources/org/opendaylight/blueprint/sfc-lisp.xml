@@ -10,29 +10,37 @@
   <odl:rpc-service id="lfmService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService"/>
 
   <bean id="lispUpdater"
-    class="org.opendaylight.sfc.sfclisp.provider.LispUpdater">
+    class="org.opendaylight.sfc.sfclisp.provider.LispUpdater"
+    destroy-method="close">
     <argument ref="lfmService"/>
+  </bean>
+
+  <bean id="sfcProviderServiceLispAPI"
+    class="org.opendaylight.sfc.sfclisp.provider.api.SfcProviderServiceLispAPI">
+    <argument ref="dataBroker"/>
   </bean>
 
   <bean id="sfcProviderSffDataListener"
     class="org.opendaylight.sfc.sfclisp.provider.listener.SfcLispSffDataListener"
-    destroy-method="closeDataChangeListener">
+    destroy-method="close">
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
-    <property name="dataProvider" ref="dataBroker"/>
+    <argument ref="sfcProviderServiceLispAPI"/>
   </bean>
 
   <bean id="sfcProviderSfEntryDataListener"
     class="org.opendaylight.sfc.sfclisp.provider.listener.SfcLispSfEntryDataListener"
-    destroy-method="closeDataChangeListener">
+    destroy-method="close">
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
-    <property name="dataProvider" ref="dataBroker"/>
+    <argument ref="sfcProviderServiceLispAPI"/>
   </bean>
 
   <bean id="sfcLispRspEntryDataListener"
     class="org.opendaylight.sfc.sfclisp.provider.listener.SfcLispRspEntryDataListener"
-    destroy-method="closeDataChangeListener">
+    destroy-method="close">
+    <argument ref="dataBroker"/>
     <argument ref="lispUpdater"/>
-    <property name="dataProvider" ref="dataBroker"/>
   </bean>
 
 </blueprint>

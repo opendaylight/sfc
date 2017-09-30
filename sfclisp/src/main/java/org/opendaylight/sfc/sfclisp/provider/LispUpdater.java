@@ -7,11 +7,11 @@
  */
 package org.opendaylight.sfc.sfclisp.provider;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.lispflowmapping.lisp.util.SourceDestKeyHelper;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -54,24 +54,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.lo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.mapping.record.container.MappingRecord;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService;
+import org.opendaylight.yangtools.util.concurrent.SpecialExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LispUpdater implements ILispUpdater {
+public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(LispUpdater.class);
-    protected static ExecutorService executor = Executors.newFixedThreadPool(5);
 
-    private static LispUpdater lispUpdaterObj;
+    private final ExecutorService executor = SpecialExecutors.newBlockingBoundedCachedThreadPool(
+            5, 1000, "LispUpdater");
     private final OdlMappingserviceService lfmService;
 
     public LispUpdater(OdlMappingserviceService lfmService) {
         this.lfmService = lfmService;
-        lispUpdaterObj = this;
-    }
-
-    public static LispUpdater getLispUpdaterObj() {
-        return LispUpdater.lispUpdaterObj;
     }
 
     public OdlMappingserviceService getMappingserviceService() {
@@ -399,8 +395,7 @@ public class LispUpdater implements ILispUpdater {
             SffName sffName = hop.getServiceFunctionForwarder();
             ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(sffName);
             if (sff == null) {
-                LOG.warn("Couldn't find SFF {} that supports hop {} in datastore", sffName,
-                        hop.getHopNumber().shortValue());
+                LOG.warn("Couldn't find SFF {} that supports hop {} in datastore", sffName, hop.getHopNumber());
                 return;
             }
 
@@ -478,6 +473,8 @@ public class LispUpdater implements ILispUpdater {
         removeMapping(spEid);
     }
 
+    // "Possible null pointer dereference of acl1 on branch that might be infeasible" - false positive - ignore it.
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE")
     private boolean shallowCompareAcls(Acl acl1, Acl acl2) {
         if (acl1 != null && acl2 == null) {
             return false;
@@ -543,5 +540,10 @@ public class LispUpdater implements ILispUpdater {
     public void updatePath(RenderedServicePath newRsp, RenderedServicePath oldRsp) {
         // overwrite
         registerPath(newRsp);
+    }
+
+    @Override
+    public void close() {
+        executor.shutdown();
     }
 }

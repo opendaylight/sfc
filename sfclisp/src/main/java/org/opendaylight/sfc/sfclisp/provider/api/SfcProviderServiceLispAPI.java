@@ -21,42 +21,51 @@ import org.slf4j.LoggerFactory;
 
 public class SfcProviderServiceLispAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceLispAPI.class);
-    private static DataBroker dataProvider;
 
-    public void setDataProvider(DataBroker broker) {
-        dataProvider = broker;
+    private final DataBroker dataProvider;
+    private final LispUpdater lispUpdater;
+
+    public SfcProviderServiceLispAPI(DataBroker dataProvider, LispUpdater lispUpdater) {
+        this.dataProvider = dataProvider;
+        this.lispUpdater = lispUpdater;
     }
 
-    public static void lispUpdateServiceFunction(ServiceFunction sf) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (dataProvider != null) {
-            sf = LispUpdater.getLispUpdaterObj().updateLispData(sf);
-
-            InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                    .child(ServiceFunction.class, sf.getKey()).build();
-
-            WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
-            writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
-            writeTx.submit();
-
+    public void lispUpdateServiceFunction(ServiceFunction sf) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+
+        ServiceFunction updatedSf = lispUpdater.updateLispData(sf);
+
+        InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
+                .child(ServiceFunction.class, updatedSf.getKey()).build();
+
+        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, updatedSf, true);
+        writeTx.submit();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        }
     }
 
-    public static void lispUpdateServiceFunctionForwarder(ServiceFunctionForwarder sff) {
-        LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
-        if (dataProvider != null) {
-
-            sff = LispUpdater.getLispUpdaterObj().updateLispData(sff);
-
-            InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
-                    .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, sff.getKey())
-                    .build();
-
-            WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
-            writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, sff, true);
-            writeTx.submit();
+    public void lispUpdateServiceFunctionForwarder(ServiceFunctionForwarder sff) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n####### Start: {}", Thread.currentThread().getStackTrace()[1]);
         }
-        LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+
+        ServiceFunctionForwarder updatedSff = lispUpdater.updateLispData(sff);
+
+        InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
+                .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, updatedSff.getKey())
+                .build();
+
+        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
+        writeTx.merge(LogicalDatastoreType.CONFIGURATION, sffEntryIID, updatedSff, true);
+        writeTx.submit();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("\n########## Stop: {}", Thread.currentThread().getStackTrace()[1]);
+        }
     }
 }

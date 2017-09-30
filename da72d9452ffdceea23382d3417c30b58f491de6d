@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_2305b613",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/api/TackerManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T22:02:02Z",
+      "side": 0,
+      "message": "\"Local variables should not shadow class fields\"",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_3505e910",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/dto/Token.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T22:02:02Z",
+      "side": 0,
+      "message": "Removed all the getters as they\u0027re not necessary plus it avoids FB warnings",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

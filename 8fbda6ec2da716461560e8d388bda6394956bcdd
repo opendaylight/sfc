@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_95081529",
+        "filename": "sfc-vnfm-tacker/src/main/java/org/opendaylight/sfc/tacker/util/DateUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T22:02:02Z",
+      "side": 1,
+      "message": "\"Utility classes should not have public constructors  \"",
+      "revId": "8fbda6ec2da716461560e8d388bda6394956bcdd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

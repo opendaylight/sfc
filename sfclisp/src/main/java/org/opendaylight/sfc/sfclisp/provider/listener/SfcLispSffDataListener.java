@@ -36,16 +36,14 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener<ServiceF
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSffDataListener.class);
     private final LispUpdater lispUpdater;
+    private final SfcProviderServiceLispAPI sfcProviderServiceLispAPI;
 
-    public SfcLispSffDataListener(LispUpdater lispUpdater) {
-        setInstanceIdentifier(SfcInstanceIdentifiers.SFF_IID);
-        setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+    public SfcLispSffDataListener(DataBroker dataBroker, LispUpdater lispUpdater,
+            SfcProviderServiceLispAPI sfcProviderServiceLispAPI) {
+        super(dataBroker, SfcInstanceIdentifiers.SFF_IID, LogicalDatastoreType.CONFIGURATION);
         this.lispUpdater = lispUpdater;
-    }
+        this.sfcProviderServiceLispAPI = sfcProviderServiceLispAPI;
 
-    public void setDataProvider(DataBroker dataBroker) {
-        setDataBroker(dataBroker);
-        registerAsDataChangeListener();
         LOG.info("Initialized SFF listener");
     }
 
@@ -66,7 +64,7 @@ public class SfcLispSffDataListener extends SfcLispAbstractDataListener<ServiceF
                                 .getServiceFunctionForwarder();
                         for (ServiceFunctionForwarder serviceFunctionForwarder : serviceFunctionForwarderList) {
                             if (lispUpdater.containsLispAddress(serviceFunctionForwarder)) {
-                                SfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
+                                sfcProviderServiceLispAPI.lispUpdateServiceFunctionForwarder(serviceFunctionForwarder);
                             }
                         }
                     }

@@ -29,15 +29,10 @@ public class SfcLispRspEntryDataListener extends SfcLispAbstractDataListener<Ren
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispRspEntryDataListener.class);
     private final LispUpdater lispUpdater;
 
-    public SfcLispRspEntryDataListener(LispUpdater lispUpdater) {
+    public SfcLispRspEntryDataListener(DataBroker dataBroker, LispUpdater lispUpdater) {
+        super(dataBroker, SfcInstanceIdentifiers.RSP_ENTRY_IID, LogicalDatastoreType.OPERATIONAL);
         this.lispUpdater = lispUpdater;
-        setInstanceIdentifier(SfcInstanceIdentifiers.RSP_ENTRY_IID);
-        setDataStoreType(LogicalDatastoreType.OPERATIONAL);
-    }
 
-    public void setDataProvider(DataBroker broker) {
-        setDataBroker(broker);
-        registerAsDataChangeListener();
         LOG.info("Initialized RSP listener");
     }
 

@@ -33,16 +33,14 @@ import org.slf4j.LoggerFactory;
 public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener<ServiceFunction> {
     private static final Logger LOG = LoggerFactory.getLogger(SfcLispSfEntryDataListener.class);
     private final LispUpdater lispUpdater;
+    private final SfcProviderServiceLispAPI sfcProviderServiceLispAPI;
 
-    public SfcLispSfEntryDataListener(LispUpdater lispUpdater) {
-        setInstanceIdentifier(SfcInstanceIdentifiers.SF_ENTRY_IID);
-        setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+    public SfcLispSfEntryDataListener(DataBroker dataBroker, LispUpdater lispUpdater,
+            SfcProviderServiceLispAPI sfcProviderServiceLispAPI) {
+        super(dataBroker, SfcInstanceIdentifiers.SF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION);
         this.lispUpdater = lispUpdater;
-    }
+        this.sfcProviderServiceLispAPI = sfcProviderServiceLispAPI;
 
-    public void setDataProvider(DataBroker dataBroker) {
-        setDataBroker(dataBroker);
-        registerAsDataChangeListener();
         LOG.info("Initialized SF listener");
     }
 
@@ -61,7 +59,7 @@ public class SfcLispSfEntryDataListener extends SfcLispAbstractDataListener<Serv
                         ServiceFunction createdServiceFunction = rootNode.getDataAfter();
 
                         if (lispUpdater.containsLispAddress(createdServiceFunction)) {
-                            SfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
+                            sfcProviderServiceLispAPI.lispUpdateServiceFunction(createdServiceFunction);
                         }
                     }
                     break;

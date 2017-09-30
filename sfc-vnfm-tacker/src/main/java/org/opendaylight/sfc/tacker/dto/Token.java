@@ -9,9 +9,13 @@
 package org.opendaylight.sfc.tacker.dto;
 
 import com.google.gson.annotations.SerializedName;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Date;
 
+// Suppresses the "May expose internal representation by returning reference to mutable object" findbugs violation for
+// the Date and String[] field getters. The alternative is to return a copy from the method but that introduces
+// inefficiency.
+@SuppressFBWarnings("EI_EXPOSE_REP")
 public class Token {
 
     @SerializedName("issued_at")
@@ -27,11 +31,11 @@ public class Token {
     private Token() {}
 
     private Token(TokenBuilder builder) {
-        this.issuedAt = builder.getIssuedAt();
-        this.expires = builder.getExpires();
-        this.id = builder.getId();
-        this.tenant = builder.getTenant();
-        this.auditIds = builder.getAuditIds();
+        this.issuedAt = builder.issuedAt;
+        this.expires = builder.expires;
+        this.id = builder.id;
+        this.tenant = builder.tenant;
+        this.auditIds = builder.auditIds;
     }
 
     public static TokenBuilder builder() {
@@ -58,6 +62,10 @@ public class Token {
         return auditIds;
     }
 
+    // Suppresses the  "May expose internal representation by incorporating reference to mutable object" findbugs
+    // violation for the Date and String[] field setters. The alternative is to copy it but that introduces
+    // inefficiency.
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public static class TokenBuilder {
 
         private Date issuedAt;
@@ -66,17 +74,9 @@ public class Token {
         private Tenant tenant;
         private String[] auditIds;
 
-        public Date getIssuedAt() {
-            return issuedAt;
-        }
-
         public TokenBuilder setIssuedAt(Date issuedAt) {
             this.issuedAt = issuedAt;
             return this;
-        }
-
-        public Date getExpires() {
-            return expires;
         }
 
         public TokenBuilder setExpires(Date expires) {
@@ -84,26 +84,14 @@ public class Token {
             return this;
         }
 
-        public String getId() {
-            return id;
-        }
-
         public TokenBuilder setId(String id) {
             this.id = id;
             return this;
         }
 
-        public Tenant getTenant() {
-            return tenant;
-        }
-
         public TokenBuilder setTenant(Tenant tenant) {
             this.tenant = tenant;
             return this;
-        }
-
-        public String[] getAuditIds() {
-            return auditIds;
         }
 
         public TokenBuilder setAuditIds(String[] auditIds) {

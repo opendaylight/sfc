@@ -14,6 +14,9 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
+    private DateUtils() {
+    }
+
     public static Date getUtcDate(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -26,8 +29,8 @@ public class DateUtils {
         int offsetHrs = offset / 1000 / 60 / 60;
         int offsetMins = offset / 1000 / 60 % 60;
 
-        calendar.add(Calendar.HOUR_OF_DAY, (-offsetHrs));
-        calendar.add(Calendar.MINUTE, (-offsetMins));
+        calendar.add(Calendar.HOUR_OF_DAY, -offsetHrs);
+        calendar.add(Calendar.MINUTE, -offsetMins);
 
         return calendar.getTime();
     }

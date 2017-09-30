@@ -178,9 +178,8 @@ public class TackerManager implements AutoCloseableSfcVnfManager {
                     JsonObject jsonObject =
                             GSON.fromJson(json, JsonObject.class).getAsJsonObject("access").getAsJsonObject("token");
 
-                    Token token = GSON.fromJson(jsonObject, Token.class);
                     LOG.debug("Authentication token successfully created.");
-                    return token;
+                    return GSON.fromJson(jsonObject, Token.class);
                 default:
                     LOG.debug(response.getEntity(String.class));
                     break;

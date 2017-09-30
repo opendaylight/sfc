@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_43370aff",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/lisp/ISfcLispListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "No longer used",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a33a46e4",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/lisp/SfcLispListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "No longer used plus the class doesn\u0027t really do anything",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_833d82df",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "\"Field isn\u0027t final but should be\" - however this really shouldn\u0027t be static",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_e3271ec8",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "Don\u0027t need a static instance plus it isn\u0027t good practice.",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_c322dab7",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "\"Boxed value is unboxed and then immediately reboxed\"",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_0329929a",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/api/SfcProviderServiceLispAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "\"Write to static field from instance method\". Make this class non-static and pass into users.\n\nAlso, I discovered that this method is actually never called thus the methods below are no-ops. It\u0027s been broken for a while since the static OpendaylightSfc class was removed about a year ago.",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_a311a65e",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/listener/SfcLispAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "\"Field not initialized in constructor but dereferenced without null check\"",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_8314624d",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/listener/SfcLispAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 0,
+      "message": "\"Field not initialized in constructor but dereferenced without null check\"",
+      "revId": "da72d9452ffdceea23382d3417c30b58f491de6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

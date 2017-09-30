@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba1f61a0_232e56a5",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/LispUpdater.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 1,
+      "message": "FB complains about \"Possible null pointer dereference of acl1 on branch...\" but the code looks correct so suppress it.",
+      "revId": "1aa2bfc1842f302b3822d049cc1ff04c7ed490a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_631b2e81",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/api/SfcProviderServiceLispAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 1,
+      "message": "Pass this in instead of accessing the static instance.",
+      "range": {
+        "startLine": 28,
+        "startChar": 62,
+        "endLine": 28,
+        "endChar": 73
+      },
+      "revId": "1aa2bfc1842f302b3822d049cc1ff04c7ed490a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba1f61a0_431eea70",
+        "filename": "sfclisp/src/main/java/org/opendaylight/sfc/sfclisp/provider/listener/SfcLispAbstractDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-09-30T20:44:25Z",
+      "side": 1,
+      "message": "Simplified this class by passing params in the ctor instead of setters and having to deal with potential null fields (and resulting findbugs violations).",
+      "revId": "1aa2bfc1842f302b3822d049cc1ff04c7ed490a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

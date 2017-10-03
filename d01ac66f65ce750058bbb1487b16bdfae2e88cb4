@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_53bce76c",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRpc.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-10-03T18:13:21Z",
+      "side": 0,
+      "message": "\"Unused private fields should be removed\"",
+      "revId": "d01ac66f65ce750058bbb1487b16bdfae2e88cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_93b65f89",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/pot/provider/SfcPotRspProcessor.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-10-03T18:13:21Z",
+      "side": 0,
+      "message": "\"Load of known null value\"",
+      "range": {
+        "startLine": 171,
+        "startChar": 77,
+        "endLine": 171,
+        "endChar": 84
+      },
+      "revId": "d01ac66f65ce750058bbb1487b16bdfae2e88cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

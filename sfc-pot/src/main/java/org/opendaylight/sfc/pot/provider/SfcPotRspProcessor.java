@@ -168,7 +168,7 @@ public class SfcPotRspProcessor {
         renderedServicePathBuilder = new RenderedServicePathBuilder(rsp);
         sfpName = rsp.getParentServiceFunctionPath();
         if (sfpName == null) {
-            LOG.error("iOAM:PoT:Disable:ServiceFunctionPath:{} is invalid.", sfpName);
+            LOG.error("iOAM:PoT:Disable:ServiceFunctionPath: parentServiceFunctionPath for {} is null.", rsp);
             return false;
         }
         ServiceFunctionPath sfp;

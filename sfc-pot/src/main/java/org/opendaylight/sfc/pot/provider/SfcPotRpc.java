@@ -21,8 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class holds all RPCs/methods for enabling/disabling SFC iOAM Proof of
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * @since 2016-06-01
  */
 public class SfcPotRpc implements SfcIoamNbPotService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SfcPotRpc.class);
 
     public static SfcPotRpc getSfcPotRpc() {
         return new SfcPotRpc();

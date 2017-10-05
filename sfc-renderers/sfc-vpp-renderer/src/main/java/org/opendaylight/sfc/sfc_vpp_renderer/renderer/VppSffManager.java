@@ -23,13 +23,13 @@ public class VppSffManager {
 
     private final VppNodeManager nodeManager;
 
-    public VppSffManager(DataBroker dataBroker, VppNodeManager nodeManager) {
+    public VppSffManager(VppNodeManager nodeManager) {
         // Register SFF listener
         this.nodeManager = nodeManager;
     }
 
     public void disposeSff(ServiceFunctionForwarder sff, boolean disconnect) {
-        boolean connected = false;
+        boolean connected;
         SffNetconfAugmentation sffNetconfAugmentation = sff.getAugmentation(SffNetconfAugmentation.class);
         if (sffNetconfAugmentation == null) {
             return;
@@ -66,8 +66,7 @@ public class VppSffManager {
                 String devicePort = "7777";
                 String username = "admin";
                 String password = "admin";
-                boolean isTcpOnly = true;
-                nodeManager.mountNode(deviceId, deviceIp, devicePort, username, password, isTcpOnly);
+                nodeManager.mountNode(deviceId, deviceIp, devicePort, username, password, true);
                 LOG.info("SFF {} is mounted by sfc vpp renderer", sff.getName());
             }
         }

@@ -65,7 +65,7 @@ public class VppNodeManager implements BindingAwareProvider {
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
-    public VppNodeManager(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
+    public VppNodeManager(BindingAwareBroker bindingAwareBroker) {
         // Register provider
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
         onSessionInitiated(providerContext);
@@ -163,15 +163,11 @@ public class VppNodeManager implements BindingAwareProvider {
         MountPoint mountPoint;
         if (optionalObject.isPresent()) {
             mountPoint = optionalObject.get();
-            if (mountPoint != null) {
-                Optional<DataBroker> optionalDataBroker = mountPoint.getService(DataBroker.class);
-                if (optionalDataBroker.isPresent()) {
-                    return optionalDataBroker.get();
-                } else {
-                    LOG.debug("Cannot obtain data broker from mountpoint {}", mountPoint);
-                }
+            Optional<DataBroker> optionalDataBroker = mountPoint.getService(DataBroker.class);
+            if (optionalDataBroker.isPresent()) {
+                return optionalDataBroker.get();
             } else {
-                LOG.debug("Cannot obtain mountpoint with IID {}", mountPointIid);
+                LOG.debug("Cannot obtain data broker from mountpoint {}", mountPoint);
             }
         }
         return null;

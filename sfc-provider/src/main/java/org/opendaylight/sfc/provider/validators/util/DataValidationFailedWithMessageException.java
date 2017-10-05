@@ -29,7 +29,7 @@ public class DataValidationFailedWithMessageException extends DataValidationFail
             final String message, final String appTag) {
         super(pathType, path, message);
         myErrorList.add(RpcResultBuilder.newError(ErrorType.APPLICATION, "invalid-value", message, appTag,
-                path != null ? path.toString() : null, null));
+                                                  path.toString(), null));
     }
 
     @Override

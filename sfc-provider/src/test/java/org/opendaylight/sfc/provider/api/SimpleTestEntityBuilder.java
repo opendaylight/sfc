@@ -39,7 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 
 
-public class SimpleTestEntityBuilder {
+public final class SimpleTestEntityBuilder {
+
+    private SimpleTestEntityBuilder() {
+    }
 
     static ServiceFunction buildServiceFunction(SfName name, SftTypeName type, IpAddress ipMgmtAddress,
                                                 SfDataPlaneLocator sfDataPlaneLocator, Boolean nshAware) {

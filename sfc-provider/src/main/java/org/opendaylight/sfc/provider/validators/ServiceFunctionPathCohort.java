@@ -45,12 +45,12 @@ import org.slf4j.LoggerFactory;
 public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionPathCohort.class);
-    ModuleInfoBackedContext moduleContext = ModuleInfoBackedContext.create();
-    ImmutableSet<YangModuleInfo> infos = BindingReflections.loadModuleInfos();
-    BindingRuntimeContext bindingContext;
-    BindingNormalizedNodeCodecRegistry codecRegistry = new BindingNormalizedNodeCodecRegistry(
+    private final ModuleInfoBackedContext moduleContext = ModuleInfoBackedContext.create();
+    private final ImmutableSet<YangModuleInfo> infos = BindingReflections.loadModuleInfos();
+    private BindingRuntimeContext bindingContext;
+    private final BindingNormalizedNodeCodecRegistry codecRegistry = new BindingNormalizedNodeCodecRegistry(
             StreamWriterGenerator.create(JavassistUtils.forClassPool(ClassPool.getDefault())));
-    ServiceFunctionPathValidator sfpv;
+    private final ServiceFunctionPathValidator sfpv;
 
     public ServiceFunctionPathCohort(ServiceFunctionPathValidator sfpv) {
         this.sfpv = sfpv;
@@ -88,9 +88,8 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
         while (menIter.hasNext()) {
             MapEntryNode meNode = menIter.next();
             LOG.debug("canCommit:sfp to process: {}", meNode);
-            NormalizedNode sfpAsNormalizedNode = meNode;
-            LOG.debug("canCommit:the first SF (as nn):  {}", sfpAsNormalizedNode);
-            DataObject dobj = codecRegistry.fromNormalizedNode(ValidationConstants.SFP_PATH_YII, sfpAsNormalizedNode)
+            LOG.debug("canCommit:the first SF (as nn):  {}", meNode);
+            DataObject dobj = codecRegistry.fromNormalizedNode(ValidationConstants.SFP_PATH_YII, meNode)
                     .getValue();
             LOG.debug("canCommit:registerValidationCohorts:the first SFP (as dataobject):  {}", dobj);
             ServiceFunctionPath sfp = (ServiceFunctionPath) dobj;

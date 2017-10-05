@@ -26,10 +26,10 @@ public class SfcVppRenderer {
     private final VppNodeListener vppNodeListener;
 
     public SfcVppRenderer(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
-        VppNodeManager vppNodeManager = new VppNodeManager(dataBroker, bindingAwareBroker);
+        VppNodeManager vppNodeManager = new VppNodeManager(bindingAwareBroker);
         vppNodeListener = new VppNodeListener(dataBroker, vppNodeManager);
 
-        VppSffManager sffManager = new VppSffManager(dataBroker, vppNodeManager);
+        VppSffManager sffManager = new VppSffManager(vppNodeManager);
         sffListener = new ServiceForwarderListener(dataBroker, sffManager);
 
         VppRspProcessor rspProcessor = new VppRspProcessor(vppNodeManager);

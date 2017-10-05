@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot
  * @version 0.1
  * @since 2016-12-01
  */
-public class SfcPotTimerData {
+public final class SfcPotTimerData {
     private static final SfcPotTimerData SFC_POT_TIMER_DATA_INSTANCE = new SfcPotTimerData();
 
     private static class SfcPotRspInfo {

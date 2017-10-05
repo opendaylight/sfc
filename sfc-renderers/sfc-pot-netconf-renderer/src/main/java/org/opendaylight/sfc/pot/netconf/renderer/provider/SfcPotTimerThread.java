@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcPotTimerThread implements Runnable {
+public final class SfcPotTimerThread implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotTimerThread.class);
     private static final int SLEEP_TIME_MS = 1000;
     private final Thread configRefresher;

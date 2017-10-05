@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 
-public class SfcPotTimerQueue {
+public final class SfcPotTimerQueue {
     private final ConcurrentLinkedQueue<RspName> sfcPotTimerQueueObj;
     private static final SfcPotTimerQueue SFC_POT_TIMER_QUEUE_INSTANCE = new SfcPotTimerQueue();
 

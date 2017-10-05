@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2016-05-01
  */
-public class SfcPotPolyAPI {
+public final class SfcPotPolyAPI {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotPolyAPI.class);
 
     private Class<? extends TimeResolution> refreshPeriodTimeUnits;

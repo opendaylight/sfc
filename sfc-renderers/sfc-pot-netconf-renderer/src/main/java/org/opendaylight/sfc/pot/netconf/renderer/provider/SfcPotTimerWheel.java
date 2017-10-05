@@ -14,7 +14,7 @@ import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class SfcPotTimerWheel {
+public final class SfcPotTimerWheel {
     private final Timer sfcPotTimerWheelObj;
     public static final SfcPotTimerWheel SFC_POT_TIMER_WHEEL_INSTANCE = new SfcPotTimerWheel();
 

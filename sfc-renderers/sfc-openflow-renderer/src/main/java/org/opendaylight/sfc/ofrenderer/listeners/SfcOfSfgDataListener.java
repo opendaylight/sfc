@@ -93,7 +93,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
         // assuming all SF's have the same SFF
         // should use the ovs id
         SffName sffName = sf.getSfDataPlaneLocator().get(0).getServiceFunctionForwarder();
-        String sffNodeId = null;
+        String sffNodeId;
         sffNodeId = getSffOpenFlowNodeName(sffName);
 
         if (sffNodeId == null) {

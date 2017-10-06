@@ -130,7 +130,7 @@ public class SfcOfRspProcessor {
             // Now process the entries in the SFF Graph and populate the flow
             // tables
             //
-            SffGraph.SffGraphEntry entry = null;
+            SffGraph.SffGraphEntry entry;
             Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
             sfcOfFlowProgrammer.setTableIndexMapper(transportProcessor.getTableIndexMapper().isPresent()
                     ? transportProcessor.getTableIndexMapper().get()
@@ -253,7 +253,7 @@ public class SfcOfRspProcessor {
         SfName sfName = null;
         SfName prevSfName = null;
         String sfgName = null;
-        SffGraph.SffGraphEntry entry = null;
+        SffGraph.SffGraphEntry entry;
         short lastServiceIndex = rsp.getStartingIndex();
 
         while (servicePathHopIter.hasNext()) {
@@ -602,7 +602,7 @@ public class SfcOfRspProcessor {
     }
 
     private String getTransportEncapName(final String transportName, final String encapName) {
-        return new StringBuilder(transportName).append(TRANSPORT_ENCAP_SEPARATOR_STRING).append(encapName).toString();
+        return transportName + TRANSPORT_ENCAP_SEPARATOR_STRING + encapName;
     }
 
     /**

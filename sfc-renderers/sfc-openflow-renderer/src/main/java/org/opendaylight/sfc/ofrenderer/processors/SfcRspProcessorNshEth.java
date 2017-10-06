@@ -111,7 +111,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureNextHopFlow(SffGraphEntry entry, SffDataPlaneLocator srcSffDpl, SfDataPlaneLocator dstSfDpl) {
-        MacAddress srcMacAddress = null;
+        MacAddress srcMacAddress;
         if (srcSffDpl == null) {
             // srcSffDpl will be null for the first hop in the chain, just use
             // the SFF DPL mac

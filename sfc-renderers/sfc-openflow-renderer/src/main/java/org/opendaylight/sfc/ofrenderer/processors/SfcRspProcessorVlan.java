@@ -30,7 +30,6 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
      */
     @Override
     public void setRspTransports() {
-        int hopIncrement = VLAN_ID_INCR_HOP;
         int transportData = LAST_VLAN_ID.addAndGet(VLAN_ID_INCR_RSP);
 
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
@@ -56,7 +55,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
             } else {
                 sffGraph.setHopIngressDpl(entry.getDstSff(), entry.getPathId(), dpl.build());
             }
-            transportData += hopIncrement;
+            transportData += VLAN_ID_INCR_HOP;
         }
     }
 

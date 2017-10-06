@@ -172,13 +172,13 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // Configure the uplink packet
         if (ulPathId >= 0) {
-            this.flowProgrammer.setFlowRspId(Long.valueOf(ulPathId));
+            this.flowProgrammer.setFlowRspId((long) ulPathId);
             this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktSrcIpStr, pktDstIpStr, ulPathId);
         }
 
         // Configure the downlink packet
         if (dlPathId >= 0) {
-            this.flowProgrammer.setFlowRspId(Long.valueOf(dlPathId));
+            this.flowProgrammer.setFlowRspId((long) dlPathId);
             this.flowProgrammer.configurePathMapperAclFlow(nodeName, pktDstIpStr, pktSrcIpStr, dlPathId);
         }
     }
@@ -261,7 +261,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
      *         otherwise
      */
     private boolean bufferPktIn(final String srcIpStr, final String dstIpStr) {
-        String key = new StringBuilder().append(srcIpStr).append(dstIpStr).toString();
+        String key = srcIpStr + dstIpStr;
         long currentMillis = System.currentTimeMillis();
 
         Long bufferedTime = pktInBuffer.get(key);
@@ -276,7 +276,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
 
         // If the entry is old, update it and return false indicating the packet
         // needs to be processed
-        if (currentMillis - bufferedTime.longValue() > maxBufferTime) {
+        if (currentMillis - bufferedTime > maxBufferTime) {
             // Update the entry
             pktInBuffer.put(key, currentMillis);
             return false;
@@ -294,7 +294,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         while (iter.hasNext()) {
             Entry<String, Long> entry = iter.next();
             Long bufferedTime = entry.getValue();
-            if (currentMillis - bufferedTime.longValue() > maxBufferTime) {
+            if (currentMillis - bufferedTime > maxBufferTime) {
                 // This also removes the entry from the pktInBuffer map and
                 // doesnt invalidate iteration
                 iter.remove();

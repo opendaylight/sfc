@@ -31,7 +31,6 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
      */
     @Override
     public void setRspTransports() {
-        int hopIncrement = MPLS_LABEL_INCR_HOP;
         long transportData = LAST_MPLS_LABEL.addAndGet(MPLS_LABEL_INCR_RSP);
 
         Iterator<SffGraph.SffGraphEntry> sffGraphIter = sffGraph.getGraphEntryIterator();
@@ -57,7 +56,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
             } else {
                 sffGraph.setHopIngressDpl(entry.getDstSff(), entry.getPathId(), dpl.build());
             }
-            transportData += hopIncrement;
+            transportData += MPLS_LABEL_INCR_HOP;
         }
 
     }

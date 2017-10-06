@@ -251,11 +251,9 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *         otherwise
      */
     public boolean compareClassificationTableCookie(FlowCookie cookie) {
-        if (cookie == null || cookie.getValue() == null) {
-            return false;
-        }
+        return cookie != null && cookie.getValue() != null && cookie.toString().toUpperCase(Locale.getDefault())
+                .startsWith(TRANSPORT_EGRESS_COOKIE_STR_BASE);
 
-        return cookie.toString().toUpperCase(Locale.getDefault()).startsWith(TRANSPORT_EGRESS_COOKIE_STR_BASE);
     }
 
     //
@@ -1193,10 +1191,10 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         StringJoiner flowName = new StringJoiner(FLOW_NAME_DELIMITER);
         flowName.add(FLOW_NAME_TRANSPORT_EGRESS).add(dstMac).add(vmac).add(port);
 
-        int flowPriority = FLOW_PRIORITY_TRANSPORT_EGRESS;
-
-        FlowBuilder transportEgressFlow = configureTransportEgressFlow(
-                match, actionList, port, flowPriority, TRANSPORT_EGRESS_MAC_CHAINING_COOKIE, flowName.toString());
+        FlowBuilder transportEgressFlow = configureTransportEgressFlow(match, actionList, port,
+                                                                       FLOW_PRIORITY_TRANSPORT_EGRESS,
+                                                                       TRANSPORT_EGRESS_MAC_CHAINING_COOKIE,
+                                                                       flowName.toString());
         sfcOfFlowWriter.writeFlow(flowRspId, sffNodeName, transportEgressFlow);
     }
 

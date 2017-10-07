@@ -63,10 +63,10 @@ public class SfcServiceFunctionSchedulerAPITest extends AbstractDataStoreManager
         int maxTries = 10;
         boolean emptyFlag = true;
 
-        // before test, private static variable mapCountRoundRobin has to be
+        // before test, private static variable MAP_COUNT_ROUND_ROBIN has to be
         // restored to original
         // state
-        Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "mapCountRoundRobin").set(HashMap.class,
+        Whitebox.getField(SfcServiceFunctionRoundRobinSchedulerAPI.class, "MAP_COUNT_ROUND_ROBIN").set(HashMap.class,
                 new HashMap<>());
 
         LOG.debug("Empty SFC data store {} times: {}", 10 - maxTries, emptyFlag ? "Successful" : "Failed");

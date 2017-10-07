@@ -90,7 +90,7 @@ public final class SfcProviderRenderedPathAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRenderedPathAPI.class);
 
-    private static Supplier<SfcServiceFunctionSchedulerAPI> defaultSchedulerSupplier =
+    private static final Supplier<SfcServiceFunctionSchedulerAPI> DEFAULT_SCHEDULER_SUPPLIER =
             Suppliers.memoize(SfcProviderRenderedPathAPI::getDefaultServiceFunctionScheduler);
 
     private SfcProviderRenderedPathAPI() {
@@ -158,7 +158,7 @@ public final class SfcProviderRenderedPathAPI {
         // Fall back to defaultScheduler
         SfcServiceFunctionSchedulerAPI scheduler = possibleScheduler;
         if (scheduler == null) {
-            scheduler = defaultSchedulerSupplier.get();
+            scheduler = DEFAULT_SCHEDULER_SUPPLIER.get();
         }
 
         // Create RSP
@@ -877,7 +877,7 @@ public final class SfcProviderRenderedPathAPI {
             List<SftTypeName> serviceFunctionTypeList) {
         int index;
         String serviceTypeName;
-        ServiceFunctionType serviceFunctionType = null;
+        ServiceFunctionType serviceFunctionType;
         List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
         // TODO Not sure why we need references to GBP in here. The way the
         // integration was done, we

@@ -32,7 +32,7 @@ public final class SfcDatastoreCache {
     /**
      * This cache stores the relationship between SFs and SF types.
      */
-    private static LoadingCache<SfName, String> sfToSfTypeCache = CacheBuilder.newBuilder().maximumSize(500)
+    private static final LoadingCache<SfName, String> SF_TO_SF_TYPE_CACHE = CacheBuilder.newBuilder().maximumSize(500)
             .build(new CacheLoader<SfName, String>() {
                 @Override
                 public String load(SfName key) {
@@ -48,7 +48,8 @@ public final class SfcDatastoreCache {
      * This cache holds the relation between SF chains and the list of SF types
      * for the chain.
      */
-    private static LoadingCache<SfcName, List<String>> sfChainToSfTypeList = CacheBuilder.newBuilder().maximumSize(500)
+    private static final LoadingCache<SfcName, List<String>> SF_CHAIN_TO_SF_TYPE_LIST
+            = CacheBuilder.newBuilder().maximumSize(500)
             .build(new CacheLoader<SfcName, List<String>>() {
                 @Override
                 public List<String> load(SfcName key) {
@@ -69,10 +70,10 @@ public final class SfcDatastoreCache {
     }
 
     public static LoadingCache<SfName, String> getSfToSfTypeCache() {
-        return sfToSfTypeCache;
+        return SF_TO_SF_TYPE_CACHE;
     }
 
     public static LoadingCache<SfcName, List<String>> getSfChainToSfTypeList() {
-        return sfChainToSfTypeList;
+        return SF_CHAIN_TO_SF_TYPE_LIST;
     }
 }

@@ -52,7 +52,7 @@ public class SfcProviderGraph {
         if (node == null) {
             node = new SfcProviderTopologyNode(nodeName);
             sfcProviderTopoNodes.put(nodeName, node);
-            sfcProviderTopoEdges.put(node, new TreeSet<SfcProviderTopologyNode>());
+            sfcProviderTopoEdges.put(node, new TreeSet<>());
         }
         return node;
     }
@@ -135,7 +135,6 @@ public class SfcProviderGraph {
             }
             sfcProviderNode.setColor(BLACK);
         }
-        return;
     }
 
     private void offer(Queue<SfcProviderTopologyNode> queue, SfcProviderTopologyNode node) {

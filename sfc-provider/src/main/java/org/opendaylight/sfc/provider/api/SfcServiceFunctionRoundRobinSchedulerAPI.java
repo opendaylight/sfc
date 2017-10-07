@@ -37,7 +37,7 @@ public final class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFu
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcServiceFunctionRoundRobinSchedulerAPI.class);
 
-    private static Map<SftTypeName, Integer> mapCountRoundRobin = new HashMap<>();
+    private static Map<SftTypeName, Integer> MAP_COUNT_ROUND_ROBIN = new HashMap<>();
 
     protected SfcServiceFunctionRoundRobinSchedulerAPI() {
         super.setSfcServiceFunctionSchedulerType(RoundRobin.class);
@@ -47,8 +47,8 @@ public final class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFu
         List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType.getSftServiceFunctionName();
         int countRoundRobin = 0;
 
-        if (mapCountRoundRobin.size() != 0) {
-            for (Entry<SftTypeName, Integer> entry : mapCountRoundRobin.entrySet()) {
+        if (!MAP_COUNT_ROUND_ROBIN.isEmpty()) {
+            for (Entry<SftTypeName, Integer> entry : MAP_COUNT_ROUND_ROBIN.entrySet()) {
                 SftTypeName sfType = entry.getKey();
                 if (sfType.equals(serviceFunctionType.getType())) {
                     countRoundRobin = entry.getValue();
@@ -60,7 +60,7 @@ public final class SfcServiceFunctionRoundRobinSchedulerAPI extends SfcServiceFu
 
         SftServiceFunctionName sftServiceFunctionName = sftServiceFunctionNameList.get(countRoundRobin);
         countRoundRobin = (countRoundRobin + 1) % sftServiceFunctionNameList.size();
-        mapCountRoundRobin.put(serviceFunctionType.getType(), countRoundRobin);
+        MAP_COUNT_ROUND_ROBIN.put(serviceFunctionType.getType(), countRoundRobin);
         return new SfName(sftServiceFunctionName.getName());
     }
 

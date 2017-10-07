@@ -168,6 +168,6 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
                 .collect(Collectors.toList());
         return renderedServicePath.getRenderedServicePathHop().stream()
                 .filter(rspHop -> sffName.equals(rspHop.getServiceFunctionForwarder()))
-                .filter(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName())).findFirst().isPresent();
+                .anyMatch(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName()));
     }
 }

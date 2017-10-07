@@ -156,16 +156,16 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
             sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).build();
 
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
-            Optional<ServiceFunction> dataObject = null;
+            Optional<ServiceFunction> dataObject = Optional.absent();
             try {
                 dataObject = readTx.read(LogicalDatastoreType.CONFIGURATION, sfIID).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.debug("Failed to readServiceFunction", e);
             }
-            if (dataObject != null && dataObject.isPresent()) {
+            if (dataObject.isPresent()) {
                 ServiceFunction serviceFunction = dataObject.get();
                 LOG.debug("readServiceFunction Success: {}", serviceFunction.getName());
-                ReadServiceFunctionOutput readServiceFunctionOutput = null;
+                ReadServiceFunctionOutput readServiceFunctionOutput;
                 ReadServiceFunctionOutputBuilder outputBuilder = new ReadServiceFunctionOutputBuilder();
                 outputBuilder.setName(serviceFunction.getName()).setType(serviceFunction.getType())
                         .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
@@ -228,7 +228,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RenderedServicePath revRenderedServicePath;
         CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
         RpcResult<CreateRenderedPathOutput> rpcResult;
-        RspName retRspName = null;
+        RspName retRspName;
 
         createdServiceFunctionPath = SfcProviderServicePathAPI
                 .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
@@ -273,7 +273,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
      */
     private boolean deleteRenderedPathWithRspName(RspName rspName) {
 
-        boolean ret = true;
+        boolean ret;
         ret = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
         ret = ret && SfcProviderServiceFunctionAPI.deleteRspFromServiceFunctionState(rspName);
 
@@ -299,7 +299,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
         if (reverseRspName != null) {
             // The RSP has a symmetric ("Reverse") Path
-            ret = ret && this.deleteRenderedPathWithRspName(reverseRspName);
+            ret = this.deleteRenderedPathWithRspName(reverseRspName);
         }
         ret = ret && this.deleteRenderedPathWithRspName(rspName);
 
@@ -330,13 +330,13 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(
             ReadRenderedServicePathFirstHopInput input) {
 
-        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+        RenderedServicePathFirstHop renderedServicePathFirstHop;
         RpcResultBuilder<ReadRenderedServicePathFirstHopOutput> rpcResultBuilder;
 
         renderedServicePathFirstHop = SfcProviderRenderedPathAPI
                 .readRenderedServicePathFirstHop(new RspName(input.getName()));
 
-        ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput = null;
+        ReadRenderedServicePathFirstHopOutput renderedServicePathFirstHopOutput;
         if (renderedServicePathFirstHop != null) {
             ReadRenderedServicePathFirstHopOutputBuilder renderedServicePathFirstHopOutputBuilder =
                     new ReadRenderedServicePathFirstHopOutputBuilder();
@@ -365,7 +365,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(
             ReadRspFirstHopBySftListInput input) {
-        RenderedServicePathFirstHop renderedServicePathFirstHop = null;
+        RenderedServicePathFirstHop renderedServicePathFirstHop;
         renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(),
                 input.getSftList());
         ReadRspFirstHopBySftListOutput readRspFirstHopBySftListOutput = null;

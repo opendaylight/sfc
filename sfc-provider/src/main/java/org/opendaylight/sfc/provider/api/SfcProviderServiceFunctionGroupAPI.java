@@ -178,13 +178,12 @@ public final class SfcProviderServiceFunctionGroupAPI {
      * @return boolean success of failure
      */
     protected static boolean addServiceFunctionToGroup(String serviceFunctionGroupName, SfName serviceFunctionName) {
-        boolean ret = false;
         printTraceStart(LOG);
 
         // TODO Implement
 
         printTraceStop(LOG);
-        return ret;
+        return false;
     }
 
     /**
@@ -200,12 +199,11 @@ public final class SfcProviderServiceFunctionGroupAPI {
      */
     protected static boolean removeServiceFunctionFromGroup(String serviceFunctionGroupName,
             SfName serviceFunctionName) {
-        boolean ret = false;
         printTraceStart(LOG);
 
         // TODO Implement
 
         printTraceStop(LOG);
-        return ret;
+        return false;
     }
 }

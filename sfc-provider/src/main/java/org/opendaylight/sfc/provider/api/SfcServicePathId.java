@@ -79,7 +79,7 @@ public final class SfcServicePathId {
      *
      * @return Pathid or error if none available
      */
-    public static int generatePathIdSequentialIncrements() {
+    private static int generatePathIdSequentialIncrements() {
         int pathid;
         int count = NUM_PATH_ID;
 
@@ -293,7 +293,7 @@ public final class SfcServicePathId {
      *
      * @return generation-algorithm enum value
      */
-    public static GenerationAlgorithmEnum getGenerationAlgorithm() {
+    private static GenerationAlgorithmEnum getGenerationAlgorithm() {
         InstanceIdentifier<ServicePathIds> spIID = InstanceIdentifier.builder(ServicePathIds.class).build();
         ServicePathIds servicePathIds = SfcDataStoreAPI.readTransactionAPI(spIID, LogicalDatastoreType.OPERATIONAL);
 
@@ -321,7 +321,7 @@ public final class SfcServicePathId {
      *            integer value as taken from service-path-id.yang
      * @return True if successful, otherwise false
      */
-    public static boolean setGenerationAlgorithm(int genAlgorithm) {
+    private static boolean setGenerationAlgorithm(int genAlgorithm) {
         return setGenerationAlgorithm(GenerationAlgorithmEnum.forValue(genAlgorithm));
     }
 

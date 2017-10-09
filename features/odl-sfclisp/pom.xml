@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.2-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfclisp</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.2-Carbon</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -34,14 +34,14 @@
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>odl-lispflowmapping-mappingservice</artifactId>
-            <version>1.5.2-SNAPSHOT</version>
+            <version>1.5.2-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>odl-lispflowmapping-southbound</artifactId>
-            <version>1.5.2-SNAPSHOT</version>
+            <version>1.5.2-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

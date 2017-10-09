@@ -77,10 +77,8 @@ class ODL:
     """ Helper to work with ODL restconf API """
 
     NEUTRON_RES = 'restconf/config/neutron:neutron'
-    TZ_RES = 'restconf/config/itm:transport-zones/transport-zone'
     IETF_IF_RES = 'restconf/config/ietf-interfaces:interfaces/interface'
     NETWORK = DOVS_PREFIX + 'net'
-    TZ = DOVS_PREFIX + 'tz'
     NETWORK_ID = '177bef73-514e-4922-990f-d7aba0f3b0f4'
     TENANT_ID = '5d806f0e-e197-4a72-88e6-72b024fa5c97'
     SEGMENTATION_ID = '1'
@@ -273,49 +271,6 @@ class ODL:
         for port in ports:
             api(ODL.NEUTRON_RES).ports.port.delete(port['uuid'])
 
-    @staticmethod
-    @ifNotFound(None)
-    def getTz(api, name):
-        return api(ODL.TZ_RES).get(name)['transport-zone'][0]
-
-    @staticmethod
-    def addTz(api, name, prefix):
-        tz = {
-            "transport-zone": {
-                "zone-name" : name,
-                "subnets" : [
-                    {
-                        "prefix" : prefix,
-                        "vlan-id" : 0,
-                        "gateway-ip" : "0.0.0.0"
-                    }
-                ],
-                "tunnel-type" : "odl-interface:tunnel-type-vxlan-gpe"
-            }
-        }
-        api(ODL.TZ_RES + '/' + name).put(data=tz)
-        return tz['transport-zone']
-
-    @staticmethod
-    def addTzVtep(api, name, port, dpnid, ip):
-        tz = ODL.getTz(api, name)
-
-        if not 'vteps' in tz['subnets'][0]:
-            tz['subnets'][0]['vteps'] = []
-        tz['subnets'][0]['vteps'].append(
-            {
-                'dpn-id' : dpnid,
-                'portname' : 'vxlan-{}'.format(name if name else dpnid),
-                'ip-address' : ip
-            }
-        )
-        api(ODL.TZ_RES + '/' + name).put(data={'transport-zone' : [tz]})
-
-    @staticmethod
-    def delTz(api, name):
-        tz = ODL.getTz(api, name)
-        if tz:
-            api(ODL.TZ_RES + '/' + name).delete()
 
 class CMD:
     """  Helper to work with simple shell pipeline commands """
@@ -825,31 +780,6 @@ class AddNode(cli.Application):
         node_ip = str(node_cidr.ip)
         LOG.debug('')
         CMD.addNodeOvsBridge(id, node_ip, self._odl)
-
-        if not self._odl:
-            return
-
-        LOG.debug('Add node vtep to transport-zone with ip {}', node_ip)
-
-        try:
-            tz = ODL.getTz(self._api, ODL.TZ)
-        except HTTPError as e:
-            if e.response.status_code == 400:
-                LOG.warn("Genius not installed, will not create transport zone")
-                return
-            raise e
-
-        node_net = str(node_cidr.network)
-        if not tz:
-            LOG.debug('transport-zone {} not found, creating', ODL.TZ)
-            tz = ODL.addTz(self._api, ODL.TZ, node_net)
-        else:
-            tz_net = tz['subnets'][0]['prefix']
-            if not node_net == tz_net:
-                LOG.debug('Node net {} is not TZ net {}', node_net, tz_net)
-                raise Dovs.Error('Wont support nodes in different subnets')
-        dpid = str(int(CMD.getNodeOvsBridgeId(id), 16))
-        ODL.addTzVtep(self._api, ODL.TZ, name, dpid, node_ip)
 
 
 @Dovs.subcommand('add-guest')

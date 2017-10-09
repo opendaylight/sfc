@@ -177,7 +177,7 @@ def execAllCmds(args_dir, chains, url_odl, execute_traffic):
             #status += execCommand(getCmdPing(client, server, 3))
             execCommand(getCmdPing(client, server, 2))
         execHttpServer(cmd_http_server, server)
-        execPushNsh(cmd_push_nsh, url_odl, client, server, chain_id)
+        #execPushNsh(cmd_push_nsh, url_odl, client, server, chain_id)
         for c in chain:
             chainTypes.append(c)
         http_client_cmds.append(getCmdHttpClient(

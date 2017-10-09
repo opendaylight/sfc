@@ -22,6 +22,30 @@
       "revId": "0a0288e26103883bc50938532a1f6143ffd90a44",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_76a0e7f4",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-10-09T18:32:46Z",
+      "side": 1,
+      "message": "It is not wrong, of course, but it does not make any difference unless you are concatenating in a loop [1], the compiler makes the trick for you.\n\n[1] https://dzone.com/articles/string-concatenation-performacne-improvement-in-ja",
+      "parentUuid": "9a245df4_1baf14e5",
+      "range": {
+        "startLine": 605,
+        "startChar": 15,
+        "endLine": 605,
+        "endChar": 28
+      },
+      "revId": "0a0288e26103883bc50938532a1f6143ffd90a44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

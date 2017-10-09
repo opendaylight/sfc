@@ -31,9 +31,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>odl-mdsal-broker</artifactId>
-      <version>1.6.1-SNAPSHOT</version>
+      <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>odl-sfc-provider</artifactId>
+      <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>
     </dependency>

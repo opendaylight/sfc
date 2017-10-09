@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_1baf14e5",
+        "filename": "sfc-renderers/sfc-openflow-renderer/src/main/java/org/opendaylight/sfc/ofrenderer/processors/SfcOfRspProcessor.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-10-09T16:13:22Z",
+      "side": 1,
+      "message": "What\u0027s wrong with using StringBuilder? Its supposed to be more efficient than adding strings like this.",
+      "range": {
+        "startLine": 605,
+        "startChar": 15,
+        "endLine": 605,
+        "endChar": 28
+      },
+      "revId": "0a0288e26103883bc50938532a1f6143ffd90a44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

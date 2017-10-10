@@ -535,7 +535,7 @@ def main():
         if args.interface is not None:
             macstring = getmac(args.interface)
             if (macstring is not None):
-                macaddr = macstring.split(':')
+                macaddr = macstring..strip().split(':')
         if (args.do == "send"):
             if (args.inner_source_mac is None):
                 args.inner_source_mac = macstring
@@ -717,7 +717,13 @@ def main():
                     if ((myethheader2.ethertype0 != 0x89) or (myethheader2.ethertype1 != 0x4f)):
                         continue
                 if (macaddr is not None):
-                    if ((myethheader2.dmac4 != int(macaddr[4], 16)) or (myethheader2.dmac5 != int(macaddr[5], 16))):
+                    dest_mac = [format(myethheader2.dmac0, '02x'),
+                                format(myethheader2.dmac1, '02x'),
+                                format(myethheader2.dmac2, '02x'),
+                                format(myethheader2.dmac3, '02x'),
+                                format(myethheader2.dmac4, '02x'),
+                                format(myethheader2.dmac5, '02x')]
+                    if (dest_mac != macaddr):
                         continue
 
                 """ Check if the received packet was ETH + NSH """
@@ -832,7 +838,13 @@ def main():
             if ((myethheader.ethertype0 != 0x89) or (myethheader.ethertype1 != 0x4f)):
                 continue
         if (macaddr is not None):
-            if ((myethheader.dmac4 != int(macaddr[4], 16)) or (myethheader.dmac5 != int(macaddr[5], 16))):
+            dest_mac = [format(myethheader.dmac0, '02x'),
+                        format(myethheader.dmac1, '02x'),
+                        format(myethheader.dmac2, '02x'),
+                        format(myethheader.dmac3, '02x'),
+                        format(myethheader.dmac4, '02x'),
+                        format(myethheader.dmac5, '02x')]
+            if (dest_mac != macaddr):
                 continue
 
         """ Check if the received packet was ETH + NSH """

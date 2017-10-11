@@ -16,6 +16,24 @@
       "revId": "f819a7c0a6d4055c5e41019f2e387a9e6f43e8a4",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_69c5a55a",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 538,
+      "author": {
+        "id": 6016
+      },
+      "writtenOn": "2017-10-11T07:43:48Z",
+      "side": 1,
+      "message": "You are right! I thought I have tested it :P",
+      "parentUuid": "9a245df4_e9e23502",
+      "revId": "f819a7c0a6d4055c5e41019f2e387a9e6f43e8a4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

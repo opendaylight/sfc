@@ -529,6 +529,10 @@ public final class SfcOvsUtil {
 
     public static String getOpenFlowNodeIdForSff(ServiceFunctionForwarder serviceFunctionForwarder) {
         NodeId nodeId = getOvsdbAugmentationNodeIdBySff(serviceFunctionForwarder);
+        if (nodeId == null) {
+            LOG.warn("No NodeId for Service Function Forwarder {}", serviceFunctionForwarder);
+            return null;
+        }
         DatapathId datapathId = getOvsDataPathId(nodeId);
         if (datapathId == null) {
             LOG.warn("No DatapathId for Service Function Forwarder {}", serviceFunctionForwarder);

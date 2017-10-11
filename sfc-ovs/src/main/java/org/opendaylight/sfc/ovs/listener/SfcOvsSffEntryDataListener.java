@@ -16,6 +16,7 @@
 
 package org.opendaylight.sfc.ovs.listener;
 
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -74,26 +75,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
     @Override
     protected void remove(ServiceFunctionForwarder deletedServiceFunctionForwarder) {
         LOG.info("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
-
-        // Since in most cases, the OvsdbNode was not created by SFC, lets not
-        // delete it
-
-        // Delete the VXGPE port
-
-        // Iterate the SFF DPLs
-        NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(deletedServiceFunctionForwarder);
-        for (SffDataPlaneLocator sffDpl : deletedServiceFunctionForwarder.getSffDataPlaneLocator()) {
-
-            // Only delete the port if this SFF is OVS augmented and the
-            // transport is VxGpe
-            SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl
-                    .getAugmentation(SffOvsLocatorOptionsAugmentation.class);
-            if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
-                // delete OvsdbTerminationPoint
-                SfcOvsUtil.deleteOvsdbTerminationPoint(
-                        SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()));
-            }
-        }
+        deleteOvsdbAugmentations(deletedServiceFunctionForwarder);
     }
 
     @Override
@@ -120,8 +102,6 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
      *
      * @param sff
      *            ServiceFunctionForwarder Object.
-     * @param executor
-     *            ExecutorService Object
      */
     static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
 
@@ -134,5 +114,37 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
             // put Termination Points
             SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator());
         }
+    }
+
+    /**
+     * Delete OVSDB augmentations.
+     *
+     * @param sff
+     *            ServiceFunctionForwarder Object.
+     */
+    private static void deleteOvsdbAugmentations(ServiceFunctionForwarder sff) {
+
+        // Since in most cases, the OvsdbNode was not created by SFC, lets not
+        // delete it
+
+        // Iterate the SFF DPLs and delete the VXGPE port
+        final List<SffDataPlaneLocator> sffDataPlaneLocatorList = sff.getSffDataPlaneLocator();
+        if (sffDataPlaneLocatorList == null || sffDataPlaneLocatorList.isEmpty()) {
+            return;
+        }
+
+        NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
+        for (SffDataPlaneLocator sffDpl : sffDataPlaneLocatorList) {
+            // Only delete the port if this SFF is OVS augmented and the
+            // transport is VxGpe
+            SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl
+                    .getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+            if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
+                // delete OvsdbTerminationPoint
+                SfcOvsUtil.deleteOvsdbTerminationPoint(
+                        SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()));
+            }
+        }
+
     }
 }

@@ -16,6 +16,24 @@
       "revId": "8ee084d88c7d6f86e65a5fbdf30d0b0fdf27f687",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_66d8341e",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 720,
+      "author": {
+        "id": 6016
+      },
+      "writtenOn": "2017-10-11T06:35:49Z",
+      "side": 1,
+      "message": "Good catch!",
+      "parentUuid": "9a245df4_c6880025",
+      "revId": "8ee084d88c7d6f86e65a5fbdf30d0b0fdf27f687",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

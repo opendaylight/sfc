@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_ec81a34b",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1162,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-10-11T09:50:16Z",
+      "side": 1,
+      "message": "This also needs to go away.",
+      "revId": "1e2ee6f104b8dbcb4147991f75e13b1503912b2a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

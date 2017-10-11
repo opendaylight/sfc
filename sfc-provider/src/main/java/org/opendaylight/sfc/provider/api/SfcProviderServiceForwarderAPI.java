@@ -347,8 +347,8 @@ public final class SfcProviderServiceForwarderAPI {
                                 sffname);
                     }
                     List<SffServicePath> sffServicePathList = readSffState(sffname);
-                    if (sffServicePathList.isEmpty() && !deleteServiceFunctionForwarderState(sffname)) {
-                        ret = false;
+                    if (sffServicePathList != null && sffServicePathList.isEmpty()) {
+                        ret = deleteServiceFunctionForwarderState(sffname);
                     }
                 }
             }
@@ -395,7 +395,7 @@ public final class SfcProviderServiceForwarderAPI {
      *
      * @param sffName
      *            SFF name
-     * @return SffServicePath
+     * @return List of SFF service paths or null if no SFF state info exists
      */
     public static List<SffServicePath> readSffState(SffName sffName) {
         printTraceStart(LOG);
@@ -412,7 +412,9 @@ public final class SfcProviderServiceForwarderAPI {
         sffStateDataObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
         // Read the list of Service Function Path anchored by this SFF
         if (sffStateDataObject != null) {
-            ret = sffStateDataObject.getSffServicePath();
+            ret = sffStateDataObject.getSffServicePath() != null
+                    ? sffStateDataObject.getSffServicePath()
+                    : Collections.emptyList();
         } else {
             LOG.warn("Service Function Forwarder {} has no operational state", sffName);
         }

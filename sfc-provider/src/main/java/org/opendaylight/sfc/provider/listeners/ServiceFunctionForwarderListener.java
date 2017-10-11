@@ -7,8 +7,6 @@
  */
 package org.opendaylight.sfc.provider.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -126,24 +124,30 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
 
         // If any data plane locator changed, all RSPs are affected
         // TODO Current data model does not allow to know which DPL is used on a RSP
-        Collection<SffDataPlaneLocator> originalLocators = originalSff.getSffDataPlaneLocator();
-        Collection<SffDataPlaneLocator> updatedLocators = updatedSff.getSffDataPlaneLocator();
-        Collection<SffDataPlaneLocator> removedLocators = new ArrayList<>(originalLocators);
-        removedLocators.removeAll(updatedLocators);
-        if (!removedLocators.isEmpty()) {
-            LOG.debug("SFF locators removed {}", removedLocators);
+        List<SffDataPlaneLocator> originalLocators = originalSff.getSffDataPlaneLocator();
+        List<SffDataPlaneLocator> updatedLocators = updatedSff.getSffDataPlaneLocator();
+        boolean isAnyLocatorChanged = originalLocators != null
+                && !originalLocators.isEmpty()
+                && (updatedLocators == null || !updatedLocators.containsAll(originalLocators));
+        if (isAnyLocatorChanged) {
+            LOG.debug("SFF locators changed: original {} updated {}", originalLocators, updatedLocators);
             return rspNames;
         }
 
         // If a dictionary changed, any RSP making use of it is affected
-        List<ServiceFunctionDictionary> originalDictionaries = originalSff.getServiceFunctionDictionary();
-        List<ServiceFunctionDictionary> updatedDictionaries = updatedSff.getServiceFunctionDictionary();
-        List<ServiceFunctionDictionary> removedDictionaries = new ArrayList<>(originalDictionaries);
-        removedDictionaries.removeAll(updatedDictionaries);
-        if (!removedDictionaries.isEmpty()) {
-            LOG.debug("SFF dictionaries removed {}", removedDictionaries);
+        List<ServiceFunctionDictionary> originalDictList = originalSff.getServiceFunctionDictionary() != null
+                ? originalSff.getServiceFunctionDictionary()
+                : Collections.emptyList();
+        List<ServiceFunctionDictionary> updatedDictList = updatedSff.getServiceFunctionDictionary() != null
+                ? updatedSff.getServiceFunctionDictionary()
+                : Collections.emptyList();
+        List<ServiceFunctionDictionary> removedDictList = updatedDictList.isEmpty()
+                ? originalDictList
+                : originalDictList.stream().filter(d -> !updatedDictList.contains(d)).collect(Collectors.toList());
+        if (!removedDictList.isEmpty()) {
+            LOG.debug("SFF dictionaries removed {}", removedDictList);
             return rspNames.stream().map(SfcProviderRenderedPathAPI::readRenderedServicePath)
-                    .filter(rsp -> isAnyDictionaryUsedInRsp(sffName, rsp, removedDictionaries))
+                    .filter(rsp -> isAnyDictionaryUsedInRsp(sffName, rsp, removedDictList))
                     .map(RenderedServicePath::getName).collect(Collectors.toList());
         }
 
@@ -168,6 +172,6 @@ public class ServiceFunctionForwarderListener extends AbstractDataTreeChangeList
                 .collect(Collectors.toList());
         return renderedServicePath.getRenderedServicePathHop().stream()
                 .filter(rspHop -> sffName.equals(rspHop.getServiceFunctionForwarder()))
-                .filter(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName())).findFirst().isPresent();
+                .anyMatch(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName()));
     }
 }

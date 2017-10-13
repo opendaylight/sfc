@@ -16,7 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
  * Holds constants that are used throughout the sfc-genius module.
  */
 // TODO move appropriate constants to genius NwConstants
-public class SfcGeniusConstants {
+public final class SfcGeniusConstants {
     // Cookie used in the genius dispatcher flow for SFC.
     public static final BigInteger COOKIE_SFC_INGRESS_TABLE = new BigInteger("8030000", 16);
 

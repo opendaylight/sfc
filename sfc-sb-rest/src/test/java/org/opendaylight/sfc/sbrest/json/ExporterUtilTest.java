@@ -58,12 +58,6 @@ public class ExporterUtilTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExporterUtilTest.class);
 
-    @Test
-    public void testExporterUtilObject() {
-        ExporterUtil exporterUtil = new ExporterUtil();
-        assertEquals("Must be equal", exporterUtil.getClass(), ExporterUtil.class);
-    }
-
     // return string created from respective .json file
     private String gatherUtilJsonStringFromFile(String testFileName) {
         String jsonString = null;

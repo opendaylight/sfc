@@ -71,7 +71,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOvsUtil {
+public final class SfcOvsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
     private static final String HEX = "0x";
@@ -101,6 +101,9 @@ public class SfcOvsUtil {
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
     private static ExecutorService executor = Executors.newFixedThreadPool(5);
+
+    private SfcOvsUtil() {
+    }
 
     /**
      * Submits callable for execution by given ExecutorService. Thanks to this

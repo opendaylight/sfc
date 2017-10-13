@@ -119,17 +119,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @After
     public void finalized() {
-
         // delete node after test
         deleteOvsdbNode(LogicalDatastoreType.CONFIGURATION);
-    }
-
-    @Test
-    public void testCreateObject() {
-
-        // just create an object of class SfcOvsUtil
-        SfcOvsUtil sfcOvsUtil = new SfcOvsUtil();
-        sfcOvsUtil.getClass();
     }
 
     @Test

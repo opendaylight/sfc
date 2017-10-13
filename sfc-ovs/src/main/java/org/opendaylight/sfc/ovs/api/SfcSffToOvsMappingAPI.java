@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @see SfcSffToOvsMappingAPI
  * @since 2015-03-23
  */
-public class SfcSffToOvsMappingAPI {
+public final class SfcSffToOvsMappingAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcSffToOvsMappingAPI.class);
     private static final String OF_PORT = "6653";

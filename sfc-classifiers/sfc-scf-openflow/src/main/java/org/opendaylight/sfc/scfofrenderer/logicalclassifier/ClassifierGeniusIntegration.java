@@ -14,7 +14,7 @@ import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapper;
 import org.opendaylight.sfc.genius.util.appcoexistence.SfcTableIndexMapperBuilder;
 import org.opendaylight.sfc.genius.util.servicebinding.GeniusServiceBinder;
 
-public class ClassifierGeniusIntegration {
+public final class ClassifierGeniusIntegration {
     private static final short TABLE_INDEX_CLASSIFIER = 0;
 
     private static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;

@@ -21,7 +21,10 @@ import java.nio.file.Paths;
  * @version 0.1
  * @since 2015-02-12
  */
-public class TestUtil {
+public final class TestUtil {
+
+    private TestUtil() {
+    }
 
     protected static String readFile(URI path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));

@@ -19,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 
-public class ExporterUtil {
+public final class ExporterUtil {
 
     public static final String TRANSPORT = "transport";
     public static final String EID = "eid";
@@ -39,6 +39,9 @@ public class ExporterUtil {
     public static final String GRE = "gre";
     public static final String OTHER = "other";
     public static final String SERVICE_LOCATOR_PREFIX = "service-locator:";
+
+    private ExporterUtil() {
+    }
 
     public static String convertIpAddress(IpAddress ip) {
         String ret = null;

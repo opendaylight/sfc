@@ -10,12 +10,12 @@ package org.opendaylight.sfc.genius.impl.handlers.readers;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -80,20 +80,13 @@ public class SfcGeniusSfReader extends SfcGeniusReaderAbstract {
     public CompletableFuture<List<String>> readInterfacesOfSf(SfName sfName) {
         InstanceIdentifier<ServiceFunction> sfID = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, new ServiceFunctionKey(sfName)).build();
-        return doRead(LogicalDatastoreType.CONFIGURATION, sfID)
-                .thenApply(SfcGeniusSfReader::getInterfacesOfServiceFunction);
+        return doReadOptional(LogicalDatastoreType.CONFIGURATION, sfID)
+                .thenApply(optionalServiceFunction -> optionalServiceFunction
+                        .map(SfcGeniusSfReader::getInterfacesOfServiceFunction)
+                        .orElse(Collections.emptyList()));
     }
 
     private static List<String> getInterfacesOfServiceFunction(ServiceFunction serviceFunction) {
-        List<? extends DataPlaneLocator> locators = serviceFunction.getSfDataPlaneLocator();
-        return Optional.ofNullable(locators)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(DataPlaneLocator::getLocatorType)
-                .filter(locatorType -> locatorType instanceof LogicalInterface)
-                .map(locatorType -> (LogicalInterface) locatorType)
-                .map(LogicalInterface::getInterfaceName)
-                .filter(name -> name != null && ! name.isEmpty())
-                .collect(Collectors.toList());
+        return Collections.singletonList(SfcGeniusDataUtils.getSfLogicalInterface(serviceFunction));
     }
 }

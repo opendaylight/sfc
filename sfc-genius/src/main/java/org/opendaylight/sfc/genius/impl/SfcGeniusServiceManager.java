@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.genius.impl;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Genius SFC Service manager.
@@ -54,6 +55,14 @@ public interface SfcGeniusServiceManager {
      *            the name of the service function.
      */
     void unbindInterfacesOfServiceFunction(String sfName);
+
+    /**
+     * Unbind the specified interfaces.
+     *
+     * @param interfaceNames
+     *            a list containing the name of the interfaces
+     */
+    void unbindInterfaces(List<String> interfaceNames);
 
     /**
      * Bind node to SFC service.

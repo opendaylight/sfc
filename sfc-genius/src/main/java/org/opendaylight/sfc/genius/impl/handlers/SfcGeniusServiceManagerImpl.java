@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.genius.impl.handlers;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -105,6 +106,27 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
                 .exceptionally(exception -> {
                     if (exception.getCause() instanceof SfcGeniusRuntimeException) {
                         LOG.error("Error unbinding from interfaces of service function {}", sfName,
+                                exception.getCause());
+                        return null;
+                    }
+                    throw new CompletionException(exception.getCause());
+                }).join();
+    }
+
+    @Override
+    public void unbindInterfaces(List<String> interfaceNames) {
+        ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
+        SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
+
+        LOG.debug("Unbind interfaces of service function {}", interfaceNames);
+
+        CompletableFuture.allOf(interfaceNames.stream()
+                        .map(serviceHandler::unbindFromInterface)
+                        .toArray(size -> new CompletableFuture<?>[size]))
+                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .exceptionally(exception -> {
+                    if (exception.getCause() instanceof SfcGeniusRuntimeException) {
+                        LOG.error("Error unbinding from interfaces {}", interfaceNames,
                                 exception.getCause());
                         return null;
                     }

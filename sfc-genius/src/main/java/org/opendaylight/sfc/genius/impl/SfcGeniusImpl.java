@@ -16,6 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusServiceManagerImpl;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
+import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSffDpnStateListener;
 import org.slf4j.Logger;
@@ -54,15 +55,19 @@ public class SfcGeniusImpl {
         interfaceStateListener = new SfcGeniusInterfaceStateListener(interfaceManager, listenerExecutor);
         SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
         sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(interfaceManager, listenerExecutor);
+        SfcGeniusSfListener sfcGeniusSfListener;
+        sfcGeniusSfListener = new SfcGeniusSfListener(interfaceManager, listenerExecutor);
 
         sfStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
         interfaceStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
         sfcGeniusSffDpnStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
+        sfcGeniusSfListener.registerListener(LogicalDatastoreType.CONFIGURATION, dataBroker);
 
         onDestroy = () -> {
             sfStateListener.close();
             interfaceStateListener.close();
             sfcGeniusSffDpnStateListener.close();
+            sfcGeniusSfListener.close();
         };
 
         LOG.info("SFC Genius module {} initialized", this);

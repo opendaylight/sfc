@@ -70,10 +70,6 @@ public class SfcGeniusSfReaderTest {
         SF_LOCATORS.put("SF4", new HashSet<>());
         SF_LOCATORS.get("SF4").add(new LogicalInterfaceBuilder().setInterfaceName("IFB").build());
         SF_LOCATORS.put("SF5", new HashSet<>());
-        SF_LOCATORS.get("SF5").add(new LogicalInterfaceBuilder().setInterfaceName("IFB").build());
-        SF_LOCATORS.get("SF5").add(new LogicalInterfaceBuilder().setInterfaceName("").build());
-        SF_LOCATORS.get("SF5").add(new LogicalInterfaceBuilder().build());
-        SF_LOCATORS.get("SF5").add(new OtherBuilder().setOtherName("Other").build());
         SF_LOCATORS.get("SF5").add(new LogicalInterfaceBuilder().setInterfaceName("IFA").build());
     }
 
@@ -106,12 +102,12 @@ public class SfcGeniusSfReaderTest {
         InstanceIdentifier<ServiceFunction> iid = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, new ServiceFunctionKey(sfName)).build();
         doReturn(CompletableFuture.completedFuture(serviceFunctions.getServiceFunction().stream()
-                .filter(serviceFunction -> serviceFunction.getName().equals(sfName)).findFirst().get())).when(reader)
-                        .doRead(LogicalDatastoreType.CONFIGURATION, iid);
+                .filter(serviceFunction -> serviceFunction.getName().equals(sfName)).findFirst())).when(reader)
+                        .doReadOptional(LogicalDatastoreType.CONFIGURATION, iid);
 
         List<String> ifNames = reader.readInterfacesOfSf(sfName).get();
 
-        assertThat(ifNames, containsInAnyOrder("IFA", "IFB"));
-        assertThat(ifNames.size(), is(2));
+        assertThat(ifNames.size(), is(1));
+        assertThat(ifNames.get(0), is("IFA"));
     }
 }

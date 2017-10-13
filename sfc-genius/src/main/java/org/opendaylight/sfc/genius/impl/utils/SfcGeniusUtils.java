@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 /**
  * Utility functions for sfc-genius module.
  */
-public class SfcGeniusUtils {
+public final class SfcGeniusUtils {
 
     /**
      * Private constructor to avoid instantiation.

@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 
 
-public class SfcModelUtil {
+public final class SfcModelUtil {
 
     private SfcModelUtil() {
     }

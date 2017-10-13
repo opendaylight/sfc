@@ -188,7 +188,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.gpe.np.grouping.NxmNxTunGpeNpBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class SfcOpenflowUtils {
+public final class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
     public static final int ETHERTYPE_VLAN = 0x8100;
     public static final int ETHERTYPE_IPV6 = 0x86dd;
@@ -1442,7 +1442,7 @@ public class SfcOpenflowUtils {
      *            the ID of the node
      * @return the {@link InstanceIdentifier}
      */
-    public static final InstanceIdentifier<Node> createNodePath(final NodeId nodeId) {
+    public static InstanceIdentifier<Node> createNodePath(final NodeId nodeId) {
         return InstanceIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
     }
 
@@ -1455,7 +1455,7 @@ public class SfcOpenflowUtils {
      *            the ID of the table
      * @return the {@link InstanceIdentifier}
      */
-    public static final InstanceIdentifier<Table> createTablePath(final NodeId nodeId, final short tableId) {
+    public static InstanceIdentifier<Table> createTablePath(final NodeId nodeId, final short tableId) {
         return createNodePath(nodeId).builder().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(tableId)).build();
     }

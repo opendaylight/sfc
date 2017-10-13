@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
-public class SfcScfOfUtils {
+public final class SfcScfOfUtils {
     // TODO this must be defined somewhere else; link to 'it' rather than have
     // it here
     private static final short TABLE_INDEX_CLASSIFIER = 0;

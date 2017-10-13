@@ -8,47 +8,58 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusSfStateListenerTest {
 
     @Mock
-    SfcGeniusServiceManager sfcGeniusServiceManager;
+    private DataBroker dataBroker;
 
     @Mock
-    Executor executor;
-
-    @Captor
-    ArgumentCaptor<Runnable> runnableCaptor;
+    private SfcGeniusServiceManager sfcGeniusServiceManager;
 
     @Mock
-    ServiceFunctionState serviceFunctionState;
+    private ExecutorService executorService;
 
     @Mock
-    List<SfServicePath> sfpList;
+    private ServiceFunctionState serviceFunctionState;
 
-    SfcGeniusSfStateListener sfcGeniusSfStateListener;
+    @Mock
+    private List<SfServicePath> sfpList;
+
+    private SfcGeniusSfStateListener sfcGeniusSfStateListener;
 
     @Before
     public void setup() {
-        sfcGeniusSfStateListener = new SfcGeniusSfStateListener(sfcGeniusServiceManager, executor);
+        when(dataBroker.registerDataChangeListener(
+                    eq(LogicalDatastoreType.OPERATIONAL),
+                    eq(InstanceIdentifier.create(ServiceFunctionsState.class).child(ServiceFunctionState.class)),
+                    any(),
+                    any()))
+                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
+        sfcGeniusSfStateListener = new SfcGeniusSfStateListener(dataBroker, sfcGeniusServiceManager, executorService);
     }
 
     @Test
@@ -56,9 +67,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(1);
-        sfcGeniusSfStateListener.remove(null, serviceFunctionState);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSfStateListener.remove(serviceFunctionState);
         verify(sfcGeniusServiceManager).unbindInterfacesOfServiceFunction("SF1");
     }
 
@@ -67,8 +76,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(0);
-        sfcGeniusSfStateListener.remove(null, serviceFunctionState);
-        verifyZeroInteractions(executor);
+        sfcGeniusSfStateListener.remove(serviceFunctionState);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
@@ -77,9 +85,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(1).thenReturn(0);
-        sfcGeniusSfStateListener.update(null, serviceFunctionState, serviceFunctionState);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSfStateListener.update(serviceFunctionState, serviceFunctionState);
         verify(sfcGeniusServiceManager).bindInterfacesOfServiceFunction("SF1");
     }
 
@@ -88,8 +94,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(1).thenReturn(2);
-        sfcGeniusSfStateListener.update(null, serviceFunctionState, serviceFunctionState);
-        verifyZeroInteractions(executor);
+        sfcGeniusSfStateListener.update(serviceFunctionState, serviceFunctionState);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
@@ -98,9 +103,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(0).thenReturn(1);
-        sfcGeniusSfStateListener.update(null, serviceFunctionState, serviceFunctionState);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSfStateListener.update(serviceFunctionState, serviceFunctionState);
         verify(sfcGeniusServiceManager).unbindInterfacesOfServiceFunction("SF1");
     }
 
@@ -109,8 +112,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(0).thenReturn(0);
-        sfcGeniusSfStateListener.update(null, serviceFunctionState, serviceFunctionState);
-        verifyZeroInteractions(executor);
+        sfcGeniusSfStateListener.update(serviceFunctionState, serviceFunctionState);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
@@ -119,9 +121,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(1);
-        sfcGeniusSfStateListener.add(null, serviceFunctionState);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSfStateListener.add(serviceFunctionState);
         verify(sfcGeniusServiceManager).bindInterfacesOfServiceFunction("SF1");
     }
 
@@ -130,8 +130,7 @@ public class SfcGeniusSfStateListenerTest {
         when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(0);
-        sfcGeniusSfStateListener.add(null, serviceFunctionState);
-        verifyZeroInteractions(executor);
+        sfcGeniusSfStateListener.add(serviceFunctionState);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 }

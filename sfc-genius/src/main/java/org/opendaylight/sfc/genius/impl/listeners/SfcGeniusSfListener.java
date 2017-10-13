@@ -9,8 +9,11 @@
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.util.Collections;
-import java.util.concurrent.Executor;
-import org.opendaylight.genius.datastoreutils.AsyncDataTreeChangeListenerBase;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
@@ -19,44 +22,36 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcGeniusSfListener extends AsyncDataTreeChangeListenerBase<ServiceFunction, SfcGeniusSfListener> {
+public class SfcGeniusSfListener extends AbstractAsyncDataTreeChangeListener<ServiceFunction> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfListener.class);
     private final SfcGeniusServiceManager interfaceManager;
-    private final Executor executor;
 
-    public SfcGeniusSfListener(SfcGeniusServiceManager interfaceManager, Executor executor) {
-        super(ServiceFunction.class, SfcGeniusSfListener.class);
+    public SfcGeniusSfListener(DataBroker dataBroker,
+                               SfcGeniusServiceManager interfaceManager,
+                               ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, getWildcardPath(), executorService);
         this.interfaceManager = interfaceManager;
-        this.executor = executor;
     }
 
-    @Override
-    protected InstanceIdentifier<ServiceFunction> getWildCardPath() {
+    private static InstanceIdentifier<ServiceFunction> getWildcardPath() {
         return InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class);
     }
 
     @Override
-    protected void remove(InstanceIdentifier<ServiceFunction> key, ServiceFunction removedServiceFunction) {
+    public void add(@Nonnull ServiceFunction newServiceFunction) {
+        // noop
+    }
+
+    @Override
+    public void remove(@Nonnull ServiceFunction removedServiceFunction) {
         LOG.debug("Received service function remove event {}", removedServiceFunction);
         String interfaceName = SfcGeniusDataUtils.getSfLogicalInterface(removedServiceFunction);
-        executor.execute(() -> interfaceManager.unbindInterfaces(Collections.singletonList(interfaceName)));
+        interfaceManager.unbindInterfaces(Collections.singletonList(interfaceName));
     }
 
     @Override
-    protected void update(InstanceIdentifier<ServiceFunction> key,
-                          ServiceFunction serviceFunctionBefore,
-                          ServiceFunction serviceFunctionAfter) {
+    public void update(@Nonnull ServiceFunction originalServiceFunction, ServiceFunction updatedServiceFunction) {
         // noop
-    }
-
-    @Override
-    protected void add(InstanceIdentifier<ServiceFunction> key, ServiceFunction addedServiceFunction) {
-        // noop
-    }
-
-    @Override
-    protected SfcGeniusSfListener getDataTreeChangeListener() {
-        return SfcGeniusSfListener.this;
     }
 }

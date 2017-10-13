@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2016-06-01
  */
-public class SfcPotRspProcessor {
+public final class SfcPotRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotRspProcessor.class);
 

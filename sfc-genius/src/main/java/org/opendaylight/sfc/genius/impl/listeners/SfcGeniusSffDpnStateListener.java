@@ -12,8 +12,11 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executor;
-import org.opendaylight.genius.datastoreutils.AsyncDataTreeChangeListenerBase;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
@@ -31,59 +34,24 @@ import org.slf4j.LoggerFactory;
  * sfc-genius needs to be aware of data plane nodes participation on
  * RSPs.
  */
-public class SfcGeniusSffDpnStateListener extends AsyncDataTreeChangeListenerBase<Dpn,
-        SfcGeniusSffDpnStateListener> {
+public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeListener<Dpn> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSffDpnStateListener.class);
     private final SfcGeniusServiceManager interfaceManager;
-    private final Executor executor;
 
-    public SfcGeniusSffDpnStateListener(SfcGeniusServiceManager interfaceManager, Executor executor) {
-        super(Dpn.class, SfcGeniusSffDpnStateListener.class);
+    public SfcGeniusSffDpnStateListener(DataBroker dataBroker,
+                                        SfcGeniusServiceManager interfaceManager,
+                                        ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, getWildCardPath(), executorService);
         this.interfaceManager = interfaceManager;
-        this.executor = executor;
     }
 
-    @Override
-    protected InstanceIdentifier<Dpn> getWildCardPath() {
+    private static InstanceIdentifier<Dpn> getWildCardPath() {
         return InstanceIdentifier.create(ServiceFunctionForwardersState.class)
                 .child(ServiceFunctionForwarderState.class)
                 .augmentation(SffLogicalSffAugmentation.class)
                 .child(DpnRsps.class)
                 .child(Dpn.class);
-    }
-
-    @Override
-    protected void remove(InstanceIdentifier<Dpn> instanceIdentifier, Dpn dpn) {
-        LOG.debug("Receive SFF state DPN remove event {} {}", instanceIdentifier, dpn);
-        boolean pathsOnDpn = getPathsOnDpn(dpn).isEmpty();
-        if (!pathsOnDpn) {
-            BigInteger dpnId = dpn.getDpnId().getValue();
-            executor.execute(() -> interfaceManager.unbindNode(dpnId));
-        }
-    }
-
-    @Override
-    protected void update(InstanceIdentifier<Dpn> instanceIdentifier, Dpn oldDpn, Dpn updatedDpn) {
-        LOG.debug("Receive SFF state DPN update event {} {} {}", instanceIdentifier, oldDpn, updatedDpn);
-        BigInteger dpnId = updatedDpn.getDpnId().getValue();
-        boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();
-        boolean pathsOnOldDpn = this.getPathsOnDpn(oldDpn).isEmpty();
-        if (!pathsOnUpdatedDpn && pathsOnOldDpn) {
-            executor.execute(() -> interfaceManager.bindNode(dpnId));
-        } else if (!pathsOnOldDpn && pathsOnUpdatedDpn) {
-            executor.execute(() -> interfaceManager.unbindNode(dpnId));
-        }
-    }
-
-    @Override
-    protected void add(InstanceIdentifier<Dpn> instanceIdentifier, Dpn dpn) {
-        LOG.debug("Receive SFF state DPN add event {} {}", instanceIdentifier, dpn);
-        boolean pathsOnDpn = getPathsOnDpn(dpn).isEmpty();
-        if (!pathsOnDpn) {
-            BigInteger dpnId = dpn.getDpnId().getValue();
-            executor.execute(() -> interfaceManager.bindNode(dpnId));
-        }
     }
 
     private List<Rsps> getPathsOnDpn(Dpn dpn) {
@@ -93,7 +61,35 @@ public class SfcGeniusSffDpnStateListener extends AsyncDataTreeChangeListenerBas
     }
 
     @Override
-    protected SfcGeniusSffDpnStateListener getDataTreeChangeListener() {
-        return SfcGeniusSffDpnStateListener.this;
+    public void add(@Nonnull Dpn newDpn) {
+        LOG.debug("Receive SFF state DPN add event {}", newDpn);
+        boolean pathsOnDpn = getPathsOnDpn(newDpn).isEmpty();
+        if (!pathsOnDpn) {
+            BigInteger dpnId = newDpn.getDpnId().getValue();
+            interfaceManager.bindNode(dpnId);
+        }
+    }
+
+    @Override
+    public void remove(@Nonnull Dpn removedDpn) {
+        LOG.debug("Receive SFF state DPN remove event {}", removedDpn);
+        boolean pathsOnDpn = getPathsOnDpn(removedDpn).isEmpty();
+        if (!pathsOnDpn) {
+            BigInteger dpnId = removedDpn.getDpnId().getValue();
+            interfaceManager.unbindNode(dpnId);
+        }
+    }
+
+    @Override
+    public void update(@Nonnull Dpn originalDpn, Dpn updatedDpn) {
+        LOG.debug("Receive SFF state DPN update event {}", originalDpn, updatedDpn);
+        BigInteger dpnId = updatedDpn.getDpnId().getValue();
+        boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();
+        boolean pathsOnOldDpn = this.getPathsOnDpn(originalDpn).isEmpty();
+        if (!pathsOnUpdatedDpn && pathsOnOldDpn) {
+            interfaceManager.bindNode(dpnId);
+        } else if (!pathsOnOldDpn && pathsOnUpdatedDpn) {
+            interfaceManager.unbindNode(dpnId);
+        }
     }
 }

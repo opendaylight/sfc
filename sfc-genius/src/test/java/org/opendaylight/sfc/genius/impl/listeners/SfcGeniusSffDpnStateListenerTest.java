@@ -8,114 +8,124 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersState;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.SffLogicalSffAugmentation;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.DpnRsps;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.Dpn;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.RspsForDpnid;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.Rsps;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusSffDpnStateListenerTest {
 
     @Mock
-    SfcGeniusServiceManager sfcGeniusServiceManager;
+    private DataBroker dataBroker;
 
     @Mock
-    Executor executor;
-
-    @Captor
-    ArgumentCaptor<Runnable> runnableCaptor;
+    private SfcGeniusServiceManager sfcGeniusServiceManager;
 
     @Mock
-    Dpn dpn;
+    private ExecutorService executorService;
 
     @Mock
-    RspsForDpnid rspsForDpnid;
+    private Dpn dpn;
 
     @Mock
-    List<Rsps> rspsList;
+    private RspsForDpnid rspsForDpnid;
 
-    SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
+    @Mock
+    private List<Rsps> rspsList;
+
+    private SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
 
     @Before
     public void setup() {
         when(dpn.getDpnId()).thenReturn(new DpnIdType(new BigInteger("1")));
         when(dpn.getRspsForDpnid()).thenReturn(rspsForDpnid);
         when(rspsForDpnid.getRsps()).thenReturn(rspsList);
-        sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(sfcGeniusServiceManager, executor);
+        when(dataBroker.registerDataChangeListener(
+                eq(LogicalDatastoreType.OPERATIONAL),
+                eq(InstanceIdentifier.create(ServiceFunctionForwardersState.class)
+                        .child(ServiceFunctionForwarderState.class)
+                        .augmentation(SffLogicalSffAugmentation.class)
+                        .child(DpnRsps.class)
+                        .child(Dpn.class)),
+                any(),
+                any()))
+                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
+        sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(
+                dataBroker,
+                sfcGeniusServiceManager,
+                executorService);
     }
 
     @Test
     public void remove() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
-        sfcGeniusSffDpnStateListener.remove(null, dpn);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSffDpnStateListener.remove(dpn);
         verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
     }
 
     @Test
     public void removeNoPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true);
-        sfcGeniusSffDpnStateListener.remove(null, dpn);
-        verifyZeroInteractions(executor);
+        sfcGeniusSffDpnStateListener.remove(dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
     @Test
     public void updateAddPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false).thenReturn(true);
-        sfcGeniusSffDpnStateListener.update(null, dpn, dpn);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSffDpnStateListener.update(dpn, dpn);
         verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
     }
 
     @Test
     public void updateAddRemoveSomePaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false).thenReturn(false);
-        sfcGeniusSffDpnStateListener.update(null, dpn, dpn);
-        verifyZeroInteractions(executor);
+        sfcGeniusSffDpnStateListener.update(dpn, dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
     @Test
     public void updateRemovePaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true).thenReturn(false);
-        sfcGeniusSffDpnStateListener.update(null, dpn, dpn);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSffDpnStateListener.update(dpn, dpn);
         verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
     }
 
     @Test
     public void add() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
-        sfcGeniusSffDpnStateListener.add(null, dpn);
-        verify(executor).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSffDpnStateListener.add(dpn);
         verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
     }
 
     @Test
     public void addNoPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true);
-        sfcGeniusSffDpnStateListener.add(null, dpn);
-        verifyZeroInteractions(executor);
+        sfcGeniusSffDpnStateListener.add(dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 

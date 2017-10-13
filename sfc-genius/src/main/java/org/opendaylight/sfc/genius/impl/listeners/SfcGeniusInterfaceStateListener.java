@@ -9,8 +9,11 @@
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.math.BigInteger;
-import java.util.concurrent.Executor;
-import org.opendaylight.genius.datastoreutils.AsyncDataTreeChangeListenerBase;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
@@ -30,56 +33,49 @@ import org.slf4j.LoggerFactory;
  *     [RFC7223] A YANG Data Model for Interface Management</a>
  * @see "org.opendaylight.genius.interfacemanager"
  */
-public class SfcGeniusInterfaceStateListener extends AsyncDataTreeChangeListenerBase<Interface,
-        SfcGeniusInterfaceStateListener> {
+public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChangeListener<Interface> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfStateListener.class);
-    private final SfcGeniusServiceManager handler;
-    private Executor executor;
+    private final SfcGeniusServiceManager interfaceManger;
 
-    public SfcGeniusInterfaceStateListener(SfcGeniusServiceManager handler, Executor executor) {
-        super(Interface.class, SfcGeniusInterfaceStateListener.class);
-        this.handler = handler;
-        this.executor = executor;
+    public SfcGeniusInterfaceStateListener(DataBroker dataBroker,
+                                           SfcGeniusServiceManager interfaceManager,
+                                           ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, getWildCardPath(), executorService);
+        this.interfaceManger = interfaceManager;
     }
 
-    @Override
-    protected InstanceIdentifier<Interface> getWildCardPath() {
+    private static InstanceIdentifier<Interface> getWildCardPath() {
         return InstanceIdentifier.create(InterfacesState.class).child(Interface.class);
     }
 
     @Override
-    protected void remove(InstanceIdentifier<Interface> instanceIdentifier, Interface interfaceState) {
+    public void add(@Nonnull Interface newInterface) {
+        // VM migration: logical interface state is added once the VM has migrated
+        // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
+        LOG.debug("Received interface state add event {}", newInterface);
+        String interfaceName = newInterface.getName();
+        BigInteger dpnId;
+        try {
+            dpnId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(newInterface.getLowerLayerIf());
+        } catch (SfcGeniusRuntimeException e) {
+            LOG.debug("Event ignored, could not get underlying dpn id", e);
+            return;
+        }
+        interfaceManger.interfaceStateUp(interfaceName, dpnId);
+    }
+
+    @Override
+    public void remove(@Nonnull Interface removedInterface) {
         // VM migration: logical interface state is removed while VM migrates to different node/port
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         // This is a NOP, we wait until until the VM has migrated once it's interface registers again
     }
 
     @Override
-    protected void update(InstanceIdentifier<Interface> instanceIdentifier, Interface interfaceState, Interface t1) {
+    public void update(@Nonnull Interface originalInterface, Interface updatedInterface) {
         // NOT VM migration: VM unavailable for any other reason
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#update
         // Do nothing, should be handled by a failover mechanism
-    }
-
-    @Override
-    protected void add(InstanceIdentifier<Interface> instanceIdentifier, Interface interfaceState) {
-        // VM migration: logical interface state is added once the VM has migrated
-        // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
-        LOG.debug("Received interface state add event {} {}", instanceIdentifier, interfaceState);
-        String interfaceName = interfaceState.getName();
-        BigInteger dpnId;
-        try {
-            dpnId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(interfaceState.getLowerLayerIf());
-        } catch (SfcGeniusRuntimeException e) {
-            LOG.debug("Event ignored, could not get underlying dpn id", e);
-            return;
-        }
-        executor.execute(() -> handler.interfaceStateUp(interfaceName, dpnId));
-    }
-
-    @Override
-    protected SfcGeniusInterfaceStateListener getDataTreeChangeListener() {
-        return SfcGeniusInterfaceStateListener.this;
     }
 }

@@ -20,8 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -50,9 +48,6 @@ public class SfcGeniusSfListenerTest {
     @Mock
     private ExecutorService executorService;
 
-    @Captor
-    private ArgumentCaptor<Runnable> runnableCaptor;
-
     private SfcGeniusSfListener sfcGeniusSfListener;
 
     @Before
@@ -62,21 +57,18 @@ public class SfcGeniusSfListenerTest {
         sfDataPlaneLocator = new SfDataPlaneLocatorBuilder().setLocatorType(logicalInterface).build();
         List<SfDataPlaneLocator> sfDataPlaneLocatorList = Collections.singletonList(sfDataPlaneLocator);
         serviceFunction = new ServiceFunctionBuilder().setSfDataPlaneLocator(sfDataPlaneLocatorList).build();
-
-        InstanceIdentifier<ServiceFunction> sfInstanceIdentifier;
-        sfInstanceIdentifier = InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class);
         when(dataBroker.registerDataChangeListener(
-                eq(LogicalDatastoreType.CONFIGURATION), eq(sfInstanceIdentifier), any(), any()))
+                        eq(LogicalDatastoreType.CONFIGURATION),
+                        eq(InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class)),
+                        any(),
+                        any()))
                 .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
-
-        sfcGeniusSfListener = new SfcGeniusSfListener(sfcGeniusServiceManager, executorService);
+        sfcGeniusSfListener = new SfcGeniusSfListener(dataBroker, sfcGeniusServiceManager, executorService);
     }
 
     @Test
     public void remove() throws Exception {
-        sfcGeniusSfListener.remove(null, serviceFunction);
-        verify(executorService).execute(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+        sfcGeniusSfListener.remove(serviceFunction);
         verify(sfcGeniusServiceManager).unbindInterfaces(Collections.singletonList("IFA"));
     }
 

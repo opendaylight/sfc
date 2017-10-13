@@ -101,7 +101,7 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     private static final Long  TEST_PORT = 1L;
     private static final SffDataPlaneLocatorName DPL_NAME = new SffDataPlaneLocatorName("sffdpl");
     private static final String TEST_IP_ADDRESS = "170.0.0.1";
-    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtilTest.class);
     private InstanceIdentifier<Node> nodeIID;
     private InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID;
     private ExecutorService executorService;
@@ -119,17 +119,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @After
     public void finalized() {
-
         // delete node after test
         deleteOvsdbNode(LogicalDatastoreType.CONFIGURATION);
-    }
-
-    @Test
-    public void testCreateObject() {
-
-        // just create an object of class SfcOvsUtil
-        SfcOvsUtil sfcOvsUtil = new SfcOvsUtil();
-        sfcOvsUtil.getClass();
     }
 
     @Test

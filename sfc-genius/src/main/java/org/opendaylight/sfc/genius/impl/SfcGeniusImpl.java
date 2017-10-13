@@ -12,7 +12,6 @@ import com.google.common.base.Preconditions;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusServiceManagerImpl;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
@@ -50,18 +49,20 @@ public class SfcGeniusImpl {
 
         // Listeners to data store events
         SfcGeniusSfStateListener sfStateListener;
-        sfStateListener = new SfcGeniusSfStateListener(interfaceManager, listenerExecutor);
-        SfcGeniusInterfaceStateListener interfaceStateListener;
-        interfaceStateListener = new SfcGeniusInterfaceStateListener(interfaceManager, listenerExecutor);
-        SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
-        sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(interfaceManager, listenerExecutor);
-        SfcGeniusSfListener sfcGeniusSfListener;
-        sfcGeniusSfListener = new SfcGeniusSfListener(interfaceManager, listenerExecutor);
+        sfStateListener = new SfcGeniusSfStateListener(dataBroker, interfaceManager, listenerExecutor);
+        sfStateListener.register();
 
-        sfStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
-        interfaceStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
-        sfcGeniusSffDpnStateListener.registerListener(LogicalDatastoreType.OPERATIONAL, dataBroker);
-        sfcGeniusSfListener.registerListener(LogicalDatastoreType.CONFIGURATION, dataBroker);
+        SfcGeniusInterfaceStateListener interfaceStateListener;
+        interfaceStateListener = new SfcGeniusInterfaceStateListener(dataBroker, interfaceManager, listenerExecutor);
+        interfaceStateListener.register();
+
+        SfcGeniusSffDpnStateListener sfcGeniusSffDpnStateListener;
+        sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(dataBroker, interfaceManager, listenerExecutor);
+        sfcGeniusSffDpnStateListener.register();
+
+        SfcGeniusSfListener sfcGeniusSfListener;
+        sfcGeniusSfListener = new SfcGeniusSfListener(dataBroker, interfaceManager, listenerExecutor);
+        sfcGeniusSfListener.register();
 
         onDestroy = () -> {
             sfStateListener.close();

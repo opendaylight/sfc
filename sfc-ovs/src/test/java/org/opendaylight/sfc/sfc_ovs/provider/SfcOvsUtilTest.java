@@ -126,14 +126,6 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
     }
 
     @Test
-    public void testCreateObject() {
-
-        // just create an object of class SfcOvsUtil
-        SfcOvsUtil sfcOvsUtil = new SfcOvsUtil();
-        sfcOvsUtil.getClass();
-    }
-
-    @Test
     public void testSubmitCallable() throws Exception {
 
         // create simple call() method for testing purposes

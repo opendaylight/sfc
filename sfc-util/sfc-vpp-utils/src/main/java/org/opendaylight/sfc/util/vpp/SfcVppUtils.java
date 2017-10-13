@@ -111,7 +111,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcVppUtils {
+public final class SfcVppUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SfcVppUtils.class);
     private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier
             .builder(NetworkTopology.class)

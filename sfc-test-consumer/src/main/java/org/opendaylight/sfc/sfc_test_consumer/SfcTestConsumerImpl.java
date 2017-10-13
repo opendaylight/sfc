@@ -315,14 +315,12 @@ public class SfcTestConsumerImpl extends AbstractMXBean implements SfcTestConsum
 
     @Override
     public Boolean testBReadSfc() {
-        // printTraceStart(LOG);
-        return null;
+        return true;
     }
 
     @Override
     public Boolean testBDeleteSfc() {
-        // printTraceStart(LOG);
-        return null;
+        return true;
     }
 
     @Override
@@ -358,11 +356,6 @@ public class SfcTestConsumerImpl extends AbstractMXBean implements SfcTestConsum
         sfRefList.add(sfBuilder.setName("napt44-abstract2").setType(new SftTypeName("napt44")).build());
 
         res = putChain(new SfcName("SFC2"), sfRefList) && res;
-
-        // Nodes
-        List<String> nodeList = new ArrayList<>();
-        nodeList.add("firewall-101-1");
-        nodeList.add("firewall-101-2");
 
         return res;
     }

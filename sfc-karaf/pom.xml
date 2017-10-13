@@ -16,20 +16,15 @@
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: sfc :: ${project.artifactId}</name>
 
-  <properties>
-    <!-- The feature to install via featuresBoot in org.apache.karaf.features.cfg  -->
-  </properties>
-
   <dependencies>
     <!-- Basic Karaf dependencies -->
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
       <artifactId>framework</artifactId>
-      <!--version>${karaf.version}</version-->
       <type>kar</type>
     </dependency>
 
-    <!-- Project local feautures -->
+    <!-- Project local features -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>features4-sfc</artifactId>
@@ -39,7 +34,6 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-
 
   <build>
     <plugins>
@@ -53,6 +47,7 @@
       </plugin>
     </plugins>
   </build>
+
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</connection>
     <developerConnection>scm:git:ssh://git.opendaylight.org:29418/sfc.git</developerConnection>

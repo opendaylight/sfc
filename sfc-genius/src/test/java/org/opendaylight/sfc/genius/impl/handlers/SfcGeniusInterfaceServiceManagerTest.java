@@ -149,6 +149,14 @@ public class SfcGeniusInterfaceServiceManagerTest {
         verify(readWriteTransaction).submit();
     }
 
+    public void unbindInterfaces() throws Exception {
+        sfcGeniusInterfaceServiceManager.unbindInterfaces(Arrays.asList("IF1", "IF2"));
+
+        verify(sfcGeniusServiceHandler).unbindFromInterface("IF1");
+        verify(sfcGeniusServiceHandler).unbindFromInterface("IF2");
+        verify(readWriteTransaction).submit();
+    }
+
     @Test
     public void unbindInterfacesOfServiceFunctionNoInterfaces() throws Exception {
         when(sfcGeniusSfReader.readInterfacesOfSf(any()))

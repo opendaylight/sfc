@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.pot.provider;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
@@ -35,16 +37,18 @@ import org.slf4j.LoggerFactory;
  * (https://github.com/CiscoDevNet/iOAM) enable and disable.
  *
  * <p>
+ *
  * @author Srihari Raghavan (srihari@cisco.com)
  * @version 0.1
  * @since 2016-06-01
  */
+@Singleton
 public final class SfcPotRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotRspProcessor.class);
 
-    private SfcPotRspProcessor() {
-        throw new UnsupportedOperationException("Utility class");
+    @Inject
+    public SfcPotRspProcessor() {
     }
 
     /**
@@ -52,21 +56,18 @@ public final class SfcPotRspProcessor {
      * iOAM Proof of Transit and related parameters.
      *
      * <p>
-     * @param rsp
-     *            Rendered service path (SFC) to enable trace on.
-     * @param refreshPeriodTimeUnits
-     *            iOAM PoT configuration refresh period time units.
-     * @param refreshPeriodValue
-     *            iOAM PoT configuration refresh period.
-     * @param ioamPotProfileBitMask
-     *            iOAM internal configuration parameter.
-     * @param ioamPotNumProfiles
-     *            iOAM number of PoT profiles per node.
+     *
+     * @param rsp                    Rendered service path (SFC) to enable trace on.
+     * @param refreshPeriodTimeUnits iOAM PoT configuration refresh period time units.
+     * @param refreshPeriodValue     iOAM PoT configuration refresh period.
+     * @param ioamPotProfileBitMask  iOAM internal configuration parameter.
+     * @param ioamPotNumProfiles     iOAM number of PoT profiles per node.
      * @return success or failure.
      */
-    public static boolean enableSfcPot(RenderedServicePath rsp,
-            final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits, Long refreshPeriodValue,
-            BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
+    public boolean enableSfcPot(RenderedServicePath rsp,
+                                final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits,
+                                Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask,
+                                Long ioamPotNumProfiles) {
         SfpName sfpName;
         RenderedServicePathBuilder renderedServicePathBuilder;
         RspIoamPotAugmentationBuilder rspIoamPotAugmentationBuilder;
@@ -83,8 +84,8 @@ public final class SfcPotRspProcessor {
         SfcName serviceFunctionChainNameObj;
         serviceFunctionChainNameObj = sfp.getServiceChainName();
         ServiceFunctionChain serviceFunctionChain;
-        serviceFunctionChain = serviceFunctionChainNameObj != null
-                ? SfcProviderServiceChainAPI.readServiceFunctionChain(serviceFunctionChainNameObj) : null;
+        serviceFunctionChain = serviceFunctionChainNameObj != null ? SfcProviderServiceChainAPI
+                .readServiceFunctionChain(serviceFunctionChainNameObj) : null;
         if (serviceFunctionChain == null) {
             LOG.error("iOAM:PoT:Enable:ServiceFunctionChain for Path:{} is invalid.", sfp.getName());
             return false;
@@ -120,16 +121,16 @@ public final class SfcPotRspProcessor {
             LOG.debug("iOAM:PoT:Enable:Updated RSP: {}", sfp.getName());
         } else {
             LOG.warn("iOAM:PoT:Enable:{}:Failed to update Rendered Service Path:{}",
-                    Thread.currentThread().getStackTrace()[1], sfp.getName());
+                     Thread.currentThread().getStackTrace()[1], sfp.getName());
             return false;
         }
 
         return true;
     }
 
-    public static boolean enableSfcPot(RspName rspName,
-            final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits, Long refreshPeriodValue,
-            BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
+    public boolean enableSfcPot(RspName rspName, final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits,
+                                Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask,
+                                Long ioamPotNumProfiles) {
 
         RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         if (rsp == null) {
@@ -140,7 +141,7 @@ public final class SfcPotRspProcessor {
         return enableSfcPot(rsp, refreshPeriodTimeUnits, refreshPeriodValue, ioamPotProfileBitMask, ioamPotNumProfiles);
     }
 
-    public static boolean disableSfcPot(RspName rspName) {
+    public boolean disableSfcPot(RspName rspName) {
         RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         if (rsp == null) {
             LOG.error("iOAM:PoT:Disable:Rendered service path by name:{} does not exist.", rspName);
@@ -155,11 +156,10 @@ public final class SfcPotRspProcessor {
      * of Transit feature.
      *
      * <p>
-     * @param rsp
-     *            Rendered service path (SFC) to disable trace on.
+     * @param rsp Rendered service path (SFC) to disable trace on.
      * @return success or failure.
      */
-    public static boolean disableSfcPot(RenderedServicePath rsp) {
+    public boolean disableSfcPot(RenderedServicePath rsp) {
         RenderedServicePathBuilder renderedServicePathBuilder;
         RspIoamPotAugmentationBuilder rspIoamPotAugmentationBuilder;
         SfpName sfpName;
@@ -175,8 +175,8 @@ public final class SfcPotRspProcessor {
         sfp = SfcProviderServicePathAPI.readServiceFunctionPath(sfpName);
         SfcName serviceFunctionChainNameObj = sfp.getServiceChainName();
         ServiceFunctionChain serviceFunctionChain;
-        serviceFunctionChain = serviceFunctionChainNameObj != null
-                ? SfcProviderServiceChainAPI.readServiceFunctionChain(serviceFunctionChainNameObj) : null;
+        serviceFunctionChain = serviceFunctionChainNameObj != null ? SfcProviderServiceChainAPI
+                .readServiceFunctionChain(serviceFunctionChainNameObj) : null;
         if (serviceFunctionChain == null) {
             LOG.error("iOAM:PoT:Disable:ServiceFunctionChain name for Path {} is null.", sfp.getName());
             return false;
@@ -209,7 +209,7 @@ public final class SfcPotRspProcessor {
             LOG.debug("iOAM:PoT:Disable:Updated RSP: {}", sfp.getName());
         } else {
             LOG.warn("iOAM:PoT:Disable:{}:Failed to update Rendered Service Path: {}",
-                    Thread.currentThread().getStackTrace()[1], sfp.getName());
+                     Thread.currentThread().getStackTrace()[1], sfp.getName());
             return false;
         }
         return true;

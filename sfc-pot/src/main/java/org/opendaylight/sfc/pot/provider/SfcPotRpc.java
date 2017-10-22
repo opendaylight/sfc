@@ -10,6 +10,8 @@ package org.opendaylight.sfc.pot.provider;
 
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot.rev161122.DisableSfcIoamPotRenderedPathInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot.rev161122.DisableSfcIoamPotRenderedPathOutput;
@@ -31,10 +33,14 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  * @version 0.1
  * @since 2016-06-01
  */
+@Singleton
 public class SfcPotRpc implements SfcIoamNbPotService {
 
-    public static SfcPotRpc getSfcPotRpc() {
-        return new SfcPotRpc();
+    private final SfcPotRspProcessor sfcPotRspProcessor;
+
+    @Inject
+    public SfcPotRpc(SfcPotRspProcessor sfcPotRspProcessor) {
+        this.sfcPotRspProcessor = sfcPotRspProcessor;
     }
 
     /**
@@ -54,7 +60,7 @@ public class SfcPotRpc implements SfcIoamNbPotService {
         RspName rspName = new RspName(input.getSfcIoamPotRspName());
 
         /* Enable iOAM Proof of Transit on the SFC/RSP */
-        ret = SfcPotRspProcessor.enableSfcPot(rspName, input.getRefreshPeriodTimeUnits(), input.getRefreshPeriodValue(),
+        ret = sfcPotRspProcessor.enableSfcPot(rspName, input.getRefreshPeriodTimeUnits(), input.getRefreshPeriodValue(),
                 input.getIoamPotBitMask(), input.getIoamPotNumProfiles());
         if (ret) {
             /* success */
@@ -88,7 +94,7 @@ public class SfcPotRpc implements SfcIoamNbPotService {
         RspName rspName = new RspName(input.getSfcIoamPotRspName());
 
         /* Disable iOAM Proof of transit for this SFC/RSP */
-        ret = SfcPotRspProcessor.disableSfcPot(rspName);
+        ret = sfcPotRspProcessor.disableSfcPot(rspName);
         if (ret) {
             /* success */
             DisableSfcIoamPotRenderedPathOutputBuilder disableSfcIoamPotRenderedPathOutputBuilder =

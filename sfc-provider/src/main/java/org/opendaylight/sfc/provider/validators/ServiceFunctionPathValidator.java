@@ -9,6 +9,8 @@ package org.opendaylight.sfc.provider.validators;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeCommitCohortRegistry;
 import org.opendaylight.sfc.provider.validators.util.DataValidationFailedWithMessageException;
@@ -26,33 +28,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Diego Granados (diego.jesus.granados.lopez@ericsson.com)
  */
+@Singleton
 public class ServiceFunctionPathValidator {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionPathValidator.class);
 
     private final DOMDataTreeCommitCohortRegistry registry;
 
+    @Inject
     public ServiceFunctionPathValidator(final DOMDataBroker domDataBroker) {
         this.registry = (DOMDataTreeCommitCohortRegistry) domDataBroker.getSupportedExtensions()
                 .get(org.opendaylight.controller.md.sal.dom.api.DOMDataTreeCommitCohortRegistry.class);
-    }
-
-    public void init() {
-        LOG.debug("ServiceFunctionPathValidator:Initializing...");
         registerValidationCohorts();
     }
 
     private void registerValidationCohorts() {
-
         ServiceFunctionPathCohort myCohort = new ServiceFunctionPathCohort(this);
 
         LOG.debug("registerValidationCohorts: sfp cohort created");
         registry.registerCommitCohort(ValidationConstants.SFP_ID, myCohort);
         LOG.info("registerValidationCohorts:initialized. registered cohort: {}", myCohort);
-
-    }
-
-    public void close() {
-        LOG.debug("close(): closing sfp validator ...");
     }
 
     /**

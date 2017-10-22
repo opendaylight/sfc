@@ -92,9 +92,6 @@ import org.slf4j.LoggerFactory;
 /* Note: Based on IosXeRspProcessorTest */
 public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotRspProcessorTest.class);
-    // private final OpendaylightSfc odl = new OpendaylightSfc();
-    private final List<ServiceFunction> sfList = new ArrayList<>();
-    private DataBroker dataBroker;
 
     /* Note: following finals from SfcProviderRpcTest */
     @SuppressWarnings("serial")
@@ -258,12 +255,16 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
     private static final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
     private static final RspName RSP_NAME = new RspName("ioam-test-rsp");
 
-    SfcProviderRpc sfcProviderRpc;
+    private final List<ServiceFunction> sfList = new ArrayList<>();
+    private DataBroker dataBroker;
+    private SfcProviderRpc sfcProviderRpc;
+    private SfcPotRspProcessor sfcPotRspProcessor;
 
     @Before
     public void init() {
         dataBroker = getDataBroker();
         sfcProviderRpc = new SfcProviderRpc(dataBroker);
+        sfcPotRspProcessor = new SfcPotRspProcessor();
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
     }
 
@@ -281,7 +282,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         assertTrue(ret);
 
         long numprofiles = 2;
-        ret = SfcPotRspProcessor.enableSfcPot(renderedServicePath, null, 1000L, null, numprofiles);
+        ret = sfcPotRspProcessor.enableSfcPot(renderedServicePath, null, 1000L, null, numprofiles);
         assertTrue(ret);
         LOG.info("enableSfcPot returned success for :{}", RSP_NAME);
 
@@ -296,7 +297,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         assertTrue(potAugmentation.isIoamPotEnable());
 
         /* Now disable SFC PoT */
-        ret = SfcPotRspProcessor.disableSfcPot(renderedServicePath);
+        ret = sfcPotRspProcessor.disableSfcPot(renderedServicePath);
         assertTrue(ret);
         LOG.info("disableSfcPot returned success for :{}", RSP_NAME);
 

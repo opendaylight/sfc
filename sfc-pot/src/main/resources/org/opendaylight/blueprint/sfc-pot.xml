@@ -3,9 +3,9 @@
   xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
   odl:use-default-for-reference-types="true">
 
-  <bean id="sfcPotRpc"
-    class="org.opendaylight.sfc.pot.provider.SfcPotRpc">
-  </bean>
+  <!--<bean id="sfcPotRpc"-->
+    <!--class="org.opendaylight.sfc.pot.provider.SfcPotRpc">-->
+  <!--</bean>-->
 
   <odl:rpc-implementation ref="sfcPotRpc" />
 

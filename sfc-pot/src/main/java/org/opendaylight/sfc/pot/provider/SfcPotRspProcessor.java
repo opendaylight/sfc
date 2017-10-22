@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.pot.provider;
 
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
@@ -39,12 +40,12 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2016-06-01
  */
+@Singleton
 public final class SfcPotRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotRspProcessor.class);
 
-    private SfcPotRspProcessor() {
-        throw new UnsupportedOperationException("Utility class");
+    public SfcPotRspProcessor() {
     }
 
     /**
@@ -64,7 +65,7 @@ public final class SfcPotRspProcessor {
      *            iOAM number of PoT profiles per node.
      * @return success or failure.
      */
-    public static boolean enableSfcPot(RenderedServicePath rsp,
+    public boolean enableSfcPot(RenderedServicePath rsp,
             final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits, Long refreshPeriodValue,
             BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
         SfpName sfpName;
@@ -127,9 +128,9 @@ public final class SfcPotRspProcessor {
         return true;
     }
 
-    public static boolean enableSfcPot(RspName rspName,
-            final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits, Long refreshPeriodValue,
-            BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
+    public boolean enableSfcPot(RspName rspName, final java.lang.Class<? extends TimeResolution> refreshPeriodTimeUnits,
+                                Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask,
+                                Long ioamPotNumProfiles) {
 
         RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         if (rsp == null) {
@@ -140,7 +141,7 @@ public final class SfcPotRspProcessor {
         return enableSfcPot(rsp, refreshPeriodTimeUnits, refreshPeriodValue, ioamPotProfileBitMask, ioamPotNumProfiles);
     }
 
-    public static boolean disableSfcPot(RspName rspName) {
+    public boolean disableSfcPot(RspName rspName) {
         RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         if (rsp == null) {
             LOG.error("iOAM:PoT:Disable:Rendered service path by name:{} does not exist.", rspName);
@@ -159,7 +160,7 @@ public final class SfcPotRspProcessor {
      *            Rendered service path (SFC) to disable trace on.
      * @return success or failure.
      */
-    public static boolean disableSfcPot(RenderedServicePath rsp) {
+    public boolean disableSfcPot(RenderedServicePath rsp) {
         RenderedServicePathBuilder renderedServicePathBuilder;
         RspIoamPotAugmentationBuilder rspIoamPotAugmentationBuilder;
         SfpName sfpName;

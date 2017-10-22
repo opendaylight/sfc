@@ -105,10 +105,8 @@ import org.slf4j.LoggerFactory;
 /* Note: Based on IosXeRspProcessorTest */
 public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfRspProcessorTest.class);
-    private final List<ServiceFunction> sfList = new ArrayList<>();
-    private DataBroker dataBroker;
-    private final String mgmtIp = "10.0.0.1";
-    private final String nodeIdString = "nodeId";
+    private static final String MGMT_IP = "10.0.0.1";
+    private static final String NODE_ID_STRING = "nodeId";
     private static final long REFRESH_VALUE = 1000;
     private static final long POT_NUM_PROFILES = 2;
 
@@ -261,11 +259,15 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
     private SfcProviderRpc sfcProviderRpc;
     private SfcPotNetconfNodeManager nodeManager;
     private SfcPotNetconfIoam sfcPotNetconfIoam;
+    private final List<ServiceFunction> sfList = new ArrayList<>();
+    private DataBroker dataBroker;
+    private SfcPotRspProcessor sfcPotRspProcessor;
 
     @Before
     public void init() {
         dataBroker = getDataBroker();
         sfcProviderRpc = new SfcProviderRpc(dataBroker);
+        sfcPotRspProcessor = new SfcPotRspProcessor();
         SfcDataStoreAPI.setDataProviderAux(dataBroker);
         nodeManager = mock(SfcPotNetconfNodeManager.class);
         prepareSfcEntities();
@@ -273,18 +275,18 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
     @Test
     public void updateRsp() {
-        NodeId nodeId = new NodeId(nodeIdString);
+        NodeId nodeId = new NodeId(NODE_ID_STRING);
         NodeBuilder nodeBuilder = new NodeBuilder();
         NetconfNodeBuilder netconfNodeBuilder = new NetconfNodeBuilder();
-        netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(mgmtIp))));
+        netconfNodeBuilder.setHost(new Host(new IpAddress(new Ipv4Address(MGMT_IP))));
         nodeBuilder.setNodeId(nodeId).addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
         Node node = nodeBuilder.build();
 
         Map<NodeId, DataBroker> nodeWithDataBrokerMap = new HashMap<>();
         nodeWithDataBrokerMap.put(nodeId, dataBroker);
 
-        when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(mgmtIp)));
-        when(nodeManager.getNodeIdFromIpAddress(new IpAddress(new Ipv4Address(mgmtIp)))).thenReturn(nodeId);
+        when(nodeManager.getNetconfNodeIp(node)).thenReturn(new IpAddress(new Ipv4Address(MGMT_IP)));
+        when(nodeManager.getNodeIdFromIpAddress(new IpAddress(new Ipv4Address(MGMT_IP)))).thenReturn(nodeId);
 
         /* Enable SFC PoT on the RSP */
         RenderedServicePath rsp = enableSfcPot();
@@ -295,7 +297,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         sfcPotNetconfIoam.processRspUpdate(rsp);
 
         /* Verify calls done from inside the SB APIs */
-        verify(nodeManager, times(1)).getNodeIdFromIpAddress(new IpAddress(new Ipv4Address(mgmtIp)));
+        verify(nodeManager, times(1)).getNodeIdFromIpAddress(new IpAddress(new Ipv4Address(MGMT_IP)));
 
         /* Verify Ioam PoT parameters generated from calls before */
         PolyParameters params = SfcPotPolyAPI.getInstance().getIoamPotParameters();
@@ -319,7 +321,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
 
         SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePath, LogicalDatastoreType.OPERATIONAL);
 
-        SfcPotRspProcessor.enableSfcPot(renderedServicePath, null, REFRESH_VALUE, null, POT_NUM_PROFILES);
+        sfcPotRspProcessor.enableSfcPot(renderedServicePath, null, REFRESH_VALUE, null, POT_NUM_PROFILES);
 
         return SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
     }
@@ -434,7 +436,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
             sffBuilder.setName(SFF_NAMES_B.get(i)).setKey(new ServiceFunctionForwarderKey(SFF_NAMES_B.get(i)))
                     .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
                     .setConnectedSffDictionary(sffDictionaryList)
-                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp))).setServiceNode(null);
+                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(MGMT_IP))).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
             InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
                     .builder(ServiceFunctionForwarders.class)

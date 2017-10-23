@@ -187,6 +187,13 @@
         <version>${ovsdb.southbound.version}</version>
       </dependency>
 
+      <!-- Genius -->
+      <dependency>
+        <groupId>org.opendaylight.genius</groupId>
+        <artifactId>mdsalutil-api</artifactId>
+        <version>${genius.version}</version>
+      </dependency>
+
       <!-- Others -->
       <dependency>
         <groupId>org.ops4j.pax.cdi</groupId>

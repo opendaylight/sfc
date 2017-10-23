@@ -30,10 +30,9 @@ import org.slf4j.LoggerFactory;
  * Entry point for the sfc openflow renderer (blueprint-instantiated).
  */
 public final class SfcOfRenderer implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
-    private final SfcOfRspProcessor sfcOfRspProcessor;
 
+    private final SfcOfRspProcessor sfcOfRspProcessor;
     private final SfcOfFlowProgrammerInterface sfcOfFlowProgrammer;
     private final Registration pktInRegistration;
     private final SfcSynchronizer sfcSynchronizer;

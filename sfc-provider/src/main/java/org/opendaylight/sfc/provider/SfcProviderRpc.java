@@ -11,7 +11,6 @@ package org.opendaylight.sfc.provider;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -140,20 +139,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
-        return Futures.transform(writeTx.submit(),
-                (Function<Void, RpcResult<Void>>) input1 -> RpcResultBuilder.<Void>success().build(),
+        return Futures.transform(writeTx.submit(), input1 -> RpcResultBuilder.<Void>success().build(),
                 MoreExecutors.directExecutor());
     }
 
     @Override
     public Future<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
-        printTraceStart(LOG);
         LOG.info("Input: {}", input);
 
         if (dataBroker != null) {
             ServiceFunctionKey sfkey = new ServiceFunctionKey(new SfName(input.getName()));
-            InstanceIdentifier<ServiceFunction> sfIID;
-            sfIID = InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).build();
+            InstanceIdentifier<ServiceFunction> sfIID =
+                    InstanceIdentifier.builder(ServiceFunctions.class).child(ServiceFunction.class, sfkey).build();
 
             ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
             Optional<ServiceFunction> dataObject = Optional.absent();
@@ -171,14 +168,11 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                         .setIpMgmtAddress(serviceFunction.getIpMgmtAddress())
                         .setSfDataPlaneLocator(serviceFunction.getSfDataPlaneLocator());
                 readServiceFunctionOutput = outputBuilder.build();
-                printTraceStop(LOG);
-                return RpcResultBuilder.<ReadServiceFunctionOutput>success(readServiceFunctionOutput).buildFuture();
+                return RpcResultBuilder.success(readServiceFunctionOutput).buildFuture();
             }
-            printTraceStop(LOG);
             return RpcResultBuilder.<ReadServiceFunctionOutput>success().buildFuture();
         } else {
             LOG.warn("\n####### Data Provider is NULL : {}", Thread.currentThread().getStackTrace()[1]);
-            printTraceStop(LOG);
             return RpcResultBuilder.<ReadServiceFunctionOutput>success().buildFuture();
         }
     }
@@ -204,25 +198,9 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         return RpcResultBuilder.<Void>success().buildFuture();
     }
 
-    // FIXME - remove this unused method?
-//    @SuppressWarnings("unused")
-//    private ServiceFunctionChain findServiceFunctionChain(SfcName name) {
-//        ServiceFunctionChainKey key = new ServiceFunctionChainKey(name);
-//        InstanceIdentifier<ServiceFunctionChain> serviceFunctionChainInstanceIdentifier = InstanceIdentifier
-//                .builder(ServiceFunctionChains.class).child(ServiceFunctionChain.class, key).build();
-//
-//        ServiceFunctionChain serviceFunctionChain = SfcDataStoreAPI
-//                .readTransactionAPI(serviceFunctionChainInstanceIdentifier, LogicalDatastoreType.CONFIGURATION);
-//        if (serviceFunctionChain == null) {
-//            LOG.error("Failed to find Service Function Chain: {}", name);
-//        }
-//        return serviceFunctionChain;
-//    }
-
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
-
         ServiceFunctionPath createdServiceFunctionPath;
         RenderedServicePath renderedServicePath;
         RenderedServicePath revRenderedServicePath;

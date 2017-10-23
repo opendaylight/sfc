@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Entry point for the sfc openflow renderer (blueprint-instantiated).
  */
-public class SfcOfRenderer implements AutoCloseable {
+public final class SfcOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
     private final SfcOfRspProcessor sfcOfRspProcessor;
@@ -38,13 +38,13 @@ public class SfcOfRenderer implements AutoCloseable {
     private final Registration pktInRegistration;
     private final SfcSynchronizer sfcSynchronizer;
 
-    SfcOfRspDataListener openflowRspDataListener = null;
-    SfcOfSfgDataListener sfcOfSfgDataListener = null;
-    SfcIpv4PacketInHandler packetInHandler = null;
-    SfcOfRendererDataListener sfcOfRendererListener = null;
+    private SfcOfRspDataListener openflowRspDataListener;
+    private SfcOfSfgDataListener sfcOfSfgDataListener;
+    private SfcIpv4PacketInHandler packetInHandler;
+    private SfcOfRendererDataListener sfcOfRendererListener;
 
     public SfcOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
-            RpcProviderRegistry rpcProviderRegistry) {
+                          RpcProviderRegistry rpcProviderRegistry) {
         LOG.info("SfcOfRenderer starting the SfcOfRenderer plugin...");
 
         this.sfcSynchronizer = new SfcSynchronizer();
@@ -63,14 +63,6 @@ public class SfcOfRenderer implements AutoCloseable {
         this.pktInRegistration = notificationService.registerNotificationListener(packetInHandler);
 
         LOG.info("SfcOfRenderer successfully started the SfcOfRenderer plugin");
-    }
-
-    public SfcOfRspDataListener getSfcOfRspDataListener() {
-        return this.openflowRspDataListener;
-    }
-
-    public SfcIpv4PacketInHandler getSfcIpv4PacketInHandler() {
-        return this.packetInHandler;
     }
 
     /**

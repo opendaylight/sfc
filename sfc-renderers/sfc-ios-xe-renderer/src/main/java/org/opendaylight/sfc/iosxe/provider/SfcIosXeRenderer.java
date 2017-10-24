@@ -38,7 +38,6 @@ public class SfcIosXeRenderer {
     }
 
     public void initialize() {
-        nodeManager = new NodeManager(dataBroker, bindingAwareBroker);
         forwarderMapper = new IosXeServiceForwarderMapper(dataBroker, nodeManager);
         functionMapper = new IosXeServiceFunctionMapper(dataBroker, nodeManager);
         rspProcessor = new IosXeRspProcessor(dataBroker, nodeManager);
@@ -46,7 +45,6 @@ public class SfcIosXeRenderer {
     }
 
     public void unregisterListeners() {
-        nodeManager.unregisterNodeListener();
         forwarderMapper.unregisterSffListener();
         functionMapper.unregisterSfListener();
         rspProcessor.unregisterRspListener();

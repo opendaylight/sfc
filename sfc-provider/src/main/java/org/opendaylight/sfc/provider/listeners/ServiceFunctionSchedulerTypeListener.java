@@ -8,16 +8,16 @@
 package org.opendaylight.sfc.provider.listeners;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,73 +27,57 @@ import org.slf4j.LoggerFactory;
  * Scheduler Types taking the appropriate actions.
  *
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
- *
  */
 @Singleton
-public class ServiceFunctionSchedulerTypeListener extends AbstractDataTreeChangeListener<ServiceFunctionSchedulerType> {
+public class ServiceFunctionSchedulerTypeListener extends
+        AbstractSyncDataTreeChangeListener<ServiceFunctionSchedulerType> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionSchedulerTypeListener.class);
 
-    private final DataBroker dataBroker;
-    private ListenerRegistration<ServiceFunctionSchedulerTypeListener> listenerRegistration;
-
     @Inject
-    public ServiceFunctionSchedulerTypeListener(final DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-        registerListeners();
+    public ServiceFunctionSchedulerTypeListener(DataBroker dataBroker) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(ServiceFunctionSchedulerTypes.class).child(ServiceFunctionSchedulerType.class));
     }
 
-    private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionSchedulerType> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(ServiceFunctionSchedulerTypes.class)
-                        .child(ServiceFunctionSchedulerType.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
-    }
-
-    // SF Scheduler Type ADDITION
     @Override
-    protected void add(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
-        if (serviceFunctionSchedulerType != null) {
-            LOG.debug("\n########## createdServiceFunctionSchedulerType {} {}", serviceFunctionSchedulerType.getType(),
-                    serviceFunctionSchedulerType.getName());
-            if (serviceFunctionSchedulerType.isEnabled()) {
-                ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
-                        .readAllServiceFunctionScheduleTypes();
-                if (serviceFunctionSchedulerTypes != null) {
-                    List<ServiceFunctionSchedulerType> sfScheduleTypeList = serviceFunctionSchedulerTypes
-                            .getServiceFunctionSchedulerType();
-                    for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
-                        if (sfst.isEnabled() && !sfst.getType().equals(serviceFunctionSchedulerType.getType())) {
-                            ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
-                                    .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
+    public void add(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+        LOG.debug("Adding Service Function Scheduler Type {} {}", serviceFunctionSchedulerType.getType(),
+                  serviceFunctionSchedulerType.getName());
+        if (serviceFunctionSchedulerType.isEnabled()) {
+            ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
+                    .readAllServiceFunctionScheduleTypes();
+            if (serviceFunctionSchedulerTypes != null) {
+                List<ServiceFunctionSchedulerType> sfScheduleTypeList = serviceFunctionSchedulerTypes
+                        .getServiceFunctionSchedulerType();
+                for (ServiceFunctionSchedulerType sfst : sfScheduleTypeList) {
+                    if (sfst.isEnabled() && !sfst.getType().equals(serviceFunctionSchedulerType.getType())) {
+                        ServiceFunctionSchedulerType sfstUpdate = new ServiceFunctionSchedulerTypeBuilder()
+                                .setName(sfst.getName()).setType(sfst.getType()).setEnabled(false).build();
 
-                            SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
-                            break;
-                        }
+                        SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstUpdate);
+                        break;
                     }
                 }
             }
         }
     }
 
-    // SF Scheduler Type DELETION
     @Override
-    protected void remove(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
-        if (serviceFunctionSchedulerType != null) {
-            LOG.debug("\n########## deletedServiceFunctionSchedulerType {} {}", serviceFunctionSchedulerType.getType(),
-                    serviceFunctionSchedulerType.getName());
-        }
+    public void remove(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+        LOG.debug("Deleting Service FunctionScheduler Type {} {}", serviceFunctionSchedulerType.getType(),
+                  serviceFunctionSchedulerType.getName());
     }
 
     // SF Scheduler Type UPDATE
     @Override
-    protected void update(ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
-            ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
-
+    public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
+                       ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         if (originalServiceFunctionSchedulerType.getType() != null
                 && updatedServiceFunctionSchedulerType.getType() != null && originalServiceFunctionSchedulerType
-                        .getType().equals(updatedServiceFunctionSchedulerType.getType())) {
-            LOG.debug("\n########## updatedServiceFunctionSchedulerType {} {}",
-                    updatedServiceFunctionSchedulerType.getType(), updatedServiceFunctionSchedulerType.getName());
+                .getType().equals(updatedServiceFunctionSchedulerType.getType())) {
+            LOG.debug("Updating ServiceFunction Scheduler Type {} {}", updatedServiceFunctionSchedulerType.getType(),
+                      updatedServiceFunctionSchedulerType.getName());
 
             if (updatedServiceFunctionSchedulerType.isEnabled()) {
                 ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
@@ -112,14 +96,6 @@ public class ServiceFunctionSchedulerTypeListener extends AbstractDataTreeChange
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public void close() throws Exception {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
         }
     }
 }

@@ -9,17 +9,16 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PreDestroy;
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.validators.util.SfcDatastoreCache;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,62 +28,37 @@ import org.slf4j.LoggerFactory;
  * Functions chains taking the appropriate actions.
  */
 @Singleton
-public class ServiceFunctionChainListener extends AbstractDataTreeChangeListener<ServiceFunctionChain> {
+public class ServiceFunctionChainListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionChain> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFunctionChainListener.class);
 
-    private final DataBroker dataBroker;
-
-    private ListenerRegistration<ServiceFunctionChainListener> listenerRegistration;
-
     @Inject
     public ServiceFunctionChainListener(final DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionChain> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(ServiceFunctionChains.class).child(ServiceFunctionChain.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(ServiceFunctionChains.class).child(ServiceFunctionChain.class));
     }
 
     @Override
-    @PreDestroy
-    public void close() throws Exception {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
+    public void add(@Nonnull ServiceFunctionChain serviceFunctionChain) {
+        LOG.debug("add:starting..(new sfc name: {})", serviceFunctionChain.getName());
+        List<String> serviceFunctionTypesForChain = new ArrayList<>();
+        for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {
+            LOG.debug("add:new sfc sf found; name={}, type={})", sfcSf.getName(), sfcSf.getType().getValue());
+            serviceFunctionTypesForChain.add(sfcSf.getType().getValue());
         }
+        SfcDatastoreCache.getSfChainToSfTypeList().put(serviceFunctionChain.getName(), serviceFunctionTypesForChain);
     }
 
     @Override
-    public void add(ServiceFunctionChain serviceFunctionChain) {
-        if (serviceFunctionChain != null) {
-            LOG.debug("add:starting..(new sfc name: {})", serviceFunctionChain.getName());
-            List<String> serviceFunctionTypesForChain = new ArrayList<>();
-            for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {
-                LOG.debug("add:new sfc sf found; name={}, type={})", sfcSf.getName(), sfcSf.getType().getValue());
-                serviceFunctionTypesForChain.add(sfcSf.getType().getValue());
-            }
-            SfcDatastoreCache.getSfChainToSfTypeList().put(serviceFunctionChain.getName(),
-                    serviceFunctionTypesForChain);
-        }
+    public void remove(@Nonnull ServiceFunctionChain serviceFunctionChain) {
+        LOG.debug("remove: Deleting Service Function chain: {}", serviceFunctionChain.getName());
+        SfcDatastoreCache.getSfChainToSfTypeList().invalidate(serviceFunctionChain.getName());
     }
 
     @Override
-    public void remove(ServiceFunctionChain serviceFunctionChain) {
-        if (serviceFunctionChain != null) {
-            LOG.debug("remove: Deleting Service Function chain: {}", serviceFunctionChain.getName());
-            SfcDatastoreCache.getSfChainToSfTypeList().invalidate(serviceFunctionChain.getName());
-        }
-    }
-
-    @Override
-    protected void update(ServiceFunctionChain originalServiceFunctionChain,
-            ServiceFunctionChain updatedServiceFunctionChain) {
-        if (originalServiceFunctionChain != null && updatedServiceFunctionChain != null) {
+    public void update(@Nonnull ServiceFunctionChain originalServiceFunctionChain,
+                       ServiceFunctionChain updatedServiceFunctionChain) {
+        if (updatedServiceFunctionChain != null) {
             LOG.debug("update:Updating Service Function chain: {}", originalServiceFunctionChain.getName());
             SfcDatastoreCache.getSfChainToSfTypeList().invalidate(originalServiceFunctionChain.getName());
             add(updatedServiceFunctionChain);

@@ -8,65 +8,47 @@
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.scfofrenderer.processors.SfcScfOfProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test Suite to test the SfcScfOfDataListener class.
+ * This class listens to changes in Service Function Classifier.
  *
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
  */
-
-public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
+@Singleton
+public class SfcScfOfDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionClassifier> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfDataListener.class);
 
     private final SfcScfOfProcessor sfcScfProcessor;
 
-    private final DataBroker dataBroker;
-    private ListenerRegistration<SfcScfOfDataListener> listenerRegistration;
-
-    public SfcScfOfDataListener(final DataBroker dataBroker, SfcScfOfProcessor sfcScfProcessor) {
-        this.dataBroker = dataBroker;
+    @Inject
+    public SfcScfOfDataListener(DataBroker dataBroker, SfcScfOfProcessor sfcScfProcessor) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));
         this.sfcScfProcessor = sfcScfProcessor;
-        init();
     }
 
-    public void init() {
-        LOG.debug("Initializing...");
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionClassifier> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
-    }
-
-    // Classifier CREATION
     @Override
-    protected void add(ServiceFunctionClassifier serviceFunctionClassifier) {
-        if (serviceFunctionClassifier != null) {
-            LOG.debug("Created ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
-            this.sfcScfProcessor.createdServiceFunctionClassifier(serviceFunctionClassifier);
-
-        }
+    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        LOG.debug("Created ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
+        this.sfcScfProcessor.createdServiceFunctionClassifier(serviceFunctionClassifier);
     }
 
-    // Classifier UPDATE
     @Override
-    protected void update(ServiceFunctionClassifier originalServiceFunctionClassifier,
-            ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+    public void update(@Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
+                       ServiceFunctionClassifier updatedServiceFunctionClassifier) {
 
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
                 && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
@@ -76,20 +58,9 @@ public class SfcScfOfDataListener extends AbstractDataTreeChangeListener<Service
         }
     }
 
-    // Classifier DELETION
     @Override
-    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier) {
-        if (serviceFunctionClassifier != null) {
-            LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
-            this.sfcScfProcessor.deletedServiceFunctionClassifier(serviceFunctionClassifier);
-        }
-    }
-
-    @Override
-    public void close() {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
+    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
+        this.sfcScfProcessor.deletedServiceFunctionClassifier(serviceFunctionClassifier);
     }
 }

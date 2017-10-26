@@ -61,7 +61,6 @@ public class SfcScfOfDataListenerTest {
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         sfcScfOfDataListener = new SfcScfOfDataListener(dataProvider, sfcScfOfProcessor);
-        sfcScfOfDataListener.init();
     }
 
     @After
@@ -91,7 +90,6 @@ public class SfcScfOfDataListenerTest {
 
         // We verify createdServiceFunctionClassifier has been called
         verify(sfcScfOfProcessor).createdServiceFunctionClassifier(serviceFunctionClassifier);
-
     }
 
     /**
@@ -115,7 +113,6 @@ public class SfcScfOfDataListenerTest {
 
         // We verify deletedServiceFunctionClassifier has been called
         verify(sfcScfOfProcessor).deletedServiceFunctionClassifier(serviceFunctionClassifier);
-
     }
 
     /**
@@ -153,7 +150,6 @@ public class SfcScfOfDataListenerTest {
         // deletedServiceFunctionClassifier have been called
         verify(sfcScfOfProcessor).deletedServiceFunctionClassifier(originalServiceFunctionClassifier);
         verify(sfcScfOfProcessor).createdServiceFunctionClassifier(updatedServiceFunctionClassifier);
-
     }
 
     /**

@@ -10,11 +10,13 @@ package org.opendaylight.sfc.scfofrenderer.listeners;
 
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
@@ -25,67 +27,66 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener<RenderedServicePath> {
+/**
+ * This class listens to changes on the Rendered Service Paths (RSPs) to reprogram classifiers accordingly.
+ */
+@Singleton
+public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeListener<RenderedServicePath> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspsUpdateListener.class);
-    private final DataBroker dataBroker;
-    private ListenerRegistration<ClassifierRspsUpdateListener> listenerRegistration;
+
     private final ClassifierRspUpdateProcessor classifierProcessor;
     private final SfcOfFlowWriterInterface openflowWriter;
     private final ClassifierRspUpdateDataGetter updateDataGetter;
     private final LogicalClassifierDataGetter dataGetter;
 
-    public ClassifierRspsUpdateListener(DataBroker theDataBroker, ClassifierRspUpdateProcessor theClassifierProcessor,
-            SfcOfFlowWriterInterface theOpenflowWriter, ClassifierRspUpdateDataGetter theUpdateDataGetter,
-            LogicalClassifierDataGetter theDataGetter) {
-        dataBroker = theDataBroker;
-        classifierProcessor = theClassifierProcessor;
-        openflowWriter = theOpenflowWriter;
-        updateDataGetter = theUpdateDataGetter;
-        dataGetter = theDataGetter;
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        LOG.info("Registering listener");
-        final DataTreeIdentifier<RenderedServicePath> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID);
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
+    @Inject
+    public ClassifierRspsUpdateListener(DataBroker dataBroker,
+                                        ClassifierRspUpdateProcessor classifierRspUpdateProcessor,
+                                        SfcOfFlowWriterInterface sfcOfFlowWriterInterface,
+                                        ClassifierRspUpdateDataGetter classifierRspUpdateDataGetter,
+                                        LogicalClassifierDataGetter logicalClassifierDataGetter) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID);
+        this.classifierProcessor = classifierRspUpdateProcessor;
+        this.openflowWriter = sfcOfFlowWriterInterface;
+        this.updateDataGetter = classifierRspUpdateDataGetter;
+        this.dataGetter = logicalClassifierDataGetter;
     }
 
     @Override
-    protected void add(RenderedServicePath newRsp) {
+    public void add(@Nonnull RenderedServicePath renderedServicePath) {
         // nothing to do when RSPs are added
     }
 
     @Override
-    protected void remove(RenderedServicePath deletedRsp) {
+    public void remove(@Nonnull RenderedServicePath removedRenderedServicePath) {
         // nothing to do when RSPs are deleted
     }
 
     @Override
-    protected void update(RenderedServicePath originalRsp, RenderedServicePath updatedRsp) {
+    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+                       RenderedServicePath updatedRenderedServicePath) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("update - old rspId: {}; new rspId: {}", originalRsp, updatedRsp);
+            LOG.debug("update - old rspId: {}; new rspId: {}", originalRenderedServicePath, updatedRenderedServicePath);
         }
 
-        Optional<DpnIdType> originalDataplaneId = dataGetter.getFirstHopDataplaneId(originalRsp);
-        Optional<DpnIdType> updatedDataplaneId = dataGetter.getFirstHopDataplaneId(updatedRsp);
+        Optional<DpnIdType> originalDataplaneId = dataGetter.getFirstHopDataplaneId(originalRenderedServicePath);
+        Optional<DpnIdType> updatedDataplaneId = dataGetter.getFirstHopDataplaneId(updatedRenderedServicePath);
 
-        if (originalDataplaneId.isPresent() && updatedDataplaneId.isPresent()
-                && !originalDataplaneId.get().equals(updatedDataplaneId.get())) {
-            LOG.info("update - First SF of RSP [{}] *moved*. Old DPNID: {}; New DPNID: {}", originalRsp.getPathId(),
-                    originalDataplaneId.get(), updatedDataplaneId.get());
-            RspName theRspName = originalRsp.getName();
+        if (originalDataplaneId.isPresent() && updatedDataplaneId.isPresent() && !originalDataplaneId.get()
+                .equals(updatedDataplaneId.get())) {
+            LOG.info("update - First SF of RSP [{}] *moved*. Old DPNID: {}; New DPNID: {}",
+                     originalRenderedServicePath.getPathId(), originalDataplaneId.get(), updatedDataplaneId.get());
+            RspName theRspName = originalRenderedServicePath.getName();
             // first SF moved elsewhere; delete old flows, then create new flows
             // (for now, separate transactions)
             // keep in mind that the only flows in the openflow are classifier
             // flows - the RSP flows are in another
             // of writer instance
-            openflowWriter.deleteRspFlows(originalRsp.getPathId());
+            openflowWriter.deleteRspFlows(originalRenderedServicePath.getPathId());
             openflowWriter.deleteFlowSet();
             List<Acl> theAcls = updateDataGetter.filterAclsByRspName(theRspName);
 
@@ -93,7 +94,8 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
                 List<SclServiceFunctionForwarder> theClassifierObjects = updateDataGetter
                         .filterClassifierNodesByAclName(acl.getAclName());
                 theClassifierObjects.forEach(classifier -> {
-                    List<FlowDetails> allFlows = classifierProcessor.processClassifier(classifier, acl, updatedRsp);
+                    List<FlowDetails> allFlows = classifierProcessor
+                            .processClassifier(classifier, acl, updatedRenderedServicePath);
                     if (!allFlows.isEmpty()) {
                         LOG.debug("update - Flows generated; gonna write them into the DS ");
                         openflowWriter.writeFlows(allFlows);
@@ -102,10 +104,5 @@ public class ClassifierRspsUpdateListener extends AbstractDataTreeChangeListener
                 });
             });
         }
-    }
-
-    @Override
-    public void close() {
-        listenerRegistration.close();
     }
 }

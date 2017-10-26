@@ -8,6 +8,7 @@
 package org.opendaylight.sfc.provider.listeners;
 
 import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
@@ -19,16 +20,18 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * date tree, and depending on the type of modification, it invokes the
  * appropriate method on the derived classes.
  *
+ * @param <T> type of the data object the listener is registered to.
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  *
- * @param <T>
- *            type of the data object the listener is registered to.
+ * @deprecated this class is deprecated, use the
+ * {@link org.opendaylight.genius.datastoreutils.listeners.AbstractClusteredSyncDataTreeChangeListener} in Genius.
  */
+@Deprecated
 public abstract class AbstractClusteredDataTreeChangeListener<T extends DataObject>
         implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<T>> collection) {
+    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<T>> collection) {
         for (final DataTreeModification<T> dataTreeModification : collection) {
             final DataObjectModification<T> dataObjectModification = dataTreeModification.getRootNode();
             switch (dataObjectModification.getModificationType()) {

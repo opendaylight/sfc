@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstateTask;
@@ -23,39 +21,35 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSfstateEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionState> {
+@Singleton
+public class SbRestSfstateEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionState> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstateEntryDataListener.class);
 
-    public SbRestSfstateEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.SFSTATE_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestSfstateEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFSTATE_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionState>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<ServiceFunctionState> change: changes) {
-            DataObjectModification<ServiceFunctionState> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    ServiceFunctionState updatedServiceFunctionState = rootNode.getDataAfter();
-                    LOG.debug("\nUpdated Service Function State Name: {}", updatedServiceFunctionState.getName());
+    public void add(@Nonnull ServiceFunctionState serviceFunctionState) {
+        update(serviceFunctionState, serviceFunctionState);
+    }
 
-                    executor().execute(new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState,
-                            executor()));
-                    break;
-                case DELETE:
-                    ServiceFunctionState originalServiceFunctionState = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Service Function State Name: {}", originalServiceFunctionState.getName());
+    @Override
+    public void remove(@Nonnull ServiceFunctionState serviceFunctionState) {
+        LOG.debug("Deleted Service Function State Name: {}", serviceFunctionState.getName());
+        executorService
+                .execute(new SbRestSfstateTask(RestOperation.DELETE, serviceFunctionState, executorService));
+    }
 
-                    executor().execute(new SbRestSfstateTask(RestOperation.DELETE, originalServiceFunctionState,
-                            executor()));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull ServiceFunctionState originalServiceFunctionState,
+                       ServiceFunctionState updatedServiceFunctionState) {
+        LOG.debug("Updated Service Function State Name: {}", updatedServiceFunctionState.getName());
+        executorService.execute(new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService));
     }
 }

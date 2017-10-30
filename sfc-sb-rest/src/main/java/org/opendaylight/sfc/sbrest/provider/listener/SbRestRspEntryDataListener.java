@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestRspTask;
@@ -23,38 +21,34 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestRspEntryDataListener extends SbRestAbstractDataListener<RenderedServicePath> {
+@Singleton
+public class SbRestRspEntryDataListener extends AbstractSyncDataTreeChangeListener<RenderedServicePath> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestRspEntryDataListener.class);
 
-    public SbRestRspEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.RSP_ENTRY_IID, LogicalDatastoreType.OPERATIONAL, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestRspEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, SfcInstanceIdentifiers.RSP_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<RenderedServicePath>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<RenderedServicePath> change: changes) {
-            DataObjectModification<RenderedServicePath> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    RenderedServicePath updatedPath = rootNode.getDataAfter();
-                    LOG.debug("\nUpdated Rendered Service Path: {}", updatedPath.getName());
+    public void add(@Nonnull RenderedServicePath renderedServicePath) {
+        update(renderedServicePath, renderedServicePath);
+    }
 
-                    RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor().execute(new SbRestRspTask(restOp, updatedPath, executor()));
-                    break;
-                case DELETE:
-                    RenderedServicePath originalPath = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Rendered Service Path Name: {}", originalPath.getName());
+    @Override
+    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+        LOG.debug("Deleted Rendered Service Path Name: {}", renderedServicePath.getName());
+        executorService.execute(new SbRestRspTask(RestOperation.DELETE, renderedServicePath, executorService));
+    }
 
-                    executor().execute(new SbRestRspTask(RestOperation.DELETE, originalPath, executor()));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+                       RenderedServicePath updatedRenderedServicePath) {
+        LOG.debug("Updated Rendered Service Path: {}", updatedRenderedServicePath.getName());
+        executorService.execute(new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService));
     }
 }

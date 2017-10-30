@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfgTask;
@@ -23,38 +21,34 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev1502
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSfgEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionGroup> {
+@Singleton
+public class SbRestSfgEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionGroup> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgEntryDataListener.class);
 
-    public SbRestSfgEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.SFG_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestSfgEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFG_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionGroup>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<ServiceFunctionGroup> change: changes) {
-            DataObjectModification<ServiceFunctionGroup> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    ServiceFunctionGroup updatedServiceFunctionGroup = rootNode.getDataAfter();
-                    LOG.debug("\nModified Service Function Name: {}", updatedServiceFunctionGroup.getName());
+    public void add(@Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+        update(serviceFunctionGroup, serviceFunctionGroup);
+    }
 
-                    executor().execute(new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executor()));
-                    break;
-                case DELETE:
-                    ServiceFunctionGroup originalServiceFunctionGroup = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunctionGroup.getName());
+    @Override
+    public void remove(@Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+        LOG.debug("Deleted Service Function Name: {}", serviceFunctionGroup.getName());
+        executorService.execute(new SbRestSfgTask(RestOperation.DELETE, serviceFunctionGroup, executorService));
+    }
 
-                    executor().execute(new SbRestSfgTask(RestOperation.DELETE, originalServiceFunctionGroup,
-                            executor()));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull ServiceFunctionGroup originalServiceFunctionGroup,
+                       ServiceFunctionGroup updatedServiceFunctionGroup) {
+        LOG.debug("\nModified Service Function Name: {}", updatedServiceFunctionGroup.getName());
+        executorService.execute(new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executorService));
     }
 }

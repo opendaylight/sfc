@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfTask;
@@ -23,37 +21,33 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSfEntryDataListener extends SbRestAbstractDataListener<ServiceFunction> {
+@Singleton
+public class SbRestSfEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunction> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
 
-    public SbRestSfEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.SF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestSfEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SF_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunction>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<ServiceFunction> change: changes) {
-            DataObjectModification<ServiceFunction> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    ServiceFunction updatedServiceFunction = rootNode.getDataAfter();
-                    LOG.debug("\nUpdated Service Function Name: {}", updatedServiceFunction.getName());
+    public void add(@Nonnull ServiceFunction serviceFunction) {
+        update(serviceFunction, serviceFunction);
+    }
 
-                    executor().execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executor()));
-                    break;
-                case DELETE:
-                    ServiceFunction originalServiceFunction = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Service Function Name: {}", originalServiceFunction.getName());
+    @Override
+    public void remove(@Nonnull ServiceFunction serviceFunction) {
+        LOG.debug("Deleted Service Function Name: {}", serviceFunction.getName());
+        executorService.execute(new SbRestSfTask(RestOperation.DELETE, serviceFunction, executorService));
+    }
 
-                    executor().execute(new SbRestSfTask(RestOperation.DELETE, originalServiceFunction, executor()));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull ServiceFunction originalDataObject, ServiceFunction updatedServiceFunction) {
+        LOG.debug("Updated Service Function Name: {}", updatedServiceFunction.getName());
+        executorService.execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executorService));
     }
 }

@@ -22,62 +22,6 @@
     <argument value="SfcSbRestDataListener"/>
   </bean>
 
-  <bean id="sbRestSfEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestSfgEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfgEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestSffEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSffEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestRspEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestRspEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestAclEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestAclEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestScfEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestScfEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestSfstEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
-  <bean id="sbRestSfstateEntryDataListener"
-      class="org.opendaylight.sfc.sbrest.provider.listener.SbRestSfstateEntryDataListener"
-      destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="executor"/>
-  </bean>
-
   <bean id="sfcSbRestProviderModule"
     class="org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl.SfcSbRestProviderModule"
     init-method="startSbRestKeepAliveSocket">

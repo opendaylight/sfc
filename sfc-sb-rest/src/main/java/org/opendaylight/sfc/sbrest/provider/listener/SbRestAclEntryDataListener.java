@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
@@ -23,38 +21,33 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestAclEntryDataListener extends SbRestAbstractDataListener<Acl> {
+@Singleton
+public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListener<Acl> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
 
-    public SbRestAclEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.ACL_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestAclEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.ACL_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<Acl>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<Acl> change: changes) {
-            DataObjectModification<Acl> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    Acl updatedAcl = rootNode.getDataAfter();
-                    LOG.debug("\nUpdated Access List Name: {}", updatedAcl.getAclName());
+    public void add(@Nonnull Acl acl) {
+        update(acl, acl);
+    }
 
-                    RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST : RestOperation.PUT;
-                    executor().execute(new SbRestAclTask(restOp, updatedAcl, executor()));
-                    break;
-                case DELETE:
-                    Acl originalAcl = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Access List Name: {}", originalAcl.getAclName());
+    @Override
+    public void remove(@Nonnull Acl acl) {
+        LOG.debug("Deleted Access List Name: {}", acl.getAclName());
+        executorService.execute(new SbRestAclTask(RestOperation.DELETE, acl, executorService));
+    }
 
-                    executor().execute(new SbRestAclTask(RestOperation.DELETE, originalAcl, executor()));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull Acl originalAcl, Acl updatedAcl) {
+        LOG.debug("Updated Access List Name: {}", updatedAcl.getAclName());
+        executorService.execute(new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService));
     }
 }

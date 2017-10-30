@@ -7,15 +7,13 @@
  */
 package org.opendaylight.sfc.sbrest.provider.listener;
 
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
-import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
-
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
@@ -25,51 +23,48 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestScfEntryDataListener extends SbRestAbstractDataListener<ServiceFunctionClassifier> {
+@Singleton
+public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionClassifier> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
 
-    public SbRestScfEntryDataListener(DataBroker dataBroker, ExecutorService executor) {
-        super(dataBroker, SfcInstanceIdentifiers.SCF_ENTRY_IID, LogicalDatastoreType.CONFIGURATION, executor);
+    private final ExecutorService executorService;
+
+    @Inject
+    public SbRestScfEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SCF_ENTRY_IID);
+        this.executorService = executorService;
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<ServiceFunctionClassifier>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<ServiceFunctionClassifier> change: changes) {
-            DataObjectModification<ServiceFunctionClassifier> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    ServiceFunctionClassifier updatedClassifier = rootNode.getDataAfter();
-                    LOG.debug("\nUpdated Service Classifier Name: {}", updatedClassifier.getName());
+    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        update(serviceFunctionClassifier, serviceFunctionClassifier);
+    }
 
-                    if (updatedClassifier.getAcl() != null) {
-                        Acl accessList = SfcProviderAclAPI.readAccessList(updatedClassifier.getAcl().getName(),
-                                updatedClassifier.getAcl().getType());
+    @Override
+    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        LOG.debug("Deleted Service Classifier Name: {}", serviceFunctionClassifier.getName());
 
-                        RestOperation restOp = rootNode.getDataBefore() == null ? RestOperation.POST
-                                : RestOperation.PUT;
-                        Runnable task = new SbRestAclTask(restOp, accessList,
-                                updatedClassifier.getSclServiceFunctionForwarder(), executor());
-                        executor().execute(task);
-                    }
-                    break;
-                case DELETE:
-                    ServiceFunctionClassifier originalClassifier = rootNode.getDataBefore();
-                    LOG.debug("\nDeleted Service Classifier Name: {}", originalClassifier.getName());
-
-                    if (originalClassifier.getAcl() != null) {
-                        Runnable task = new SbRestAclTask(RestOperation.DELETE, originalClassifier.getAcl().getName(),
-                                originalClassifier.getAcl().getType(),
-                                originalClassifier.getSclServiceFunctionForwarder(), executor());
-                        executor().execute(task);
-                    }
-                    break;
-                default:
-                    break;
-            }
+        if (serviceFunctionClassifier.getAcl() != null) {
+            executorService.execute(
+                    new SbRestAclTask(RestOperation.DELETE, serviceFunctionClassifier.getAcl().getName(),
+                                      serviceFunctionClassifier.getAcl().getType(),
+                                      serviceFunctionClassifier.getSclServiceFunctionForwarder(),
+                                      executorService));
         }
+    }
 
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull ServiceFunctionClassifier originalDataObject,
+                       ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+        LOG.debug("Updated Service Classifier Name: {}", updatedServiceFunctionClassifier.getName());
+
+        if (updatedServiceFunctionClassifier.getAcl() != null) {
+            Acl accessList = SfcProviderAclAPI.readAccessList(updatedServiceFunctionClassifier.getAcl().getName(),
+                                                              updatedServiceFunctionClassifier.getAcl().getType());
+            executorService.execute(new SbRestAclTask(RestOperation.PUT, accessList,
+                                                      updatedServiceFunctionClassifier.getSclServiceFunctionForwarder(),
+                                                      executorService));
+        }
     }
 }

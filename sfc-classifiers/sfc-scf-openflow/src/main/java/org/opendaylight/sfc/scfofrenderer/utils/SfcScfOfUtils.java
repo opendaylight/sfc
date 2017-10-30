@@ -39,6 +39,14 @@ public final class SfcScfOfUtils {
     private SfcScfOfUtils() {
     }
 
+    public static short getClassifierTable() {
+        return TABLE_INDEX_CLASSIFIER;
+    }
+
+    public static short getIngressTransportTable() {
+        return TABLE_INDEX_INGRESS_TRANSPORT;
+    }
+
     /**
      * Get a FlowBuilder object that install the table-miss in the classifier
      * table.
@@ -136,9 +144,9 @@ public final class SfcScfOfUtils {
         theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC2(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC3(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC4(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(sfcNshHeader.getNshMetaC2(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(sfcNshHeader.getNshMetaC3(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(sfcNshHeader.getNshMetaC4(), theActions.size()));
         theActions
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));

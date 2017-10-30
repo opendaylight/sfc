@@ -189,15 +189,16 @@ public class SfcNshHeader {
 
         String context = theRsp.getContextMetadata();
         if (context == null) {
-            LOG.error("getSfcNshHeader: context is null\n");
-        }
-
-        ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
-        if (md == null) {
-            LOG.error("getSfcNshHeader: metadata is null\n");
+            LOG.warn("getSfcNshHeader: context is null, using default values\n");
+            sfcNshHeader.setNshMetaC1(0L).setNshMetaC2(0L).setNshMetaC3(0L).setNshMetaC4(0L);
         } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
-                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
+            ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
+            if (md == null) {
+                LOG.error("getSfcNshHeader: metadata is null\n");
+            } else {
+                sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
+                        .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
+            }
         }
 
         return sfcNshHeader;
@@ -248,15 +249,16 @@ public class SfcNshHeader {
 
         String context = renderedServicePath.getContextMetadata();
         if (context == null) {
-            LOG.error("getSfcNshHeader: context is null\n");
-        }
-
-        ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
-        if (md == null) {
-            LOG.error("getSfcNshHeader: metadata is null\n");
+            LOG.warn("getSfcNshHeader: context is null, using default values\n");
+            sfcNshHeader.setNshMetaC1(0L).setNshMetaC2(0L).setNshMetaC3(0L).setNshMetaC4(0L);
         } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
-                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
+            ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
+            if (md == null) {
+                LOG.error("getSfcNshHeader: metadata is null\n");
+            } else {
+                sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
+                        .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
+            }
         }
 
         return sfcNshHeader;

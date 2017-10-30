@@ -23,6 +23,7 @@ import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusInte
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -106,8 +107,10 @@ public class NshProcessor implements ClassifierProcessorInterface {
             theFlows.addAll(classifierInterface.createDpdkFlows(nodeName, nsh.get().getNshNsp()));
         } else {
             LOG.info("processAce - About to delete the *out* flows");
-            theFlows.add(classifierHandler.deleteFlowFromTable(nodeName,
-                    flowKey, ClassifierGeniusIntegration.getClassifierTable()));
+            theFlows.add(classifierHandler.deleteFlowFromTable(nodeName, flowKey,
+                    classifierHandler.usesLogicalInterfaces(theSff)
+                            ? ClassifierGeniusIntegration.getClassifierTable() :
+                              SfcScfOfUtils.getClassifierTable()));
         }
 
         // when the classifier is attached to a logical SFF, there's no need to process the reverse RSP, so we bail
@@ -177,9 +180,10 @@ public class NshProcessor implements ClassifierProcessorInterface {
                     .ifPresent(theFlows::add);
         } else {
             FlowDetails deleteRelayFlow =
-                    classifierHandler.deleteFlowFromTable(theNodeName,
-                            flowKey,
-                            ClassifierGeniusIntegration.getClassifierTable());
+                    classifierHandler.deleteFlowFromTable(theNodeName, flowKey,
+                            classifierHandler.usesLogicalInterfaces(theSff)
+                                    ? ClassifierGeniusIntegration.getClassifierTable() :
+                                      SfcScfOfUtils.getClassifierTable());
             theFlows.add(deleteRelayFlow);
         }
 
@@ -232,7 +236,9 @@ public class NshProcessor implements ClassifierProcessorInterface {
                             theReverseNshHeader, nodeName));
         } else {
             relayFlow = Optional.of(classifierHandler.deleteFlowFromTable(nodeName, flowKey,
-                    ClassifierGeniusIntegration.getClassifierTable()));
+                    classifierHandler.usesLogicalInterfaces(theSff)
+                            ? ClassifierGeniusIntegration.getClassifierTable() :
+                              SfcScfOfUtils.getClassifierTable()));
         }
         return relayFlow;
     }

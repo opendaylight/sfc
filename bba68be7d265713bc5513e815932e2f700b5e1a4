@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_573633e8",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/listeners/SfcGeniusInterfaceStateListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-10-30T09:24:16Z",
+      "side": 1,
+      "message": "I\u0027d replace that method by InstanceIdentifier.create(InterfacesState.class).child(Interface.class)",
+      "range": {
+        "startLine": 44,
+        "startChar": 60,
+        "endLine": 44,
+        "endChar": 77
+      },
+      "revId": "bba68be7d265713bc5513e815932e2f700b5e1a4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a245df4_773b77d1",
+        "filename": "sfc-genius/src/main/java/org/opendaylight/sfc/genius/impl/listeners/SfcGeniusSfListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-10-30T09:24:16Z",
+      "side": 1,
+      "message": "Why don\u0027t use directly InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class)?",
+      "range": {
+        "startLine": 33,
+        "startChar": 62,
+        "endLine": 33,
+        "endChar": 79
+      },
+      "revId": "bba68be7d265713bc5513e815932e2f700b5e1a4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

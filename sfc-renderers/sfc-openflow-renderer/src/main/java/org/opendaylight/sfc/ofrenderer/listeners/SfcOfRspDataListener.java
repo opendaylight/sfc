@@ -51,7 +51,7 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
                 case WRITE:
                 case SUBTREE_MODIFIED:
                     if (rootNode.getDataBefore() == null && rootNode.getDataAfter() != null) {
-                        LOG.info("SfcOfRspDataListener.onDataTreeChanged create RSP {}", rootNode.getDataBefore());
+                        LOG.info("SfcOfRspDataListener.onDataTreeChanged create RSP {}", rootNode.getDataAfter());
                         sfcOfRspProcessor.processRenderedServicePath(rootNode.getDataAfter());
                     } else if (rootNode.getDataAfter().equals(rootNode.getDataBefore())) {
                         LOG.info("SfcOfRspDataListener.onDataTreeChanged update RSP Before:{} After:{}",

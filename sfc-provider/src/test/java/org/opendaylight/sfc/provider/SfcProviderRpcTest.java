@@ -213,7 +213,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         // initialised at top ?
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI
                 .readServiceFunctionState(new SfName("unittest-fw-1"));
-        assertEquals(sfServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
+        assertEquals(sfServicePathList.get(0).getName().getValue(), SFP_NAME.getValue());
 
         // check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI
@@ -328,7 +328,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         // check if SF oper contains RSP
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI
                 .readServiceFunctionState(new SfName("unittest-fw-1"));
-        assertEquals(sfServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
+        assertEquals(sfServicePathList.get(0).getName().getValue(), SFP_NAME.getValue());
 
         // check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI

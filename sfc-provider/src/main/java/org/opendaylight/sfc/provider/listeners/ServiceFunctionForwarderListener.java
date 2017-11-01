@@ -22,6 +22,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -65,19 +66,30 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
     public void remove(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         SffName sffName = serviceFunctionForwarder.getName();
         // Get RSPs of SFF
-        LOG.debug("Deleting Service Function Forwarder {}", sffName);
+        LOG.info("Deleting Service Function Forwarder {}", sffName);
         List<RspName> rspNames = SfcProviderServiceForwarderAPI.readRspNamesFromSffState(sffName);
-        LOG.debug("Deleting Rendered Service Paths {}", rspNames);
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathsAndStates(rspNames);
+
+        LOG.info("Deleting Service Function Paths for RSPs {}", rspNames);
+        for (RspName rspName : rspNames) {
+            RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+            // This will in-turn delete the RSP from config and oper
+            SfcProviderServicePathAPI.deleteServiceFunctionPath(rsp.getParentServiceFunctionPath());
+        }
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
-        LOG.debug("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
+        LOG.info("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
         List<RspName> rspNames = findAffectedRsp(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
-        LOG.debug("Deleting Rendered Service Paths {}", rspNames);
-        SfcProviderRenderedPathAPI.deleteRenderedServicePathsAndStates(rspNames);
+
+        LOG.info("Deleting Service Function Paths for RSPs {}", rspNames);
+        for (RspName rspName : rspNames) {
+            RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+            LOG.info("Deleting SFP {}", rsp.getParentServiceFunctionPath().getValue());
+            // This will in-turn delete the RSP from config and oper
+            SfcProviderServicePathAPI.deleteServiceFunctionPath(rsp.getParentServiceFunctionPath());
+        }
     }
 
     /**

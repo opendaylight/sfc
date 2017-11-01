@@ -14,13 +14,18 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
@@ -78,6 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -100,6 +106,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcProviderRpc.class);
     private final DataBroker dataBroker;
+    private final ScheduledExecutorService executor =
+            Executors.newSingleThreadScheduledExecutor("SfcProviderRpc", LOG);
 
     public SfcProviderRpc(DataBroker dataBroker) {
         this.dataBroker = dataBroker;
@@ -199,9 +207,17 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     /**
-     * Create an RSP via an RPC operation. The RSP will only be created in
-     * the Operational Data Store. As of Oxygen, this method is deprecated.
-     * Now RSP creation will be triggered via SFP creation.
+     * Create an RSP via an RPC operation. As of Oxygen, this method is
+     * deprecated. Now, instead of using the RPC, the RSP creation will
+     * be triggered via SFP creation.
+     * If the supplied RspName is not present, then the RSP would have
+     * been created when the SFP was created, so this already created
+     * RSP name will be returned.
+     * If the supplied RspName is present, then this will create an RSP
+     * in the config data store, which will trigger creating the RSP
+     * in the operational data store. This will be for the case where
+     * the end-user wants multiple RPSs for 1 SFP. This methodology
+     * will no longer be supported when this deprecated RPC is removed.
      *
      * <p>
      * @param createRenderedPathInput
@@ -212,43 +228,129 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
-        ServiceFunctionPath createdServiceFunctionPath;
-        RenderedServicePath renderedServicePath;
-        RenderedServicePath revRenderedServicePath;
-        CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
-        RpcResult<CreateRenderedPathOutput> rpcResult;
-        RspName retRspName;
+        SettableFuture<RpcResult<CreateRenderedPathOutput>> futureResult = SettableFuture.create();
+        CreateRenderedPathImpl runnable = new CreateRenderedPathImpl(createRenderedPathInput, futureResult);
+        ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(
+                runnable,
+                0,
+                100,
+                TimeUnit.MILLISECONDS);
+        runnable.setBackingFuture(scheduledFuture);
+        return futureResult;
+    }
 
-        createdServiceFunctionPath = SfcProviderServicePathAPI
-                .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
+    // This runnable will be scheduled with periodic delay
+    // as a result createRenderedPath RPC. It is in charge of creating
+    // the config RSP and waiting for the corresponding oper RSP.
+    // Once it happens, it will provide the result of the RPC
+    // and cancel itself.
+    private static class CreateRenderedPathImpl implements Runnable {
 
-        if (createdServiceFunctionPath != null) {
-            renderedServicePath = SfcProviderRenderedPathAPI
-                    .createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput);
-            if (renderedServicePath != null) {
-                retRspName = renderedServicePath.getName();
-                createRenderedPathOutputBuilder.setName(retRspName.getValue());
-                rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
-                if (SfcProviderRenderedPathAPI.isChainSymmetric(createdServiceFunctionPath, renderedServicePath)) {
-                    revRenderedServicePath = SfcProviderRenderedPathAPI
-                            .createSymmetricRenderedServicePathAndState(renderedServicePath);
-                    if (revRenderedServicePath == null) {
-                        LOG.error("Failed to create symmetric service path: {}");
-                    } else {
-                        SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath,
-                                revRenderedServicePath.getPathId());
-                    }
-                }
-            } else {
-                rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                        .withError(ErrorType.APPLICATION, "Failed to create RSP").build();
+        private CreateRenderedPathInput createRenderedPathInput;
+        private SettableFuture<RpcResult<CreateRenderedPathOutput>> result;
+        private volatile Future backingFuture = null;
+
+        CreateRenderedPathImpl(CreateRenderedPathInput createRenderedPathInput,
+                               SettableFuture<RpcResult<CreateRenderedPathOutput>> result) {
+            this.createRenderedPathInput = createRenderedPathInput;
+            this.result = result;
+        }
+
+        @Override
+        public void run() {
+
+            // if we are done but somehow still running, cancel ourself.
+            if (result.isDone()) {
+                cancelBackingFuture();
+                return;
             }
 
-        } else {
-            rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                    .withError(ErrorType.APPLICATION, "Service Function Path does not exist").build();
+            final String inputRspNameValue = createRenderedPathInput.getName();
+            final RspName inputRspName = new RspName(inputRspNameValue);
+
+            // If the operational RSP already exists, give it back and complete
+            RenderedServicePath operRSp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    inputRspName,
+                    LogicalDatastoreType.OPERATIONAL);
+            if (operRSp != null) {
+                completeSuccess(inputRspNameValue);
+                return;
+            }
+
+            // If the config RSP already exists, we just have to wait for the operational RSP
+            RenderedServicePath configRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    inputRspName,
+                    LogicalDatastoreType.CONFIGURATION);
+            if (configRsp != null) {
+                return;
+            }
+
+            // Fail if the SFP doesnt exist
+            ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI
+                    .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
+            if (serviceFunctionPath == null) {
+                completeError("Service Function Path does not exist");
+                return;
+            }
+
+            // If the input name is empty, then the RSP was already created when
+            // the SFP was created, so nothing to do but to return the RSP name
+            if (inputRspNameValue == null || inputRspNameValue.isEmpty()) {
+                // Iterate the RPSs created for this SFP looking for the correct name to return
+                // If the RspName isnt found, then fall through and create the RSP
+                List<SfpRenderedServicePath> sfpRspList =
+                        SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
+                // In case this RPC was called before the RSP listeners complete and
+                // the sfpRspList hasnt been created yet, git it a chance to complete.
+                // This RPC will be removed in Fluorine.
+                if (sfpRspList == null || sfpRspList.isEmpty()) {
+                    return;
+                }
+
+                for (SfpRenderedServicePath sfpRsp : sfpRspList) {
+                    RspName rspName = sfpRsp.getName();
+                    if (rspName.getValue().startsWith(serviceFunctionPath.getName().getValue())
+                            && !rspName.getValue().endsWith("-Reverse")) {
+                        completeSuccess(sfpRspList.get(0).getName().getValue());
+                        return;
+                    }
+                }
+            }
+
+            // Go ahead and create the RSP with the provided inputRspNameValue
+            // The symmetric RSP will optionally be created in createRenderedServicePathInConfig()
+            configRsp = SfcProviderRenderedPathAPI.createRenderedServicePathInConfig(
+                    serviceFunctionPath,
+                    inputRspNameValue);
+            if (configRsp == null) {
+                completeError("Failed to create RSP");
+            }
         }
-        return Futures.immediateFuture(rpcResult);
+
+        private void setBackingFuture(Future backingFuture) {
+            this.backingFuture = backingFuture;
+        }
+
+        private boolean cancelBackingFuture() {
+            return backingFuture != null && backingFuture.cancel(false);
+        }
+
+        private boolean completeSuccess(String rspName) {
+            CreateRenderedPathOutput createRenderedPathOutput = new CreateRenderedPathOutputBuilder()
+                    .setName(rspName)
+                    .build();
+            RpcResult<CreateRenderedPathOutput> rpcResult = RpcResultBuilder.success(createRenderedPathOutput).build();
+            result.set(rpcResult);
+            return cancelBackingFuture();
+        }
+
+        private boolean completeError(String errorMsg) {
+            RpcResult<CreateRenderedPathOutput> rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
+                    .withError(ErrorType.APPLICATION, errorMsg).build();
+            result.set(rpcResult);
+            return cancelBackingFuture();
+        }
+
     }
 
     /**

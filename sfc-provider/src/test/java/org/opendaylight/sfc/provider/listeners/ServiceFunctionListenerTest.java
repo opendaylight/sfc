@@ -127,7 +127,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
 
-        Thread.sleep(500);
         SftServiceFunctionName sftServiceFunctionName = SfcProviderServiceTypeAPI
                 .readServiceFunctionTypeEntry(serviceFunction);
         assertNotNull(sftServiceFunctionName);
@@ -154,7 +153,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
 
-        Thread.sleep(500);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(serviceFunction));
     }
 
@@ -188,12 +186,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // create a new one with the new type
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
         // Clean-up
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
-        Thread.sleep(500);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
     }
 
@@ -225,8 +221,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // The listener will remove the Service Function Type Entry
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
         List<RspName> rspNameList = SfcProviderServiceFunctionAPI.getRspsBySfName(serviceFunction.getName());
         if (rspNameList != null) {
             for (RspName rspName : rspNameList) {
@@ -284,15 +280,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // create a new one with the new type
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
         // Clean-up
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
         List<RspName> rspNameList = SfcProviderServiceFunctionAPI.getRspsBySfName(originalServiceFunction.getName());
         if (rspNameList != null) {
             for (RspName rspName : rspNameList) {
@@ -345,14 +340,13 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // create a new one with the new type
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
         // Clean-up
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
         List<RspName> rspNameList = SfcProviderServiceFunctionAPI.getRspsBySfName(originalServiceFunction.getName());
         if (rspNameList != null) {
             for (RspName rspName : rspNameList) {
@@ -405,15 +399,14 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // create a new one with the new type
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
         // Clean-up
         assertTrue(SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(updatedServiceFunction));
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
         List<RspName> rspNameList = SfcProviderServiceFunctionAPI.getRspsBySfName(originalServiceFunction.getName());
         if (rspNameList != null) {
             for (RspName rspName : rspNameList) {
@@ -465,7 +458,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // The listener will NOT remove anything
         collection.add(dataTreeModification);
         serviceFunctionListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
@@ -693,7 +685,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
                 LogicalDatastoreType.CONFIGURATION));
 
-        Thread.sleep(1000); // Wait they are really created
+        Thread.sleep(200); // Wait they are really created
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {
@@ -762,7 +754,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
                 .setSymmetric(true);
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
-        Thread.sleep(1000); // Wait SFC is really created
+        Thread.sleep(200); // Wait SFC is really created
 
         ServiceFunctionChain readServiceFunctionChain = SfcProviderServiceChainAPI
                 .readServiceFunctionChain(new SfcName(SFC_NAME));
@@ -779,7 +771,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
 
-        Thread.sleep(1000); // Wait they are really created
+        Thread.sleep(200); // Wait they are really created
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;

@@ -135,23 +135,20 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Creates a RSP and all the associated operational state based on the given
-     * service function path and scheduler. Deprecated in Oxygen. RSPs should be
-     * created via config data store instead of RPC.
+     * service function path and scheduler.
      *
      * <p>
      *
      * @param createdServiceFunctionPath
      *            Service Function Path
-     * @param createRenderedPathInput
-     *            CreateRenderedPathInput object
+     * @param rspName
+     *            Name of the RSP to create
      * @param possibleScheduler
      *            SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath Created RSP or null
      */
-    @Deprecated
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput,
-            @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
+            String rspName, @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
         boolean rspSuccessful = false;
         boolean addPathToSffStateSuccessful = false;
         boolean addPathToSfStateSuccessful = false;
@@ -165,7 +162,7 @@ public final class SfcProviderRenderedPathAPI {
 
         // Create RSP
         if ((renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(createdServiceFunctionPath,
-                createRenderedPathInput, scheduler)) != null) {
+                rspName, scheduler)) != null) {
             rspSuccessful = true;
 
         } else {
@@ -213,6 +210,58 @@ public final class SfcProviderRenderedPathAPI {
         }
 
         return renderedServicePath;
+    }
+
+    /**
+     * Creates a RSP and all the associated operational state based on the given
+     * service function path and scheduler.
+     *
+     * <p>
+     *
+     * @param createdServiceFunctionPath
+     *            Service Function Path
+     * @param rspName
+     *            Name of the RSP to create
+     * @return RenderedServicePath Created RSP or null
+     */
+    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
+            String rspName) {
+        return createRenderedServicePathAndState(createdServiceFunctionPath, rspName, null);
+    }
+
+    /**
+     * Creates a RSP and all the associated operational state based on the given
+     * service function path. Deprecated in Oxygen. RSPs should be created via
+     * config data store instead of RPC.
+     *
+     * <p>
+     *
+     * @param createdServiceFunctionPath
+     *            Service Function Path
+     * @param createRenderedPathInput
+     *            CreateRenderedPathInput object
+     * @param possibleScheduler
+     *            SfcServiceFunctionSchedulerAPI object
+     * @return RenderedServicePath Created RSP or null
+     */
+    @Deprecated
+    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
+            CreateRenderedPathInput createRenderedPathInput,
+            @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
+
+        // Provisional code to test new RPC parameters
+        ContextHeaderAllocationType1 contextHeaderAllocationType1 = createRenderedPathInput
+                .getContextHeaderAllocationType1();
+        if (contextHeaderAllocationType1 != null) {
+            Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
+                    contextHeaderAllocationType1.getImplementedInterface();
+            if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
+                LOG.debug("ok");
+            }
+        }
+
+        return createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput.getName(),
+                possibleScheduler);
     }
 
     /**
@@ -425,38 +474,26 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Create a Rendered Path and all the associated operational state based on
-     * the given rendered service path and scheduler. Deprecated in Oxygen. RSPs
-     * should be created via config data store instead of RPC.
+     * the given rendered service path and scheduler.
      *
      * <p>
      *
      * @param serviceFunctionPath
      *            RSP Object
-     * @param createRenderedPathInput
-     *            CreateRenderedPathInput object
+     * @param rspName
+     *            Name of the RSP to create
      * @param scheduler
      *            SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath
      */
-    @Deprecated
     protected static RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
+            String rspName, SfcServiceFunctionSchedulerAPI scheduler) {
         printTraceStart(LOG);
 
         long pathId;
 
         RenderedServicePath ret = null;
 
-        // Provisional code to test new RPC parameters
-        ContextHeaderAllocationType1 contextHeaderAllocationType1 = createRenderedPathInput
-                .getContextHeaderAllocationType1();
-        if (contextHeaderAllocationType1 != null) {
-            Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
-                contextHeaderAllocationType1.getImplementedInterface();
-            if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
-                LOG.debug("ok");
-            }
-        }
         // String simplectxName =
         // contextHeaderAllocationType1ImplementedInterface.getSimpleName();
         // simplectxName is VxlanClassifier
@@ -522,7 +559,7 @@ public final class SfcProviderRenderedPathAPI {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopArrayList);
         // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty()) {
+        if (rspName == null || rspName.isEmpty()) {
             if (serviceFunctionPath.getName() != null) {
                 renderedServicePathBuilder
                         .setName(new RspName(serviceFunctionPath.getName().getValue() + "-Path-" + pathId));
@@ -532,7 +569,7 @@ public final class SfcProviderRenderedPathAPI {
                 return null;
             }
         } else {
-            renderedServicePathBuilder.setName(new RspName(createRenderedPathInput.getName()));
+            renderedServicePathBuilder.setName(new RspName(rspName));
 
         }
 

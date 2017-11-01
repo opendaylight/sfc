@@ -60,7 +60,6 @@ module rendered-service-path {
   // Rendered Service Path
 
   container rendered-service-paths {
-    config false;
     description
       "A container that holds the list of all Rendered Service Paths
        in a SFC domain";
@@ -83,6 +82,7 @@ module rendered-service-path {
 
       }
       leaf transport-type {
+        config false;
         type sfc-sl:sl-transport-type-def;
         default "sfc-sl:vxlan-gpe";
         description
@@ -90,11 +90,13 @@ module rendered-service-path {
            Path";
       }
       leaf context-metadata {
+        config false;
         type sfc-md:context-metadata-ref;
         description
           "The name of the associated context metadata";
       }
       leaf variable-metadata {
+        config false;
         type sfc-md:variable-metadata-ref;
         description
           "The name of the associated variable metadata";
@@ -104,10 +106,13 @@ module rendered-service-path {
         description
           "This RSP was created for a specific tenant-id";
       }
+      // Its not possible to mark a uses statement as "config false".
+      // The statistics will only be written to in operational.
       uses sfc-ss:service-statistics-group {
         description "Global Rendered Service Path statistics";
       }
       list rendered-service-path-hop {
+        config false;
         key "hop-number";
         leaf hop-number {
           type uint8;
@@ -152,6 +157,7 @@ module rendered-service-path {
            service path";
       }
       leaf service-chain-name {
+        config false;
         type sfc-common:sfc-name;
         mandatory true;
         description
@@ -159,11 +165,13 @@ module rendered-service-path {
            path";
       }
       leaf starting-index {
+        config false;
         type uint8;
         description
           "Starting service index";
       }
       leaf path-id {
+        config false;
         type uint32 {
           range "0..16777216";
         }
@@ -176,6 +184,7 @@ module rendered-service-path {
            a specific path.";
       }
       leaf symmetric-path-id {
+        config false;
         type uint32 {
           range "0..16777216";
         }
@@ -183,6 +192,7 @@ module rendered-service-path {
           "Identifies the associated symmetric path, if any.";
       }
       leaf sfc-encapsulation {
+        config false;
         type sfc-sl:sfc-encapsulation-type;
         description
           "The type of encapsulation used in this path for passing
@@ -236,6 +246,10 @@ module rendered-service-path {
   rpc create-rendered-path {
     description
       "Created a Rendered Service Path";
+
+    // Deprecated in Oxygen, to be removed in Fluorine
+    status deprecated;
+
     input {
       leaf name {
         type string;

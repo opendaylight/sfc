@@ -198,6 +198,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         return RpcResultBuilder.<Void>success().buildFuture();
     }
 
+    /**
+     * Create an RSP via an RPC operation. The RSP will only be created in
+     * the Operational Data Store. As of Oxygen, this method is deprecated.
+     * A better approach is to create the RSP in the Config Data Store, and
+     * the RSP will internally be created in the Operational Data Store.
+     *
+     * <p>
+     * @param createRenderedPathInput
+     *        Input information used to create the RSP.
+     * @return RPC Output
+     */
+    @Deprecated
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {

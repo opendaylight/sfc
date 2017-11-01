@@ -210,7 +210,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         // check if SF oper contains RSP
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI
                 .readServiceFunctionState(new SfName("unittest-fw-1"));
-        assertEquals(sfServicePathList.get(0).getName().getValue(), RSP_NAME.getValue());
+        assertEquals(sfServicePathList.get(0).getName().getValue(), SFP_NAME.getValue());
 
         // check if SFP oper contains RSP
         List<SfpRenderedServicePath> sfpRenderedServicePathList = SfcProviderServicePathAPI
@@ -235,10 +235,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-
         RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+                serviceFunctionPathBuilder.build(), "", testScheduler);
 
         // method "readServiceFunctionTypeExecutor" returns null, so there is no
         // list of SF
@@ -252,7 +250,6 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      */
     public void testCreateRenderedServicePathEntryUnsuccessful1() throws Exception {
         setupSfc();
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath;
@@ -260,7 +257,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
 
         testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+                serviceFunctionPathBuilder.build(), "", testScheduler);
 
         // method "createRenderedServicePathHopList", so there is no RSP hop
         // list
@@ -273,16 +270,14 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
      */
     public void testCreateRenderedServicePathEntryUnsuccessful2() throws Exception {
         setupSfc();
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
-        createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setTransportType(Mpls.class);
 
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+                serviceFunctionPathBuilder.build(), RSP_NAME.getValue(), testScheduler);
 
         assertNull("Must be null", testRenderedServicePath);
     }
@@ -294,10 +289,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     public void testCreateRenderedServicePathEntrySuccessful() throws Exception {
         init();
 
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-
-        createRenderedPathInputBuilder.setName(null);
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setTransportType(Mac.class);
         serviceFunctionPathBuilder.setSfcEncapsulation(Transport.class);
@@ -308,7 +300,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+                serviceFunctionPathBuilder.build(), null, testScheduler);
 
         assertNotNull("Must not be null", testRenderedServicePath);
         assertEquals("Must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);
@@ -326,10 +318,8 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
     public void testCreateRenderedServicePathEntrySuccessfulDefaults() throws Exception {
         init();
 
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
-        createRenderedPathInputBuilder.setName(null);
         serviceFunctionPathBuilder.setServiceChainName(SFC_NAME);
         serviceFunctionPathBuilder.setContextMetadata("CMD");
         serviceFunctionPathBuilder.setVariableMetadata("VMD");
@@ -338,7 +328,7 @@ public class SfcProviderRenderedPathAPITest extends AbstractSfcRendererServicePa
 
         SfcServiceFunctionSchedulerAPI testScheduler = new SfcServiceFunctionRandomSchedulerAPI();
         RenderedServicePath testRenderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                serviceFunctionPathBuilder.build(), createRenderedPathInputBuilder.build(), testScheduler);
+                serviceFunctionPathBuilder.build(), null, testScheduler);
 
         assertNotNull("Must not be null", testRenderedServicePath);
         assertEquals("Must be equal", testRenderedServicePath.getServiceChainName(), SFC_NAME);

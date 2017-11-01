@@ -10,7 +10,6 @@ package org.opendaylight.sfc.provider.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // try to read again, must be null
         sfpList = SfcProviderServicePathAPI.readServicePathState(sfpKey);
 
-        assertNull("Must be null", sfpList);
+        assertTrue("Must be empty", sfpList.isEmpty());
     }
 
     // create service function path state and put rendered service path into it

@@ -134,8 +134,9 @@ public final class SfcProviderRenderedPathAPI {
     }
 
     /**
-     * Creates a RSP and all the associated operational state based on the given
-     * service function path and scheduler.
+     * Creates an RSP and all the associated operational state based on the given
+     * service function path and scheduler. Deprecated in Oxygen. RSPs will now be
+     * created when an SFP is created.
      *
      * <p>
      *
@@ -147,6 +148,7 @@ public final class SfcProviderRenderedPathAPI {
      *            SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath Created RSP or null
      */
+    @Deprecated
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput,
             @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
@@ -215,7 +217,8 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Creates a RSP and all the associated operational state based on the given
-     * service function path.
+     * service function path. Deprecated in Oxygen. RSPs should be created via
+     * config data store instead of RPC.
      *
      * <p>
      *
@@ -225,6 +228,7 @@ public final class SfcProviderRenderedPathAPI {
      *            CreateRenderedPathInput object
      * @return RenderedServicePath Created RSP or null
      */
+    @Deprecated
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput) {
         return createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput, null);
@@ -421,7 +425,8 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Create a Rendered Path and all the associated operational state based on
-     * the given rendered service path and scheduler.
+     * the given rendered service path and scheduler. Deprecated in Oxygen. RSPs
+     * should be created via config data store instead of RPC.
      *
      * <p>
      *
@@ -433,6 +438,7 @@ public final class SfcProviderRenderedPathAPI {
      *            SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath
      */
+    @Deprecated
     protected static RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
         printTraceStart(LOG);

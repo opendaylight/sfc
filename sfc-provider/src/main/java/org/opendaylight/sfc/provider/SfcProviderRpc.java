@@ -78,6 +78,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -212,43 +213,63 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
-        ServiceFunctionPath createdServiceFunctionPath;
-        RenderedServicePath renderedServicePath;
-        RenderedServicePath revRenderedServicePath;
-        CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
-        RpcResult<CreateRenderedPathOutput> rpcResult;
-        RspName retRspName;
 
-        createdServiceFunctionPath = SfcProviderServicePathAPI
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI
                 .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
 
-        if (createdServiceFunctionPath != null) {
-            renderedServicePath = SfcProviderRenderedPathAPI
-                    .createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput);
-            if (renderedServicePath != null) {
-                retRspName = renderedServicePath.getName();
-                createRenderedPathOutputBuilder.setName(retRspName.getValue());
-                rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
-                if (SfcProviderRenderedPathAPI.isChainSymmetric(createdServiceFunctionPath, renderedServicePath)) {
-                    revRenderedServicePath = SfcProviderRenderedPathAPI
-                            .createSymmetricRenderedServicePathAndState(renderedServicePath);
-                    if (revRenderedServicePath == null) {
-                        LOG.error("Failed to create symmetric service path: {}");
-                    } else {
-                        SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath,
-                                revRenderedServicePath.getPathId());
-                    }
+        // Fail if the SFP doesnt exist
+        if (serviceFunctionPath == null) {
+            return Futures.immediateFuture(RpcResultBuilder.<CreateRenderedPathOutput>failed()
+                    .withError(ErrorType.APPLICATION, "Service Function Path does not exist").build());
+        }
+
+        // If the input name is empty, then the RSP was already created when
+        // the SFP was created, so nothing to do but to return the RSP name
+        CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
+        if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty()) {
+            // Iterate the RPSs created for this SFP looking for the correct name to return
+            // If the RspName isnt found, then fall through and create the RSP
+            List<SfpRenderedServicePath> sfpRspList =
+                    SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
+            // In case this RPC was called before the RSP listeners complete and
+            // the sfpRspList hasnt been created yet, git it a chance to complete.
+            // This RPC will be removed in Fluorine.
+            if (sfpRspList == null || sfpRspList.isEmpty()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    LOG.debug("Interrupted sleep");
                 }
-            } else {
-                rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                        .withError(ErrorType.APPLICATION, "Failed to create RSP").build();
+                sfpRspList = SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
             }
 
-        } else {
-            rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                    .withError(ErrorType.APPLICATION, "Service Function Path does not exist").build();
+            if (sfpRspList != null && !sfpRspList.isEmpty()) {
+                for (SfpRenderedServicePath sfpRsp : sfpRspList) {
+                    RspName rspName = sfpRsp.getName();
+                    if (rspName.getValue().startsWith(serviceFunctionPath.getName().getValue())
+                        && !rspName.getValue().endsWith("-Reverse")) {
+                        createRenderedPathOutputBuilder.setName(sfpRspList.get(0).getName().getValue());
+                        RpcResult<CreateRenderedPathOutput> rpcResult =
+                                RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
+
+                        return Futures.immediateFuture(rpcResult);
+                    }
+                }
+            }
         }
-        return Futures.immediateFuture(rpcResult);
+
+        // Go ahead and create the RSP with the provided rspName
+        // The symmetric RSP will optionally be created in createRenderedServicePathInConfig()
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI
+                .createRenderedServicePathInConfig(serviceFunctionPath, createRenderedPathInput.getName());
+        if (renderedServicePath == null) {
+            return Futures.immediateFuture(RpcResultBuilder.<CreateRenderedPathOutput>failed()
+                    .withError(ErrorType.APPLICATION, "Failed to create RSP").build());
+        }
+
+        createRenderedPathOutputBuilder.setName(renderedServicePath.getName().getValue());
+
+        return Futures.immediateFuture(RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build());
     }
 
     /**

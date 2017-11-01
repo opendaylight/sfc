@@ -46,11 +46,9 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
         LOG.debug("Deleted Service Classifier Name: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getAcl() != null) {
-            executorService.execute(
-                    new SbRestAclTask(RestOperation.DELETE, serviceFunctionClassifier.getAcl().getName(),
-                                      serviceFunctionClassifier.getAcl().getType(),
-                                      serviceFunctionClassifier.getSclServiceFunctionForwarder(),
-                                      executorService));
+            new SbRestAclTask(RestOperation.DELETE, serviceFunctionClassifier.getAcl().getName(),
+                              serviceFunctionClassifier.getAcl().getType(),
+                              serviceFunctionClassifier.getSclServiceFunctionForwarder(), executorService).run();
         }
     }
 
@@ -62,9 +60,8 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
         if (updatedServiceFunctionClassifier.getAcl() != null) {
             Acl accessList = SfcProviderAclAPI.readAccessList(updatedServiceFunctionClassifier.getAcl().getName(),
                                                               updatedServiceFunctionClassifier.getAcl().getType());
-            executorService.execute(new SbRestAclTask(RestOperation.PUT, accessList,
-                                                      updatedServiceFunctionClassifier.getSclServiceFunctionForwarder(),
-                                                      executorService));
+            new SbRestAclTask(RestOperation.PUT, accessList,
+                              updatedServiceFunctionClassifier.getSclServiceFunctionForwarder(), executorService).run();
         }
     }
 }

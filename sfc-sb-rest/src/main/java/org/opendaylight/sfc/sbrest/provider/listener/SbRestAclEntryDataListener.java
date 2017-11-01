@@ -42,12 +42,12 @@ public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull Acl acl) {
         LOG.debug("Deleted Access List Name: {}", acl.getAclName());
-        executorService.execute(new SbRestAclTask(RestOperation.DELETE, acl, executorService));
+        new SbRestAclTask(RestOperation.DELETE, acl, executorService).run();
     }
 
     @Override
     public void update(@Nonnull Acl originalAcl, Acl updatedAcl) {
         LOG.debug("Updated Access List Name: {}", updatedAcl.getAclName());
-        executorService.execute(new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService));
+        new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService).run();
     }
 }

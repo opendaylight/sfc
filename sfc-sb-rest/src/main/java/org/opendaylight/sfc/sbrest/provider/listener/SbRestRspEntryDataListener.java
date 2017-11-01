@@ -42,13 +42,13 @@ public class SbRestRspEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull RenderedServicePath renderedServicePath) {
         LOG.debug("Deleted Rendered Service Path Name: {}", renderedServicePath.getName());
-        executorService.execute(new SbRestRspTask(RestOperation.DELETE, renderedServicePath, executorService));
+        new SbRestRspTask(RestOperation.DELETE, renderedServicePath, executorService).run();
     }
 
     @Override
     public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
                        RenderedServicePath updatedRenderedServicePath) {
         LOG.debug("Updated Rendered Service Path: {}", updatedRenderedServicePath.getName());
-        executorService.execute(new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService));
+        new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService).run();
     }
 }

@@ -38,14 +38,13 @@ public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.debug("Deleted Service Function Forwarder Name: {}", serviceFunctionForwarder.getName());
-        executorService
-                .execute(new SbRestSffTask(RestOperation.DELETE, serviceFunctionForwarder, executorService));
+        new SbRestSffTask(RestOperation.DELETE, serviceFunctionForwarder, executorService).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updated Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
-        executorService.execute(new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, executorService));
+        new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, executorService).run();
     }
 }

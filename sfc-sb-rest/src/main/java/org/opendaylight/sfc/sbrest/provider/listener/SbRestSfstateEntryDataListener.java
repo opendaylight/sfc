@@ -42,14 +42,13 @@ public class SbRestSfstateEntryDataListener extends AbstractSyncDataTreeChangeLi
     @Override
     public void remove(@Nonnull ServiceFunctionState serviceFunctionState) {
         LOG.debug("Deleted Service Function State Name: {}", serviceFunctionState.getName());
-        executorService
-                .execute(new SbRestSfstateTask(RestOperation.DELETE, serviceFunctionState, executorService));
+        new SbRestSfstateTask(RestOperation.DELETE, serviceFunctionState, executorService).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionState originalServiceFunctionState,
                        ServiceFunctionState updatedServiceFunctionState) {
         LOG.debug("Updated Service Function State Name: {}", updatedServiceFunctionState.getName());
-        executorService.execute(new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService));
+        new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService).run();
     }
 }

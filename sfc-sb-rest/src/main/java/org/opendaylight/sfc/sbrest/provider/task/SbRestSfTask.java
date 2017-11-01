@@ -14,7 +14,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SbRestSfTask extends SbRestAbstractTask {
 
     private static final String SF_REST_URI = "/config/service-function:service-functions/service-function/";

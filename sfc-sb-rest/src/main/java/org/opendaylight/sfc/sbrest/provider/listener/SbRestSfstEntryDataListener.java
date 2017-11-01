@@ -42,17 +42,13 @@ public class SbRestSfstEntryDataListener extends AbstractSyncDataTreeChangeListe
     @Override
     public void remove(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Deleted Service Function Schedule Type Name: {}", serviceFunctionSchedulerType.getName());
-
-        executorService
-                .execute(new SbRestSfstTask(RestOperation.DELETE, serviceFunctionSchedulerType, executorService));
+        new SbRestSfstTask(RestOperation.DELETE, serviceFunctionSchedulerType, executorService).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
                        ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         LOG.debug("Updated Service Function Schedule Type Name: {}", updatedServiceFunctionSchedulerType.getName());
-
-        executorService
-                .execute(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executorService));
+        new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executorService).run();
     }
 }

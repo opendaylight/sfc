@@ -175,16 +175,11 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // The listener will remove the Service Function Forwarder Entry
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(2000);
-        // Verify that RSP was removed
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        // Verify that SFP was removed
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
-        // Verify that RSP was removed
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
-
-        // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
-        assertNull(sffServicePathList);
+        // The SFP State is removed in the SFP listener
     }
 
     /**
@@ -226,12 +221,11 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // Entry and associated RSPs
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
-        // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
-        assertNull(sffServicePathList);
+        // The SFP state is removed in the SFP listener
+
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
                 LogicalDatastoreType.CONFIGURATION));
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
@@ -278,12 +272,10 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // Entry and associated RSPs
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
-        // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
-        assertNull(sffServicePathList);
+        // The SFP state is removed in the SFP listener
 
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
                 LogicalDatastoreType.CONFIGURATION));
@@ -331,7 +323,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // The listener will NOT remove the RSP
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was NOT removed
@@ -346,7 +337,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
 
         // The listener will NOT remove the RSP
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was NOT removed
@@ -368,7 +358,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * trigger a more complete code coverage within the listener. In order to
      * simulate a removal from the data store this test does the following: -
      * Create RSP - Update the SfDictionary by adding a removing a used SF
-     * dictionary. The RSP should be deleted. - creates a IID and add to
+     * dictionary. The SFP should be deleted. - creates a IID and add to
      * removedPaths data structure. This IID points to the SFF objects stored in
      * the original data - Call listener explicitly. - Cleans up
      */
@@ -395,15 +385,13 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
         when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
 
-        // The listener will remove the RSP
+        // The listener will remove the SFP
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
-        // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
-        assertNull(sffServicePathList);
+        // The State is removed by the SFP listener
 
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
                 LogicalDatastoreType.CONFIGURATION));
@@ -447,15 +435,14 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
         when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
 
-        // The listener will remove the RSP
+        // The listener will remove the SFP
         collection.add(dataTreeModification);
         serviceFunctionForwarderListener.onDataTreeChanged(collection);
-        Thread.sleep(500);
-        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+        assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
+                renderedServicePath.getParentServiceFunctionPath()));
 
-        // Verify that State was removed
-        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
-        assertNull(sffServicePathList);
+        // The SFP State is removed in the SFP listener
+
         /*
          * for (SffServicePath sffServicePath : sffServicePathList) {
          * assertNotEquals(sffServicePath.getName(),
@@ -726,7 +713,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new
         // Object[]{sfsBuilder.build()},
         // new Class[]{ServiceFunctions.class})).get();
-        Thread.sleep(1000); // Wait they are really created
+        Thread.sleep(200); // Wait they are really created
 
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {
@@ -797,7 +784,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
 
-        Thread.sleep(1000); // Wait SFC is really crated
+        Thread.sleep(200); // Wait SFC is really crated
 
         ServiceFunctionChain readServiceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(SFC_NAME);
 
@@ -812,7 +799,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
 
-        Thread.sleep(1000); // Wait they are really created
+        Thread.sleep(200); // Wait they are really created
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;

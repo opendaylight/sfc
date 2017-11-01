@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstTask;
@@ -22,16 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SbRestSfstEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionSchedulerType> {
+public class SbRestSfstEntryDataListener extends AbstractAsyncDataTreeChangeListener<ServiceFunctionSchedulerType> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfstEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     @Inject
     public SbRestSfstEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFST_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFST_ENTRY_IID, executorService);
     }
 
     @Override
@@ -42,17 +39,13 @@ public class SbRestSfstEntryDataListener extends AbstractSyncDataTreeChangeListe
     @Override
     public void remove(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Deleted Service Function Schedule Type Name: {}", serviceFunctionSchedulerType.getName());
-
-        executorService
-                .execute(new SbRestSfstTask(RestOperation.DELETE, serviceFunctionSchedulerType, executorService));
+        new SbRestSfstTask(RestOperation.DELETE, serviceFunctionSchedulerType, getExecutorService()).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
                        ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         LOG.debug("Updated Service Function Schedule Type Name: {}", updatedServiceFunctionSchedulerType.getName());
-
-        executorService
-                .execute(new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executorService));
+        new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, getExecutorService()).run();
     }
 }

@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
@@ -22,16 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListener<Acl> {
+public class SbRestAclEntryDataListener extends AbstractAsyncDataTreeChangeListener<Acl> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestAclEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     @Inject
     public SbRestAclEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.ACL_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.ACL_ENTRY_IID, executorService);
     }
 
     @Override
@@ -42,12 +39,12 @@ public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull Acl acl) {
         LOG.debug("Deleted Access List Name: {}", acl.getAclName());
-        executorService.execute(new SbRestAclTask(RestOperation.DELETE, acl, executorService));
+        new SbRestAclTask(RestOperation.DELETE, acl, getExecutorService()).run();
     }
 
     @Override
     public void update(@Nonnull Acl originalAcl, Acl updatedAcl) {
         LOG.debug("Updated Access List Name: {}", updatedAcl.getAclName());
-        executorService.execute(new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService));
+        new SbRestAclTask(RestOperation.PUT, updatedAcl, getExecutorService()).run();
     }
 }

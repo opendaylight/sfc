@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
@@ -24,16 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionClassifier> {
+public class SbRestScfEntryDataListener extends AbstractAsyncDataTreeChangeListener<ServiceFunctionClassifier> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestScfEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     @Inject
     public SbRestScfEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SCF_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SCF_ENTRY_IID, executorService);
     }
 
     @Override
@@ -46,11 +43,9 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
         LOG.debug("Deleted Service Classifier Name: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getAcl() != null) {
-            executorService.execute(
-                    new SbRestAclTask(RestOperation.DELETE, serviceFunctionClassifier.getAcl().getName(),
-                                      serviceFunctionClassifier.getAcl().getType(),
-                                      serviceFunctionClassifier.getSclServiceFunctionForwarder(),
-                                      executorService));
+            new SbRestAclTask(RestOperation.DELETE, serviceFunctionClassifier.getAcl().getName(),
+                              serviceFunctionClassifier.getAcl().getType(),
+                              serviceFunctionClassifier.getSclServiceFunctionForwarder(), getExecutorService()).run();
         }
     }
 
@@ -62,9 +57,9 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
         if (updatedServiceFunctionClassifier.getAcl() != null) {
             Acl accessList = SfcProviderAclAPI.readAccessList(updatedServiceFunctionClassifier.getAcl().getName(),
                                                               updatedServiceFunctionClassifier.getAcl().getType());
-            executorService.execute(new SbRestAclTask(RestOperation.PUT, accessList,
-                                                      updatedServiceFunctionClassifier.getSclServiceFunctionForwarder(),
-                                                      executorService));
+            new SbRestAclTask(RestOperation.PUT, accessList,
+                              updatedServiceFunctionClassifier.getSclServiceFunctionForwarder(), getExecutorService())
+                    .run();
         }
     }
 }

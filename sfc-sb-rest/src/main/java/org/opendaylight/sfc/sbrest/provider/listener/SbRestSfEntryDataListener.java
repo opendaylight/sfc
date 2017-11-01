@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfTask;
@@ -22,16 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SbRestSfEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunction> {
+public class SbRestSfEntryDataListener extends AbstractAsyncDataTreeChangeListener<ServiceFunction> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     @Inject
     public SbRestSfEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SF_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SF_ENTRY_IID, executorService);
     }
 
     @Override
@@ -42,12 +39,12 @@ public class SbRestSfEntryDataListener extends AbstractSyncDataTreeChangeListene
     @Override
     public void remove(@Nonnull ServiceFunction serviceFunction) {
         LOG.debug("Deleted Service Function Name: {}", serviceFunction.getName());
-        executorService.execute(new SbRestSfTask(RestOperation.DELETE, serviceFunction, executorService));
+        new SbRestSfTask(RestOperation.DELETE, serviceFunction, getExecutorService()).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunction originalDataObject, ServiceFunction updatedServiceFunction) {
         LOG.debug("Updated Service Function Name: {}", updatedServiceFunction.getName());
-        executorService.execute(new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executorService));
+        new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, getExecutorService()).run();
     }
 }

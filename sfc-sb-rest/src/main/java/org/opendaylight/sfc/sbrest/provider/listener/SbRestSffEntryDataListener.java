@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSffTask;
@@ -19,15 +19,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionForwarder> {
+public class SbRestSffEntryDataListener extends AbstractAsyncDataTreeChangeListener<ServiceFunctionForwarder> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     public SbRestSffEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFF_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFF_ENTRY_IID, executorService);
     }
 
     @Override
@@ -38,14 +35,13 @@ public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.debug("Deleted Service Function Forwarder Name: {}", serviceFunctionForwarder.getName());
-        executorService
-                .execute(new SbRestSffTask(RestOperation.DELETE, serviceFunctionForwarder, executorService));
+        new SbRestSffTask(RestOperation.DELETE, serviceFunctionForwarder, getExecutorService()).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updated Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
-        executorService.execute(new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, executorService));
+        new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, getExecutorService()).run();
     }
 }

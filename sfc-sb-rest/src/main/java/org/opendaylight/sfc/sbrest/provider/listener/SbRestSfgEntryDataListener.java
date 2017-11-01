@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfgTask;
@@ -22,16 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class SbRestSfgEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionGroup> {
+public class SbRestSfgEntryDataListener extends AbstractAsyncDataTreeChangeListener<ServiceFunctionGroup> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSfgEntryDataListener.class);
 
-    private final ExecutorService executorService;
-
     @Inject
     public SbRestSfgEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
-        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFG_ENTRY_IID);
-        this.executorService = executorService;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFG_ENTRY_IID, executorService);
     }
 
     @Override
@@ -42,13 +39,13 @@ public class SbRestSfgEntryDataListener extends AbstractSyncDataTreeChangeListen
     @Override
     public void remove(@Nonnull ServiceFunctionGroup serviceFunctionGroup) {
         LOG.debug("Deleted Service Function Name: {}", serviceFunctionGroup.getName());
-        executorService.execute(new SbRestSfgTask(RestOperation.DELETE, serviceFunctionGroup, executorService));
+        new SbRestSfgTask(RestOperation.DELETE, serviceFunctionGroup, getExecutorService()).run();
     }
 
     @Override
     public void update(@Nonnull ServiceFunctionGroup originalServiceFunctionGroup,
                        ServiceFunctionGroup updatedServiceFunctionGroup) {
-        LOG.debug("\nModified Service Function Name: {}", updatedServiceFunctionGroup.getName());
-        executorService.execute(new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executorService));
+        LOG.debug("Modified Service Function Name: {}", updatedServiceFunctionGroup.getName());
+        new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, getExecutorService()).run();
     }
 }

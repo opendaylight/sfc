@@ -411,6 +411,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
         renderedServicePathBuilder.setName(pathName)
+            .setParentServiceFunctionPath(new SfpName("SFP"))
             .setKey(new RenderedServicePathKey(pathName))
             .setRenderedServicePathHop(renderedServicePathHops)
             .setPathId(0L)

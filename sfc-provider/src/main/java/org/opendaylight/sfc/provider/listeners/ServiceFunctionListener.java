@@ -16,12 +16,10 @@ import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
-import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
 import org.opendaylight.sfc.provider.validators.util.SfcDatastoreCache;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -65,7 +63,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
         // delete cache
         SfcDatastoreCache.getSfToSfTypeCache().invalidate(serviceFunction.getName());
 
-        deleteSfRsps(serviceFunction);
+        deleteSfSfps(serviceFunction);
         if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(serviceFunction)) {
             LOG.error("remove: Failed to delete Service Function: ", serviceFunction.getName());
         }
@@ -88,7 +86,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
                 SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(updatedServiceFunction);
             }
 
-            deleteSfRsps(originalServiceFunction);
+            deleteSfSfps(originalServiceFunction);
         }
     }
 
@@ -142,28 +140,25 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     /**
-     * Removes all the RSP in which the Service Function is referenced.
+     * Removes all the SFPs in which the Service Function is referenced.
+     * Removing the SFP will in-turn remove the RSP from config and oper
      */
-    private void deleteSfRsps(ServiceFunction serviceFunction) {
+    private void deleteSfSfps(ServiceFunction serviceFunction) {
         /*
          * Before removing RSPs used by this Service Function, we need to remove
          * all references in the SFF/SF operational trees
          */
         SfName sfName = serviceFunction.getName();
         List<SfServicePath> sfServicePathList = SfcProviderServiceFunctionAPI.readServiceFunctionState(sfName);
-        List<RspName> rspList = new ArrayList<>();
         if (sfServicePathList != null && !sfServicePathList.isEmpty()) {
             if (!SfcProviderServiceFunctionAPI.deleteServiceFunctionState(sfName)) {
                 LOG.error("{}: Failed to delete SF {} operational state", Thread.currentThread().getStackTrace()[1],
                           sfName);
             }
             for (SfServicePath sfServicePath : sfServicePathList) {
-                RspName rspName = new RspName(sfServicePath.getName().getValue());
-                SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
-                LOG.info("Deleting RSP [{}] on SF [{}]", rspName, sfName);
-                rspList.add(rspName);
+                LOG.info("Deleting SFP [{}] on SF [{}]", sfServicePath.getName().getValue(), sfName);
+                SfcProviderServicePathAPI.deleteServiceFunctionPath(sfServicePath.getName());
             }
-            SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspList);
         }
 
         /*

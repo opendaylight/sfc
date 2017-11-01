@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -78,6 +79,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -199,9 +201,17 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     /**
-     * Create an RSP via an RPC operation. The RSP will only be created in
-     * the Operational Data Store. As of Oxygen, this method is deprecated.
-     * Now RSP creation will be triggered via SFP creation.
+     * Create an RSP via an RPC operation. As of Oxygen, this method is
+     * deprecated. Now, instead of using the RPC, the RSP creation will
+     * be triggered via SFP creation.
+     * If the supplied RspName is not present, then the RSP would have
+     * been created when the SFP was created, so this already created
+     * RSP name will be returned.
+     * If the supplied RspName is present, then this will create an RSP
+     * in the config data store, which will trigger creating the RSP
+     * in the operational data store. This will be for the case where
+     * the end-user wants multiple RPSs for 1 SFP. This methodology
+     * will no longer be supported when this deprecated RPC is removed.
      *
      * <p>
      * @param createRenderedPathInput
@@ -212,43 +222,74 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
-        ServiceFunctionPath createdServiceFunctionPath;
-        RenderedServicePath renderedServicePath;
-        RenderedServicePath revRenderedServicePath;
-        CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
-        RpcResult<CreateRenderedPathOutput> rpcResult;
-        RspName retRspName;
+        // Launch a separate thread, since the processing could be slow
+        return CompletableFuture.supplyAsync(() -> createRenderedPathImpl(createRenderedPathInput));
+    }
 
-        createdServiceFunctionPath = SfcProviderServicePathAPI
+    /**
+     * Implementation of the RPC that will launched in a separate thread.
+     * Creates an RSP
+     *
+     * @param createRenderedPathInput
+     *        Input information used to create the RSP.
+     * @return RPC Output
+     */
+    private RpcResult<CreateRenderedPathOutput> createRenderedPathImpl(
+            CreateRenderedPathInput createRenderedPathInput) {
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI
                 .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
 
-        if (createdServiceFunctionPath != null) {
-            renderedServicePath = SfcProviderRenderedPathAPI
-                    .createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput);
-            if (renderedServicePath != null) {
-                retRspName = renderedServicePath.getName();
-                createRenderedPathOutputBuilder.setName(retRspName.getValue());
-                rpcResult = RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
-                if (SfcProviderRenderedPathAPI.isChainSymmetric(createdServiceFunctionPath, renderedServicePath)) {
-                    revRenderedServicePath = SfcProviderRenderedPathAPI
-                            .createSymmetricRenderedServicePathAndState(renderedServicePath);
-                    if (revRenderedServicePath == null) {
-                        LOG.error("Failed to create symmetric service path: {}");
-                    } else {
-                        SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath,
-                                revRenderedServicePath.getPathId());
-                    }
-                }
-            } else {
-                rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                        .withError(ErrorType.APPLICATION, "Failed to create RSP").build();
-            }
-
-        } else {
-            rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
+        // Fail if the SFP doesnt exist
+        if (serviceFunctionPath == null) {
+            return RpcResultBuilder.<CreateRenderedPathOutput>failed()
                     .withError(ErrorType.APPLICATION, "Service Function Path does not exist").build();
         }
-        return Futures.immediateFuture(rpcResult);
+
+        // If the input name is empty, then the RSP was already created when
+        // the SFP was created, so nothing to do but to return the RSP name
+        CreateRenderedPathOutputBuilder createRenderedPathOutputBuilder = new CreateRenderedPathOutputBuilder();
+        if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty()) {
+            // Iterate the RPSs created for this SFP looking for the correct name to return
+            // If the RspName isnt found, then fall through and create the RSP
+            List<SfpRenderedServicePath> sfpRspList =
+                    SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
+            // In case this RPC was called before the RSP listeners complete and
+            // the sfpRspList hasnt been created yet, git it a chance to complete.
+            // This RPC will be removed in Fluorine.
+            if (sfpRspList == null || sfpRspList.isEmpty()) {
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    LOG.debug("Interrupted sleep");
+                }
+                sfpRspList = SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
+            }
+
+            if (sfpRspList != null && !sfpRspList.isEmpty()) {
+                for (SfpRenderedServicePath sfpRsp : sfpRspList) {
+                    RspName rspName = sfpRsp.getName();
+                    if (rspName.getValue().startsWith(serviceFunctionPath.getName().getValue())
+                        && !rspName.getValue().endsWith("-Reverse")) {
+                        createRenderedPathOutputBuilder.setName(sfpRspList.get(0).getName().getValue());
+
+                        return RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
+                    }
+                }
+            }
+        }
+
+        // Go ahead and create the RSP with the provided rspName
+        // The symmetric RSP will optionally be created in createRenderedServicePathInConfig()
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI
+                .createRenderedServicePathInConfig(serviceFunctionPath, createRenderedPathInput.getName());
+        if (renderedServicePath == null) {
+            return RpcResultBuilder.<CreateRenderedPathOutput>failed()
+                    .withError(ErrorType.APPLICATION, "Failed to create RSP").build();
+        }
+
+        createRenderedPathOutputBuilder.setName(renderedServicePath.getName().getValue());
+
+        return RpcResultBuilder.success(createRenderedPathOutputBuilder.build()).build();
     }
 
     /**

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_b74e8294",
+        "filename": "sfc-sb-rest/src/main/java/org/opendaylight/sfc/sbrest/provider/listener/SbRestAclEntryDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2017-11-01T22:55:25Z",
+      "side": 1,
+      "message": "Async will off-load to the executor and the SbRestAclTask will in turn off-load to the executor. Sync  is fine.",
+      "range": {
+        "startLine": 25,
+        "startChar": 48,
+        "endLine": 25,
+        "endChar": 83
+      },
+      "revId": "3fe3b2b4d2f680e1b91631aadf6aed54bc3c0117",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

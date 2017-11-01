@@ -11,6 +11,7 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
+import java.util.Collections;
 import java.util.List;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -57,7 +58,7 @@ public final class SfcProviderServicePathAPI {
 
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
-        List<SfpRenderedServicePath> ret = null;
+        List<SfpRenderedServicePath> ret = Collections.emptyList();
 
         ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
 
@@ -85,30 +86,36 @@ public final class SfcProviderServicePathAPI {
      * @return Nothing.
      */
     public static boolean addRenderedPathToServicePathState(SfpName servicePathName, RspName renderedPathName) {
-
         printTraceStart(LOG);
-        InstanceIdentifier<SfpRenderedServicePath> rspIID;
-        boolean ret = false;
 
-        SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
         SfpRenderedServicePathKey sfpRenderedServicePathKey = new SfpRenderedServicePathKey(renderedPathName);
+        SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
         sfpRenderedServicePathBuilder.setKey(sfpRenderedServicePathKey).setName(renderedPathName);
 
-        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
-
-        rspIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey)
-                .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).build();
+        InstanceIdentifier<SfpRenderedServicePath> rspIID =
+                InstanceIdentifier.builder(ServiceFunctionPathsState.class)
+                        .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(servicePathName))
+                        .child(SfpRenderedServicePath.class, sfpRenderedServicePathKey).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, sfpRenderedServicePathBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL)) {
-            ret = true;
+            return true;
         } else {
             LOG.error("{}: Failed to create Service Function Path {} state. Rendered Service Path: {}",
                     Thread.currentThread().getStackTrace()[1], servicePathName, renderedPathName);
         }
         printTraceStop(LOG);
-        return ret;
+        return false;
+    }
+
+    public static boolean deleteRenderedPathFromServicePathState(SfpName sfpName, RspName rspName) {
+        InstanceIdentifier<SfpRenderedServicePath> rspIID =
+                InstanceIdentifier.builder(ServiceFunctionPathsState.class)
+                        .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(sfpName))
+                        .child(SfpRenderedServicePath.class, new SfpRenderedServicePathKey(rspName))
+                        .build();
+
+        return SfcDataStoreAPI.deleteTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
     }
 
     /**
@@ -159,5 +166,27 @@ public final class SfcProviderServicePathAPI {
 
         printTraceStop(LOG);
         return ret;
+    }
+
+    public static boolean deleteServiceFunctionPath(SfpName sfpName) {
+        ServiceFunctionPath sfp = readServiceFunctionPath(sfpName);
+        if (sfp == null) {
+            LOG.error("Failed to delete non-existent Service Function Path: {}", sfpName);
+            return false;
+        }
+
+        return deleteServiceFunctionPath(sfp);
+    }
+
+    public static boolean deleteServiceFunctionPath(ServiceFunctionPath sfp) {
+        InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
+                .child(ServiceFunctionPath.class, sfp.getKey()).build();
+
+        if (SfcDataStoreAPI.deleteTransactionAPI(sfpEntryIID, LogicalDatastoreType.CONFIGURATION)) {
+            LOG.info("Deleted Service Function Path: {}", sfp.getName());
+            return true;
+        }
+
+        return false;
     }
 }

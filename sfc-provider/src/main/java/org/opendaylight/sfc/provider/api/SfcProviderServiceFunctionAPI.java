@@ -191,7 +191,7 @@ public final class SfcProviderServiceFunctionAPI {
         printTraceStart(LOG);
 
         // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        SfpName sfpName = new SfpName(renderedServicePath.getName().getValue());
+        SfpName sfpName = new SfpName(renderedServicePath.getParentServiceFunctionPath().getValue());
         SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpName);
         SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
         sfServicePathBuilder.setKey(sfServicePathKey);

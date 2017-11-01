@@ -134,9 +134,145 @@ public final class SfcProviderRenderedPathAPI {
     }
 
     /**
-     * Creates an RSP and all the associated operational state based on the given
-     * service function path and scheduler. Deprecated in Oxygen. RSPs will now be
-     * created when an SFP is created.
+     * Creates an RSP in the configuration data store, and optionally
+     * create the symmetric RSP. This will be called when an SFP has
+     * been created.
+     *
+     * <p>
+     *
+     * @param serviceFunctionPath
+     *            The SFP used to create this RSP
+     * @return RenderedServicePath
+     *            The RSP or null
+     */
+    public static RenderedServicePath createRenderedServicePathInConfig(ServiceFunctionPath serviceFunctionPath) {
+        return createRenderedServicePathInConfig(serviceFunctionPath, null);
+    }
+
+    public static RenderedServicePath createRenderedServicePathInConfig(ServiceFunctionPath serviceFunctionPath,
+                                                                        String rspName) {
+        // Create the RSP
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
+                serviceFunctionPath, rspName, DEFAULT_SCHEDULER_SUPPLIER.get());
+
+        if (renderedServicePath == null) {
+            LOG.error("Could not create RSP for SFP {}", serviceFunctionPath.getName().getValue());
+            return null;
+        }
+
+        // Optionally create the Symmetric RSP
+        if (SfcProviderRenderedPathAPI.isChainSymmetric(serviceFunctionPath, renderedServicePath)) {
+            RenderedServicePath revRenderedServicePath = SfcProviderRenderedPathAPI
+                    .createSymmetricRenderedServicePathInConfig(renderedServicePath);
+            if (revRenderedServicePath == null) {
+                LOG.error("Failed to create symmetric Rendered Service Path for input SFP: {}",
+                        serviceFunctionPath.getName().getValue());
+            } else {
+                renderedServicePath = SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath,
+                        revRenderedServicePath.getPathId(), null);
+            }
+        }
+
+        // Write the RSP to the configuration data store
+        writeRenderedServicePath(renderedServicePath, LogicalDatastoreType.CONFIGURATION);
+
+        return renderedServicePath;
+    }
+
+    /**
+     * Creates the RSP operational state based on the given service function path.
+     *
+     * <p>
+     *
+     * @param createdServiceFunctionPath
+     *            Service Function Path
+     * @param renderedServicePath
+     *            The RSP used to add operational state
+     * @return boolean
+     *            True if the state was correctly set, False otherwise
+     */
+    public static boolean createRenderedServicePathState(ServiceFunctionPath createdServiceFunctionPath,
+            RenderedServicePath renderedServicePath) {
+
+        // Add Path name to SFF operational state
+        if (!SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(renderedServicePath)) {
+            LOG.error("Failed to add RSP to SFF state {}", renderedServicePath.getName());
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
+
+            return false;
+        }
+
+        // Add Path to SF operational state
+        if (!SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath)) {
+            LOG.error("Failed to add RSP to SF state {}", renderedServicePath.getName());
+            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
+
+            return false;
+        }
+
+        // Add RSP to SFP operational state
+        if (!SfcProviderServicePathAPI.addRenderedPathToServicePathState(
+                createdServiceFunctionPath.getName(), renderedServicePath.getName())) {
+            LOG.error("Failed to add RSP to SFP state {}", renderedServicePath.getName());
+            SfcProviderServiceFunctionAPI
+                    .deleteServicePathFromServiceFunctionState(createdServiceFunctionPath.getName());
+            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
+            SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Creates a RSP and all the associated operational state based on the given
+     * service function path and config RSP. This version is called when an RSP has
+     * been created in the config data store, to create an RSP in operational.
+     *
+     * <p>
+     *
+     * @param createdServiceFunctionPath
+     *            Service Function Path
+     * @param createdRenderedServicePath
+     *            The config RSP used to create the operational RSP
+     * @return RenderedServicePath Created RSP or null
+     */
+    public static RenderedServicePath createRenderedServicePathAndState(
+            ServiceFunctionPath createdServiceFunctionPath, RenderedServicePath createdRenderedServicePath) {
+
+        // Create the Operational RSP based on the Config RSP
+        RenderedServicePathBuilder renderedServicePathBuilder =
+                new RenderedServicePathBuilder(createdRenderedServicePath);
+
+        // These are the config false RSP attributes, that can only be written in the RSP Operational data store
+        renderedServicePathBuilder.setContextMetadata(createdServiceFunctionPath.getContextMetadata());
+        renderedServicePathBuilder.setVariableMetadata(createdServiceFunctionPath.getVariableMetadata());
+
+        RenderedServicePath renderedServicePath = renderedServicePathBuilder.build();
+        if (renderedServicePath == null) {
+            LOG.error("Could not create RSP in operational for config RSP {}",
+                    createdRenderedServicePath.getName().getValue());
+            return null;
+        }
+
+        if (!writeRenderedServicePath(renderedServicePath, LogicalDatastoreType.OPERATIONAL)) {
+            return null;
+        }
+
+        if (!createRenderedServicePathState(createdServiceFunctionPath, renderedServicePath)) {
+            // If createRenderedServicePathState() returns false, the RSP was deleted therein
+            return null;
+        }
+
+        return renderedServicePath;
+    }
+
+    /**
+     * Creates a RSP and all the associated operational state based on the given
+     * service function path. This version is called from the create-RSP RPC.
+     * Deprecated in Oxygen. RSPs should be created via config data store instead of RPC.
      *
      * <p>
      *
@@ -152,10 +288,17 @@ public final class SfcProviderRenderedPathAPI {
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput,
             @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
-        boolean rspSuccessful = false;
-        boolean addPathToSffStateSuccessful = false;
-        boolean addPathToSfStateSuccessful = false;
-        RenderedServicePath renderedServicePath;
+
+        // Provisional code to test new RPC parameters
+        ContextHeaderAllocationType1 contextHeaderAllocationType1 = createRenderedPathInput
+                .getContextHeaderAllocationType1();
+        if (contextHeaderAllocationType1 != null) {
+            Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
+                    contextHeaderAllocationType1.getImplementedInterface();
+            if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
+                LOG.debug("ok");
+            }
+        }
 
         // Fall back to defaultScheduler
         SfcServiceFunctionSchedulerAPI scheduler = possibleScheduler;
@@ -163,53 +306,23 @@ public final class SfcProviderRenderedPathAPI {
             scheduler = DEFAULT_SCHEDULER_SUPPLIER.get();
         }
 
-        // Create RSP
-        if ((renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(createdServiceFunctionPath,
-                createRenderedPathInput, scheduler)) != null) {
-            rspSuccessful = true;
-
-        } else {
-            LOG.error("Could not create RSP. System state inconsistent. Deleting and add SFP {} back",
-                    createdServiceFunctionPath.getName());
-        }
-
-        // Add Path name to SFF operational state
-        if (rspSuccessful && SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(renderedServicePath)) {
-            addPathToSffStateSuccessful = true;
-        } else {
-            if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
-            }
-        }
-
-        // Add Path to SF operational state
-        if (addPathToSffStateSuccessful
-                && SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(renderedServicePath)) {
-
-            addPathToSfStateSuccessful = true;
-        } else {
-            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
-            if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
-            }
-        }
-
-        // Add RSP to SFP operational state
-        if (!(addPathToSfStateSuccessful && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
-                createdServiceFunctionPath.getName(), renderedServicePath.getName()))) {
-            SfcProviderServiceFunctionAPI
-                    .deleteServicePathFromServiceFunctionState(createdServiceFunctionPath.getName());
-            SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(createdServiceFunctionPath);
-            if (renderedServicePath != null) {
-                SfcProviderRenderedPathAPI.deleteRenderedServicePath(renderedServicePath.getName());
-            }
-        }
+        // Create the RSP
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
+                createdServiceFunctionPath, createRenderedPathInput.getName(), scheduler);
 
         if (renderedServicePath == null) {
-            LOG.error("Failed to create RSP for SFP {}", createdServiceFunctionPath.getName());
-        } else {
-            LOG.info("Create RSP {} for SFP {} successfully", renderedServicePath.getName(),
+            LOG.error("Could not create RSP in operational for RPC, SFP {}",
                     createdServiceFunctionPath.getName());
+            return null;
+        }
+
+        if (!writeRenderedServicePath(renderedServicePath, LogicalDatastoreType.OPERATIONAL)) {
+            return null;
+        }
+
+        if (!createRenderedServicePathState(createdServiceFunctionPath, renderedServicePath)) {
+            // If createRenderedServicePathState() returns false, the RSP was deleted therein
+            return null;
         }
 
         return renderedServicePath;
@@ -217,8 +330,8 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Creates a RSP and all the associated operational state based on the given
-     * service function path. Deprecated in Oxygen. RSPs should be created via
-     * config data store instead of RPC.
+     * service function path. This version may be called from the create-RSP RPC.
+     * Deprecated in Oxygen. RSPs should be created via config data store instead of RPC.
      *
      * <p>
      *
@@ -232,6 +345,31 @@ public final class SfcProviderRenderedPathAPI {
     public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
             CreateRenderedPathInput createRenderedPathInput) {
         return createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput, null);
+    }
+
+    /**
+     * Creates a symmetric RSP in the configuration data store. This
+     * will be called when an SFP has been created.
+     *
+     * <p>
+     *
+     * @param renderedServicePath
+     *            The original RSP used to create this symmetric RSP
+     * @return RenderedServicePath
+     *            The symmetric RSP or null
+     */
+    public static RenderedServicePath createSymmetricRenderedServicePathInConfig(
+            RenderedServicePath renderedServicePath) {
+        final RenderedServicePath revRenderedServicePath = SfcProviderRenderedPathAPI
+                .createReverseRenderedServicePathEntry(renderedServicePath);
+        if (revRenderedServicePath == null) {
+            LOG.error("Could not create Reverse RSP {}", renderedServicePath.getName());
+            return null;
+        }
+
+        writeRenderedServicePath(revRenderedServicePath, LogicalDatastoreType.CONFIGURATION);
+
+        return revRenderedServicePath;
     }
 
     /**
@@ -253,6 +391,7 @@ public final class SfcProviderRenderedPathAPI {
                 .createReverseRenderedServicePathEntry(renderedServicePath);
         if (revRenderedServicePath != null) {
             revRspSuccessful = true;
+            writeRenderedServicePath(revRenderedServicePath, LogicalDatastoreType.OPERATIONAL);
         } else {
             LOG.error("Could not create Reverse RSP {}", renderedServicePath.getName());
         }
@@ -425,38 +564,26 @@ public final class SfcProviderRenderedPathAPI {
 
     /**
      * Create a Rendered Path and all the associated operational state based on
-     * the given rendered service path and scheduler. Deprecated in Oxygen. RSPs
-     * should be created via config data store instead of RPC.
+     * the given rendered service path and scheduler.
      *
      * <p>
      *
      * @param serviceFunctionPath
      *            RSP Object
-     * @param createRenderedPathInput
-     *            CreateRenderedPathInput object
+     * @param rspName
+     *            Name of the RSP to create
      * @param scheduler
      *            SfcServiceFunctionSchedulerAPI object
      * @return RenderedServicePath
      */
-    @Deprecated
     protected static RenderedServicePath createRenderedServicePathEntry(ServiceFunctionPath serviceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput, SfcServiceFunctionSchedulerAPI scheduler) {
+            String rspName, SfcServiceFunctionSchedulerAPI scheduler) {
         printTraceStart(LOG);
 
         long pathId;
 
         RenderedServicePath ret = null;
 
-        // Provisional code to test new RPC parameters
-        ContextHeaderAllocationType1 contextHeaderAllocationType1 = createRenderedPathInput
-                .getContextHeaderAllocationType1();
-        if (contextHeaderAllocationType1 != null) {
-            Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
-                contextHeaderAllocationType1.getImplementedInterface();
-            if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
-                LOG.debug("ok");
-            }
-        }
         // String simplectxName =
         // contextHeaderAllocationType1ImplementedInterface.getSimpleName();
         // simplectxName is VxlanClassifier
@@ -522,18 +649,11 @@ public final class SfcProviderRenderedPathAPI {
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopArrayList);
         // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-        if (createRenderedPathInput.getName() == null || createRenderedPathInput.getName().isEmpty()) {
-            if (serviceFunctionPath.getName() != null) {
-                renderedServicePathBuilder
-                        .setName(new RspName(serviceFunctionPath.getName().getValue() + "-Path-" + pathId));
-            } else {
-                LOG.error("{}: Failed to set RSP Name as it was null and SFP Name was null.",
-                        Thread.currentThread().getStackTrace()[1]);
-                return null;
-            }
+        if (rspName == null || rspName.isEmpty()) {
+            renderedServicePathBuilder
+                    .setName(getRspName(serviceFunctionPath, pathId));
         } else {
-            renderedServicePathBuilder.setName(new RspName(createRenderedPathInput.getName()));
-
+            renderedServicePathBuilder.setName(new RspName(rspName));
         }
 
         renderedServicePathBuilder.setPathId(pathId);
@@ -543,8 +663,6 @@ public final class SfcProviderRenderedPathAPI {
         renderedServicePathBuilder.setStartingIndex((short) MAX_STARTING_INDEX);
         renderedServicePathBuilder.setServiceChainName(serviceFunctionChainName);
         renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
-        renderedServicePathBuilder.setContextMetadata(serviceFunctionPath.getContextMetadata());
-        renderedServicePathBuilder.setVariableMetadata(serviceFunctionPath.getVariableMetadata());
         renderedServicePathBuilder.setReversePath(false);
 
         if (serviceFunctionPath.getTransportType() == null) {
@@ -558,28 +676,12 @@ public final class SfcProviderRenderedPathAPI {
         }
 
         // If no encapsulation type specified, default is NSH for VxlanGpe and
-        // Transport
-        // in any other case
+        // Transport in any other case
         renderedServicePathBuilder.setSfcEncapsulation(serviceFunctionPath.getSfcEncapsulation() != null
                 ? serviceFunctionPath.getSfcEncapsulation()
                 : renderedServicePathBuilder.getTransportType().equals(VxlanGpe.class) ? Nsh.class : Transport.class);
 
-        RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(
-                renderedServicePathBuilder.getName());
-        InstanceIdentifier<RenderedServicePath> rspIID;
-        rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePathKey).build();
-
-        RenderedServicePath renderedServicePath = renderedServicePathBuilder.build();
-
-        if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePath, LogicalDatastoreType.OPERATIONAL)) {
-            ret = renderedServicePath;
-        } else {
-            LOG.error("{}: Failed to create Rendered Service Path: {}", Thread.currentThread().getStackTrace()[1],
-                    serviceFunctionPath.getName());
-        }
-        printTraceStop(LOG);
-        return ret;
+        return renderedServicePathBuilder.build();
     }
 
     /**
@@ -611,9 +713,8 @@ public final class SfcProviderRenderedPathAPI {
         revRenderedServicePathBuilder.setKey(revRenderedServicePathKey);
 
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
-        // Populate new array with elements from existing service path. They
-        // will be replaced as we
-        // go along
+        // Populate new array with elements from existing service path.
+        // They will be replaced as we go along.
         List<RenderedServicePathHop> revRenderedServicePathHopArrayList = new ArrayList<>();
         revRenderedServicePathHopArrayList.addAll(renderedServicePathHopList);
 
@@ -637,22 +738,7 @@ public final class SfcProviderRenderedPathAPI {
         revRenderedServicePathBuilder.setSymmetricPathId(renderedServicePath.getPathId());
         revRenderedServicePathBuilder.setReversePath(true);
 
-        InstanceIdentifier<RenderedServicePath> rspIID;
-
-        rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, revRenderedServicePathKey).build();
-
-        RenderedServicePath revRenderedServicePath = revRenderedServicePathBuilder.build();
-
-        if (SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, revRenderedServicePath,
-                LogicalDatastoreType.OPERATIONAL)) {
-            ret = revRenderedServicePath;
-        } else {
-            LOG.error("{}: Failed to create Reverse Rendered Service Path: {}",
-                    Thread.currentThread().getStackTrace()[1], revPathName);
-        }
-        printTraceStop(LOG);
-        return ret;
+        return revRenderedServicePathBuilder.build();
     }
 
     /**
@@ -668,6 +754,24 @@ public final class SfcProviderRenderedPathAPI {
                 : new RspName(rspName.getValue() + REVERSED_PATH_SUFFIX);
     }
 
+    private static boolean writeRenderedServicePath(RenderedServicePath renderedServicePath,
+                                                    LogicalDatastoreType type) {
+        RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(
+                renderedServicePath.getName());
+        InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
+                .child(RenderedServicePath.class, renderedServicePathKey).build();
+
+        if (!SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePath, type)) {
+            LOG.error("{}: Failed to create Rendered Service Path: {}", Thread.currentThread().getStackTrace()[1],
+                    renderedServicePath.getName());
+            return false;
+        }
+
+        LOG.info("Create RSP [{}] in {} data store successfully", renderedServicePath.getName().getValue(), type);
+
+        return true;
+    }
+
     /**
      * It returns the Symmetric RSP Name from a RspName if both exist.
      *
@@ -679,13 +783,36 @@ public final class SfcProviderRenderedPathAPI {
      *         or if it has not a symmetric Path Id
      */
     public static RspName getReversedRspName(RspName rspName) {
-        RspName returnRspName = null;
-        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+        // First check for the RSP in operational, if its not there then check in configuration
+        RenderedServicePath renderedServicePath =
+                SfcProviderRenderedPathAPI.readRenderedServicePath(rspName, LogicalDatastoreType.OPERATIONAL);
+
+        if (renderedServicePath == null) {
+            renderedServicePath =
+                    SfcProviderRenderedPathAPI.readRenderedServicePath(rspName, LogicalDatastoreType.CONFIGURATION);
+        }
+
         if (renderedServicePath != null && renderedServicePath.getSymmetricPathId() != null) {
             // The RSP has a symmetric ("Reverse") Path
-            returnRspName = SfcProviderRenderedPathAPI.generateReversedPathName(renderedServicePath.getName());
+            return SfcProviderRenderedPathAPI.generateReversedPathName(renderedServicePath.getName());
         }
-        return returnRspName;
+
+        return null;
+    }
+
+    /**
+     * Creates an RSP name based on the SFP name and pathId.
+     *
+     * <p>
+     *
+     * @param serviceFunctionPath
+     *            The SFP name is used to create the RSP name
+     * @param pathId
+     *            Used to create the RSP name
+     * @return An RSP name
+     */
+    public static RspName getRspName(ServiceFunctionPath serviceFunctionPath, long pathId) {
+        return new RspName(serviceFunctionPath.getName().getValue() + "-Path-" + pathId);
     }
 
     /**
@@ -698,13 +825,18 @@ public final class SfcProviderRenderedPathAPI {
      * @return Nothing.
      */
     public static RenderedServicePath readRenderedServicePath(RspName rspName) {
+        return readRenderedServicePath(rspName, LogicalDatastoreType.OPERATIONAL);
+    }
+
+    public static RenderedServicePath readRenderedServicePath(RspName rspName,
+                                                              LogicalDatastoreType logicalDatastoreType) {
         printTraceStart(LOG);
 
         RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(rspName);
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, renderedServicePathKey).build();
 
-        RenderedServicePath rsp = SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
+        RenderedServicePath rsp = SfcDataStoreAPI.readTransactionAPI(rspIID, logicalDatastoreType);
 
         printTraceStop(LOG);
 
@@ -764,7 +896,8 @@ public final class SfcProviderRenderedPathAPI {
      *            RSP name
      * @return Nothing.
      */
-    public static boolean deleteRenderedServicePath(RspName renderedServicePathName) {
+    public static boolean deleteRenderedServicePath(RspName renderedServicePathName,
+                                                    LogicalDatastoreType logicalDatastoreType) {
         boolean ret = false;
         printTraceStart(LOG);
 
@@ -773,13 +906,17 @@ public final class SfcProviderRenderedPathAPI {
                 .child(RenderedServicePath.class, renderedServicePathKey).build();
 
         RenderedServicePath renderedServicePath = SfcDataStoreAPI.readTransactionAPI(rspEntryIID,
-                LogicalDatastoreType.OPERATIONAL);
+                logicalDatastoreType);
         if (renderedServicePath != null) {
             long pathId = renderedServicePath.getPathId();
-            if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, LogicalDatastoreType.OPERATIONAL)) {
+            if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, logicalDatastoreType)) {
                 ret = true;
                 // Free pathId
-                SfcServicePathId.freePathId(pathId);
+                if (logicalDatastoreType == LogicalDatastoreType.OPERATIONAL) {
+                    SfcServicePathId.freePathId(pathId);
+                    SfcProviderServicePathAPI.deleteRenderedPathFromServicePathState(
+                            renderedServicePath.getParentServiceFunctionPath(), renderedServicePathName);
+                }
             } else {
                 LOG.error("{}: Failed to delete RSP: {}", Thread.currentThread().getStackTrace()[1],
                         renderedServicePathName);
@@ -789,6 +926,10 @@ public final class SfcProviderRenderedPathAPI {
         }
         printTraceStop(LOG);
         return ret;
+    }
+
+    public static boolean deleteRenderedServicePath(RspName renderedServicePathName) {
+        return deleteRenderedServicePath(renderedServicePathName, LogicalDatastoreType.OPERATIONAL);
     }
 
     /**
@@ -971,7 +1112,8 @@ public final class SfcProviderRenderedPathAPI {
                 LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
             } else {
                 // Set the symmetric path ID on the original RSP
-                setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId());
+                setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId(),
+                        LogicalDatastoreType.OPERATIONAL);
             }
         }
 
@@ -982,9 +1124,8 @@ public final class SfcProviderRenderedPathAPI {
     }
 
     /**
-     * This method gets all necessary information for a system to construct a
-     * NSH header and associated overlay packet to target the first service hop
-     * of a Rendered Service Path by ServiceFunctionTypeIdentity list.
+     * Set the Symmetric pathId on an RSP and optionally store the
+     * result in the specified data store.
      *
      * <p>
      *
@@ -992,17 +1133,27 @@ public final class SfcProviderRenderedPathAPI {
      *            RenderedServicePath Object
      * @param pathId
      *            Symmetric Path Id
-     * @return true if symmetric path-id was set, otherwise false
+     * @param logicalDatastoreType
+     *            The data store to write the resulting RSP to.
+     *            If its null, dont write to the datastore.
+     * @return the resulting RSP
      */
-    public static boolean setSymmetricPathId(RenderedServicePath renderedServicePath, long pathId) {
+    public static RenderedServicePath setSymmetricPathId(RenderedServicePath renderedServicePath, long pathId,
+                                             @Nullable LogicalDatastoreType logicalDatastoreType) {
         RenderedServicePathKey renderedServicePathKey = new RenderedServicePathKey(renderedServicePath.getName());
         InstanceIdentifier<RenderedServicePath> rspIID;
         rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, renderedServicePathKey).build();
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder(renderedServicePath);
         renderedServicePathBuilder.setSymmetricPathId(pathId);
-        return SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, renderedServicePathBuilder.build(),
-                LogicalDatastoreType.OPERATIONAL);
+
+        RenderedServicePath updatedRenderedServicePath = renderedServicePathBuilder.build();
+
+        if (logicalDatastoreType != null) {
+            SfcDataStoreAPI.writeMergeTransactionAPI(rspIID, updatedRenderedServicePath, logicalDatastoreType);
+        }
+
+        return updatedRenderedServicePath;
     }
 
     /**

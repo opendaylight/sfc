@@ -102,6 +102,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionListener = new ServiceFunctionListener(getDataBroker());
+        serviceFunctionListener.register();
     }
 
     @After

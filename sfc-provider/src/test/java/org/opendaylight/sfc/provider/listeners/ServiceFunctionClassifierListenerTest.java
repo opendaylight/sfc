@@ -60,6 +60,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionClassifierListener = new ServiceFunctionClassifierListener(getDataBroker());
+        serviceFunctionClassifierListener.register();
     }
 
     @After

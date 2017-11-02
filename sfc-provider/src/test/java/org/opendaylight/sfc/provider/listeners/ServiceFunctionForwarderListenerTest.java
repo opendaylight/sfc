@@ -102,6 +102,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionForwarderListener = new ServiceFunctionForwarderListener(getDataBroker());
+        serviceFunctionForwarderListener.register();
     }
 
     @After

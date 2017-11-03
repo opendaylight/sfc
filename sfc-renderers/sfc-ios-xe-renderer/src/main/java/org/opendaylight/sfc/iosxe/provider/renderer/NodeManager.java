@@ -16,13 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
-import org.opendaylight.sfc.iosxe.provider.listener.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
@@ -39,12 +40,11 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Singleton
 public class NodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeManager.class);
 
-    private final NodeListener nodeListener;
     private MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
@@ -53,12 +53,11 @@ public class NodeManager implements BindingAwareProvider {
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
+    @Inject
     public NodeManager(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
         // Register provider
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
         onSessionInitiated(providerContext);
-        // Node listener
-        nodeListener = new NodeListener(dataBroker, this);
         // Capabilities
         requiredCapabilities = initializeRequiredCapabilities();
     }
@@ -169,10 +168,6 @@ public class NodeManager implements BindingAwareProvider {
 
     public Map<NodeId, DataBroker> getActiveMountPoints() {
         return activeMountPoints;
-    }
-
-    public void unregisterNodeListener() {
-        nodeListener.getRegistrationObject().close();
     }
 
     @Override

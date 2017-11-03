@@ -6,14 +6,8 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-  <reference id="bindingRegistry"
-    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
 
-  <bean id="renderer"
-    class="org.opendaylight.sfc.iosxe.provider.SfcIosXeRenderer"
-    init-method="initialize" destroy-method="unregisterListeners">
-    <argument ref="dataBroker"/>
-    <argument ref="bindingRegistry"/>
-  </bean>
+  <reference id="bindingAwareBroker"
+    interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker"/>
 
 </blueprint>

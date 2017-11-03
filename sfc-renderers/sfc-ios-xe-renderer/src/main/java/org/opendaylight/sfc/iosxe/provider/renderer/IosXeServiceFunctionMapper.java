@@ -12,9 +12,10 @@ import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transa
 import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
 
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.listener.ServiceFunctionListener;
 import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
 import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -33,17 +34,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class IosXeServiceFunctionMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(IosXeServiceFunctionMapper.class);
 
     private final NodeManager nodeManager;
-    private final ServiceFunctionListener sfListener;
 
+    @Inject
     public IosXeServiceFunctionMapper(DataBroker dataBroker, NodeManager nodeManager) {
         this.nodeManager = nodeManager;
-        // Register SF listener
-        sfListener = new ServiceFunctionListener(dataBroker, this);
     }
 
     public void syncFunctions(List<ServiceFunction> functions, boolean delete) {
@@ -51,7 +51,7 @@ public class IosXeServiceFunctionMapper {
             IpAddress forwarderMgmtIp = function.getIpMgmtAddress();
             if (forwarderMgmtIp == null) {
                 LOG.warn("Service function forwarder {} has no management Ip address, cannot be created",
-                        function.getName().getValue());
+                         function.getName().getValue());
                 continue;
             }
             // Find appropriate node for SFF
@@ -59,28 +59,31 @@ public class IosXeServiceFunctionMapper {
                 IpAddress netconfNodeIp = nodeManager.getNetconfNodeIp(netconfNode);
                 if (netconfNodeIp.equals(forwarderMgmtIp)) {
                     // Find the right mountpoint
-                    DataBroker mountPoint = nodeManager.getActiveMountPoints()
-                            .get(netconfNode.getNodeId());
+                    DataBroker mountPoint = nodeManager.getActiveMountPoints().get(netconfNode.getNodeId());
                     if (mountPoint != null && !delete) {
-                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain
-                            .ServiceFunction serviceFunction = createNetconfServiceFunction(function);
+                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction
+                                serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
                             IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction,
-                                    WRITE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
+                                                                                           WRITE_FUNCTION,
+                                                                                           LogicalDatastoreType
+                                                                                                   .CONFIGURATION);
                             Object result = writeServiceFunction.call();
                             if (Boolean.TRUE.equals(result)) {
                                 LOG.info("Service function {} created on node {}", serviceFunction.getName(),
-                                        netconfNode.getNodeId().getValue());
+                                         netconfNode.getNodeId().getValue());
                             }
                         }
                     }
                     if (mountPoint != null && delete) {
-                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain
-                            .ServiceFunction serviceFunction = createNetconfServiceFunction(function);
+                        org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction
+                                serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
                             IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
-                                    serviceFunction.getKey(),
-                                    DELETE_FUNCTION, LogicalDatastoreType.CONFIGURATION);
+                                                                                           serviceFunction.getKey(),
+                                                                                           DELETE_FUNCTION,
+                                                                                           LogicalDatastoreType
+                                                                                                   .CONFIGURATION);
                             Object result = writeServiceFunction.call();
                             if (Boolean.TRUE.equals(result)) {
                                 LOG.info("Service function {} removed", serviceFunction.getName());
@@ -92,15 +95,14 @@ public class IosXeServiceFunctionMapper {
         }
     }
 
-    private org.opendaylight.yang.gen.v1.urn.ios.rev160308._native
-        .service.chain.ServiceFunction createNetconfServiceFunction(ServiceFunction function) {
+    private org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction
+        createNetconfServiceFunction(ServiceFunction function) {
         SfName sfName = function.getName();
 
-        SfDataPlaneLocator sfDataPlaneLocator = SfcIosXeUtils.getDplWithIpLocatorType(function
-                .getSfDataPlaneLocator());
+        SfDataPlaneLocator sfDataPlaneLocator = SfcIosXeUtils.getDplWithIpLocatorType(function.getSfDataPlaneLocator());
         if (sfDataPlaneLocator == null || sfDataPlaneLocator.getLocatorType() == null) {
-            LOG.warn("Any suitable data plane locator has not been found for service function {}", function.getName()
-                    .getValue());
+            LOG.warn("Any suitable data plane locator has not been found for service function {}",
+                     function.getName().getValue());
             return null;
         }
         IpAddress sfDplIpAddress = null;
@@ -118,16 +120,11 @@ public class IosXeServiceFunctionMapper {
                 ConfigServiceChainSfModeBuilder sfModeBuilder = new ConfigServiceChainSfModeBuilder();
                 sfModeBuilder.setIp(ipBuilder.build());
                 ServiceFunctionBuilder netconfServiceFunction = new ServiceFunctionBuilder();
-                netconfServiceFunction.setName(sfName.getValue())
-                        .setKey(new ServiceFunctionKey(sfName.getValue()))
+                netconfServiceFunction.setName(sfName.getValue()).setKey(new ServiceFunctionKey(sfName.getValue()))
                         .setConfigServiceChainSfMode(sfModeBuilder.build());
                 return netconfServiceFunction.build();
             }
         }
         return null;
-    }
-
-    public void unregisterSfListener() {
-        sfListener.getRegistrationObject().close();
     }
 }

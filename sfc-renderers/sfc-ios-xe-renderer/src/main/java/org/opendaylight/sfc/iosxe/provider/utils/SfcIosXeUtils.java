@@ -35,9 +35,12 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.forwarder.ServiceFfNameKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class SfcIosXeUtils {
+public final class SfcIosXeUtils {
 
     private static final String REMOTE = "Remote forwarder: ";
+
+    private SfcIosXeUtils() {
+    }
 
     /**
      * Creates local service function forwarder {@link ServiceFunctionForwarder}
@@ -184,5 +187,4 @@ public class SfcIosXeUtils {
     public static InstanceIdentifier<ServicePath> createServicePathIid(@Nonnull ServicePathKey key) {
         return InstanceIdentifier.builder(Native.class).child(ServiceChain.class).child(ServicePath.class, key).build();
     }
-
 }

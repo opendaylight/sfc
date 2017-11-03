@@ -19,9 +19,10 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.listener.RenderedPathListener;
 import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
 import org.opendaylight.sfc.iosxe.provider.utils.RspStatus;
 import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
@@ -50,19 +51,18 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class IosXeRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(IosXeRspProcessor.class);
 
     private final DataBroker dataBroker;
     private final NodeManager nodeManager;
-    private final RenderedPathListener rspListener;
 
+    @Inject
     public IosXeRspProcessor(DataBroker dataBroker, NodeManager nodeManager) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         this.nodeManager = Preconditions.checkNotNull(nodeManager);
-        // Register RSP listener
-        rspListener = new RenderedPathListener(dataBroker, this);
     }
 
     public void updateRsp(RenderedServicePath renderedServicePath) {
@@ -262,9 +262,5 @@ public class IosXeRspProcessor {
         }
         return nodeManager
                 .getMountpointFromIpAddress(new IpAddress(new Ipv4Address(sffMgmtIp.getIpv4Address().getValue())));
-    }
-
-    public void unregisterRspListener() {
-        rspListener.getRegistrationObject().close();
     }
 }

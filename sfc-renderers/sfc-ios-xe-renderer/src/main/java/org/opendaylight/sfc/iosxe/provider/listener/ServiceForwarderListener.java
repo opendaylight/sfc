@@ -8,59 +8,45 @@
 
 package org.opendaylight.sfc.iosxe.provider.listener;
 
-import java.util.Collection;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.iosxe.provider.renderer.IosXeServiceForwarderMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+@Singleton
+public class ServiceForwarderListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionForwarders> {
 
-public class ServiceForwarderListener implements DataTreeChangeListener<ServiceFunctionForwarders> {
-
-    private final ListenerRegistration iosXeSffListenerRegistration;
     private final IosXeServiceForwarderMapper sffManager;
 
+    @Inject
     public ServiceForwarderListener(DataBroker dataBroker, IosXeServiceForwarderMapper sffManager) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.builder(ServiceFunctionForwarders.class).build());
         this.sffManager = sffManager;
-        // Register listener
-        iosXeSffListenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifier.builder(ServiceFunctionForwarders.class).build()), this);
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<ServiceFunctionForwarders>> changes) {
-        for (DataTreeModification<ServiceFunctionForwarders> modification : changes) {
-            DataObjectModification<ServiceFunctionForwarders> rootNode = modification.getRootNode();
+    public void add(@Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+        update(serviceFunctionForwarders, serviceFunctionForwarders);
+    }
 
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null
-                            && rootNode.getDataAfter().getServiceFunctionForwarder() != null) {
-                        sffManager.syncForwarders(rootNode.getDataAfter().getServiceFunctionForwarder(), false);
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null
-                            && rootNode.getDataBefore().getServiceFunctionForwarder() != null) {
-                        sffManager.syncForwarders(rootNode.getDataBefore().getServiceFunctionForwarder(), true);
-                    }
-                    break;
-                default:
-                    break;
-            }
+    @Override
+    public void remove(@Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+        if (serviceFunctionForwarders.getServiceFunctionForwarder() != null) {
+            sffManager.syncForwarders(serviceFunctionForwarders.getServiceFunctionForwarder(), true);
         }
     }
 
-    public ListenerRegistration getRegistrationObject() {
-        return iosXeSffListenerRegistration;
+    @Override
+    public void update(@Nonnull ServiceFunctionForwarders originalServiceFunctionForwarders,
+                       ServiceFunctionForwarders updatedServiceFunctionForwarders) {
+        if (updatedServiceFunctionForwarders.getServiceFunctionForwarder() != null) {
+            sffManager.syncForwarders(updatedServiceFunctionForwarders.getServiceFunctionForwarder(), false);
+        }
     }
 }

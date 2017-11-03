@@ -8,57 +8,42 @@
 
 package org.opendaylight.sfc.iosxe.provider.listener;
 
-import java.util.Collection;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
-public class RenderedPathListener implements DataTreeChangeListener<RenderedServicePaths> {
+@Singleton
+public class RenderedPathListener extends AbstractSyncDataTreeChangeListener<RenderedServicePaths> {
 
     private final IosXeRspProcessor rspProcessor;
-    private final ListenerRegistration iosXeRspListenerRegistration;
 
+    @Inject
     public RenderedPathListener(DataBroker dataBroker, IosXeRspProcessor rspProcessor) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(RenderedServicePaths.class));
         this.rspProcessor = rspProcessor;
-        // Register listener
-        iosXeRspListenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
-                        InstanceIdentifier.builder(RenderedServicePaths.class).build()), this);
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<RenderedServicePaths>> changes) {
-        for (DataTreeModification<RenderedServicePaths> modification : changes) {
-            DataObjectModification<RenderedServicePaths> rootNode = modification.getRootNode();
-
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null && rootNode.getDataAfter().getRenderedServicePath() != null) {
-                        rootNode.getDataAfter().getRenderedServicePath().forEach(rspProcessor::updateRsp);
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null && rootNode.getDataBefore().getRenderedServicePath() != null) {
-                        rootNode.getDataBefore().getRenderedServicePath().forEach(rspProcessor::deleteRsp);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+    public void add(@Nonnull RenderedServicePaths renderedServicePaths) {
+        update(renderedServicePaths, renderedServicePaths);
     }
 
-    public ListenerRegistration getRegistrationObject() {
-        return iosXeRspListenerRegistration;
+    @Override
+    public void remove(@Nonnull RenderedServicePaths renderedServicePaths) {
+        renderedServicePaths.getRenderedServicePath().forEach(rspProcessor::deleteRsp);
+    }
+
+    @Override
+    public void update(@Nonnull RenderedServicePaths originalRenderedServicePaths,
+                       RenderedServicePaths updatedRenderedServicePaths) {
+        if (updatedRenderedServicePaths.getRenderedServicePath() != null) {
+            updatedRenderedServicePaths.getRenderedServicePath().forEach(rspProcessor::updateRsp);
+        }
     }
 }

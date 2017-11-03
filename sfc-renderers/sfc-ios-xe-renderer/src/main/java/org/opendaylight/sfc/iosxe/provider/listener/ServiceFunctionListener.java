@@ -8,57 +8,44 @@
 
 package org.opendaylight.sfc.iosxe.provider.listener;
 
-import java.util.Collection;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.iosxe.provider.renderer.IosXeServiceFunctionMapper;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-
-public class ServiceFunctionListener implements DataTreeChangeListener<ServiceFunctions> {
+@Singleton
+public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<ServiceFunctions> {
 
     private final IosXeServiceFunctionMapper sfManager;
-    private final ListenerRegistration iosXeSfListenerRegistration;
 
+    @Inject
     public ServiceFunctionListener(DataBroker dataBroker, IosXeServiceFunctionMapper sfManager) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.builder(ServiceFunctions.class).build());
         this.sfManager = sfManager;
-        // Register listener
-        iosXeSfListenerRegistration = dataBroker
-                .registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifier.builder(ServiceFunctions.class).build()), this);
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<ServiceFunctions>> changes) {
-        for (DataTreeModification<ServiceFunctions> modification : changes) {
-            DataObjectModification<ServiceFunctions> rootNode = modification.getRootNode();
+    public void add(@Nonnull ServiceFunctions serviceFunctions) {
+        update(serviceFunctions, serviceFunctions);
+    }
 
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null && rootNode.getDataAfter().getServiceFunction() != null) {
-                        sfManager.syncFunctions(rootNode.getDataAfter().getServiceFunction(), false);
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null && rootNode.getDataBefore().getServiceFunction() != null) {
-                        sfManager.syncFunctions(rootNode.getDataBefore().getServiceFunction(), true);
-                    }
-                    break;
-                default:
-                    break;
-            }
+    @Override
+    public void remove(@Nonnull ServiceFunctions serviceFunctions) {
+        if (serviceFunctions.getServiceFunction() != null) {
+            sfManager.syncFunctions(serviceFunctions.getServiceFunction(), true);
         }
     }
 
-    public ListenerRegistration getRegistrationObject() {
-        return iosXeSfListenerRegistration;
+    @Override
+    public void update(@Nonnull ServiceFunctions originalServiceFunctions, ServiceFunctions updatedServiceFunctions) {
+        if (updatedServiceFunctions.getServiceFunction() != null) {
+            sfManager.syncFunctions(originalServiceFunctions.getServiceFunction(), false);
+        }
     }
 }

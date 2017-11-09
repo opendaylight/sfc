@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
@@ -39,69 +40,53 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogicallyAttachedClassifier.class);
 
-    private static final short GENIUS_DISPATCHER_TABLE = 0x11;
-
     public LogicallyAttachedClassifier(LogicalClassifierDataGetter theDataGetter) {
         logicalSffDataGetter = theDataGetter;
         classifierHandler = new ClassifierHandler();
     }
 
     @Override
-    public FlowDetails initClassifierTable(String nodeName) {
+    public FlowDetails initClassifierTable(String nodeId) {
         MatchBuilder match = new MatchBuilder();
 
-        Action geniusDispatcher = SfcOpenflowUtils.createActionResubmitTable(GENIUS_DISPATCHER_TABLE, 0);
+        Action geniusDispatcher = SfcOpenflowUtils.createActionResubmitTable(NwConstants.LPORT_DISPATCHER_TABLE, 0);
         List<Action> theActionList = new ArrayList<>();
         theActionList.add(geniusDispatcher);
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActionList);
 
-        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(ClassifierGeniusIntegration.getClassifierTable(),
+        FlowBuilder fb = SfcOpenflowUtils.createFlowBuilder(this.getClassifierTable(),
                 SfcScfOfUtils.FLOW_PRIORITY_MATCH_ANY, "MatchAny", match, isb);
 
-        LOG.info("initClassifierTable - jump to table: {}", ClassifierGeniusIntegration.getClassifierTable());
-        return classifierHandler.addRspRelatedFlowIntoNode(nodeName, fb, OpenflowConstants.SFC_FLOWS);
+        LOG.info("initClassifierTable - jump to table: {}", NwConstants.LPORT_DISPATCHER_TABLE);
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId, fb, OpenflowConstants.SFC_FLOWS);
     }
 
-    /**
-     * Create the flows for the genius integrated classifier.
-     *
-     * @param flowKey
-     *            the key for the flow objects
-     * @param match
-     *            the Match object
-     * @param sfcNshHeader
-     *            all related NSH info is encapsulated within this object
-     * @param classifierNodeName
-     *            the node name of the classifier (ex: "openflow:dpnID")
-     * @return a FlowBuilder object containing the desired flow
-     */
     @Override
-    public FlowDetails createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
-            String classifierNodeName) {
+    public FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo) {
 
-        if (Strings.isNullOrEmpty(flowKey) || sfcNshHeader == null || Strings.isNullOrEmpty(classifierNodeName)) {
+        if (Strings.isNullOrEmpty(flowKey) || sfcRspInfo == null || Strings.isNullOrEmpty(nodeId)) {
             LOG.error("createClassifierOutFlow - Wrong inputs; either the flow key of the NSH header are not correct");
             return null;
         }
 
         LOG.info("createClassifierOutFlow - Validated inputs");
-        List<Action> theActions = buildNshActions(sfcNshHeader);
+        List<Action> theActions = buildNshActions(sfcRspInfo);
 
         InstructionsBuilder isb;
         // if the classifier is co-located w/ the first SFF, we simply jump to
         // the SFC ingress table
         // otherwise, we forward the packet through the respective tunnel to the
         // intended SFF
-        DpnIdType classifierNodeDpnId = LogicalClassifierDataGetter.getDpnIdFromNodeName(classifierNodeName);
-        DpnIdType firstHopDataplaneId = logicalSffDataGetter.getFirstHopDataplaneId(sfcNshHeader.getRsp())
+        DpnIdType classifierNodeDpnId = LogicalClassifierDataGetter.getDpnIdFromNodeName(nodeId);
+        DpnIdType firstHopDataplaneId = logicalSffDataGetter.getFirstHopDataplaneId(sfcRspInfo.getRsp())
                 .orElseThrow(IllegalArgumentException::new);
         if (classifierNodeDpnId.equals(firstHopDataplaneId)) {
             LOG.info("createClassifierOutFlow - Classifier co-located w/ first SFF; jump to transport ingress: {}",
-                    ClassifierGeniusIntegration.getTransportIngressTable());
+                    this.getTransportIngressTable());
             // generate the flows
             isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
             // create GotoTable instruction - dispatcher table
-            SfcOpenflowUtils.appendGotoTableInstruction(isb, ClassifierGeniusIntegration.getTransportIngressTable());
+            SfcOpenflowUtils.appendGotoTableInstruction(isb, this.getTransportIngressTable());
         } else {
             String theTunnelIf = logicalSffDataGetter
                     .getInterfaceBetweenDpnIds(classifierNodeDpnId, firstHopDataplaneId)
@@ -126,92 +111,84 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
         }
 
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey)).setTableId(ClassifierGeniusIntegration.getClassifierTable())
+        flowb.setId(new FlowId(flowKey)).setTableId(this.getClassifierTable())
                 .setKey(new FlowKey(new FlowId(flowKey))).setPriority(SfcScfOfUtils.FLOW_PRIORITY_CLASSIFIER)
                 .setMatch(match).setInstructions(isb.build());
-        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName, flowb, sfcNshHeader.getNshNsp());
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId, flowb, sfcRspInfo.getNshNsp());
     }
 
     // this type of classifier does not require 'in' flows
     @Override
-    public FlowDetails createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort,
-            String nodeName) {
+    public FlowDetails createClassifierInFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, Long outPort) {
         return null;
     }
 
     // this type of classifier does not require 'relay' flows
     @Override
-    public FlowDetails createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader, String nodeName) {
+    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo,
+                                                 String classifierName) {
         return null;
     }
 
     @Override
-    public List<FlowDetails> createDpdkFlows(String nodeName, long rspPathId) {
+    public List<FlowDetails> createDpdkFlows(String nodeId, SfcRspInfo sfcRspInfo) {
         // DPDK flows are not supported in logical SFF
         return Collections.emptyList();
     }
 
-    /**
-     * Get the name of the compute node connected to the supplied interfaceName.
-     *
-     * @param theInterfaceName
-     *            the interface name.
-     * @return the name of the compute node hosting the supplied SF. ex:
-     *         "openflow:xxx"
-     */
     @Override
-    public Optional<String> getNodeName(String theInterfaceName) {
-        return logicalSffDataGetter.getNodeName(theInterfaceName);
+    public Optional<String> getNodeName(String interfaceName) {
+        return logicalSffDataGetter.getNodeName(interfaceName);
     }
 
-    /**
-     * Get the input openflow port, given an interface name, and a nodeName, if
-     * any.
-     *
-     * @param ifName
-     *            the name of the neutron port
-     * @param nodeName
-     *            the name of the node (ex: "openflow:xxx")
-     * @return the openflow port, if any
-     */
     @Override
-    public Optional<Long> getInPort(String ifName, String nodeName) {
-        return getInPort(ifName);
+    public Optional<Long> getInPort(String nodeId, String interfaceName) {
+        return getInPort(interfaceName);
     }
 
     /**
      * Get the name of the input openflow port, given an interface name.
      *
-     * @param ifName
+     * @param interfaceName
      *            the name of the neutron port
      * @return the input openflow port, if any
      */
-    private Optional<Long> getInPort(String ifName) {
-        return LogicalClassifierDataGetter.getOpenflowPort(ifName);
+    private Optional<Long> getInPort(String interfaceName) {
+        return LogicalClassifierDataGetter.getOpenflowPort(interfaceName);
     }
 
     /**
      * Build a list of actions which will be installed into the classifier.
      *
-     * @param theHeader
-     *            the {@link SfcNshHeader} object encapsulating all NSH related
+     * @param sfcRspInfo
+     *            the {@link SfcRspInfo} object encapsulating all NSH related
      *            data
      * @return the List of {@link Action} related to NSH which will be pushed
      *         into the classifier
      */
-    private List<Action> buildNshActions(SfcNshHeader theHeader) {
+    private List<Action> buildNshActions(SfcRspInfo sfcRspInfo) {
         List<Action> theActions = new ArrayList<>();
         theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(theHeader.getNshNsp(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(theHeader.getNshStartNsi(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(theHeader.getNshMetaC1(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(theHeader.getNshMetaC2(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(theHeader.getNshMetaC3(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(theHeader.getNshMetaC4(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(sfcRspInfo.getNshMetaC2(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(sfcRspInfo.getNshMetaC3(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(sfcRspInfo.getNshMetaC4(), theActions.size()));
         theActions
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         return theActions;
+    }
+
+    @Override
+    public short getClassifierTable() {
+        return ClassifierGeniusIntegration.getClassifierTable();
+    }
+
+    @Override
+    public short getTransportIngressTable() {
+        return ClassifierGeniusIntegration.getTransportIngressTable();
     }
 }

@@ -18,7 +18,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.ClassifierInterface;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -99,7 +99,7 @@ public class ClassifierRspUpdateProcessor {
             return Collections.emptyList();
         }
 
-        Optional<Long> inPort = classifierInterface.getInPort(itfName.get(), nodeName.get());
+        Optional<Long> inPort = classifierInterface.getInPort(nodeName.get(), itfName.get());
         if (!inPort.isPresent()) {
             LOG.error("processClassifier - port is null; returning empty list");
             return Collections.emptyList();
@@ -144,9 +144,9 @@ public class ClassifierRspUpdateProcessor {
         }
 
         LOG.debug("processAce: in port: {}", inPort);
-        SfcNshHeader nsh = SfcNshHeader.getSfcNshHeader(theRsp);
+        SfcRspInfo sfcRspInfo = SfcRspInfo.getSfcRspInfo(theRsp);
 
-        if (nsh == null) {
+        if (sfcRspInfo == null) {
             LOG.error("processAce - nsh is null; returning empty list");
             return Collections.emptyList();
         }
@@ -159,7 +159,7 @@ public class ClassifierRspUpdateProcessor {
         theFlows.add(classifierInterface.initClassifierTable(nodeName));
         NodeConnectorId port = new NodeConnectorId(String.format("%s:%s", nodeName, inPort));
         Match match = new SfcScfMatch().setPortMatch(port).setAclMatch(theAce.getMatches()).build();
-        theFlows.add(classifierInterface.createClassifierOutFlow(flowKey, match, nsh, nodeName));
+        theFlows.add(classifierInterface.createClassifierOutFlow(nodeName, flowKey, match, sfcRspInfo));
 
         // DPDK is not supported for logical SFF, thus, its flows are not
         // installed here

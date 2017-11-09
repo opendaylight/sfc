@@ -103,6 +103,9 @@ public class OpenflowClassifierProcessor {
      *            the classifier node to be added
      * @param theAcl
      *            the ACL we want to install in the classifier
+     * @param addClassifierScenario
+     *            true when adding the classifier flows, false when deleting
+     *            them
      * @return a List of {@link FlowDetails} having all the generated flows,
      *         which will be later installed
      */

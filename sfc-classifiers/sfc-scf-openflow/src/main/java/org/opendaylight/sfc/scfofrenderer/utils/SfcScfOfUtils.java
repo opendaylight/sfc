@@ -28,8 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 public final class SfcScfOfUtils {
     // TODO this must be defined somewhere else; link to 'it' rather than have
     // it here
-    private static final short TABLE_INDEX_CLASSIFIER = 0;
-    private static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;
+    public static final short TABLE_INDEX_CLASSIFIER = 0;
+    public static final short TABLE_INDEX_INGRESS_TRANSPORT = 1;
 
     public static final int FLOW_PRIORITY_CLASSIFIER = 1000;
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
@@ -114,31 +114,31 @@ public final class SfcScfOfUtils {
      *            flow key
      * @param match
      *            flow match
-     * @param sfcNshHeader
+     * @param sfcRspInfo
      *            nsh header
      * @param outPort
      *            flow out port
      * @return create flow result
      */
-    public static FlowBuilder createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
+    public static FlowBuilder createClassifierOutFlow(String flowKey, Match match, SfcRspInfo sfcRspInfo,
             Long outPort) {
 
-        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
+        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
             return null;
         }
 
-        String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
+        String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
 
         List<Action> theActions = new ArrayList<>();
         theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(NSH_MDTYPE_ONE, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(NSH_NP_ETH, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcNshHeader.getNshNsp(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcNshHeader.getNshStartNsi(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC1(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC2(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC3(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcNshHeader.getNshMetaC4(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC2(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC3(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC4(), theActions.size()));
         theActions
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
@@ -159,18 +159,18 @@ public final class SfcScfOfUtils {
      *
      * @param flowKey
      *            flow key
-     * @param sfcNshHeader
+     * @param sfcRspInfo
      *            nsh header
      * @param outPort
      *            flow out port
      * @return create in result
      */
-    public static FlowBuilder createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort) {
-        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
+    public static FlowBuilder createClassifierInFlow(String flowKey, SfcRspInfo sfcRspInfo, Long outPort) {
+        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
             return null;
         }
 
-        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
+        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
 
         List<Action> theActions = new ArrayList<>();
         theActions.add(SfcOpenflowUtils.createActionNxPopNsh(theActions.size()));
@@ -192,15 +192,15 @@ public final class SfcScfOfUtils {
      *
      * @param flowKey
      *            flow key
-     * @param sfcNshHeader
+     * @param sfcRspInfo
      *            nsh header
      * @return the FlowBuilder containing the classifier relay flow
      */
-    public static FlowBuilder createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader) {
-        if (flowKey == null || sfcNshHeader == null || sfcNshHeader.getVxlanIpDst() == null) {
+    public static FlowBuilder createClassifierRelayFlow(String flowKey, SfcRspInfo sfcRspInfo) {
+        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
             return null;
         }
-        String dstIp = sfcNshHeader.getVxlanIpDst().getValue();
+        String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
         List<Action> theActions = new ArrayList<>();
         theActions
                 .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
@@ -213,7 +213,7 @@ public final class SfcScfOfUtils {
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
         FlowBuilder flowb = new FlowBuilder();
-        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcNshHeader.getNshNsp(), sfcNshHeader.getNshEndNsi());
+        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
         flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(mb.build()).setInstructions(isb.build());
         return flowb;

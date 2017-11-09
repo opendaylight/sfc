@@ -8,25 +8,20 @@
 package org.opendaylight.sfc.scfofrenderer.processors;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.scfofrenderer.flowgenerators.MacChainingClassifier;
-import org.opendaylight.sfc.scfofrenderer.logicalclassifier.ClassifierGeniusIntegration;
+import org.opendaylight.sfc.scfofrenderer.flowgenerators.ClassifierInterface;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfMatch;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.acl.access.list.entries.Ace;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
@@ -40,17 +35,17 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
     // true if we're adding a classifier node, false if we're deleting it
     private boolean addClassifier = true;
 
-    private final MacChainingClassifier macChainingClassifier;
+    private final ClassifierInterface classifierInterface;
 
     private final ClassifierHandler classifierHandler;
 
     private static final Logger LOG = LoggerFactory.getLogger(MacChainingProcessor.class);
 
     public MacChainingProcessor(ClassifierHandler classifierHandler,
-                                MacChainingClassifier macChainingClassifier,
+                                ClassifierInterface classifierInterface,
                                 boolean addClassifier) {
         this.classifierHandler = classifierHandler;
-        this.macChainingClassifier = macChainingClassifier;
+        this.classifierInterface = classifierInterface;
         this.addClassifier = addClassifier;
     }
 
@@ -81,7 +76,7 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
 
         LOG.info("processAce - NodeName: {}; IF name: {}", nodeName, theIfName);
 
-        Optional<Long> inPort = macChainingClassifier.getInPort(theIfName, nodeName);
+        Optional<Long> inPort = classifierInterface.getInPort(nodeName, theIfName);
 
         // Build the match object if possible; throw a RuntimeException if the ACE is not correctly provisioned
         Match match = inPort.map(port -> String.format("%s:%s",nodeName, port)).map(NodeConnectorId::new)
@@ -89,20 +84,27 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
                 .map(scfMatch -> scfMatch.setAclMatch(theAce.getMatches())).orElseThrow(IllegalArgumentException::new)
                 .build();
 
+        Optional<SfcRspInfo> sfcRspInfo = rspName.map(SfcRspInfo::getSfcRspInfo);
+
+        if (!sfcRspInfo.isPresent()) {
+            LOG.error("processAce: sfcRspInfo is null; returning empty list");
+            return Collections.emptyList();
+        }
+
         String flowKey = classifierHandler.buildFlowKeyName(theScfName, aclName, ruleName, ".out");
 
         // add a classifier
         if (addClassifier) {
             // write the flows into the classifier
             LOG.info("processAce - About to create flows");
-            theFlows.add(macChainingClassifier.initClassifierTable(nodeName));
-            Optional.ofNullable(macChainingClassifier.createClassifierOutFlow(
-                    flowKey, match, rspName.get(), nodeName)).ifPresent(theFlows::add);
+            theFlows.add(classifierInterface.initClassifierTable(nodeName));
+            Optional.ofNullable(classifierInterface.createClassifierOutFlow(
+                    nodeName, flowKey, match, sfcRspInfo.get())).ifPresent(theFlows::add);
         } else {
             LOG.info("processAce - About to delete the *out* flows");
             theFlows.add(classifierHandler.deleteFlowFromTable(nodeName,
                     flowKey,
-                    ClassifierGeniusIntegration.getClassifierTable()));
+                    classifierInterface.getClassifierTable()));
         }
 
         // when the classifier is attached to a logical SFF, there's no need to process the reverse RSP, so we bail
@@ -149,21 +151,24 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
 
         RspName reverseRspName = SfcProviderRenderedPathAPI.generateReversedPathName(theRspName);
 
-        RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(theRspName);
-        RenderedServicePathHop lastRspHop = Iterables.getLast(rsp.getRenderedServicePathHop());
-        SffName reverseSff = lastRspHop.getServiceFunctionForwarder();
+        SfcRspInfo sfcRspInfo = SfcRspInfo.getSfcRspInfo(reverseRspName);
+        if (sfcRspInfo == null) {
+            LOG.warn("processReverseRsp: reverseNsh is null");
+            return Collections.emptyList();
+        }
 
+        SffName reverseSff = sfcRspInfo.getLastSffName();
 
         String flowKey = classifierHandler.buildFlowKeyName(theScfName, theAclName, theRuleName, ".in");
 
         if (addClassifier) {
-            Optional.ofNullable(macChainingClassifier.createClassifierInFlow(
-                    flowKey, reverseRspName, port, theNodeName)).ifPresent(theFlows::add);
+            Optional.ofNullable(classifierInterface.createClassifierInFlow(
+                    theNodeName, flowKey, sfcRspInfo, port)).ifPresent(theFlows::add);
         } else {
             FlowDetails deleteRelayFlow =
                     classifierHandler.deleteFlowFromTable(theNodeName,
                             flowKey,
-                            ClassifierGeniusIntegration.getClassifierTable());
+                            classifierInterface.getClassifierTable());
             theFlows.add(deleteRelayFlow);
         }
 
@@ -176,7 +181,7 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
             return theFlows;
         }
 
-        processReverseRspRelayFlow(lastNodeName.get(), theScfName, reverseRspName, flowKey)
+        processReverseRspRelayFlow(lastNodeName.get(), theScfName, sfcRspInfo, flowKey)
                 .ifPresent(theFlows::add);
 
         return theFlows;
@@ -190,27 +195,27 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
      *              chain - last of the reverse chain.
      * @param classifierName
      *              the classifier name
-     * @param reverseRspName
-     *              the reverse RSP name
+     * @param sfcRspInfo
+     *              the reverse RSP info
      * @param theFlowKey
      *            the name of the analogous 'in' flow
      * @return    a {@link FlowDetails} object if possible, and empty Optional otherwise
      */
     protected Optional<FlowDetails> processReverseRspRelayFlow(String nodeName,
                                                                String classifierName,
-                                                               RspName reverseRspName,
+                                                               SfcRspInfo sfcRspInfo,
                                                                String theFlowKey) {
 
         Optional<FlowDetails> relayFlow;
         String flowKey = theFlowKey.replaceFirst(".in", ".relay");
         if (addClassifier) {
 
-            relayFlow = Optional.of(macChainingClassifier.createClassifierRelayFlow(
-                    flowKey, reverseRspName, nodeName, classifierName));
+            relayFlow = Optional.of(classifierInterface.createClassifierRelayFlow(
+                    nodeName, flowKey, sfcRspInfo, classifierName));
         } else {
             relayFlow = Optional.of(classifierHandler.deleteFlowFromTable(nodeName,
                     flowKey,
-                    ClassifierGeniusIntegration.getClassifierTable()));
+                    classifierInterface.getClassifierTable()));
         }
         return relayFlow;
     }

@@ -10,23 +10,112 @@ package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
 import java.util.List;
 import java.util.Optional;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
 public interface ClassifierInterface {
-    FlowDetails initClassifierTable(String classifierNodeName);
 
-    FlowDetails createClassifierOutFlow(String flowKey, Match match, SfcNshHeader sfcNshHeader,
-            String classifierNodeName);
+    /**
+     * Create classifier initialization flow.
+     *
+     * @param nodeId
+     *            the node ID of the classifier (ex: "openflow:dpnID")
+     * @return a FlowDetails object containing the desired flow
+     */
+    FlowDetails initClassifierTable(String nodeId);
 
-    FlowDetails createClassifierInFlow(String flowKey, SfcNshHeader sfcNshHeader, Long outPort, String nodeName);
+    /**
+     * Create classifier out (classifier to SFF) flows.
+     *
+     * @param nodeId
+     *            the node ID of the classifier (ex: "openflow:dpnID")
+     * @param flowKey
+     *            the key for the flow objects
+     * @param match
+     *            the Match object
+     * @param sfcRspInfo
+     *            the RSP info
+     * @return a FlowDetails object containing the desired flow
+     */
+    FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo);
 
-    FlowDetails createClassifierRelayFlow(String flowKey, SfcNshHeader sfcNshHeader, String nodeName);
+    /**
+     * Create classifier in (SFF to classifier) flow.
+     *
+     * @param nodeId
+     *            the node ID of the classifier (ex: "openflow:dpnID")
+     * @param flowKey
+     *            the key for the flow objects
+     * @param sfcRspInfo
+     *            the RSP info
+     * @param outPort
+     *            the flow out port
+     * @return a FlowDetails object containing the desired flow
+     */
+    FlowDetails createClassifierInFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, Long outPort);
 
-    List<FlowDetails> createDpdkFlows(String nodeName, long rspPathId);
+    /**
+     * Create classifier relay flow.
+     *
+     * @param nodeId
+     *            the ID of the relay node (ex: "openflow:dpnID")
+     * @param flowKey
+     *            the key for the flow objects
+     * @param sfcRspInfo
+     *            the RSP info
+     * @param classifierName
+     *            the node name of the classifier
+     * @return a FlowDetails object containing the desired flow
+     */
+    FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, String classifierName);
 
-    Optional<String> getNodeName(String theInterfaceName);
+    /**
+     * Create DPDK flows.
+     *
+     * @param nodeId
+     *            the node ID of the classifier (ex: "openflow:dpnID")
+     * @param sfcRspInfo
+     *            the RSP info
+     * @return a list of FlowDetails object containing the desired flows
+     */
+    List<FlowDetails> createDpdkFlows(String nodeId, SfcRspInfo sfcRspInfo);
 
-    Optional<Long> getInPort(String ifName, String nodeName);
+    /**
+     * Get the name of the node connected to the supplied interface.
+     *
+     * @param interfaceName
+     *            the interface name.
+     * @return the name of the compute node hosting the supplied SF. ex:
+     *         "openflow:xxx"
+     */
+    Optional<String> getNodeName(String interfaceName);
+
+    /**
+     * Get the input openflow port, given an interface name, and a nodeName, if
+     * any.
+     *
+     * @param nodeId
+     *            the ID of the node (ex: "openflow:dpnID")
+     * @param interfaceName
+     *            the name of the interface
+     * @return the openflow port, if any
+     */
+    Optional<Long> getInPort(String nodeId, String interfaceName);
+
+    /**
+     * Get the number of the openflow table used by the SFC classifier.
+     *
+     * @return the number of the openflow table used by the SFC classifier
+     */
+    short getClassifierTable();
+
+    /**
+     * Get the number of the openflow table used by SFC transport ingress from
+     * genius.
+     *
+     * @return the number of the openflow table used by the SFC transport
+     *         ingress table
+     */
+    short getTransportIngressTable();
 }

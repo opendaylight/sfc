@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_f52d71a9",
+        "filename": "sfc-ovs/src/test/java/org/opendaylight/sfc/ovs/api/SfcOvsDataStoreAPITest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-11-09T11:32:33Z",
+      "side": 1,
+      "message": "I think something went wrong here and other places.",
+      "revId": "1548b46a41de471ddf849c3a8a4aabcac0256f80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

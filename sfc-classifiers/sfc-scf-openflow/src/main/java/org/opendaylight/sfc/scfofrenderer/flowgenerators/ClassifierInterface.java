@@ -26,7 +26,7 @@ public interface ClassifierInterface {
     FlowDetails initClassifierTable(String nodeId);
 
     /**
-     * Create classifier out (classifier -> SFF) flows.
+     * Create classifier out (classifier to SFF) flows.
      *
      * @param nodeId
      *            the node ID of the classifier (ex: "openflow:dpnID")
@@ -41,7 +41,7 @@ public interface ClassifierInterface {
     FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo);
 
     /**
-     * Create classifier in (SFF -> classifier) flow.
+     * Create classifier in (SFF to classifier) flow.
      *
      * @param nodeId
      *            the node ID of the classifier (ex: "openflow:dpnID")

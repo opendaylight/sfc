@@ -16,7 +16,7 @@ import java.util.Date;
 // the Date and String[] field getters. The alternative is to return a copy from the method but that introduces
 // inefficiency.
 @SuppressFBWarnings("EI_EXPOSE_REP")
-public class Token {
+public final class Token {
 
     @SerializedName("issued_at")
     private Date issuedAt;

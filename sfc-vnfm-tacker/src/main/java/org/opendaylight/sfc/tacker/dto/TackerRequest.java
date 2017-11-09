@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
-public class TackerRequest {
+public final class TackerRequest {
 
     private Auth auth;
     private Vnf vnf;

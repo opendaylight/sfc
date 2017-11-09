@@ -53,19 +53,15 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * this class contains junit tests for SfcOvsDataStoreAPI class
+ * Junit tests for SfcOvsDataStoreAPI class.
+ * All methods in SfcDataStoreAPI are mocked here. The main reason is, that
+ * tests does not work reliable, when there was something written into data store in more than one class. Most of
+ * SfcDataStoreAPI.class is tested through SfcOvsUtil.class.
  *
  * @author Vladimir Lavor
  * @version 0.1
  * @see SfcOvsDataStoreAPI
  * @since 2015-05-26
- */
-
-/*
- * All methods in SfcDataStoreAPI are mocked here. The main reason is, that
- * tests does not work reliable, when there was something written into data
- * store in more than one class. Most of SfcDataStoreAPI.class is tested through
- * SfcOvsUtil.class
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcDataStoreAPI.class)
@@ -88,11 +84,12 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI")).toReturn(true);
     }
 
-    @Test
+
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "readTransactionAPI" if "readTransactionAPI" is not called, test fails
      */
+    @Test
     public void testReadOvsdbBridge() throws Exception {
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE;
         methodParams[0] = createBridgeIID();
@@ -107,11 +104,11 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "putOvsdbBridge" if "putOvsdbBridge" is not called, test fails
      */
+    @Test
     public void testPutOvsdbBridge() throws Exception {
         methodToCall = SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE;
         methodParams[0] = createOvsdbBridgeAugmentation();
@@ -123,11 +120,11 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "deleteOvsdbNode" if "deleteOvsdbNode" is not called, test fails
      */
+    @Test
     public void testDeleteOvsdbNode() throws Exception {
         methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE;
         methodParams[0] = nodeIID;
@@ -138,10 +135,10 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * test whether ovsdb termination point is inserted and then deleted
      */
+    @Test
     public void testPutAndDeleteOvsdbTerminationPoint() throws Exception {
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         sffDataPlaneLocatorBuilder.setName(dplName);
@@ -166,8 +163,8 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     // method returns null, because node is missing in topology
+    @Test
     public void testReadOvsdbNodeByIpFailed() throws Exception {
 
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
@@ -183,8 +180,8 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNull("Must be null", testResult);
     }
 
-    @Test
     // method returns null, because remote ip is missing in topology
+    @Test
     public void testReadOvsdbNodeByIpFailedAgain() throws Exception {
 
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
@@ -200,12 +197,12 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNull("Must be null", testResult);
     }
 
-    @Test
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "readTransactionAPI" if "readTransactionAPI" is not called, test fails
      * ipv4 is tested here
      */
+    @Test
     public void testReadOvsdbNodeByIpv4() throws Exception {
 
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
@@ -221,12 +218,12 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "readTransactionAPI" if "readTransactionAPI" is not called, test fails
      * ipv6 is tested here
      */
+    @Test
     public void testReadOvsdbNodeByIpv6() throws Exception {
 
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
@@ -242,12 +239,12 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * test whether variables methodToCall & methodParams successfully call
      * "readTransactionAPI" if "readTransactionAPI" is not called, test fails
      * ovsdbRef is tested here
      */
+    @Test
     public void testReadOvsdbNodeByRef() throws Exception {
         OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(nodeIID);
 
@@ -262,11 +259,11 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
         assertNotNull("Must not be null", testResult);
     }
 
-    @Test
     /*
      * there are tested all options with incorrect parameters, so every test
      * returns null
      */
+    @Test
     public void testAllCallsWithIncorrectParameters() throws Exception {
         methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE;
         methodParams[0] = createOvsdbTerminationPointAugmentation();
@@ -357,8 +354,8 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
 
     // create ovsdb termination point augmentation
     private OvsdbTerminationPointAugmentation createOvsdbTerminationPointAugmentation() {
-        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
-                new OvsdbTerminationPointAugmentationBuilder();
+        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder
+                = new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTerminationPointAugmentationBuilder.setName(dplName.getValue());
         return ovsdbTerminationPointAugmentationBuilder.build();
     }
@@ -376,18 +373,17 @@ public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
     }
 
     // create ovsdb termination point IID
-    private InstanceIdentifier<OvsdbTerminationPointAugmentation> createOvsdbTerminationPointIID(SffName sffName,
-            SffDataPlaneLocatorName sffDataPlaneLocatorName) {
+    private InstanceIdentifier<OvsdbTerminationPointAugmentation>
+        createOvsdbTerminationPointIID(SffName sffName, SffDataPlaneLocatorName sffDataPlaneLocatorName) {
         final String bridgePrefix = "/bridge/";
         final String terminationPointPrefix = "/terminationpoint/";
         return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(new NodeId(sffName.getValue() + bridgePrefix + BRIDGE_NAME)))
-                .child(TerminationPoint.class,
-                        new TerminationPointKey(new TpId(sffName.getValue() + bridgePrefix + BRIDGE_NAME
-                                + terminationPointPrefix + sffDataPlaneLocatorName.getValue())))
+                .child(TerminationPoint.class, new TerminationPointKey(new TpId(
+                        sffName.getValue() + bridgePrefix + BRIDGE_NAME + terminationPointPrefix
+                                + sffDataPlaneLocatorName.getValue())))
                 .augmentation(OvsdbTerminationPointAugmentation.class);
-
     }
 
     // create ipv4 topology for successful "readOvsdbNodeByIp" test

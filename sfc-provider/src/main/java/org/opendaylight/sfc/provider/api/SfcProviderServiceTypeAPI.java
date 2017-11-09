@@ -171,10 +171,9 @@ public final class SfcProviderServiceTypeAPI {
     /**
      * Delete a ServiceFunctionType based on SftType (key).
      *
-     * @param sftType: Sft type
+     * @param sftType Sft type
      * @return Status of delete stf operation
      */
-
     public static boolean deleteServiceFunctionType(SftTypeName sftType) {
         ServiceFunctionType serviceFunctionType = readServiceFunctionType(sftType);
         if (serviceFunctionType != null) {

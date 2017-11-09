@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.YangModuleInfo;
 import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
 
 /**
- * This class contains auxiliary methods to manage abstract data store
+ * This class contains auxiliary methods to manage abstract data store.
  *
  * @author Vladimir Lavor vladimir.lavor@pantheon.sk
  * @version 0.1

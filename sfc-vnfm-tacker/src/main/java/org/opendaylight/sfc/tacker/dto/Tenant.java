@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
-public class Tenant {
+public final class Tenant {
 
     private String description;
     private boolean enabled;

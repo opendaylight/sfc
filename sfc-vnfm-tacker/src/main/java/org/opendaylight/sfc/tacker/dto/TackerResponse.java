@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
-public class TackerResponse {
+public final class TackerResponse {
 
     private Vnf vnf;
 

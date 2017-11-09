@@ -54,7 +54,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * this class contains junit tests for SfcOvsDataStoreAPI class
+ * this class contains junit tests for SfcOvsDataStoreAPI class.
  *
  * @author Vladimir Lavor
  * @version 0.1

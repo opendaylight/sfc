@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_950b5529",
+        "filename": "docs/specs/rsp-config-datastore.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-11-09T11:43:28Z",
+      "side": 1,
+      "message": "Would it be worth mentioning if we are going to support updates from northbound to this RSP configuration? If not, should we detail any consideration taken to prevent it if possible? (For example, Diego once implemented a validation within the MDSAL transaction process, could we make use of this?)",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 20
+      },
+      "revId": "9f38e5a8650d5ccefdad9049a2ac4260fbef0b0f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

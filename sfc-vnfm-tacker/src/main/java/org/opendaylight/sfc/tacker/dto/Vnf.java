@@ -10,7 +10,7 @@ package org.opendaylight.sfc.tacker.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Vnf {
+public final class Vnf {
 
     private String status;
     private String name;

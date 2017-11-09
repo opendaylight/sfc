@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.tacker.dto;
 
-public class Auth {
+public final class Auth {
 
     private String tenantName;
     private PasswordCredentials passwordCredentials;

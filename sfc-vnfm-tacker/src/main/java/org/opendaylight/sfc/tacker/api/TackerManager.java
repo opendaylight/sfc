@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev14070
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TackerManager implements AutoCloseableSfcVnfManager {
+public final class TackerManager implements AutoCloseableSfcVnfManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(TackerManager.class);
     private static final DateDeserializer DATE_DESERIALIZER = new DateDeserializer();

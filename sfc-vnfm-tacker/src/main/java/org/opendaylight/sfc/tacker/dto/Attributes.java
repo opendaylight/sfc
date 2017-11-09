@@ -10,7 +10,7 @@ package org.opendaylight.sfc.tacker.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Attributes {
+public final class Attributes {
 
     @SerializedName("service_type")
     private String serviceType;

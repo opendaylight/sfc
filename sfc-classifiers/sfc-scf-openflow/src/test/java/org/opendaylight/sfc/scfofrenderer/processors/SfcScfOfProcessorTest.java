@@ -28,7 +28,7 @@ import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
@@ -44,7 +44,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ SfcProviderAclAPI.class, SfcProviderServiceForwarderAPI.class, SfcProviderRenderedPathAPI.class,
-        SfcOvsUtil.class, SfcScfOfUtils.class, OpenflowClassifierProcessor.class, SfcNshHeader.class })
+        SfcOvsUtil.class, SfcScfOfUtils.class, OpenflowClassifierProcessor.class, SfcRspInfo.class })
 public class SfcScfOfProcessorTest {
 
     private SfcScfOfProcessor sfcScfProcessor;

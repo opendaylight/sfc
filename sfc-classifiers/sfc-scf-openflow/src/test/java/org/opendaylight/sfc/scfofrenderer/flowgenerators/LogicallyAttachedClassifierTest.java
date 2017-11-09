@@ -32,7 +32,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -58,7 +58,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SfcGeniusDataUtils.class, SfcGeniusRpcClient.class, SfcNshHeader.class,
+@PrepareForTest({ SfcGeniusDataUtils.class, SfcGeniusRpcClient.class, SfcRspInfo.class,
         LogicalClassifierDataGetter.class, SfcProviderServiceFunctionAPI.class })
 public class LogicallyAttachedClassifierTest {
     @InjectMocks
@@ -131,7 +131,7 @@ public class LogicallyAttachedClassifierTest {
         when(dataGetter.getEgressActionsForTunnelInterface(anyString(), any(Integer.class)))
                 .thenReturn(Collections.emptyList());
         when(dataGetter.getFirstHopDataplaneId(any(RenderedServicePath.class))).thenReturn(Optional.of(FIRST_SF_DPNID));
-        // when(dataGetter.getFirstHopNodeName(any(SfcNshHeader.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
+        // when(dataGetter.getFirstHopNodeName(any(SfcRspInfo.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
         when(dataGetter.getInterfaceBetweenDpnIds(any(DpnIdType.class), any(DpnIdType.class)))
                 .thenReturn(Optional.of("tun-1234"));
 
@@ -146,13 +146,13 @@ public class LogicallyAttachedClassifierTest {
 
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getOvsPort")).toReturn(2L);
 
-        PowerMockito.mockStatic(SfcNshHeader.class);
-        SfcNshHeader nshHeader = new SfcNshHeader().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
+        PowerMockito.mockStatic(SfcRspInfo.class);
+        SfcRspInfo nshHeader = new SfcRspInfo().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
                 .setNshMetaC1(123L).setNshMetaC2(321L).setNshMetaC3(2323L).setNshMetaC4(3232L).setNshNsp(666L)
-                .setNshStartNsi((short) 255).setSffName(new SffName("sff#1"))
+                .setNshStartNsi((short) 255).setLastSffName(new SffName("sff#1"))
                 .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080));
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RspName.class))).thenReturn(nshHeader);
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RenderedServicePath.class))).thenReturn(nshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RspName.class))).thenReturn(nshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RenderedServicePath.class))).thenReturn(nshHeader);
 
         PowerMockito.stub(PowerMockito.method(SfcGeniusDataUtils.class, "getInterfaceLowerLayerIf"))
                 .toReturn(new ArrayList<String>() {
@@ -170,8 +170,8 @@ public class LogicallyAttachedClassifierTest {
 
     @Test
     public void outFlowPositiveCoLocated() {
-        FlowDetails flowDetails = logicalScf.createClassifierOutFlow("the-key", aclMatch,
-                SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")), FIRST_SF_NODE_NAME);
+        FlowDetails flowDetails = logicalScf.createClassifierOutFlow(FIRST_SF_NODE_NAME, "the-key", aclMatch,
+                SfcRspInfo.getSfcRspInfo(new RspName("RSP_1")));
 
         Flow flow = flowDetails.getFlow();
         Assert.assertEquals(2, flow.getInstructions().getInstruction().size());
@@ -197,8 +197,8 @@ public class LogicallyAttachedClassifierTest {
         PowerMockito.when(LogicalClassifierDataGetter.getDpnIdFromNodeName(CLASSIFIER_NODE_NAME))
                 .thenReturn(CLASSIFIER_DPNID);
 
-        FlowDetails flowDetails = logicalScf.createClassifierOutFlow("the-key", aclMatch,
-                SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")), CLASSIFIER_NODE_NAME);
+        FlowDetails flowDetails = logicalScf.createClassifierOutFlow(CLASSIFIER_NODE_NAME,"the-key", aclMatch,
+                SfcRspInfo.getSfcRspInfo(new RspName("RSP_1")));
 
         Flow flow = flowDetails.getFlow();
         Assert.assertEquals(1, flow.getInstructions().getInstruction().size());
@@ -213,12 +213,12 @@ public class LogicallyAttachedClassifierTest {
 
     @Test
     public void outFlowEmptyFlowKey() {
-        Assert.assertNull(logicalScf.createClassifierOutFlow(null, aclMatch,
-                SfcNshHeader.getSfcNshHeader(new RspName("RSP_1")), FIRST_SF_NODE_NAME));
+        Assert.assertNull(logicalScf.createClassifierOutFlow(FIRST_SF_NODE_NAME, null, aclMatch,
+                SfcRspInfo.getSfcRspInfo(new RspName("RSP_1"))));
     }
 
     @Test
     public void outFlowEmptyNshHeader() {
-        Assert.assertNull(logicalScf.createClassifierOutFlow("the-key", aclMatch, null, FIRST_SF_NODE_NAME));
+        Assert.assertNull(logicalScf.createClassifierOutFlow(FIRST_SF_NODE_NAME, "the-key", aclMatch, null));
     }
 }

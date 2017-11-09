@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
  * This class has some overlap function with SfcProviderRenderedPathAPI.java
  * Todo: will move all functions to SfcProviderRenderedPathAPI.java
  */
-public class SfcNshHeader {
+public class SfcRspInfo {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcNshHeader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcRspInfo.class);
 
     private Ipv4Address vxlanIpDst;
     private PortNumber vxlanUdpPort;
@@ -40,18 +40,19 @@ public class SfcNshHeader {
     private Long nshMetaC2;
     private Long nshMetaC3;
     private Long nshMetaC4;
-    private SffName sffName;
-    private SfName sfName;
+    private SffName firstSffName;
+    private SffName lastSffName;
+    private SfName firstSfName;
     private RenderedServicePath rsp;
 
-    public SfcNshHeader() {
+    public SfcRspInfo() {
     }
 
     public Ipv4Address getVxlanIpDst() {
         return vxlanIpDst;
     }
 
-    public SfcNshHeader setVxlanIpDst(Ipv4Address vxlanIpDst) {
+    public SfcRspInfo setVxlanIpDst(Ipv4Address vxlanIpDst) {
         this.vxlanIpDst = vxlanIpDst;
         return this;
     }
@@ -60,7 +61,7 @@ public class SfcNshHeader {
         return vxlanUdpPort;
     }
 
-    public SfcNshHeader setVxlanUdpPort(PortNumber vxlanUdpPort) {
+    public SfcRspInfo setVxlanUdpPort(PortNumber vxlanUdpPort) {
         this.vxlanUdpPort = vxlanUdpPort;
         return this;
     }
@@ -69,7 +70,7 @@ public class SfcNshHeader {
         return nshNsp;
     }
 
-    public SfcNshHeader setNshNsp(Long nshNsp) {
+    public SfcRspInfo setNshNsp(Long nshNsp) {
         this.nshNsp = nshNsp;
         return this;
     }
@@ -78,7 +79,7 @@ public class SfcNshHeader {
         return nshStartNsi;
     }
 
-    public SfcNshHeader setNshStartNsi(Short nshStartNsi) {
+    public SfcRspInfo setNshStartNsi(Short nshStartNsi) {
         this.nshStartNsi = nshStartNsi;
         return this;
     }
@@ -87,7 +88,7 @@ public class SfcNshHeader {
         return nshEndNsi;
     }
 
-    public SfcNshHeader setNshEndNsi(Short nshEndNsi) {
+    public SfcRspInfo setNshEndNsi(Short nshEndNsi) {
         this.nshEndNsi = nshEndNsi;
         return this;
     }
@@ -96,7 +97,7 @@ public class SfcNshHeader {
         return this.nshMetaC1;
     }
 
-    public SfcNshHeader setNshMetaC1(Long nshMetaC1) {
+    public SfcRspInfo setNshMetaC1(Long nshMetaC1) {
         this.nshMetaC1 = nshMetaC1;
         return this;
     }
@@ -105,12 +106,12 @@ public class SfcNshHeader {
         return this.nshMetaC2;
     }
 
-    public SfcNshHeader getNshMetaC2(Long nshMetaC2) {
+    public SfcRspInfo getNshMetaC2(Long nshMetaC2) {
         this.nshMetaC2 = nshMetaC2;
         return this;
     }
 
-    public SfcNshHeader setNshMetaC2(Long nshMetaC2) {
+    public SfcRspInfo setNshMetaC2(Long nshMetaC2) {
         this.nshMetaC2 = nshMetaC2;
         return this;
     }
@@ -119,7 +120,7 @@ public class SfcNshHeader {
         return nshMetaC3;
     }
 
-    public SfcNshHeader setNshMetaC3(Long nshMetaC3) {
+    public SfcRspInfo setNshMetaC3(Long nshMetaC3) {
         this.nshMetaC3 = nshMetaC3;
         return this;
     }
@@ -128,26 +129,35 @@ public class SfcNshHeader {
         return nshMetaC4;
     }
 
-    public SfcNshHeader setNshMetaC4(Long nshMetaC4) {
+    public SfcRspInfo setNshMetaC4(Long nshMetaC4) {
         this.nshMetaC4 = nshMetaC4;
         return this;
     }
 
-    public SffName getSffName() {
-        return sffName;
+    public SffName getFirstSffName() {
+        return firstSffName;
     }
 
-    public SfcNshHeader setSffName(SffName sffName) {
-        this.sffName = sffName;
+    public SfcRspInfo setFirstSffName(SffName sffName) {
+        this.firstSffName = sffName;
+        return this;
+    }
+
+    public SffName getLastSffName() {
+        return lastSffName;
+    }
+
+    public SfcRspInfo setLastSffName(SffName sffName) {
+        this.lastSffName = sffName;
         return this;
     }
 
     public SfName getFirstSfName() {
-        return sfName;
+        return firstSfName;
     }
 
-    public SfcNshHeader setFirstSfName(SfName sfName) {
-        this.sfName = sfName;
+    public SfcRspInfo setFirstSfName(SfName sfName) {
+        this.firstSfName = sfName;
         return this;
     }
 
@@ -155,110 +165,68 @@ public class SfcNshHeader {
         return rsp;
     }
 
-    public SfcNshHeader setRsp(RenderedServicePath theRsp) {
+    public SfcRspInfo setRsp(RenderedServicePath theRsp) {
         rsp = theRsp;
         return this;
     }
 
-    public static SfcNshHeader getSfcNshHeader(RenderedServicePath theRsp) {
+    public static SfcRspInfo getSfcRspInfo(RenderedServicePath theRsp) {
 
         RenderedServicePathHop theFirstHop = theRsp.getRenderedServicePathHop().get(0);
         RenderedServicePathHop lastRspHop = Iterables.getLast(theRsp.getRenderedServicePathHop());
 
         if (lastRspHop == null) {
-            LOG.error("getSfcNshHeader: last rsp hop is null\n");
+            LOG.error("getSfcRspInfo: last rsp hop is null\n");
             return null;
         }
 
         RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI
                 .readRenderedServicePathFirstHop(theRsp.getName());
         if (rspFirstHop == null) {
-            LOG.error("getSfcNshHeader: rsp first hop is null\n");
+            LOG.error("getSfcRspInfo: rsp first hop is null\n");
             return null;
         }
 
-        SfcNshHeader sfcNshHeader = new SfcNshHeader().setRsp(theRsp).setNshNsp(theRsp.getPathId())
+        SfcRspInfo sfcRspInfo = new SfcRspInfo().setRsp(theRsp).setNshNsp(theRsp.getPathId())
                 .setNshStartNsi(theRsp.getStartingIndex())
                 .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
-                .setSffName(lastRspHop.getServiceFunctionForwarder())
+                .setFirstSffName(theFirstHop.getServiceFunctionForwarder())
+                .setLastSffName(lastRspHop.getServiceFunctionForwarder())
                 .setFirstSfName(theFirstHop.getServiceFunctionName());
 
         if (rspFirstHop.getIp() != null) {
-            sfcNshHeader.setVxlanIpDst(rspFirstHop.getIp().getIpv4Address()).setVxlanUdpPort(rspFirstHop.getPort());
+            sfcRspInfo.setVxlanIpDst(rspFirstHop.getIp().getIpv4Address()).setVxlanUdpPort(rspFirstHop.getPort());
         }
 
         String context = theRsp.getContextMetadata();
         if (context == null) {
-            LOG.error("getSfcNshHeader: context is null\n");
+            LOG.error("getSfcRspInfo: context is null\n");
         }
 
         ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
         if (md == null) {
-            LOG.error("getSfcNshHeader: metadata is null\n");
+            LOG.error("getSfcRspInfo: metadata is null\n");
         } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
+            sfcRspInfo.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
                     .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
         }
 
-        return sfcNshHeader;
+        return sfcRspInfo;
     }
 
-    public static SfcNshHeader getSfcNshHeader(RspName rspName) {
+    public static SfcRspInfo getSfcRspInfo(RspName rspName) {
 
         if (rspName == null) {
-            LOG.error("getSfcNshHeader: rspName is null\n");
+            LOG.error("getSfcRspInfo: rspName is null\n");
             return null;
         }
 
         RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
         if (renderedServicePath == null) {
-            LOG.error("getSfcNshHeader: rsp is null\n");
+            LOG.error("getSfcRspInfo: rsp is null\n");
             return null;
         }
 
-        RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI.readRenderedServicePathFirstHop(rspName);
-        if (rspFirstHop == null) {
-            LOG.error("getSfcNshHeader: rsp first hop is null\n");
-            return null;
-        }
-
-        if (renderedServicePath.getRenderedServicePathHop() == null) {
-            LOG.error("getSfcNshHeader: getRenderedServicePathHop is null\n");
-            return null;
-        }
-
-        RenderedServicePathHop lastRspHop = Iterables.getLast(renderedServicePath.getRenderedServicePathHop());
-
-        if (lastRspHop == null) {
-            LOG.error("getSfcNshHeader: last rsp hop is null\n");
-            return null;
-        }
-
-        RenderedServicePathHop theFirstHop = renderedServicePath.getRenderedServicePathHop().get(0);
-
-        SfcNshHeader sfcNshHeader = new SfcNshHeader().setRsp(renderedServicePath)
-                .setNshNsp(renderedServicePath.getPathId()).setNshStartNsi(rspFirstHop.getStartingIndex())
-                .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
-                .setSffName(lastRspHop.getServiceFunctionForwarder())
-                .setFirstSfName(theFirstHop.getServiceFunctionName());
-
-        if (rspFirstHop.getIp() != null) {
-            sfcNshHeader.setVxlanIpDst(rspFirstHop.getIp().getIpv4Address()).setVxlanUdpPort(rspFirstHop.getPort());
-        }
-
-        String context = renderedServicePath.getContextMetadata();
-        if (context == null) {
-            LOG.error("getSfcNshHeader: context is null\n");
-        }
-
-        ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
-        if (md == null) {
-            LOG.error("getSfcNshHeader: metadata is null\n");
-        } else {
-            sfcNshHeader.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
-                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
-        }
-
-        return sfcNshHeader;
+        return getSfcRspInfo(renderedServicePath);
     }
 }

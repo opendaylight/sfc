@@ -8,21 +8,18 @@
 
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
-import com.google.common.collect.Iterables;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.util.macchaining.SfcModelUtil;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -34,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 
 
 
-public class MacChainingClassifier {
+public class MacChainingClassifier implements ClassifierInterface {
     private ServiceFunctionForwarder serviceFunctionForwarder;
 
     private final ClassifierHandler classifierHandler;
@@ -53,24 +50,19 @@ public class MacChainingClassifier {
         return this;
     }
 
-    public FlowDetails initClassifierTable(String classifierNodeName) {
-        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName,
+    @Override
+    public FlowDetails initClassifierTable(String nodeId) {
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId,
                 SfcScfOfUtils.initClassifierTable(),
                 OpenflowConstants.SFC_FLOWS);
     }
 
+    @Override
+    public FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo) {
 
-    public FlowDetails createClassifierOutFlow(
-            String flowKey, Match match, RspName rspName, String classifierNodeName) {
+        SffName firstSffName = sfcRspInfo.getFirstSffName();
 
-        RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
-
-
-        List<RenderedServicePathHop> renderedServicePathHopList = rsp.getRenderedServicePathHop();
-        RenderedServicePathHop renderedServicePathHop = renderedServicePathHopList.get(0);
-        SffName firstSffName = renderedServicePathHop.getServiceFunctionForwarder();
-
-        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(classifierNodeName));
+        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(nodeId));
 
         SffDataPlaneLocator outputDpl = SfcModelUtil.searchSrcDplInConnectedSffs(classifier, firstSffName);
 
@@ -83,24 +75,18 @@ public class MacChainingClassifier {
             return null;
         }
 
-        String nodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(classifier));
-
         FlowBuilder fb = SfcScfOfUtils.createMacChainClassifierOutFlow(
-                nodeName, String.format("%s.%s", flowKey, ofsDpl.getOfsPort().getPortId()), match,
-                        ofsDpl.getOfsPort().getPortId(), rsp.getPathId(), rsp.getStartingIndex());
+                nodeId, String.format("%s.%s", flowKey, ofsDpl.getOfsPort().getPortId()), match,
+                        ofsDpl.getOfsPort().getPortId(), sfcRspInfo.getNshNsp(), sfcRspInfo.getNshStartNsi());
 
-        return classifierHandler.addRspRelatedFlowIntoNode(nodeName,
-                fb, rsp.getPathId());
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId, fb, sfcRspInfo.getNshNsp());
 
     }
 
+    @Override
+    public FlowDetails createClassifierInFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, Long outPort) {
 
-    public FlowDetails createClassifierInFlow(String flowKey, RspName rspName, Long outPort, String nodeName) {
-
-        RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
-
-        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(nodeName));
+        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(nodeId));
         ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(classifier);
 
         List<SffDataPlaneLocator> sffDataPlaneLocatorList = sff.getSffDataPlaneLocator();
@@ -121,24 +107,27 @@ public class MacChainingClassifier {
                 SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(classifier));
 
         FlowBuilder fb = SfcScfOfUtils.createMacChainClassifierInFlow(
-                classifierNodeName, String.format("%s.%s", flowKey, rsp.getPathId().toString()),
-                        terminationPoint.getPortId(), terminationPoint.getMacAddress().getValue(),
-                        rsp.getPathId(), rsp.getStartingIndex());
+                classifierNodeName, String.format("%s.%s", flowKey, sfcRspInfo.getNshNsp().toString()),
+                terminationPoint.getPortId(), terminationPoint.getMacAddress().getValue(),
+                sfcRspInfo.getNshNsp(), sfcRspInfo.getNshStartNsi());
 
-        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName,
-                fb, rsp.getPathId());
+        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName, fb,sfcRspInfo.getNshNsp());
 
     }
 
+    @Override
+    public List<FlowDetails> createDpdkFlows(String nodeId, SfcRspInfo sfcRspInfo) {
+        return Collections.emptyList();
+    }
 
-    public FlowDetails createClassifierRelayFlow(String flowKey, RspName rspName, String nodeName, String classifier) {
 
-        RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+    @Override
+    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo,
+                                                 String classifierName) {
 
-        RenderedServicePathHop lastRspHop = Iterables.getLast(rsp.getRenderedServicePathHop());
-        SffName lastSff = lastRspHop.getServiceFunctionForwarder();
+        SffName lastSff = sfcRspInfo.getLastSffName();
 
-        SffName classifierSff = new SffName(classifier);
+        SffName classifierSff = new SffName(classifierName);
 
         SffDataPlaneLocator returnSffDpl = SfcModelUtil.searchSrcDplInConnectedSffs(lastSff, classifierSff);
 
@@ -150,29 +139,36 @@ public class MacChainingClassifier {
         if (ofsDpl == null) {
             return null;
         }
-        String lastFFNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(lastSff));
 
         FlowBuilder fb = SfcScfOfUtils.createClassifierMacChainingRelayFlow(
-                lastFFNodeName, flowKey, ofsDpl.getOfsPort().getPortId(), rsp.getPathId(), rsp.getStartingIndex(),
-                        (short) (lastRspHop.getServiceIndex().intValue() - 1));
+                nodeId, flowKey, ofsDpl.getOfsPort().getPortId(), sfcRspInfo.getNshNsp(),
+                sfcRspInfo.getNshStartNsi(), sfcRspInfo.getNshEndNsi());
 
-        return classifierHandler.addRspRelatedFlowIntoNode(lastFFNodeName,
-                fb, rsp.getPathId());
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId, fb, sfcRspInfo.getNshNsp());
 
     }
 
-
-
-    public Optional<String> getNodeName(String theInterfaceName) {
+    @Override
+    public Optional<String> getNodeName(String interfaceName) {
         return Optional.ofNullable(serviceFunctionForwarder)
                 .filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
                 .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }
 
 
-    public Optional<Long> getInPort(String ifName, String nodeName) {
-        return Optional.ofNullable(SfcOvsUtil.getOfPortByName(nodeName, ifName));
+    @Override
+    public Optional<Long> getInPort(String nodeId, String interfaceName) {
+        return Optional.ofNullable(SfcOvsUtil.getOfPortByName(nodeId, interfaceName));
+    }
+
+    @Override
+    public short getClassifierTable() {
+        return SfcScfOfUtils.TABLE_INDEX_CLASSIFIER;
+    }
+
+    @Override
+    public short getTransportIngressTable() {
+        return SfcScfOfUtils.TABLE_INDEX_INGRESS_TRANSPORT;
     }
 
 }

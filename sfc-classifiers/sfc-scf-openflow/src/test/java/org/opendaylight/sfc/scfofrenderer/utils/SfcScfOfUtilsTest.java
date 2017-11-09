@@ -49,7 +49,7 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testCreateClassifierOutFlow() {
-        SfcNshHeader nsh = mock(SfcNshHeader.class);
+        SfcRspInfo nsh = mock(SfcRspInfo.class);
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 
@@ -63,7 +63,7 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testCreateClassifierInFlow() {
-        SfcNshHeader nsh = mock(SfcNshHeader.class);
+        SfcRspInfo nsh = mock(SfcRspInfo.class);
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 
@@ -76,7 +76,7 @@ public class SfcScfOfUtilsTest {
 
     @Test
     public void testCreateClassifierRelayFlow() {
-        SfcNshHeader nsh = mock(SfcNshHeader.class);
+        SfcRspInfo nsh = mock(SfcRspInfo.class);
         Ipv4Address ip = mock(Ipv4Address.class);
         nsh.setVxlanIpDst(ip);
 

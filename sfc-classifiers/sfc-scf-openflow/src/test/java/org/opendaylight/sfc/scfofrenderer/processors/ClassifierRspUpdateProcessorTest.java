@@ -27,7 +27,7 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.ClassifierAclDataBuilder;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -49,7 +49,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SfcProviderServiceForwarderAPI.class, SfcNshHeader.class })
+@PrepareForTest({ SfcProviderServiceForwarderAPI.class, SfcRspInfo.class })
 public class ClassifierRspUpdateProcessorTest {
     @Mock
     private LogicallyAttachedClassifier classifierInterface;
@@ -95,8 +95,8 @@ public class ClassifierRspUpdateProcessorTest {
         Mockito.when(classifierInterface.getNodeName(any(String.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
         Mockito.when(classifierInterface.getInPort(any(String.class), any(String.class))).thenReturn(Optional.of(2L));
 
-        Mockito.when(classifierInterface.createClassifierOutFlow(any(String.class), any(Match.class),
-                any(SfcNshHeader.class), any(String.class))).thenReturn(theFlowDetails);
+        Mockito.when(classifierInterface.createClassifierOutFlow(any(String.class), any(String.class), any(Match.class),
+                any(SfcRspInfo.class))).thenReturn(theFlowDetails);
 
         Mockito.when(classifierInterface.initClassifierTable(any(String.class))).thenReturn(theFlowDetails);
 
@@ -126,13 +126,13 @@ public class ClassifierRspUpdateProcessorTest {
                 .thenReturn(sff);
 
         // mock the static NSH header object
-        PowerMockito.mockStatic(SfcNshHeader.class);
-        SfcNshHeader theNshHeader = new SfcNshHeader().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
+        PowerMockito.mockStatic(SfcRspInfo.class);
+        SfcRspInfo theNshHeader = new SfcRspInfo().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
                 .setNshMetaC1(123L).setNshMetaC2(321L).setNshMetaC3(2323L).setNshMetaC4(3232L).setNshNsp(666L)
-                .setNshStartNsi((short) 255).setSffName(new SffName("sff#1"))
+                .setNshStartNsi((short) 255).setLastSffName(new SffName("sff#1"))
                 .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080));
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RspName.class))).thenReturn(theNshHeader);
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RenderedServicePath.class))).thenReturn(theNshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RspName.class))).thenReturn(theNshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RenderedServicePath.class))).thenReturn(theNshHeader);
     }
 
     @Test

@@ -37,7 +37,7 @@ import org.opendaylight.sfc.scfofrenderer.ClassifierAclDataBuilder;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
-import org.opendaylight.sfc.scfofrenderer.utils.SfcNshHeader;
+import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -64,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SfcGeniusDataUtils.class, SfcGeniusRpcClient.class, SfcNshHeader.class,
+@PrepareForTest({ SfcGeniusDataUtils.class, SfcGeniusRpcClient.class, SfcRspInfo.class,
         SfcProviderServiceFunctionAPI.class, SfcProviderServiceForwarderAPI.class, SfcProviderRenderedPathAPI.class,
         LogicalClassifierDataGetter.class, SfcOvsUtil.class })
 public class OpenflowClassifierProcessorTest {
@@ -156,14 +156,14 @@ public class OpenflowClassifierProcessorTest {
         PowerMockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(any(SffName.class)))
                 .thenReturn(sff);
 
-        PowerMockito.mockStatic(SfcNshHeader.class);
-        SfcNshHeader theNshHeader = new SfcNshHeader().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
+        PowerMockito.mockStatic(SfcRspInfo.class);
+        SfcRspInfo theNshHeader = new SfcRspInfo().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
                 .setNshMetaC1(123L).setNshMetaC2(321L).setNshMetaC3(2323L).setNshMetaC4(3232L).setNshNsp(666L)
-                .setNshStartNsi((short) 255).setSffName(new SffName("sff#1"))
+                .setNshStartNsi((short) 255).setLastSffName(new SffName("sff#1"))
                 .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080));
 
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RspName.class))).thenReturn(theNshHeader);
-        PowerMockito.when(SfcNshHeader.getSfcNshHeader(any(RenderedServicePath.class))).thenReturn(theNshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RspName.class))).thenReturn(theNshHeader);
+        PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RenderedServicePath.class))).thenReturn(theNshHeader);
 
         PowerMockito.mockStatic(SfcOvsUtil.class);
         PowerMockito.when(SfcOvsUtil.getVxlanOfPort(anyString())).thenReturn(4L);

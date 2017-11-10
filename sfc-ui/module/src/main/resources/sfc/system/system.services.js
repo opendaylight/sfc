@@ -23,7 +23,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     svc.baseSystemRest = function () {
-    	return SfcRestangularSvc.getCurrentInstance().oneUrl('restconf', svc.getCurrentBaseUrl() + "system/console/");
+        return SfcRestangularSvc.getCurrentInstance().oneUrl('restconf', svc.getCurrentBaseUrl() + "system/console/");
     };
 
     svc.getLogs = function (callback) {

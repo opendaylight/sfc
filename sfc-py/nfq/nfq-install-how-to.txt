@@ -32,7 +32,7 @@ sudo make install
 cd ..
 
 
-### 1b. or from distribution repository 
+### 1b. or from distribution repository
 # this will install following packages: libglib2.0-0 libglib2.0-data libmnl0 libnetfilter-queue-dev
 #  libnetfilter-queue1 libnfnetlink-dev libnfnetlink0 libxml2 pkg-config
 #  sgml-base shared-mime-info xml-core

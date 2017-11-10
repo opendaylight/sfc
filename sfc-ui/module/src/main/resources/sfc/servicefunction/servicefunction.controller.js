@@ -162,13 +162,13 @@ define(['app/sfc/sfc.module'], function (sfc) {
       if ($scope.data['type'] == 'Cisco-vASA') {
         ifrm = '<iframe id=ifrm src="https://' + $scope.data['ip-mgmt-address'] + '/admin/exec/show+nsh" width="1100" height="850" style="background-color: Snow;"></iframe>';
         ifrmSafe = $scope.htmlSafe(ifrm);
-        return ifrmSafe; 
-      } 
+        return ifrmSafe;
+      }
       else if ($scope.data['type'] == 'Cisco-vNBAR') {
         ifrm = '<iframe id=ifrm src="http://' + $scope.data['ip-mgmt-address'] + '/appBars.html" width="1100" height="850"></iframe>';
         ifrmSafe = $scope.htmlSafe(ifrm);
-        return ifrmSafe; 
-      } 
+        return ifrmSafe;
+      }
       else {}
     };
 

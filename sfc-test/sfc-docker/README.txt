@@ -1,7 +1,7 @@
 This directory provides:
 
 - An utility, 'dovs', to setup neutron networks where compute nodes
-  are containerized openvswitch instances and VMs are isolated network namespaces 
+  are containerized openvswitch instances and VMs are isolated network namespaces
   connected to such instances.
 - A vagrant driven virtual environment prepared to run dovs
 

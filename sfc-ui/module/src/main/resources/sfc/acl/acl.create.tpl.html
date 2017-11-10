@@ -24,8 +24,8 @@
                 <label for="acl-type" class="col-lg-6 control-label small-label">{{'SFC_ACL_TYPE' | translate}}
                 </label>
                 <div class="col-lg-6">
-                  <select class="form-control input-sm" id="acl-type" ui-select2="{allowClear: true}" 
-                  ng-model="data['acl-type']" ng-required="true" data-placeholder="{{'SFC_ACL_CREATE_ACE_TYPE' | translate}}" 
+                  <select class="form-control input-sm" id="acl-type" ui-select2="{allowClear: true}"
+                  ng-model="data['acl-type']" ng-required="true" data-placeholder="{{'SFC_ACL_CREATE_ACE_TYPE' | translate}}"
                   ng-change="$broadcast('acl_type_change', data['acl-type'])">
                     <option value=""></option>
                     <option ng-repeat="t in aclConstants['acl-type']" value="{{t}}">{{t}}</option>

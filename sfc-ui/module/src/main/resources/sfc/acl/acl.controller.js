@@ -103,7 +103,7 @@ define(['app/sfc/sfc.module'], function (sfc) {
     };
 
     $scope.editItem = function editItem(ace) {
-      $state.transitionTo('main.sfc.acl-edit',{itemKeyType: ace['acl-type'], itemKey: ace['acl-name']}, 
+      $state.transitionTo('main.sfc.acl-edit',{itemKeyType: ace['acl-type'], itemKey: ace['acl-name']},
               { location: true, inherit: true, relative: $state.$current, notify: true });
     };
   });

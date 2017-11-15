@@ -267,7 +267,7 @@ REST API
 The following JSON shows how an SFP is created, which will trigger the creation
 of the RSPs in both the Configuration and Operational data store.
 
-.. code-block:: service-function-path REST
+.. code-block:: rest
 
     URL: http://localhost:8181/config/service-function-path:rendered-service-paths/
 

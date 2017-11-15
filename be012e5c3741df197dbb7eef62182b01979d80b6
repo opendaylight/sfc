@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a245df4_99bc15de",
+        "filename": "docs/specs/rsp-config-datastore.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 3635
+      },
+      "writtenOn": "2017-11-15T17:07:02Z",
+      "side": 1,
+      "message": "This is causing the following build error in the docs project:\n\nhttps://jenkins.opendaylight.org/releng/job/docs-tox-verify-oxygen/384/console",
+      "range": {
+        "startLine": 270,
+        "startChar": 0,
+        "endLine": 270,
+        "endChar": 42
+      },
+      "revId": "be012e5c3741df197dbb7eef62182b01979d80b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

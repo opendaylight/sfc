@@ -18,18 +18,19 @@
 package org.opendaylight.sfc.ovs.listener;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
@@ -38,43 +39,27 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node> {
-    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
-    private final DataBroker dataBroker;
-    private ListenerRegistration<SfcOvsNodeDataListener> listenerRegistration;
+@Singleton
+public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<Node> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SfcOvsNodeDataListener.class);
+
+    private final DataBroker dataBroker;
+
+    @Inject
     public SfcOvsNodeDataListener(final DataBroker dataBroker) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                .child(Node.class));
         this.dataBroker = dataBroker;
     }
 
-    public void init() {
-        LOG.debug("Initializing...");
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        final DataTreeIdentifier<Node> treeId = new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(NetworkTopology.class)
-                        .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                        .child(Node.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
-    }
-
     @Override
-    public void close() throws Exception {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
-    }
-
-    @Override
-    protected void add(Node createdNode) {
+    public void add(@Nonnull Node node) {
         /*
          * NODE CREATION When user puts SFF into config DS, reading from
          * topology is involved to write OVSDB bridge and termination point
@@ -82,17 +67,15 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
          * might put SFF into config DS before topology in operational DS gets
          * populated.
          */
+        LOG.debug("Created OVS Node: {}", node.toString());
 
-        LOG.debug("\nCreated OVS Node: {}", createdNode.toString());
-
-        OvsdbNodeAugmentation ovsdbNodeAugmentation = createdNode.getAugmentation(OvsdbNodeAugmentation.class);
+        OvsdbNodeAugmentation ovsdbNodeAugmentation = node.getAugmentation(OvsdbNodeAugmentation.class);
         if (ovsdbNodeAugmentation != null) {
             final ConnectionInfo connectionInfo = ovsdbNodeAugmentation.getConnectionInfo();
             if (connectionInfo != null) {
-                CheckedFuture<Optional<ServiceFunctionForwarders>, ReadFailedException>
-                    exitsingSffs = readServiceFunctionForwarders();
-                Futures.addCallback(exitsingSffs, new FutureCallback<Optional<ServiceFunctionForwarders>>() {
+                ListenableFuture<Optional<ServiceFunctionForwarders>> exitsingSffs = readServiceFunctionForwarders();
 
+                Futures.addCallback(exitsingSffs, new FutureCallback<Optional<ServiceFunctionForwarders>>() {
                     @Override
                     public void onSuccess(Optional<ServiceFunctionForwarders> optionalSffs) {
                         if (optionalSffs != null && optionalSffs.isPresent()) {
@@ -116,7 +99,7 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
     }
 
     @Override
-    protected void remove(Node deletedNode) {
+    public void remove(@Nonnull Node node) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled
@@ -125,7 +108,7 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
     }
 
     @Override
-    protected void update(Node originalNode, Node updatedNode) {
+    public void update(@Nonnull Node originalNode, @Nonnull Node updatedNode) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled
@@ -133,11 +116,10 @@ public class SfcOvsNodeDataListener extends AbstractDataTreeChangeListener<Node>
          */
     }
 
-    private CheckedFuture<Optional<ServiceFunctionForwarders>, ReadFailedException> readServiceFunctionForwarders() {
+    private ListenableFuture<Optional<ServiceFunctionForwarders>> readServiceFunctionForwarders() {
         ReadTransaction transaction = dataBroker.newReadOnlyTransaction();
         InstanceIdentifier<ServiceFunctionForwarders> sffIid = InstanceIdentifier
                 .builder(ServiceFunctionForwarders.class).build();
         return transaction.read(LogicalDatastoreType.CONFIGURATION, sffIid);
     }
-
 }

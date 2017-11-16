@@ -17,12 +17,13 @@
 package org.opendaylight.sfc.ovs.listener;
 
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.ovs.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
@@ -30,57 +31,36 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
+@Singleton
+public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionForwarder> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsSffEntryDataListener.class);
-    private final DataBroker dataBroker;
-    private ListenerRegistration<SfcOvsSffEntryDataListener> listenerRegistration;
 
     public SfcOvsSffEntryDataListener(final DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    public void init() {
-        LOG.debug("Initializing...");
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionForwarder> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class));
     }
 
     @Override
-    public void close() throws Exception {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
-    }
-
-    @Override
-    protected void add(ServiceFunctionForwarder serviceFunctionForwarder) {
-        LOG.info("\nCreated Service Function Forwarder: {}", serviceFunctionForwarder.toString());
+    public void add(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+        LOG.info("Created Service Function Forwarder: {}", serviceFunctionForwarder.toString());
         // add augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(serviceFunctionForwarder);
     }
 
     @Override
-    protected void remove(ServiceFunctionForwarder deletedServiceFunctionForwarder) {
-        LOG.info("\nDeleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
+    public void remove(@Nonnull ServiceFunctionForwarder deletedServiceFunctionForwarder) {
+        LOG.info("Deleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
         deleteOvsdbAugmentations(deletedServiceFunctionForwarder);
     }
 
     @Override
-    protected void update(ServiceFunctionForwarder originalServiceFunctionForwarder,
-            ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+    public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
+                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         // Notice: Adding an SffDpl to an existing SFF will trigger this
         // listener, not a separate SffDplListener
         // which means 2 different listeners are not needed. This was tested
@@ -92,7 +72,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
         // -X PUT --user admin:admin
         // http://localhost:${PORT}/restconf/config/service-function-forwarder:service-function-forwarders/service-function-forwarder/sff1/sff-data-plane-locator/vxgpe1
 
-        LOG.info("\nModified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
+        LOG.info("Modified Service Function Forwarder : {}", updatedServiceFunctionForwarder.toString());
         // rewrite augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(updatedServiceFunctionForwarder);
     }
@@ -103,8 +83,7 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
      * @param sff
      *            ServiceFunctionForwarder Object.
      */
-    static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
-
+    public static void addOvsdbAugmentations(ServiceFunctionForwarder sff) {
         OvsdbBridgeAugmentation ovsdbBridge = SfcSffToOvsMappingAPI.buildOvsdbBridgeAugmentation(sff);
 
         if (ovsdbBridge != null) {
@@ -122,17 +101,14 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
      * @param sff
      *            ServiceFunctionForwarder Object.
      */
-    private static void deleteOvsdbAugmentations(ServiceFunctionForwarder sff) {
-
+    private void deleteOvsdbAugmentations(ServiceFunctionForwarder sff) {
         // Since in most cases, the OvsdbNode was not created by SFC, lets not
         // delete it
-
         // Iterate the SFF DPLs and delete the VXGPE port
         final List<SffDataPlaneLocator> sffDataPlaneLocatorList = sff.getSffDataPlaneLocator();
         if (sffDataPlaneLocatorList == null || sffDataPlaneLocatorList.isEmpty()) {
             return;
         }
-
         NodeId ovsdbBridgeNodeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         for (SffDataPlaneLocator sffDpl : sffDataPlaneLocatorList) {
             // Only delete the port if this SFF is OVS augmented and the
@@ -145,6 +121,5 @@ public class SfcOvsSffEntryDataListener extends AbstractDataTreeChangeListener<S
                         SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()));
             }
         }
-
     }
 }

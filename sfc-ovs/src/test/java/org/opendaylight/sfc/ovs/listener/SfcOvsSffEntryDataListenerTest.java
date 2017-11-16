@@ -86,7 +86,6 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         dataTreeModification = mock(DataTreeModification.class);
         dataObjectModification = mock(DataObjectModification.class);
         sfcOvsSffEntryDataListener = new SfcOvsSffEntryDataListener(getDataBroker());
-        sfcOvsSffEntryDataListener.init();
     }
 
     @After

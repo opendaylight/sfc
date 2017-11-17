@@ -67,7 +67,7 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
 
     @Override
     public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
-                       ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
         List<RspName> rspNames = findAffectedRsp(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         LOG.debug("Deleting Rendered Service Paths {}", rspNames);

@@ -72,7 +72,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void update(@Nonnull ServiceFunction originalServiceFunction, ServiceFunction updatedServiceFunction) {
+    public void update(@Nonnull ServiceFunction originalServiceFunction, @Nonnull ServiceFunction updatedServiceFunction) {
         LOG.debug("update:Updating Service Function: {}", originalServiceFunction.getName());
 
         if (!compareSfs(originalServiceFunction, updatedServiceFunction)) {
@@ -91,7 +91,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
         }
     }
 
-    private boolean compareSfs(ServiceFunction originalServiceFunction, ServiceFunction serviceFunction) {
+    private boolean compareSfs(@Nonnull ServiceFunction originalServiceFunction, @Nonnull ServiceFunction serviceFunction) {
         //
         // Compare SFF IP Mgmt Addresses
         //

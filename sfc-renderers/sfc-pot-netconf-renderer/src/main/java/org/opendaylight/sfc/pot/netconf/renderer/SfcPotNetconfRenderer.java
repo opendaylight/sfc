@@ -8,12 +8,11 @@
 
 package org.opendaylight.sfc.pot.netconf.renderer;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.sfc.pot.netconf.renderer.listener.SfcPotNetconfNodeListener;
-import org.opendaylight.sfc.pot.netconf.renderer.listener.SfcPotNetconfRSPListener;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfIoam;
-import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotTimerQueue;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotTimerThread;
 import org.slf4j.Logger;
@@ -27,34 +26,20 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since   2016-12-01
  */
+@Singleton
 public class SfcPotNetconfRenderer {
-
-    private SfcPotNetconfRSPListener sfcPotNetconfRSPListener;
-    private SfcPotNetconfIoam sfcPotNetconfIoam;
-    private SfcPotNetconfNodeManager nodeManager;
-    private SfcPotNetconfNodeListener nodeListener;
-
-    private final DataBroker dataBroker;
-    private final BindingAwareBroker bindingAwareBroker;
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfRenderer.class);
 
-    public SfcPotNetconfRenderer(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
-        this.dataBroker = dataBroker;
-        this.bindingAwareBroker = bindingAwareBroker;
+    private final SfcPotNetconfIoam sfcPotNetconfIoam;
+
+    @Inject
+    public SfcPotNetconfRenderer(SfcPotNetconfIoam sfcPotNetconfIoam) {
+        this.sfcPotNetconfIoam = sfcPotNetconfIoam;
     }
 
+    @PostConstruct
     public void initialize() {
-        /* Netconf node manager and listener */
-        nodeManager = new SfcPotNetconfNodeManager(bindingAwareBroker);
-        nodeListener = new SfcPotNetconfNodeListener(dataBroker, nodeManager);
-
-        /* SB configuration generator and netconf handler */
-        sfcPotNetconfIoam = new SfcPotNetconfIoam(nodeManager);
-
-        /* Add a listener to handle RSP updates */
-        sfcPotNetconfRSPListener = new SfcPotNetconfRSPListener(dataBroker, sfcPotNetconfIoam);
-
         /* kick off a thread for periodic SB configuration refresh handling */
         SfcPotTimerThread sfcPotTimerThread = SfcPotTimerThread.getInstance();
         sfcPotTimerThread.setSfcPotRspProcessor(sfcPotNetconfIoam);
@@ -63,15 +48,13 @@ public class SfcPotNetconfRenderer {
         LOG.info("iOAM:PoT:SB:Netconf renderer started.");
     }
 
+    @PreDestroy
     public void unregisterListeners() {
         SfcPotTimerQueue queue = SfcPotTimerQueue.getInstance();
         queue.clearTimerQueue();
 
         SfcPotTimerThread sfcPotTimerThread = SfcPotTimerThread.getInstance();
         sfcPotTimerThread.stopConfigRefresher();
-
-        sfcPotNetconfRSPListener.closeDataChangeListener();
-        nodeListener.closeListenerRegistration();
 
         LOG.info("iOAM:PoT:SB:Netconf renderer stopped.");
     }

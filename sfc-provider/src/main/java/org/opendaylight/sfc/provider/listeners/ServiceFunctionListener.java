@@ -72,7 +72,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void update(@Nonnull ServiceFunction originalServiceFunction, ServiceFunction updatedServiceFunction) {
+    public void update(@Nonnull ServiceFunction originalServiceFunction,
+                       @Nonnull ServiceFunction updatedServiceFunction) {
         LOG.debug("update:Updating Service Function: {}", originalServiceFunction.getName());
 
         if (!compareSfs(originalServiceFunction, updatedServiceFunction)) {
@@ -91,10 +92,9 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
         }
     }
 
-    private boolean compareSfs(ServiceFunction originalServiceFunction, ServiceFunction serviceFunction) {
-        //
+    private boolean compareSfs(@Nonnull ServiceFunction originalServiceFunction,
+                               @Nonnull ServiceFunction serviceFunction) {
         // Compare SFF IP Mgmt Addresses
-        //
         if (serviceFunction.getIpMgmtAddress() != null && originalServiceFunction.getIpMgmtAddress() != null) {
             if (!serviceFunction.getIpMgmtAddress().toString()
                     .equals(originalServiceFunction.getIpMgmtAddress().toString())) {
@@ -108,18 +108,14 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
             return false;
         }
 
-        //
         // Compare SF Types
-        //
         if (!serviceFunction.getType().getValue().equals(originalServiceFunction.getType().getValue())) {
             LOG.info("compareSFs: SF type changed orig [{}] new [{}]", originalServiceFunction.getType().getValue(),
                      serviceFunction.getType().getValue());
             return false;
         }
 
-        //
         // Compare SF DPLs
-        //
         List<SfDataPlaneLocator> origSfDplList = originalServiceFunction.getSfDataPlaneLocator();
         List<SfDataPlaneLocator> sfDplList = serviceFunction.getSfDataPlaneLocator();
 

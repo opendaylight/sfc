@@ -66,7 +66,7 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
 
     @Override
     public void update(@Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
-                       ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         if (originalServiceFunctionClassifier.getAcl() != null
                 && updatedServiceFunctionClassifier.getAcl() != null && !originalServiceFunctionClassifier.getAcl()
                 .equals(updatedServiceFunctionClassifier.getAcl())) {

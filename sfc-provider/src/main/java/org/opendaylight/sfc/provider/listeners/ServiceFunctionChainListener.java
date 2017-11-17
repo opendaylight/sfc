@@ -57,11 +57,9 @@ public class ServiceFunctionChainListener extends AbstractSyncDataTreeChangeList
 
     @Override
     public void update(@Nonnull ServiceFunctionChain originalServiceFunctionChain,
-                       ServiceFunctionChain updatedServiceFunctionChain) {
-        if (updatedServiceFunctionChain != null) {
-            LOG.debug("update:Updating Service Function chain: {}", originalServiceFunctionChain.getName());
-            SfcDatastoreCache.getSfChainToSfTypeList().invalidate(originalServiceFunctionChain.getName());
-            add(updatedServiceFunctionChain);
-        }
+                       @Nonnull ServiceFunctionChain updatedServiceFunctionChain) {
+        LOG.debug("update:Updating Service Function chain: {}", originalServiceFunctionChain.getName());
+        SfcDatastoreCache.getSfChainToSfTypeList().invalidate(originalServiceFunctionChain.getName());
+        add(updatedServiceFunctionChain);
     }
 }

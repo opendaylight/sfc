@@ -72,7 +72,7 @@ public class ServiceFunctionSchedulerTypeListener extends
     // SF Scheduler Type UPDATE
     @Override
     public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
-                       ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
+                       @Nonnull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         if (originalServiceFunctionSchedulerType.getType() != null
                 && updatedServiceFunctionSchedulerType.getType() != null && originalServiceFunctionSchedulerType
                 .getType().equals(updatedServiceFunctionSchedulerType.getType())) {

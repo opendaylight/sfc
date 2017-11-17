@@ -47,7 +47,7 @@ public class SbRestRspEntryDataListener extends AbstractSyncDataTreeChangeListen
 
     @Override
     public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
-                       RenderedServicePath updatedRenderedServicePath) {
+                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
         LOG.debug("Updated Rendered Service Path: {}", updatedRenderedServicePath.getName());
         new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService).run();
     }

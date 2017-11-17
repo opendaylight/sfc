@@ -43,7 +43,7 @@ public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListen
 
     @Override
     public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
-                       ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updated Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
         new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, executorService).run();
     }

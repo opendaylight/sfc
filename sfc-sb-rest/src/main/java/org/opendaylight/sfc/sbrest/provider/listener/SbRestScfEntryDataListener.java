@@ -54,7 +54,7 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
 
     @Override
     public void update(@Nonnull ServiceFunctionClassifier originalDataObject,
-                       ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         LOG.debug("Updated Service Classifier Name: {}", updatedServiceFunctionClassifier.getName());
 
         if (updatedServiceFunctionClassifier.getAcl() != null) {

@@ -47,7 +47,7 @@ public class SbRestSfstEntryDataListener extends AbstractSyncDataTreeChangeListe
 
     @Override
     public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
-                       ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
+                       @Nonnull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         LOG.debug("Updated Service Function Schedule Type Name: {}", updatedServiceFunctionSchedulerType.getName());
         new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executorService).run();
     }

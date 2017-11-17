@@ -47,7 +47,7 @@ public class SbRestSfstateEntryDataListener extends AbstractSyncDataTreeChangeLi
 
     @Override
     public void update(@Nonnull ServiceFunctionState originalServiceFunctionState,
-                       ServiceFunctionState updatedServiceFunctionState) {
+                       @Nonnull ServiceFunctionState updatedServiceFunctionState) {
         LOG.debug("Updated Service Function State Name: {}", updatedServiceFunctionState.getName());
         new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService).run();
     }

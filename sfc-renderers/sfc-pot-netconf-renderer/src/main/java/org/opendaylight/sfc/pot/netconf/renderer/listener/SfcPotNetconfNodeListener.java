@@ -9,16 +9,14 @@ package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.SfcPotNetconfNodeManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.netconf.node.connection.status.AvailableCapabilities;
@@ -26,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev15
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,25 +37,22 @@ import org.slf4j.LoggerFactory;
  *
  * @version 0.1
  */
-public class SfcPotNetconfNodeListener implements DataTreeChangeListener<Node> {
+@Singleton
+public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfNodeListener.class);
 
-    private final ListenerRegistration listenerRegistration;
     private final SfcPotNetconfNodeManager nodeManager;
     private List<String> ioamNetconfCapabilities = new ArrayList<>();
 
+    @Inject
     public SfcPotNetconfNodeListener(DataBroker dataBroker, SfcPotNetconfNodeManager nodeManager) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL,
+              InstanceIdentifier.builder(NetworkTopology.class).child(Topology.class).child(Node.class).build());
         this.nodeManager = nodeManager;
 
-        /* Register listener */
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.builder(NetworkTopology.class).child(Topology.class).child(Node.class).build()),
-                this);
-
         /* Initialize iOAM Capabilities to check from Node info */
-        ioamNetconfCapabilities = initializeIoamNetconfCapabilities();
+        this.ioamNetconfCapabilities = initializeIoamNetconfCapabilities();
     }
 
     private List<String> initializeIoamNetconfCapabilities() {
@@ -69,30 +63,21 @@ public class SfcPotNetconfNodeListener implements DataTreeChangeListener<Node> {
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<Node>> changes) {
-        for (DataTreeModification<Node> modification : changes) {
-            DataObjectModification<Node> rootNode = modification.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case WRITE:
-                case SUBTREE_MODIFIED:
-                    if (rootNode.getDataAfter() != null) {
-                        Node node = rootNode.getDataAfter();
-                        if (isIoamCapableNetconfDevice(node)) {
-                            nodeManager.updateNode(node);
-                        }
-                    }
-                    break;
-                case DELETE:
-                    if (rootNode.getDataBefore() != null) {
-                        Node node = rootNode.getDataBefore();
-                        if (isIoamCapableNetconfDevice(node)) {
-                            nodeManager.removeNode(node);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
+    public void add(@Nonnull Node node) {
+        update(node, node);
+    }
+
+    @Override
+    public void remove(@Nonnull Node node) {
+        if (isIoamCapableNetconfDevice(node)) {
+            nodeManager.removeNode(node);
+        }
+    }
+
+    @Override
+    public void update(@Nonnull Node originalNode, @Nonnull Node updatedNode) {
+        if (isIoamCapableNetconfDevice(updatedNode)) {
+            nodeManager.updateNode(updatedNode);
         }
     }
 
@@ -108,11 +93,5 @@ public class SfcPotNetconfNodeListener implements DataTreeChangeListener<Node> {
         return capabilities != null
                 && capabilities.getAvailableCapability().stream().map(AvailableCapability::getCapability)
                         .collect(Collectors.toList()).containsAll(ioamNetconfCapabilities);
-    }
-
-    public void closeListenerRegistration() {
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
     }
 }

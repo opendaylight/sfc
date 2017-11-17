@@ -11,6 +11,8 @@ package org.opendaylight.sfc.pot.netconf.renderer.provider;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * @version 0.1
  */
+@Singleton
 public class SfcPotNetconfNodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfNodeManager.class);
@@ -53,6 +56,7 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
+    @Inject
     public SfcPotNetconfNodeManager(BindingAwareBroker bindingAwareBroker) {
         /* Register provider */
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);

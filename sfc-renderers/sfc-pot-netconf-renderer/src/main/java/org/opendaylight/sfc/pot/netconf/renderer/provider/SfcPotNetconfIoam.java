@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.pot.netconf.renderer.provider.api.SfcPotPolyAPI;
@@ -63,9 +65,8 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2016-12-01
  */
+@Singleton
 public class SfcPotNetconfIoam {
-    private final SfcPotNetconfNodeManager nodeManager;
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfIoam.class);
 
     private static final long MIN_CFG_REFRESH_INTERVAL_MS = 500;
@@ -92,9 +93,12 @@ public class SfcPotNetconfIoam {
     /* Stores configuration map to allow deletes later */
     private final Map<String, HashSet<Config>> pathConfig;
 
-    public SfcPotNetconfIoam(SfcPotNetconfNodeManager nodeManager) {
-        pathConfig = new HashMap<>();
-        this.nodeManager = nodeManager;
+    private final SfcPotNetconfNodeManager nodeManager;
+
+    @Inject
+    public SfcPotNetconfIoam(SfcPotNetconfNodeManager sfcPotNetconfNodeManager) {
+        this.nodeManager = sfcPotNetconfNodeManager;
+        this.pathConfig = new HashMap<>();
     }
 
     /* Utility functions */

@@ -9,17 +9,20 @@
 package org.opendaylight.sfc.scfvpprenderer.processors;
 
 import com.google.common.base.Preconditions;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 
+@Singleton
 public class VppNodeManager implements BindingAwareProvider {
 
     private MountPointService mountService = null;
 
-    public VppNodeManager(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
+    @Inject
+    public VppNodeManager(BindingAwareBroker bindingAwareBroker) {
         // Register provider
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
         onSessionInitiated(providerContext);

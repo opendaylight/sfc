@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
@@ -51,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.vpp.clas
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class VppClassifierProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppClassifierProcessor.class);
@@ -94,6 +97,7 @@ public class VppClassifierProcessor {
         }
     }
 
+    @Inject
     public VppClassifierProcessor(VppNodeManager nodeManager) {
         this.nodeManager = Preconditions.checkNotNull(nodeManager);
     }

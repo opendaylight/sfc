@@ -9,14 +9,15 @@
 
 package org.opendaylight.sfc.scfvpprenderer.listeners;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.scfvpprenderer.processors.VppClassifierProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,73 +27,40 @@ import org.slf4j.LoggerFactory;
  *
  * @author Yi Yang (yi.y.yang@intel.com)
  */
-
-public class SfcScfVppDataListener extends AbstractDataTreeChangeListener<ServiceFunctionClassifier> {
+@Singleton
+public class SfcScfVppDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionClassifier> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfVppDataListener.class);
 
     private final VppClassifierProcessor classifierProcessor;
 
-    private final DataBroker dataBroker;
-    private ListenerRegistration<SfcScfVppDataListener> listenerRegistration;
-
+    @Inject
     public SfcScfVppDataListener(final DataBroker dataBroker, VppClassifierProcessor classifierProcessor) {
-        this.dataBroker = dataBroker;
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));
         this.classifierProcessor = classifierProcessor;
-        init();
     }
 
-    public void init() {
-        LOG.debug("Initializing...");
-        registerListeners();
-    }
-
-    private void registerListeners() {
-        final DataTreeIdentifier<ServiceFunctionClassifier> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
-    }
-
-
-    // Classifier CREATION
     @Override
-    protected void add(ServiceFunctionClassifier serviceFunctionClassifier) {
-        if (serviceFunctionClassifier != null) {
-            LOG.debug("Add ServiceFunctionClassifier name: {}\n",
-                    serviceFunctionClassifier.getName());
-            this.classifierProcessor.addScf(serviceFunctionClassifier);
-
-        }
+    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        LOG.debug("Add ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
+        this.classifierProcessor.addScf(serviceFunctionClassifier);
     }
 
-    // Classifier UPDATE
     @Override
-    protected void update(ServiceFunctionClassifier originalServiceFunctionClassifier,
-                          ServiceFunctionClassifier updatedServiceFunctionClassifier) {
-
+    public void update(@Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
+                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
                 && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
-            LOG.debug("Updated ServiceFunctionClassifier name: {}\n", updatedServiceFunctionClassifier.getName());
+            LOG.debug("Updated ServiceFunctionClassifier name: {}", updatedServiceFunctionClassifier.getName());
             this.classifierProcessor.removeScf(originalServiceFunctionClassifier);
             this.classifierProcessor.addScf(updatedServiceFunctionClassifier);
         }
     }
 
-    // Classifier DELETION
     @Override
-    protected void remove(ServiceFunctionClassifier serviceFunctionClassifier) {
-        if (serviceFunctionClassifier != null) {
-            LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
-            this.classifierProcessor.removeScf(serviceFunctionClassifier);
-        }
-    }
-
-    @Override
-    public void close() {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
+    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        LOG.debug("Deleted ServiceFunctionClassifier name: {}", serviceFunctionClassifier.getName());
+        this.classifierProcessor.removeScf(serviceFunctionClassifier);
     }
 }

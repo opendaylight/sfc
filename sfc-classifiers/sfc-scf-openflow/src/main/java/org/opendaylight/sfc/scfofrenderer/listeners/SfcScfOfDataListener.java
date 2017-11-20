@@ -9,8 +9,6 @@
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
@@ -26,14 +24,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
  */
-@Singleton
 public class SfcScfOfDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionClassifier> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfDataListener.class);
 
     private final SfcScfOfProcessor sfcScfProcessor;
 
-    @Inject
     public SfcScfOfDataListener(DataBroker dataBroker, SfcScfOfProcessor sfcScfProcessor) {
         super(dataBroker, LogicalDatastoreType.CONFIGURATION,
               InstanceIdentifier.create(ServiceFunctionClassifiers.class).child(ServiceFunctionClassifier.class));

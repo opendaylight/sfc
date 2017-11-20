@@ -15,8 +15,13 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
+import org.opendaylight.sfc.scfofrenderer.listeners.ClassifierRspsUpdateListener;
+import org.opendaylight.sfc.scfofrenderer.listeners.SfcScfOfDataListener;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
+import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
 import org.opendaylight.sfc.scfofrenderer.processors.OpenflowClassifierProcessor;
+import org.opendaylight.sfc.scfofrenderer.processors.SfcScfOfProcessor;
+import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
 import org.slf4j.Logger;
@@ -27,6 +32,8 @@ import org.slf4j.LoggerFactory;
 public class SfcScfOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfRenderer.class);
+    private final ClassifierRspsUpdateListener classifierRspsUpdateListener;
+    private final SfcScfOfDataListener sfcScfDataListener;
 
     public SfcScfOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
             RpcProviderRegistry theRpcProvider) {
@@ -55,6 +62,14 @@ public class SfcScfOfRenderer implements AutoCloseable {
         // the classifierProcessor share the same transaction object
         openflowWriter.injectTransaction(theTx);
 
+        classifierRspsUpdateListener = new ClassifierRspsUpdateListener(dataBroker,
+                new ClassifierRspUpdateProcessor(logicalClassifier), openflowWriter,
+                new ClassifierRspUpdateDataGetter(), dataGetter);
+        sfcScfDataListener = new SfcScfOfDataListener(dataBroker,
+                new SfcScfOfProcessor(openflowWriter, logicalClassifierHandler));
+        classifierRspsUpdateListener.register();
+        sfcScfDataListener.register();
+
         LOG.info("SfcScfOfRenderer successfully started the SfcScfOfRenderer plugin");
     }
 
@@ -63,6 +78,8 @@ public class SfcScfOfRenderer implements AutoCloseable {
      */
     @Override
     public void close()  {
+        classifierRspsUpdateListener.close();
+        sfcScfDataListener.close();
         LOG.info("SfcScfOfRenderer auto-closed");
     }
 }

@@ -11,8 +11,6 @@ package org.opendaylight.sfc.scfofrenderer.listeners;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
@@ -33,7 +31,6 @@ import org.slf4j.LoggerFactory;
 /**
  * This class listens to changes on the Rendered Service Paths (RSPs) to reprogram classifiers accordingly.
  */
-@Singleton
 public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeListener<RenderedServicePath> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassifierRspsUpdateListener.class);
@@ -43,7 +40,6 @@ public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeList
     private final ClassifierRspUpdateDataGetter updateDataGetter;
     private final LogicalClassifierDataGetter dataGetter;
 
-    @Inject
     public ClassifierRspsUpdateListener(DataBroker dataBroker,
                                         ClassifierRspUpdateProcessor classifierRspUpdateProcessor,
                                         SfcOfFlowWriterInterface sfcOfFlowWriterInterface,

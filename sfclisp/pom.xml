@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>sfc-parent</artifactId>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.2-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>sfclisp</artifactId>

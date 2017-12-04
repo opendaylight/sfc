@@ -140,7 +140,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
         // TODO Two test cases for TCP/UDP shall be done
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetType().getType().getValue().longValue(),
@@ -167,7 +167,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
         assertTrue(match.getVlanMatch().getVlanId().isVlanIdPresent());
@@ -192,7 +192,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
 
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
@@ -214,7 +214,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetType().getType().getValue().longValue(),
@@ -241,7 +241,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_ARP_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_ARP_TRANSPORT_INGRESS);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetType().getType().getValue().longValue(),
@@ -323,7 +323,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_PATH_MAPPER);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_PATH_MAPPER);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetType().getType().getValue().longValue(),
@@ -366,7 +366,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_PATH_MAPPER);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_PATH_MAPPER);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getVlanMatch().getVlanId().getVlanId().getValue().intValue(), VLAN_ID);
@@ -407,7 +407,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetSource().getAddress().getValue(), MAC_SRC);
@@ -456,7 +456,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
 
         Match match = flowBuilder.getMatch();
         // transparent equals false -> VMAC should be match in the destination MAC address
@@ -510,7 +510,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
 
         Match match = flowBuilder.getMatch();
         // transparent equals true -> VMAC should be match in the source MAC address
@@ -558,7 +558,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetSource().getAddress().getValue(), MAC_SRC);
@@ -596,7 +596,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -635,7 +635,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_NEXT_HOP);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_NEXT_HOP);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -681,7 +681,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -736,7 +736,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -776,7 +776,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -812,7 +812,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -859,7 +859,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
@@ -927,8 +927,8 @@ public class SfcOfFlowProgrammerTest {
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
         int priority = flowBuilder.getPriority();
-        assertTrue(priority == SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS
-                || priority == SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 5);
+        assertTrue(priority == SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS
+                || priority == SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 5);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -1005,7 +1005,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 5);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 5);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
@@ -1074,7 +1074,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 10);
 
         Match match = flowBuilder.getMatch();
         assertEquals(match.getEthernetMatch().getEthernetDestination().getAddress().getValue(), MAC_DST);
@@ -1120,7 +1120,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_TRANSPORT_EGRESS + 10);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS + 10);
 
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
@@ -1155,7 +1155,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -1182,7 +1182,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -1204,7 +1204,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -1226,7 +1226,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_PATH_MAPPER_ACL);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -1249,7 +1249,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -1272,7 +1272,7 @@ public class SfcOfFlowProgrammerTest {
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
-        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.FLOW_PRIORITY_MATCH_ANY);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_MATCH_ANY);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction

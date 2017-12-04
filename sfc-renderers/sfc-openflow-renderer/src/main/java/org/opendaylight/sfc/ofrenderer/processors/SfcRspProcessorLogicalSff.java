@@ -217,8 +217,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                     + " egress actions for logical interface [" + sfLogicalInterface + "] (sf:" + sfDst + ")");
         }
 
-        StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
-        flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
+        StringJoiner flowName = new StringJoiner(OpenflowConstants.FLOW_NAME_DELIMITER);
+        flowName.add(OpenflowConstants.FLOW_NAME_TRANSPORT_EGRESS)
             .add("SF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
 
         sfcFlowProgrammer.configureNshEthTransportEgressFlow(
@@ -296,8 +296,8 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 actionList.get().add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH,
                         actionList.get().size()));
 
-                StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
-                flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
+                StringJoiner flowName = new StringJoiner(OpenflowConstants.FLOW_NAME_DELIMITER);
+                flowName.add(OpenflowConstants.FLOW_NAME_TRANSPORT_EGRESS)
                     .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
 
                 // 4, write those actions

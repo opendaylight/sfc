@@ -11,5 +11,7 @@ Contents:
    :maxdepth: 1
 
    Design Specification Template <specs-template>
+   rsp-config-datastore
+   rsp-stats
    sfc-shell
    directional-dpl

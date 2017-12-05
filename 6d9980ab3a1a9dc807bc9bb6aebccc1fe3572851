@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_8088b123",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/OpenflowConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T15:27:06Z",
+      "side": 1,
+      "message": "This isn\u0027t a table",
+      "range": {
+        "startLine": 26,
+        "startChar": 31,
+        "endLine": 26,
+        "endChar": 50
+      },
+      "revId": "6d9980ab3a1a9dc807bc9bb6aebccc1fe3572851",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_c082a9ff",
+        "filename": "sfc-util/sfc-openflow-utils/src/main/java/org/opendaylight/sfc/util/openflow/OpenflowConstants.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T15:27:06Z",
+      "side": 1,
+      "message": "I\u0027d take advantage of this change to name these constants better. For example: those that are tables OF_TABLE_XXX, those being actions OF_ACTION_XXX, etc.",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 51,
+        "endChar": 81
+      },
+      "revId": "6d9980ab3a1a9dc807bc9bb6aebccc1fe3572851",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

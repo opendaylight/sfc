@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_80d0b154",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T14:56:08Z",
+      "side": 1,
+      "message": "collection-period instead?",
+      "range": {
+        "startLine": 247,
+        "startChar": 21,
+        "endLine": 247,
+        "endChar": 31
+      },
+      "revId": "94b04d7cf5cedb07cbeabf7f629b911d16ec6f2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_60d5b542",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T14:56:08Z",
+      "side": 1,
+      "message": "deactivate-collection or just deactivate?",
+      "range": {
+        "startLine": 249,
+        "startChar": 17,
+        "endLine": 249,
+        "endChar": 31
+      },
+      "revId": "94b04d7cf5cedb07cbeabf7f629b911d16ec6f2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

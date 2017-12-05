@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "7a1969be_8a03afb7",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T19:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_ca9be7c7",
+      "range": {
+        "startLine": 247,
+        "startChar": 21,
+        "endLine": 247,
+        "endChar": 31
+      },
+      "revId": "94b04d7cf5cedb07cbeabf7f629b911d16ec6f2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a1969be_60d5b542",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 2
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "how about deactivate-rsp-collection?",
       "parentUuid": "7a1969be_60d5b542",
+      "range": {
+        "startLine": 249,
+        "startChar": 17,
+        "endLine": 249,
+        "endChar": 31
+      },
+      "revId": "94b04d7cf5cedb07cbeabf7f629b911d16ec6f2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_6a00f3aa",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T19:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a1969be_aaa02bf5",
       "range": {
         "startLine": 249,
         "startChar": 17,

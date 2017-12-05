@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a1969be_657e67e6",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T13:34:48Z",
+      "side": 1,
+      "message": "RSP Statistics?",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 20
+      },
+      "revId": "70ee384eea5b4681af2f4b78275fcb67f2085b74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_651dc773",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T13:34:48Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 60
+      },
+      "revId": "70ee384eea5b4681af2f4b78275fcb67f2085b74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_c020e99d",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T13:34:48Z",
+      "side": 1,
+      "message": "is \"rest\" properly interpreted by Sphinx?",
+      "range": {
+        "startLine": 203,
+        "startChar": 16,
+        "endLine": 203,
+        "endChar": 20
+      },
+      "revId": "70ee384eea5b4681af2f4b78275fcb67f2085b74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a1969be_a025edac",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 1
+      },
+      "lineNbr": 248,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-05T13:34:48Z",
+      "side": 1,
+      "message": "You might add the command here to show the statistics. Will there be a command to activate/deactivate statistics?",
+      "range": {
+        "startLine": 247,
+        "startChar": 0,
+        "endLine": 248,
+        "endChar": 18
+      },
+      "revId": "70ee384eea5b4681af2f4b78275fcb67f2085b74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

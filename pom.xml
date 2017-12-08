@@ -48,7 +48,7 @@
     <module>sfc-vnfm-tacker</module>
     <module>sfc-pot</module>
     <module>features</module>
-    <module>sfc-karaf</module>
+    <module>karaf</module>
     <module>sfc-renderers</module>
     <module>sfc-genius</module>
     <module>sfc-shell</module>

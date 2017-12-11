@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5728b0ea_29c7998e",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-11T21:03:23Z",
+      "side": 1,
+      "message": "It will be by the flow name. I submit a patch in Nitrogen to improve the flow names exactly for this. I\u0027ll update the doc.",
+      "parentUuid": "f81ddb3e_72c3390e",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bede6b05_460c290d",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2017-12-11T10:01:09Z",
       "side": 1,
       "message": "I wonder why this option was chosen vs triggering statistics with a listener on the RSP and avoid the dependency between the renderer and statistics feature.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f3f8824e_6c92862f",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-11T21:03:23Z",
+      "side": 1,
+      "message": "Because we need the RSP OpenFlow flows written before being able to collect statistics.",
+      "parentUuid": "bede6b05_460c290d",
       "range": {
         "startLine": 45,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "8782839b_ce73e123",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-11T21:03:23Z",
+      "side": 1,
+      "message": "This is getting a bit too detailed for the spec, and can be sorted out in the code review.\nThe plan is to have separate thread pools (each of size 1 thread) for the RSP, SF, and SFF statistics collection. This will allow us to start and stop each individually.",
+      "parentUuid": "341bfd79_46dc4f45",
+      "range": {
+        "startLine": 156,
+        "startChar": 43,
+        "endLine": 157,
+        "endChar": 63
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb6a4950_868a1d60",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3
@@ -82,6 +154,30 @@
       "writtenOn": "2017-12-11T09:49:53Z",
       "side": 1,
       "message": "I am curious as to the scope of this test. Will it run traffic to increment the counters? Or will it just check the timestamp?",
+      "range": {
+        "startLine": 296,
+        "startChar": 0,
+        "endLine": 299,
+        "endChar": 9
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f7135b45_252b83ca",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-11T21:03:23Z",
+      "side": 1,
+      "message": "Ideally it should run traffic.",
+      "parentUuid": "eb6a4950_868a1d60",
       "range": {
         "startLine": 296,
         "startChar": 0,

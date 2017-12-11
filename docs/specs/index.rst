@@ -12,3 +12,4 @@ Contents:
 
    Design Specification Template <specs-template>
    sfc-shell
+   directional-dpl

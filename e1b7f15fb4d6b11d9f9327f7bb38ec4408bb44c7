@@ -25,6 +25,29 @@
     },
     {
       "key": {
+        "uuid": "bede6b05_460c290d",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-11T10:01:09Z",
+      "side": 1,
+      "message": "I wonder why this option was chosen vs triggering statistics with a listener on the RSP and avoid the dependency between the renderer and statistics feature.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "341bfd79_46dc4f45",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3

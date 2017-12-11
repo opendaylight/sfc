@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f81ddb3e_72c3390e",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-11T09:49:53Z",
+      "side": 1,
+      "message": "How is the Next Hop flow of each RSP going to be recognized? By flow name? Can you give some more details for this?",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "341bfd79_46dc4f45",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-11T09:49:53Z",
+      "side": 1,
+      "message": "Do you mean 1 thread in total, or per RSP\u0027s ScheduledExecutorService? If the latter, isn\u0027t it too much to have a one thread per RSP that checks statistics each 20 seconds, defalt?\n\nWhy not a single ScheduledExecutorService, and submit a separate scheduled task per RSP?\n\nWhy newScheduledThreadPool instead of newSingleThreadScheduledExecutor? Do you plan to reconfigure the number of threads after creation?",
+      "range": {
+        "startLine": 156,
+        "startChar": 43,
+        "endLine": 157,
+        "endChar": 63
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "eb6a4950_868a1d60",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-11T09:49:53Z",
+      "side": 1,
+      "message": "I am curious as to the scope of this test. Will it run traffic to increment the counters? Or will it just check the timestamp?",
+      "range": {
+        "startLine": 296,
+        "startChar": 0,
+        "endLine": 299,
+        "endChar": 9
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

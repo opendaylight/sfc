@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "95dbaf7f_ce1e585b",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-12T14:19:46Z",
+      "side": 1,
+      "message": "Yes, it will be addressed in implementation.",
+      "parentUuid": "9845fb76_f665b767",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bede6b05_460c290d",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "I see. Is it because we might not find the flow that we want to read, or is something actually preventing the ability to \nperform the read? Simply not updating the counter while the flow cant be read is not an option?",
       "parentUuid": "f3f8824e_6c92862f",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "89ce48f9_07e10fba",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-12T14:19:46Z",
+      "side": 1,
+      "message": "If we trigger on RSP creation, the flows will be written at the same time that the stats are trying to be read for those same flows. We could just skip the first period if the flow isnt there and catch it the next time around. Can we postpone the final decision to implementation to see if there are any other issues?",
+      "parentUuid": "6b0d5712_c1bf2644",
       "range": {
         "startLine": 45,
         "startChar": 0,

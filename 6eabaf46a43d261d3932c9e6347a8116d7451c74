@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6454ece0_5b9054ba",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-12T09:49:53Z",
+      "side": 1,
+      "message": "Should any consideration be made in regards of what happens when the node performing the statistic collection goes down?",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 34
+      },
+      "revId": "6eabaf46a43d261d3932c9e6347a8116d7451c74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

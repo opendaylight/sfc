@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "9845fb76_f665b767",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-12T09:49:53Z",
+      "side": 1,
+      "message": "Ok. The flow names do sometimes include details further than the path id and index. For example, locator details. It could get messy.\nWhat about the node name to read from? For logical SFF this is a bit different than any other case, is it considered?",
+      "parentUuid": "5728b0ea_29c7998e",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 61
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bede6b05_460c290d",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3
@@ -84,6 +108,30 @@
       "side": 1,
       "message": "Because we need the RSP OpenFlow flows written before being able to collect statistics.",
       "parentUuid": "bede6b05_460c290d",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 16
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6b0d5712_c1bf2644",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-12T09:49:53Z",
+      "side": 1,
+      "message": "I see. Is it because we might not find the flow that we want to read, or is something actually preventing the ability to \nperform the read? Simply not updating the counter while the flow cant be read is not an option?",
+      "parentUuid": "f3f8824e_6c92862f",
       "range": {
         "startLine": 45,
         "startChar": 0,
@@ -143,6 +191,30 @@
     },
     {
       "key": {
+        "uuid": "c2aa737d_13e4a45a",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-12T09:49:53Z",
+      "side": 1,
+      "message": "Ok, let\u0027s discuss this in the code review.",
+      "parentUuid": "8782839b_ce73e123",
+      "range": {
+        "startLine": 156,
+        "startChar": 43,
+        "endLine": 157,
+        "endChar": 63
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "eb6a4950_868a1d60",
         "filename": "docs/specs/rsp-stats.rst",
         "patchSetId": 3
@@ -178,6 +250,30 @@
       "side": 1,
       "message": "Ideally it should run traffic.",
       "parentUuid": "eb6a4950_868a1d60",
+      "range": {
+        "startLine": 296,
+        "startChar": 0,
+        "endLine": 299,
+        "endChar": 9
+      },
+      "revId": "e1b7f15fb4d6b11d9f9327f7bb38ec4408bb44c7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "84ebe642_90a41840",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-12T09:49:53Z",
+      "side": 1,
+      "message": "Ok.",
+      "parentUuid": "f7135b45_252b83ca",
       "range": {
         "startLine": 296,
         "startChar": 0,

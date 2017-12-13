@@ -22,6 +22,30 @@
       "revId": "6eabaf46a43d261d3932c9e6347a8116d7451c74",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d12715df_1e2c37ae",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-13T15:38:39Z",
+      "side": 1,
+      "message": "I think it will be ok when the rsp-config feature is implemented. When the node comes back, the config will be replayed, which will ultimately cause the statistics collection to be started again.",
+      "parentUuid": "6454ece0_5b9054ba",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 34
+      },
+      "revId": "6eabaf46a43d261d3932c9e6347a8116d7451c74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

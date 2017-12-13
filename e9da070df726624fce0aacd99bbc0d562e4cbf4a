@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "492a4aa4_46228d55",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-13T23:55:10Z",
+      "side": 1,
+      "message": "Minor detail, should be \"in the previous paragraph\".",
+      "range": {
+        "startLine": 30,
+        "startChar": 63,
+        "endLine": 30,
+        "endChar": 65
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ec940b97_09d08fc6",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-13T23:55:10Z",
+      "side": 1,
+      "message": "I would also mention somewhere that many legacy Service Functions only support Bump in the wire. So here, we could mention we are extending support for these legacy service functions.",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 9
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

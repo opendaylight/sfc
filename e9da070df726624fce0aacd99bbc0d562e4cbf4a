@@ -45,6 +45,144 @@
       "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "787e88df_5aa32eaa",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "from",
+      "range": {
+        "startLine": 107,
+        "startChar": 10,
+        "endLine": 107,
+        "endChar": 12
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f768be1f_290269d6",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "Why are we assuming that \u0027bump in the wire\u0027 SFs are not NSH-aware? I think the 2 concepts are orthogonal.",
+      "range": {
+        "startLine": 111,
+        "startChar": 39,
+        "endLine": 111,
+        "endChar": 55
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "963f3fca_ae045816",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "reverse",
+      "range": {
+        "startLine": 189,
+        "startChar": 26,
+        "endLine": 189,
+        "endChar": 33
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a5c4cc0_4456c7eb",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "a",
+      "range": {
+        "startLine": 228,
+        "startChar": 54,
+        "endLine": 228,
+        "endChar": 56
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0c89b99e_baf3831e",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "The RSP has a field called symmetric-path-id that can be used to identify the reverse path for an RSP.",
+      "range": {
+        "startLine": 407,
+        "startChar": 14,
+        "endLine": 408,
+        "endChar": 27
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "40bb4a43_0b1e9438",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-14T16:45:24Z",
+      "side": 1,
+      "message": "I dont think this is used anywhere in this spec. If its not used, it should be removed.",
+      "range": {
+        "startLine": 416,
+        "startChar": 0,
+        "endLine": 416,
+        "endChar": 100
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

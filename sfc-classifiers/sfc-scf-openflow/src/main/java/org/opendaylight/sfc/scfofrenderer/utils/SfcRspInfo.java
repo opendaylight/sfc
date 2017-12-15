@@ -106,11 +106,6 @@ public class SfcRspInfo {
         return this.nshMetaC2;
     }
 
-    public SfcRspInfo getNshMetaC2(Long nshMetaC2) {
-        this.nshMetaC2 = nshMetaC2;
-        return this;
-    }
-
     public SfcRspInfo setNshMetaC2(Long nshMetaC2) {
         this.nshMetaC2 = nshMetaC2;
         return this;

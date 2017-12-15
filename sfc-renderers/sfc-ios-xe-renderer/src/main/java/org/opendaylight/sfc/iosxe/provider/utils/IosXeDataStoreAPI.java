@@ -189,7 +189,7 @@ public class IosXeDataStoreAPI implements Callable {
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
-    private <U extends DataObject> boolean writeMergeTransaction(InstanceIdentifier<U> addIID, U data) {
+    private <U extends DataObject> boolean writeMergeTransaction(InstanceIdentifier<U> addIID, U dataObject) {
         long timeout = 5000L;
         int attempt = 0;
         WriteTransaction transaction = null;
@@ -217,7 +217,7 @@ public class IosXeDataStoreAPI implements Callable {
             return false;
         }
         try {
-            transaction.merge(Preconditions.checkNotNull(datastoreType), addIID, data);
+            transaction.merge(Preconditions.checkNotNull(datastoreType), addIID, dataObject);
             CheckedFuture<Void, TransactionCommitFailedException> submitFuture = transaction.submit();
             submitFuture.checkedGet();
             return true;

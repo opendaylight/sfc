@@ -66,8 +66,8 @@ public abstract class SfcRspTransportProcessorBase {
         this.rsp = rsp;
     }
 
-    public void setFlowProgrammer(SfcOfFlowProgrammerInterface sfcFlowProgrammer) {
-        this.sfcFlowProgrammer = sfcFlowProgrammer;
+    public void setFlowProgrammer(SfcOfFlowProgrammerInterface flowProgrammer) {
+        this.sfcFlowProgrammer = flowProgrammer;
     }
 
     public void setSfcProviderUtils(SfcOfBaseProviderUtils sfcProviderUtils) {
@@ -395,10 +395,10 @@ public abstract class SfcRspTransportProcessorBase {
      *
      * @param theGraph
      *            the graph on which the just-rendered path was based
-     * @param rsp
+     * @param updatedRsp
      *            the rendered service path
      */
-    public void updateOperationalDSInfo(SffGraph theGraph, RenderedServicePath rsp) {
+    public void updateOperationalDSInfo(SffGraph theGraph, RenderedServicePath updatedRsp) {
         // Overriden by transport processors which do perform operational
         // datastore updates
     }

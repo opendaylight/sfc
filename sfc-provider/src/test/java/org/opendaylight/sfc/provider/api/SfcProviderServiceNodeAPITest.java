@@ -49,7 +49,7 @@ public class SfcProviderServiceNodeAPITest extends AbstractConcurrentDataBrokerT
     @Test
     public void testCreateReadServiceNode() {
         SfcProviderServiceNodeAPI.putServiceNode(serviceNode);
-        ServiceNode serviceNode = SfcProviderServiceNodeAPI.readServiceNodeByName(new SnName(SERVICE_NODE_NAME));
+        serviceNode = SfcProviderServiceNodeAPI.readServiceNodeByName(new SnName(SERVICE_NODE_NAME));
         assertNotNull("Must not be null", serviceNode);
         assertEquals("Must be equals", serviceNode.getName().getValue(), SERVICE_NODE_NAME);
         assertEquals("Must be equals", serviceNode.getIpMgmtAddress().getIpv4Address().getValue(),

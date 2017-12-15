@@ -20,39 +20,33 @@ public class SfcTableIndexMapperBuilder {
     private short externalNextHopTable = EXTERNAL_TABLE_NOT_SET;
     private short externalTransportEgressTable = EXTERNAL_TABLE_NOT_SET;
 
-    public SfcTableIndexMapperBuilder setClassifierTable(
-            short externalTransportClassifierTable) {
-        this.externalTransportClassifierTable = externalTransportClassifierTable;
+    public SfcTableIndexMapperBuilder setClassifierTable(short classifierTable) {
+        this.externalTransportClassifierTable = classifierTable;
         return this;
     }
 
-    public SfcTableIndexMapperBuilder setTransportIngressTable(
-            short externalTransportIngressTable) {
-        this.externalTransportIngressTable = externalTransportIngressTable;
+    public SfcTableIndexMapperBuilder setTransportIngressTable(short ingressTable) {
+        this.externalTransportIngressTable = ingressTable;
         return this;
     }
 
-    public SfcTableIndexMapperBuilder setPathMapperTable(
-            short externalPathMapperTable) {
-        this.externalPathMapperTable = externalPathMapperTable;
+    public SfcTableIndexMapperBuilder setPathMapperTable(short mapperTable) {
+        this.externalPathMapperTable = mapperTable;
         return this;
     }
 
-    public SfcTableIndexMapperBuilder setPathMapperAclTable(
-            short externalPathMapperAclTable) {
-        this.externalPathMapperAclTable = externalPathMapperAclTable;
+    public SfcTableIndexMapperBuilder setPathMapperAclTable(short mapperAclTable) {
+        this.externalPathMapperAclTable = mapperAclTable;
         return this;
     }
 
-    public SfcTableIndexMapperBuilder setNextHopTable(
-            short externalNextHopTable) {
-        this.externalNextHopTable = externalNextHopTable;
+    public SfcTableIndexMapperBuilder setNextHopTable(short nextHopTable) {
+        this.externalNextHopTable = nextHopTable;
         return this;
     }
 
-    public SfcTableIndexMapperBuilder setTransportEgressTable(
-            short externalTransportEgressTable) {
-        this.externalTransportEgressTable = externalTransportEgressTable;
+    public SfcTableIndexMapperBuilder setTransportEgressTable(short transportEgressTable) {
+        this.externalTransportEgressTable = transportEgressTable;
         return this;
     }
 

@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "f6f25c7f_278484cf",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-15T11:59:55Z",
+      "side": 1,
+      "message": "I don\u0027t think the 2 concepts are completely orthogonal: if there is an sfc encapsulation, then there is an outer transport header which could be used to address the SF that in turn does not need to be a bump in the wire.\nAnyway, what I do assume is that bump in the wire service functions *might* not be nsh aware.\nI will rephrase, to clear things up.",
+      "parentUuid": "f768be1f_290269d6",
+      "range": {
+        "startLine": 111,
+        "startChar": 39,
+        "endLine": 111,
+        "endChar": 55
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "963f3fca_ae045816",
         "filename": "docs/specs/directional-dpl.rst",
         "patchSetId": 2
@@ -151,6 +175,30 @@
       "writtenOn": "2017-12-14T16:45:24Z",
       "side": 1,
       "message": "The RSP has a field called symmetric-path-id that can be used to identify the reverse path for an RSP.",
+      "range": {
+        "startLine": 407,
+        "startChar": 14,
+        "endLine": 408,
+        "endChar": 27
+      },
+      "revId": "e9da070df726624fce0aacd99bbc0d562e4cbf4a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9b8fe99b_60d6b72a",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-15T11:59:55Z",
+      "side": 1,
+      "message": "But the symmetric-path-id of the forward path is the reverse path and the symmetric-path-id of the reverse path is the forward path. We still don\u0027t know which is which at rendering time.",
+      "parentUuid": "0c89b99e_baf3831e",
       "range": {
         "startLine": 407,
         "startChar": 14,

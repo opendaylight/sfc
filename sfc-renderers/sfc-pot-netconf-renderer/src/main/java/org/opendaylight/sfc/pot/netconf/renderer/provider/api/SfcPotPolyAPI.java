@@ -69,8 +69,8 @@ public final class SfcPotPolyAPI {
      * This function is used for initial configuration generation for a
      * specified number of profiles.
      */
-    public boolean init(String rspName, int sfSize, final Class<? extends TimeResolution> refreshPeriodTimeUnits,
-            Long refreshPeriodValue, BitMaskOptions ioamPotProfileBitMask, Long ioamPotNumProfiles) {
+    public boolean init(String rspName, int sfSize, final Class<? extends TimeResolution> newRefreshPeriodTimeUnits,
+            Long newRefreshPeriodValue, BitMaskOptions newIoamPotProfileBitMask, Long newIoamPotNumProfiles) {
         long prime;
         long secret;
         List<Coeffs> coeffs = new ArrayList<>();
@@ -87,18 +87,18 @@ public final class SfcPotPolyAPI {
             }
         }
 
-        this.refreshPeriodTimeUnits = refreshPeriodTimeUnits;
-        this.refreshPeriodValue = refreshPeriodValue;
-        this.ioamPotProfileBitMask = ioamPotProfileBitMask;
-        this.ioamPotNumProfiles = ioamPotNumProfiles;
+        this.refreshPeriodTimeUnits = newRefreshPeriodTimeUnits;
+        this.refreshPeriodValue = newRefreshPeriodValue;
+        this.ioamPotProfileBitMask = newIoamPotProfileBitMask;
+        this.ioamPotNumProfiles = newIoamPotNumProfiles;
 
-        sfcPotPolyClassAPI.setNumProfiles(ioamPotNumProfiles);
+        sfcPotPolyClassAPI.setNumProfiles(newIoamPotNumProfiles);
 
         /* Also set the SB profiles information appropriately. */
         SfcPotConfigGenerator configGenerator = new SfcPotConfigGenerator(sfSize);
         configGenerator.generateScvConfig();
 
-        for (long j = 0; j < ioamPotNumProfiles; j++) {
+        for (long j = 0; j < newIoamPotNumProfiles; j++) {
             prime = configGenerator.getPrime();
             secret = configGenerator.getSecret();
             for (int i = 1; i < sfSize; i++) {

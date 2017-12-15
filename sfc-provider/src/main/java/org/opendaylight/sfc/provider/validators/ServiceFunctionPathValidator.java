@@ -62,6 +62,7 @@ public class ServiceFunctionPathValidator {
      *             when validation cannot be performed because some of the
      *             referenced SFs / SFCs do not exist
      */
+    @SuppressWarnings("checkstyle:AvoidHidingCauseException")
     protected boolean validateServiceFunctionPath(ServiceFunctionPath serviceFunctionPath)
             throws DataValidationFailedWithMessageException {
         if (serviceFunctionPath != null) {

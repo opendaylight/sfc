@@ -113,14 +113,14 @@ public final class SfcOvsUtil {
      *
      * @param callable
      *            Callable
-     * @param executor
+     * @param executorService
      *            ExecutorService
      * @return true if callable completed successfully, otherwise false.
      */
-    public static Object submitCallable(Callable<?> callable, ExecutorService executor) {
+    public static Object submitCallable(Callable<?> callable, ExecutorService executorService) {
         Object result = null;
 
-        Future<?> future = executor.submit(callable);
+        Future<?> future = executorService.submit(callable);
 
         try {
             result = future.get();

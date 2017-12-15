@@ -177,7 +177,6 @@ public class OpenflowClassifierProcessorTest {
         when(dataGetter.getFirstHopDataplaneId(any(RenderedServicePath.class)))
                 .thenReturn(Optional.of(FIRST_SF_DATAPLANE_ID));
 
-        LogicallyAttachedClassifier classifierInterface = Mockito.spy(new LogicallyAttachedClassifier(dataGetter));
         doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
         OpenflowClassifierProcessor classifierManager = new OpenflowClassifierProcessor(readWriteTransaction,
                 classifierInterface, new BareClassifier());
@@ -267,7 +266,6 @@ public class OpenflowClassifierProcessorTest {
         when(dataGetter.getFirstHopDataplaneId(any(RenderedServicePath.class)))
                 .thenReturn(Optional.of(FIRST_SF_DATAPLANE_ID));
 
-        LogicallyAttachedClassifier classifierInterface = Mockito.spy(new LogicallyAttachedClassifier(dataGetter));
         doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
 
         OpenflowClassifierProcessor classifierManager = new OpenflowClassifierProcessor(readWriteTransaction,
@@ -290,10 +288,10 @@ public class OpenflowClassifierProcessorTest {
         // disable DPDK extensions
         PowerMockito.when(SfcOvsUtil.getDpdkOfPort(anyString(), anyString())).thenReturn(null);
 
-        BareClassifier classifierInterface = Mockito.spy(new BareClassifier(sff));
-        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
+        BareClassifier bareClassifier = Mockito.spy(new BareClassifier(sff));
+        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(bareClassifier).getNodeName(anyString());
         OpenflowClassifierProcessor classifierManager = new OpenflowClassifierProcessor(readWriteTransaction,
-                new LogicallyAttachedClassifier(dataGetter), classifierInterface);
+                new LogicallyAttachedClassifier(dataGetter), bareClassifier);
 
         List<FlowDetails> theFlows = classifierManager.processClassifier(sffClassifier, acl, false);
         Assert.assertFalse(theFlows.isEmpty());
@@ -313,10 +311,10 @@ public class OpenflowClassifierProcessorTest {
         // disable DPDK extensions
         PowerMockito.when(SfcOvsUtil.getDpdkOfPort(anyString(), anyString())).thenReturn(null);
 
-        BareClassifier classifierInterface = Mockito.spy(new BareClassifier(sff));
-        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(classifierInterface).getNodeName(anyString());
+        BareClassifier bareClassifier = Mockito.spy(new BareClassifier(sff));
+        doReturn(Optional.of(FIRST_SF_NODE_NAME)).when(bareClassifier).getNodeName(anyString());
         OpenflowClassifierProcessor classifierManager = new OpenflowClassifierProcessor(readWriteTransaction,
-                new LogicallyAttachedClassifier(dataGetter), classifierInterface);
+                new LogicallyAttachedClassifier(dataGetter), bareClassifier);
 
         List<FlowDetails> theFlows = classifierManager.processClassifier(sffClassifier, acl, false);
 

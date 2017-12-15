@@ -180,7 +180,7 @@ public class TackerManagerTest extends JerseyTest {
     @Test
     public void createSfTestAuthFail() {
         // authenticate with wrong username/password
-        TackerManager tackerManager = TackerManager.builder()
+        TackerManager badCredentialsTackerManager = TackerManager.builder()
             .setBaseUri(BASE_URI)
             .setTackerPort(BASE_PORT)
             .setKeystonePort(KEYSTONE_PORT)
@@ -191,7 +191,7 @@ public class TackerManagerTest extends JerseyTest {
             .build();
 
         ServiceFunctionType sfType = new ServiceFunctionTypeBuilder().setType(new SftTypeName("firewall")).build();
-        boolean result = tackerManager.createSf(sfType);
+        boolean result = badCredentialsTackerManager.createSf(sfType);
         LOG.debug("createSfTestAuthFail passed: " + !result);
         Assert.assertFalse(result);
     }

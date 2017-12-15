@@ -180,8 +180,8 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     }
 
     @Override
-    public void setFlowWriter(SfcOfFlowWriterInterface sfcOfFlowWriter) {
-        this.sfcOfFlowWriter = sfcOfFlowWriter;
+    public void setFlowWriter(SfcOfFlowWriterInterface writer) {
+        this.sfcOfFlowWriter = writer;
     }
 
     // This method should only be called by SfcOfRenderer.close()

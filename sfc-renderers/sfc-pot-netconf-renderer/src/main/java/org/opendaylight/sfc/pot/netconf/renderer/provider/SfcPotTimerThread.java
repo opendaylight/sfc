@@ -36,8 +36,8 @@ public final class SfcPotTimerThread implements Runnable {
         return SFC_POT_TIMER_THREAD;
     }
 
-    public void setSfcPotRspProcessor(SfcPotNetconfIoam sfcPotNetconfIoam) {
-        this.sfcPotNetconfIoam = sfcPotNetconfIoam;
+    public void setSfcPotRspProcessor(SfcPotNetconfIoam netconfIoam) {
+        this.sfcPotNetconfIoam = netconfIoam;
     }
 
     public void triggerConfigRefresher() {

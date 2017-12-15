@@ -26,8 +26,8 @@ public final class SfcProviderDebug {
     private SfcProviderDebug() {
     }
 
-    public static void setON(boolean on) {
-        SfcProviderDebug.on = on;
+    public static void setON(boolean value) {
+        SfcProviderDebug.on = value;
     }
 
     public static boolean isOn() {

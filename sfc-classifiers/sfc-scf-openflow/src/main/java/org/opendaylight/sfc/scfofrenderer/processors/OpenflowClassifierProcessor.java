@@ -78,7 +78,7 @@ public class OpenflowClassifierProcessor {
      *
      * @param theAcl
      *            the ACL object to install
-     * @param addClassifier
+     * @param onAddClassifier
      *            true when adding the classifier flows, false when deleting
      *            them
      * @param classifierList
@@ -86,9 +86,9 @@ public class OpenflowClassifierProcessor {
      *            classifier flows will be installed
      * @return the list of all the relevant flows to be installed
      */
-    public List<FlowDetails> processClassifierList(Acl theAcl, boolean addClassifier,
+    public List<FlowDetails> processClassifierList(Acl theAcl, boolean onAddClassifier,
             List<SclServiceFunctionForwarder> classifierList) {
-        return classifierList.stream().map(classifier -> processClassifier(classifier, theAcl, addClassifier))
+        return classifierList.stream().map(classifier -> processClassifier(classifier, theAcl, onAddClassifier))
                 .peek(theFlows -> LOG.info("createdServiceFunctionClassifier - flow size: {}", theFlows.size()))
                 .reduce(new ArrayList<>(), (dstList, theList) -> Stream.concat(dstList.stream(), theList.stream())
                         .collect(Collectors.toList()));

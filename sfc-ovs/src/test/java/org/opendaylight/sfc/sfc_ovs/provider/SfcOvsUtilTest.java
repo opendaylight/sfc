@@ -452,11 +452,11 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         nodeBuilder.setKey(new NodeKey(new NodeId("nodeId"))).addAugmentation(OvsdbNodeAugmentation.class,
                 ovsdbNodeAugmentationBuilder.build());
 
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+        InstanceIdentifier<Node> ovsdbNodeIID = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
             .child(Node.class, new NodeKey(new NodeId("nodeId")));
 
-        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(),
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(ovsdbNodeIID, nodeBuilder.build(),
                 LogicalDatastoreType.CONFIGURATION);
         assertTrue("Must be true", transactionSuccessful);
 
@@ -597,10 +597,10 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         nodeBuilder.setNodeId(new NodeId(IPV6_ADDRESS)).addAugmentation(OvsdbNodeAugmentation.class,
                 ovsdbNodeAugmentationBuilder.build());
 
-        InstanceIdentifier<Node> nodeIID = SfcOvsUtil.buildOvsdbNodeIID(IPV6_ADDRESS);
+        InstanceIdentifier<Node> ovsdbNodeIID = SfcOvsUtil.buildOvsdbNodeIID(IPV6_ADDRESS);
 
-        boolean transactionSuccessful =
-                SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        boolean transactionSuccessful = SfcDataStoreAPI.writePutTransactionAPI(ovsdbNodeIID, nodeBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
         assertTrue("Must be true", transactionSuccessful);
 
         // ipv6 address

@@ -63,7 +63,7 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LispUpdater.class);
 
     private final ExecutorService executor = SpecialExecutors.newBlockingBoundedCachedThreadPool(
-            5, 1000, "LispUpdater");
+            5, 1000, "LispUpdater", LispUpdater.class);
     private final OdlMappingserviceService lfmService;
 
     public LispUpdater(OdlMappingserviceService lfmService) {

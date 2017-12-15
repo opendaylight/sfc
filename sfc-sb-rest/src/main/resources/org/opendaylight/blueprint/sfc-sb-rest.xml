@@ -20,6 +20,10 @@
     <argument value="${max-pool-size}"/>
     <argument value="${max-queue-size}"/>
     <argument value="SfcSbRestDataListener"/>
+    <argument>
+      <!-- We should use a more specific class -->
+      <bean factory-ref="dataBroker" factory-method="getClass"/>
+    </argument>
   </bean>
 
   <bean id="sfcSbRestProviderModule"

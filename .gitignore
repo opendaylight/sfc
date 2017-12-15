@@ -38,3 +38,4 @@ coverage/
 .vagrant
 *.log
 **/yang/gen
+.factorypath

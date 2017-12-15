@@ -65,7 +65,7 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
         LOG.debug("canCommit:called! txId={}, candidate={}, context={} ", txId, candidate, ctx);
 
         DataTreeCandidateNode candidateRoot = candidate.getRootNode();
-        NormalizedNode nn = candidateRoot.getDataAfter().orNull();
+        NormalizedNode nn = candidateRoot.getDataAfter().orElse(null);
         if (nn == null) {
             LOG.debug("canCommit:no sfp after the change");
             return ValidationConstants.SUCCESS_CAN_COMMIT_FUTURE;

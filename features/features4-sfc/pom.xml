@@ -103,20 +103,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>odl-sfc-provider-rest</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>odl-sfc-sb-rest</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>odl-sfc-scf-openflow</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
@@ -139,13 +125,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>odl-sfc-ui</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>odl-sfc-vnfm-tacker</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>

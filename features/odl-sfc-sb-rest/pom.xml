@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>odl-sfc-provider-rest</artifactId>
+            <artifactId>odl-sfc-provider</artifactId>
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>

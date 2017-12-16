@@ -32,7 +32,6 @@
         <module>features4-sfc</module>
         <module>odl-sfc-model</module>
         <module>odl-sfc-provider</module>
-        <module>odl-sfc-provider-rest</module>
         <module>odl-sfc-netconf</module>
         <module>odl-sfc-ios-xe-renderer</module>
         <module>odl-sfc-ovs</module>
@@ -41,14 +40,11 @@
         <module>odl-sfc-openflow-renderer</module>
         <module>odl-sfc-vpp-renderer</module>
         <module>odl-sfclisp</module>
-        <module>odl-sfc-sb-rest</module>
         <module>odl-sfc-pot</module>
         <module>odl-sfc-pot-netconf-renderer</module>
         <module>odl-sfc-ui</module>
         <module>odl-sfc-test-consumer</module>
-        <module>odl-sfc-vnfm-tacker</module>
         <module>odl-sfc-genius</module>
-        <module>odl-sfc-shell</module>
     </modules>
 
     <scm>

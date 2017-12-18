@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1543fbc2_2088a476",
+        "filename": "docs/specs/rsp-stats.rst",
+        "patchSetId": 6
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-18T10:15:23Z",
+      "side": 1,
+      "message": "Since the name is optional, maybe we can avoid the use of \"all\" magic word, and provide the statistics of all service paths when a name is not provided? Otherwise, it would make sense to make the name mandatory, although is the least preferred option for me.",
+      "range": {
+        "startLine": 101,
+        "startChar": 54,
+        "endLine": 102,
+        "endChar": 69
+      },
+      "revId": "56cc2a6de8ae075d0578bd73ae31d8868bb1bff1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

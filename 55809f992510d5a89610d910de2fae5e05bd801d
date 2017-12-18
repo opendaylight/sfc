@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3bceddc0_f7d12c8c",
+        "filename": "features/odl-sfc-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2017-12-18T20:53:27Z",
+      "side": 1,
+      "message": "question here, is does sfc-provider get used without restconf? I wasn\u0027t sure if some project pulled in sfc-provider - without wanting restconf. But I don\u0027t think that is the case.",
+      "revId": "55809f992510d5a89610d910de2fae5e05bd801d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f446493e_42b00861",
+        "filename": "features/odl-sfc-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2017-12-18T20:53:27Z",
+      "side": 1,
+      "message": "same here, does shell do anything without sfc-provider?",
+      "revId": "55809f992510d5a89610d910de2fae5e05bd801d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}

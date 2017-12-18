@@ -187,6 +187,13 @@ module rendered-service-path {
         description
           "Identifies the associated symmetric path, if any.";
       }
+      leaf is-reverse-path {
+        type boolean;
+        mandatory true;
+        description
+          "True if this path is the reverse path of a symmetric
+           chain.";
+      }
       leaf sfc-encapsulation {
         config false;
         type sfc-sl:sfc-encapsulation-type;

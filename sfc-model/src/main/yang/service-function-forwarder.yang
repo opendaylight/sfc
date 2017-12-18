@@ -163,14 +163,45 @@ module service-function-forwarder {
             type sfc-common:sf-data-plane-locator-name;
             description
               "The SF data plane locator to use when sending
-               packets to the associated service function";
+               packets to the associated service function.
+               Used both as forward and reverse locators for
+               paths of a symmetric chain.";
           }
           leaf sff-dpl-name {
             type sfc-common:sff-data-plane-locator-name;
             description
               "The SFF data plane locator to use when sending
                packets to the associated service function.
-               This is necessary when the SFF has multiple DPLs";
+               Used both as forward and reverse locators for
+               paths of a symmetric chain.";
+          }
+          leaf sf-forward-dpl-name {
+            type sfc-common:sf-data-plane-locator-name;
+            description
+              "The SF data plane locator to use when sending
+               packets to the associated service function
+               on the forward path of a symmetric chain";
+          }
+          leaf sf-reverse-dpl-name {
+            type sfc-common:sf-data-plane-locator-name;
+            description
+              "The SF data plane locator to use when sending
+               packets to the associated service function
+               on the reverse path of a symmetric chain";
+          }
+          leaf sff-forward-dpl-name {
+            type sfc-common:sff-data-plane-locator-name;
+            description
+              "The SFF data plane locator to use when sending
+               packets to the associated service function
+               on the forward path of a symmetric chain.";
+          }
+          leaf sff-reverse-dpl-name {
+            type sfc-common:sff-data-plane-locator-name;
+            description
+              "The SFF data plane locator to use when sending
+               packets to the associated service function
+               on the reverse path of a symmetric chain.";
           }
         }
         list sff-interfaces {

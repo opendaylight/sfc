@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "bd239bc1_a9e87089",
+        "filename": "features/features4-sfc/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-18T16:03:30Z",
+      "side": 0,
+      "message": "This feature is never used in the current use-cases.",
+      "parentUuid": "1447cbf3_5465fc6a",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "42cc292f7d5a755455ef45ebb6352b0deb6d24fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e043c55_9462533d",
         "filename": "features/features4-sfc/pom.xml",
         "patchSetId": 1
@@ -59,6 +83,30 @@
       "writtenOn": "2017-12-18T10:39:07Z",
       "side": 0,
       "message": "If this was only used when tacker talked directly to odl sfc, since now it uses networking-sfc, could the whole module be dropped?",
+      "range": {
+        "startLine": 148,
+        "startChar": 24,
+        "endLine": 148,
+        "endChar": 43
+      },
+      "revId": "42cc292f7d5a755455ef45ebb6352b0deb6d24fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "334adee5_c456fedf",
+        "filename": "features/features4-sfc/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-18T16:03:30Z",
+      "side": 0,
+      "message": "We could possibly remove the entire module. Currently there is no impl avail, so we shouldnt include the feature.",
+      "parentUuid": "4e043c55_9462533d",
       "range": {
         "startLine": 148,
         "startChar": 24,

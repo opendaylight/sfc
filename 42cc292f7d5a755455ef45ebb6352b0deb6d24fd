@@ -72,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "ad1261aa_e5423cfb",
+        "filename": "features/features4-sfc/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-18T17:01:11Z",
+      "side": 0,
+      "message": "Yeah, but still you need it for sfc_agent which is kinda useful for testing. Anyway, I guess it is ok if you can somehow install it afterwards.",
+      "parentUuid": "bd239bc1_a9e87089",
+      "range": {
+        "startLine": 111,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 21
+      },
+      "revId": "42cc292f7d5a755455ef45ebb6352b0deb6d24fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "4e043c55_9462533d",
         "filename": "features/features4-sfc/pom.xml",
         "patchSetId": 1

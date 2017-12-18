@@ -87,6 +87,18 @@ module service-function-forwarder-logical {
     }
   }
 
+  augment "/sfc-sff:service-function-forwarders/"
+        + "sfc-sff:service-function-forwarder/"
+        + "sfc-sff:sff-data-plane-locator/"
+        + "sfc-sff:data-plane-locator/"
+        + "sfc-sff:locator-type/" {
+    description "Augments the Service Function Forwarder to allow the use of logical
+                interface locators";
+    case logical-interface {
+      uses logical-interface-locator;
+    }
+  }
+
   augment "/sfc-sff:service-function-forwarders-state/"
         + "sfc-sff:service-function-forwarder-state/" {
     description "Augments the SFF state to hold logical SFF specific information";

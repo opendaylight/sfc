@@ -39,7 +39,6 @@ mechanisms to steer traffic (mac chaining, nsh, vlan, mpls...), versus
 bump in the wire service functions that are sfc unaware and thus might
 not allow any modification over the source traffic.
 
-
 Use Cases
 ---------
 Support 'bump in the wire' network devices that can be made sfc aware to
@@ -137,7 +136,6 @@ while operating in this mode, are sfc aware in that they allow to use
 already supported mechanisms (mac chaining, nsh...) to steer SFC
 traffic.
 
-
 Pipeline changes
 ----------------
 The existing OpenFlow pipeline will not be affected by this change.
@@ -207,15 +205,49 @@ within the service function forwarder.
             }
         }
 
+Logical interface locator support is also added to the service function
+forwarder data plane locator.
+
+.. code-block:: service-function-forwarder-logical.yang
+
+        augment "/sfc-sff:service-function-forwarders/"
+              + "sfc-sff:service-function-forwarder/"
+              + "sfc-sff:sff-data-plane-locator/"
+              + "sfc-sff:data-plane-locator/"
+              + "sfc-sff:locator-type/" {
+          description "Augments the Service Function Forwarder to allow the use of logical
+                      interface locators";
+          case logical-interface {
+            uses logical-interface-locator;
+          }
+        }
+
+A new leaf is added to the rendered service path model to flag reverse
+paths.
+
+.. code-block:: rendered-service-path.yang
+
+        leaf reverse-path {
+          type boolean;
+          mandatory true;
+          description
+            "True if this path is the reverse path of a symmetric
+             chain.";
+        }
+
 Configuration impact
 --------------------
 New optional parameters are added to the SFF-SF dictionary. These new
 parameters may not be configured in which case behavior is not changed.
-Backward compatibility is preserved.
+
+The new flag introduced in the rendered service path model does not
+have configuration impact as the entity is not meant to be configured.
 
 Logical SFF configuration model will change. Both, previous and new
 configuration models will be supported.
 
+Thus backward compatibility is preserved despite the introduced
+changes.
 
 Clustering considerations
 -------------------------
@@ -373,13 +405,15 @@ Work Items
   interfaces.
 * Update odl-openflow-renderer processor and surrounding utilities to
   use the proper data plane locator based on the direction of the path.
+* Update provider to set the reverse flag on reverse rendered service
+  paths.
 * Update the shell command for service functions and service
   function forwarders to display the associations between them.
+* Update CSIT Full Deploy to use new Logical SFF configuration model.
 * Update the user & developer guide to document directional data plane
   locators.
 * Update the user & developer guide to reflect the new Logical SFF
   configuration model.
-
 
 Dependencies
 ============
@@ -405,7 +439,8 @@ None.
 
 CSIT
 ----
-None.
+Existing Full Deploy CSIT will be updated to use the new Logical SFF
+configuration model.
 
 Documentation Impact
 ====================
@@ -414,17 +449,11 @@ Both the User Guide and Developer Guide will need to be updated.
 Open Issues
 ===========
 
-* Should we drop support for the old Logical SFF configuration model for
-  simpler code, given it is not probably used by itself much and we will
-  update the netvirt sfc translator anyway?
-* CSIT was not proposed yet because it requires testing with traffic,
-  which we don't currently have and is a major undertaking on itself.
-* Currently reverse paths are only recognized with a name ending in
-  '-Reverse'. We probably should have a more explicit property to
-  designate a reversed path.
-* I think that considering a yang model proposal that covers full bump
-  in the wire support in this spec would be interesting. So can we do this
-  without committing to a full implementation for the targeted release?
+* Drop support for the old Logical SFF configuration model?
+* New CSIT tests not proposed yet because it requires testing with
+  traffic, which we don't currently have and is a major undertaking on
+  itself.
 
 References
 ==========
+NA

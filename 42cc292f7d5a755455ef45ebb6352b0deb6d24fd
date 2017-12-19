@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "836a9e60_72474d61",
+        "filename": "features/features4-sfc/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2017-12-19T13:31:24Z",
+      "side": 0,
+      "message": "The shell uses the provider to retrieve data, but the sfc-provider shouldn\u0027t force to install the shell.",
+      "parentUuid": "e36e4ca9_386e131d",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 20
+      },
+      "revId": "42cc292f7d5a755455ef45ebb6352b0deb6d24fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1447cbf3_5465fc6a",
         "filename": "features/features4-sfc/pom.xml",
         "patchSetId": 1

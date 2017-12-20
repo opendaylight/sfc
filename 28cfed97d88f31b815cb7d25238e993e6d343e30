@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2b53c494_74553946",
+        "filename": "docs/specs/directional-dpl.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-20T22:19:58Z",
+      "side": 1,
+      "message": "Why was the spec included with the API changes?",
+      "revId": "28cfed97d88f31b815cb7d25238e993e6d343e30",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

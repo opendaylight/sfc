@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3b4501b4_f3dd1fd9",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-20T22:19:58Z",
+      "side": 1,
+      "message": "This would be more clear like this:\nUsed for both forward and reverse packets on symmetric paths with Service Functions that have just one locator.",
+      "range": {
+        "startLine": 167,
+        "startChar": 15,
+        "endLine": 168,
+        "endChar": 41
+      },
+      "revId": "0b2ecee34f2f37532a77b50bf747ab954843c86f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "78c07cbe_04e37978",
+        "filename": "sfc-model/src/main/yang/service-function-forwarder.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-20T22:19:58Z",
+      "side": 1,
+      "message": "This would be more clear like this:\nUsed for both forward and reverse packets on symmetric paths with Service Functions that have just one locator.",
+      "range": {
+        "startLine": 175,
+        "startChar": 15,
+        "endLine": 176,
+        "endChar": 44
+      },
+      "revId": "0b2ecee34f2f37532a77b50bf747ab954843c86f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

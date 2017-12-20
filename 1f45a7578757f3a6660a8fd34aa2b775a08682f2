@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a273cb83_6e89dfa7",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "To clarify: The traditional VxLAN mesh created by genius can have GPE extension enabled via ITM config option, a separate VxLAN-GPE mesh is not mandatory.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 41
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "873a5a4b_37adf87e",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "Why a global toggle? What if the forwarding plane supports nsh but not all SFs do? I would probably like to mix some paths that use nsh while others not. In my opinion there is no need for this toggle, chains with transport set to vxlan and sfc encapsulation set to transport should render like this.",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 30
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c945a962_d2fd35fd",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "Could you add a reference for this?",
+      "range": {
+        "startLine": 103,
+        "startChar": 5,
+        "endLine": 103,
+        "endChar": 47
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0fc76b6f_023c0d96",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "I miss a bit of detail on how path ID and index will be combined into a VNI. How are we sure this VNI will not fall within the reserved ranges for Netvirt?",
+      "range": {
+        "startLine": 106,
+        "startChar": 0,
+        "endLine": 107,
+        "endChar": 45
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "362b6dcd_083a4ffb",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "The spec directional-dpl spec covers this, have you checked it?",
+      "range": {
+        "startLine": 125,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 47
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b35dcba4_604169f4",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "I am missing a bit how this is achieved on SFC side of things.\nThis could be managed configuring different SF \u0027instances\u0027, each with single arm pair.\nThere is a \u0027only-one-chain\u0027 flag on service functions that is not currently used but could be leveraged.\nBut simply leaving this up to the orchestration might not be enough. Schedulers may cause using these exclusive interfaces more than once.",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 80
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1704fa1e_bb306c8b",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "What about changes on this table?",
+      "range": {
+        "startLine": 185,
+        "startChar": 50,
+        "endLine": 185,
+        "endChar": 80
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b7f19cea_ce1858cf",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 4
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2017-12-20T14:20:37Z",
+      "side": 1,
+      "message": "Missing some words on this phrase. Anyway, do you have plans to keep 83 \u0026 86 to match on metadata/registers and be same for both for nsh/non-nsh? And dispatcher \u0026 87 would be different based on nsh/non-nsh?",
+      "range": {
+        "startLine": 193,
+        "startChar": 24,
+        "endLine": 194,
+        "endChar": 52
+      },
+      "revId": "1f45a7578757f3a6660a8fd34aa2b775a08682f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

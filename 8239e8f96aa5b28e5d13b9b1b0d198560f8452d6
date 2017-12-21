@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8a3cc795_695e49bc",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-21T23:17:15Z",
+      "side": 1,
+      "message": "All of this needs to be removed.",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "8239e8f96aa5b28e5d13b9b1b0d198560f8452d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "48c15804_a8fc17f1",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2017-12-21T23:17:15Z",
+      "side": 1,
+      "message": "These sections need to be finished.",
+      "range": {
+        "startLine": 299,
+        "startChar": 0,
+        "endLine": 312,
+        "endChar": 3
+      },
+      "revId": "8239e8f96aa5b28e5d13b9b1b0d198560f8452d6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

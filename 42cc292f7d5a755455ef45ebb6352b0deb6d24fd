@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "62450616_88ab4bfc",
+        "filename": "features/features4-sfc/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2017-12-22T03:39:19Z",
+      "side": 0,
+      "message": "Sure. In the context of trying to speed up builds this might still be useful. The question was whether shell does anything if the provider is not loaded. It was just a thought that provider was the core feature, so if it wasn\u0027t loaded then the shell didn\u0027t have any value.",
+      "parentUuid": "836a9e60_72474d61",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 40,
+        "endChar": 20
+      },
+      "revId": "42cc292f7d5a755455ef45ebb6352b0deb6d24fd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1447cbf3_5465fc6a",
         "filename": "features/features4-sfc/pom.xml",
         "patchSetId": 1

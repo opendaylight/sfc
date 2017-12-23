@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
@@ -154,6 +155,10 @@ public class SfcOfRspProcessor {
 
             // Update the operational datastore if necessary (without blocking)
             transportProcessor.updateOperationalDSInfo(sffGraph, rsp);
+
+            // TODO do we need to store the tableOffsets for stats to work later??
+            //this.sfcStatisticsMgr.scheduleRspStatistics(
+            //        rsp, getTableOffsets(sffGraph.getGraphEntryIterator().next().getDstSff()));
 
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
@@ -550,11 +555,13 @@ public class SfcOfRspProcessor {
 
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
             if (entry.usesLogicalSFF()) {
+                this.sfcOfProviderUtils.setTableOffsets(entry.getDstSff(), NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE);
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(sffNodeName,
                         NwConstants.LPORT_DISPATCHER_TABLE);
                 this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAnyResubmit(sffNodeName,
                         NwConstants.LPORT_DISPATCHER_TABLE);
             } else {
+                this.sfcOfProviderUtils.setTableOffsets(entry.getDstSff(), sfcOfFlowProgrammer.getTableBase());
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
                 this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
             }

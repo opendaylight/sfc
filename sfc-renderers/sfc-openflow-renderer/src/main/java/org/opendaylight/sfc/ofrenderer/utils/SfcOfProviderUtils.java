@@ -28,6 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfTableOffsets;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTable;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -227,6 +230,27 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     @Override
     public List<SffDataPlaneLocator> getSffNonSfDataPlaneLocators(ServiceFunctionForwarder sff) {
         return SfcProviderServiceForwarderAPI.getNonSfDataPlaneLocators(sff);
+    }
+
+    public void setTableOffsets(SffName sffName, long tableBase) {
+        if (tableBase < 0) {
+            tableBase = 0;
+        }
+
+        SfcOfTablesByBaseTableBuilder sfcOfTablesByBaseTableBuilder = new SfcOfTablesByBaseTableBuilder();
+        sfcOfTablesByBaseTableBuilder.setSffName(sffName);
+        sfcOfTablesByBaseTableBuilder.setBaseTable(tableBase);
+        sfcOfTablesByBaseTableBuilder.setTransportIngressTable(tableBase + 1);
+        sfcOfTablesByBaseTableBuilder.setPathMapperTable(tableBase + 2);
+        sfcOfTablesByBaseTableBuilder.setPathMapperAclTable(tableBase + 3);
+        sfcOfTablesByBaseTableBuilder.setNextHopTable(tableBase + 4);
+        sfcOfTablesByBaseTableBuilder.setTransportEgressTable(tableBase + 10);
+
+        InstanceIdentifier<SfcOfTablesByBaseTable> iid = InstanceIdentifier.create(SfcOfTableOffsets.class)
+                .child(SfcOfTablesByBaseTable.class);
+
+        SfcDataStoreAPI.writeMergeTransactionAPI(iid, sfcOfTablesByBaseTableBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
     }
 
 }

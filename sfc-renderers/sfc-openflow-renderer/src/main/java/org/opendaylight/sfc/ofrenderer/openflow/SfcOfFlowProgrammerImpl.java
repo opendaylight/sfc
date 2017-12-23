@@ -572,7 +572,6 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      *
      * @param sffNodeName - the SFF to write the flow to
      */
-    @Override
     public void configureMacChainingTransportIngressFlow(final String sffNodeName) {
 
         MatchBuilder match = new MatchBuilder();

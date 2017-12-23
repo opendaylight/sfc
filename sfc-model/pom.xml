@@ -50,6 +50,7 @@
               org.opendaylight.yang.gen.v1.urn.ericsson.*;
               org.opendaylight.yang.gen.v1.urn.ieee.*;
               org.opendaylight.yang.gen.v1.urn.ietf.*;
+              org.opendaylight.yang.gen.v1.urn.inocybe.*;
               org.opendaylight.yang.gen.v1.urn.intel.*;
               org.opendaylight.yang.gen.v1.urn.opendaylight.*;
               org.opendaylight.yang.gen.v1.urn.hpe.*;

@@ -131,4 +131,9 @@ public class SfcOfProviderUtilsTestMock extends SfcOfBaseProviderUtils {
 
         return nonSfDpls;
     }
+
+    @Override
+    public void setTableOffsets(SffName sffName, long tableBase) {
+        // Empty for now
+    }
 }

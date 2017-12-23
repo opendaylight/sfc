@@ -119,6 +119,7 @@ public class SfcOfRspProcessorTest {
 
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -186,6 +187,7 @@ public class SfcOfRspProcessorTest {
 
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -250,6 +252,7 @@ public class SfcOfRspProcessorTest {
 
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -303,6 +306,7 @@ public class SfcOfRspProcessorTest {
 
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -354,6 +358,7 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled(sffName);
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -403,6 +408,7 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled(sffName);
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
@@ -450,6 +456,7 @@ public class SfcOfRspProcessorTest {
 
         // verify table index mapper setting
         verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());

@@ -64,6 +64,8 @@ public abstract class SfcOfBaseProviderUtils {
     // DPL types: one for the SFs and another for the SFF trunk.
     public abstract List<SffDataPlaneLocator> getSffNonSfDataPlaneLocators(ServiceFunctionForwarder sff);
 
+    public abstract void setTableOffsets(SffName sffName, long tableBase);
+
     /**
      * Return a named SffDataPlaneLocator on a SFF.
      *

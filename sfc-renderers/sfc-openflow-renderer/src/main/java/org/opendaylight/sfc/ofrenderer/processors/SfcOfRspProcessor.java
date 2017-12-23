@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
@@ -547,11 +548,13 @@ public class SfcOfRspProcessor {
 
             transportProcessor.configureClassifierTableMatchAny(sffNodeName);
             if (entry.usesLogicalSFF()) {
+                this.sfcOfProviderUtils.setTableOffsets(entry.getDstSff(), NwConstants.SFC_TRANSPORT_CLASSIFIER_TABLE);
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAnyResubmit(sffNodeName,
                         NwConstants.LPORT_DISPATCHER_TABLE);
                 this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAnyResubmit(sffNodeName,
                         NwConstants.LPORT_DISPATCHER_TABLE);
             } else {
+                this.sfcOfProviderUtils.setTableOffsets(entry.getDstSff(), sfcOfFlowProgrammer.getTableBase());
                 this.sfcOfFlowProgrammer.configureTransportIngressTableMatchAny(sffNodeName);
                 this.sfcOfFlowProgrammer.configureTransportEgressTableMatchAny(sffNodeName);
             }

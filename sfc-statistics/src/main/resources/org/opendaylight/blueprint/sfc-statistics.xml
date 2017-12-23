@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+           odl:use-default-for-reference-types="true">
+
+  <bean id="sfcStatisticsRpc" class="org.opendaylight.sfc.statistics.rpc.SfcStatisticsRpc">
+  </bean>
+
+  <odl:rpc-implementation ref="sfcStatisticsRpc" />
+
+</blueprint>

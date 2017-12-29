@@ -19,7 +19,7 @@ class FixGuestAdditions < VagrantVbguest::Installers::RedHat
     # latest CentOS release anymore and we have to look for it in the archives...
     if communicate.test('test -f /etc/centos-release && ! yum -q info kernel-devel-`uname -r` &>/dev/null')
       env.ui.warn("[#{vm.name}] Looking for the CentOS 'kernel-devel' package in the release archives...")
-      packages.sub!('kernel-devel-`uname -r`', 'http://mirror.centos.org/centos' \
+      packages.sub!('kernel-devel-`uname -r`', 'http://vault.centos.org/centos' \
                                                '/`grep -Po \'\b\d+\.[\d.]+\b\' /etc/centos-release`' \
                                                '/{os,updates}/`arch`/Packages/kernel-devel-`uname -r`.rpm')
     end

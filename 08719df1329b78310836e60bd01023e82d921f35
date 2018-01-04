@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5f037756_9575bf06",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "So here we generate RSP-\u003csfp-name\u003e as name. But createRenderedServicePathEntry also generates a name if none is provided (@ line ~599), in the form of \u003csfp-name\u003e-Path-\u003cpath-id\u003e. Shouldnt we consolidate and stick to one form? Probably the old one for familiarity?",
+      "range": {
+        "startLine": 140,
+        "startChar": 37,
+        "endLine": 140,
+        "endChar": 95
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "25c1c195_f0fea141",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "I am a bit lost here. As a result of this call, for the operational RSP, a new path id will be generated different from the configured one. Also the scheduler will be triggered possibly generating a different sequence of SFs than the one configured one. Aren\u0027t we supposed to use the configured path id and SF sequence?",
+      "range": {
+        "startLine": 68,
+        "startChar": 17,
+        "endLine": 68,
+        "endChar": 50
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5ff6dc4b_f331d607",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "This return can be removed",
+      "range": {
+        "startLine": 71,
+        "startChar": 12,
+        "endLine": 71,
+        "endChar": 18
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ebe4f410_5b38e6eb",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "Missing @Nonnull annotation",
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1b3cab6d_f94793d0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "I thought, per the spec, that updates would not be allowed.",
+      "range": {
+        "startLine": 136,
+        "startChar": 8,
+        "endLine": 136,
+        "endChar": 40
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8b9fc3ff_133fd97b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionPathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "If the SFP is being restored from a backup, we might update the configured RSP unintentionally. Or either, the RSP configured here will be updated by the backed up configured RSP.",
+      "range": {
+        "startLine": 46,
+        "startChar": 18,
+        "endLine": 46,
+        "endChar": 51
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "55e78e27_91887889",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionPathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "Missing @Nonnull annotation",
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "18c3c1b5_9af1aa90",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionPathListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-04T12:04:42Z",
+      "side": 1,
+      "message": "Should we support updates? The renderer does not support updates anyway. Also, I don\u0027t know how this wold work, as it will generate a new path id and SF sequence for the configured RSP.",
+      "range": {
+        "startLine": 94,
+        "startChar": 8,
+        "endLine": 94,
+        "endChar": 40
+      },
+      "revId": "08719df1329b78310836e60bd01023e82d921f35",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

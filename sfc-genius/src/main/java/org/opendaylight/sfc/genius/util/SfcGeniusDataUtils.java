@@ -11,10 +11,13 @@ package org.opendaylight.sfc.genius.util;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
@@ -83,32 +86,7 @@ public final class SfcGeniusDataUtils {
      *         otherwise
      */
     public static boolean isSfUsingALogicalInterface(ServiceFunction sf) {
-        return Optional.ofNullable(sf).map(SfcGeniusDataUtils::getSfLogicalInterfaceDataplaneLocators)
-                .filter(logicalIfDpls -> logicalIfDpls.size() > 0).isPresent();
-    }
-
-    /**
-     * Fetches the logical interface name, when given a ServiceFunction.
-     *
-     * @param sf
-     *            The service function whose logical interface name we're
-     *            interested on
-     * @return The interface name, when available
-     * @throws IllegalArgumentException
-     *             if the Service Function is not attached to a single Logical
-     *             Interface
-     *
-     */
-    public static String getSfLogicalInterface(ServiceFunction sf) {
-        List<LogicalInterface> theDpls = Optional.ofNullable(sf)
-                .map(SfcGeniusDataUtils::getSfLogicalInterfaceDataplaneLocators).orElse(Collections.emptyList());
-
-        if (theDpls.size() == 1) {
-            return theDpls.get(0).getInterfaceName();
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("We *must* have a single LogicalInterface locator. Got %d", theDpls.size()));
-        }
+        return !getSfLogicalInterfaces(sf).isEmpty();
     }
 
     /**
@@ -135,10 +113,25 @@ public final class SfcGeniusDataUtils {
      * @return The list of logical interface dataplane locators attached to the
      *         Service Function
      */
-    private static List<LogicalInterface> getSfLogicalInterfaceDataplaneLocators(ServiceFunction sf) {
-        return Optional.ofNullable(sf).orElseThrow(() -> new RuntimeException("ServiceFunction is null"))
-                .getSfDataPlaneLocator().stream().filter(dpl -> dpl.getLocatorType() != null)
-                .filter(dpl -> dpl.getLocatorType().getImplementedInterface().equals(LogicalInterface.class))
-                .map(logicalIfDpl -> (LogicalInterface) logicalIfDpl.getLocatorType()).collect(Collectors.toList());
+    public static List<String> getSfLogicalInterfaces(@Nonnull ServiceFunction sf) {
+        return sf.getSfDataPlaneLocator()
+                .stream()
+                .map(SfcGeniusDataUtils::getLogicalInterfaceNameFromLocator)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Extracts the logical interface name from a SF data plane locator.
+     *
+     * @param  sfDataPlaneLocator the SF data plane locator.
+     * @return the logical interface name or {@code Null} if locator is not a
+     *         logical interface.
+     */
+    public static String getLogicalInterfaceNameFromLocator(@Nonnull SfDataPlaneLocator sfDataPlaneLocator) {
+        return Optional.ofNullable(sfDataPlaneLocator.getLocatorType())
+                .filter(locatorType -> LogicalInterface.class.equals(locatorType.getImplementedInterface()))
+                .map(locatorType -> ((LogicalInterface) locatorType).getInterfaceName())
+                .orElse(null);
     }
 }

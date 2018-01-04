@@ -203,7 +203,11 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
 
         ServiceFunction sfDst = sfcProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        String sfLogicalInterface = SfcGeniusDataUtils.getSfLogicalInterface(sfDst);
+        String sfLogicalInterface = SfcGeniusDataUtils.getLogicalInterfaceNameFromLocator(dstSfDpl);
+        if (sfLogicalInterface == null) {
+            throw new SfcRenderingException(
+                    "Failure during transport egress config: could not get logical interface name from locator");
+        }
         LOG.debug("configureTransportEgressFlows:sff->sf egress from a logical sff. " + "Target interface:{} si:{}",
                 sfLogicalInterface, entry.getServiceIndex());
 

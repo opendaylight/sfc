@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -46,8 +46,8 @@ public class SfcGeniusSfListener extends AbstractAsyncDataTreeChangeListener<Ser
     @Override
     public void remove(@Nonnull ServiceFunction removedServiceFunction) {
         LOG.debug("Received service function remove event {}", removedServiceFunction);
-        String interfaceName = SfcGeniusDataUtils.getSfLogicalInterface(removedServiceFunction);
-        interfaceManager.unbindInterfaces(Collections.singletonList(interfaceName));
+        List<String> interfaceNames = SfcGeniusDataUtils.getSfLogicalInterfaces(removedServiceFunction);
+        interfaceManager.unbindInterfaces(interfaceNames);
     }
 
     @Override

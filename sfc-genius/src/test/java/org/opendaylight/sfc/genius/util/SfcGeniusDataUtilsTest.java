@@ -13,6 +13,7 @@ import static org.mockito.Matchers.anyString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
@@ -279,13 +280,9 @@ public class SfcGeniusDataUtilsTest {
     }
 
     /**
-     * Negative test, where we cannot retrieve the interface name of the
-     * LogicalInterface to which the SF is connected to, because it does not
-     * have a dataplane locator set.
-     *
+     * Test that there are no logical interfaces if there is no DPL set.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSfLogicalInterfaceNegativeTestNoDpl() {
+    public void getSfLogicalInterfacesNoDpl() {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
@@ -302,17 +299,15 @@ public class SfcGeniusDataUtilsTest {
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 
-        SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
+        List<String> sfLogicalInterfaces = SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode);
+        Assert.assertTrue("There are no logical interfaces", sfLogicalInterfaces.isEmpty());
     }
 
     /**
-     * Negative test, where we cannot retrieve the interface name of the
-     * LogicalInterface to which the SF is connected to, because it has a
-     * different DataPlaneLocator type.
-     *
+     * Test that there are no logical interfaces if the DPL is not a of
+     * logical interface type.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSfLogicalInterfaceNegativeTest() {
+    public void getSfLogicalInterfacesWithDifferentLocatorType() {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
@@ -332,17 +327,16 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators).build();
 
         Assert.assertFalse(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
-        SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
+        List<String> sfLogicalInterfaces = SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode);
+        Assert.assertTrue("There are no logical interfaces", sfLogicalInterfaces.isEmpty());
     }
 
     /**
-     * Negative test, where we cannot retrieve the interface name of the
-     * LogicalInterface to which the SF is connected to, because it has multiple
-     * LogicalInterface data-plane locators, and we cannot know which is the
-     * correct one.
+     * Positive test, where we can get the names of the LogicalInterfaces to which
+     * the SF is connected to.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void getSfLogicalInterfaceWithMultipleLocatorsNegativeTest() {
+    @Test
+    public void getSfLogicalInterfaces() {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
@@ -369,35 +363,8 @@ public class SfcGeniusDataUtilsTest {
                 .setSfDataPlaneLocator(dpLocators).build();
 
         Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
-        SfcGeniusDataUtils.getSfLogicalInterface(dpiNode);
-    }
-
-    /**
-     * Positive test, where we can get the name of the LogicalInterface to which
-     * the SF is connected to.
-     */
-    @Test
-    public void getSfLogicalInterface() {
-        SfName sf1Name = new SfName("dpi");
-        String dpiIpAddress = "192.168.1.30";
-        ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
-        List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
-            {
-                add(new SfDataPlaneLocatorBuilder()
-                        .setKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
-                        .setServiceFunctionForwarder(new SffName("sfflogical1"))
-                        .setLocatorType(new LogicalInterfaceBuilder()
-                                .setInterfaceName("40c552e0-3695-472d-bace-7618786aba27").build())
-                        .build());
-            }
-        };
-
-        ServiceFunction dpiNode = new ServiceFunctionBuilder().setKey(dpiKey)
-                .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
-                .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
-                .setSfDataPlaneLocator(dpLocators).build();
-
-        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
-        Assert.assertEquals("40c552e0-3695-472d-bace-7618786aba27", SfcGeniusDataUtils.getSfLogicalInterface(dpiNode));
+        Assert.assertEquals(
+                Arrays.asList("40c552e0-3695-472d-bace-7618786aba27", "12345678-3695-472d-bace-7618786aba27"),
+                SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode));
     }
 }

@@ -87,6 +87,6 @@ public class SfcGeniusSfReader extends SfcGeniusReaderAbstract {
     }
 
     private static List<String> getInterfacesOfServiceFunction(ServiceFunction serviceFunction) {
-        return Collections.singletonList(SfcGeniusDataUtils.getSfLogicalInterface(serviceFunction));
+        return SfcGeniusDataUtils.getSfLogicalInterfaces(serviceFunction);
     }
 }

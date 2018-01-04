@@ -242,6 +242,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
         assertEquals(renderedServicePath.getName(), RSP_NAME);
         assertEquals(5, renderedServicePath.getRenderedServicePathHop().size());
+        assertFalse("The path must not be the reverse of the symmetric", renderedServicePath.isReversePath());
 
         assertHop(0, new SffName("SFF1"), renderedServicePath.getRenderedServicePathHop().get(0));
         assertHop(1, new SffName("SFF2"), renderedServicePath.getRenderedServicePathHop().get(1));
@@ -287,14 +288,19 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         }
 
         // get created rendered service paths
+        RspName rspName = new RspName(rpcResult.getResult().getName());
         RenderedServicePath createdRsp = null;
         if (rpcResult != null) {
             createdRsp = SfcProviderRenderedPathAPI
-                    .readRenderedServicePath(new RspName(rpcResult.getResult().getName()));
+                    .readRenderedServicePath(rspName);
         }
 
         assertNotNull("Must not be null", createdRsp);
         assertNotNull("RSP is symmetric", createdRsp.getSymmetricPathId());
+
+        RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
+        RenderedServicePath reverseRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(reverseRspName);
+        assertTrue("The path must be the reverse of the symmetric", reverseRsp.isReversePath());
     }
 
     private void assertHop(long hopNumber, SffName name, RenderedServicePathHop hop) {

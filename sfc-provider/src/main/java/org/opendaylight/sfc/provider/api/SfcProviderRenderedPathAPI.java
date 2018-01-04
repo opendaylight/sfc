@@ -545,6 +545,7 @@ public final class SfcProviderRenderedPathAPI {
         renderedServicePathBuilder.setParentServiceFunctionPath(serviceFunctionPath.getName());
         renderedServicePathBuilder.setContextMetadata(serviceFunctionPath.getContextMetadata());
         renderedServicePathBuilder.setVariableMetadata(serviceFunctionPath.getVariableMetadata());
+        renderedServicePathBuilder.setReversePath(false);
 
         if (serviceFunctionPath.getTransportType() == null) {
             // TODO this is a temporary workaround to a YANG problem
@@ -634,6 +635,7 @@ public final class SfcProviderRenderedPathAPI {
 
         revRenderedServicePathBuilder.setRenderedServicePathHop(revRenderedServicePathHopArrayList);
         revRenderedServicePathBuilder.setSymmetricPathId(renderedServicePath.getPathId());
+        revRenderedServicePathBuilder.setReversePath(true);
 
         InstanceIdentifier<RenderedServicePath> rspIID;
 

@@ -19,10 +19,13 @@ import org.opendaylight.sfc.ofrenderer.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.LogicalInterfaceLocator;
@@ -246,21 +249,27 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
-        long nsp = entry.getPathId();
+        long pathId = entry.getPathId();
+        long nsp = pathId;
         short nsi = entry.getServiceIndex();
-        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(),
-                entry.getSrcDpnId());
+        SffName dstSff = entry.getDstSff();
+        SffName srcSff = entry.getSrcSff();
+        DpnIdType srcDpnId = entry.getSrcDpnId();
+        DpnIdType dstDpnId = entry.getDstDpnId();
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(srcSff, pathId, srcDpnId);
 
-        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
+        if (SffGraph.EGRESS.equals(dstSff)) {
             LOG.debug("configureSffTransportEgressFlow: called for chain egress");
-            SfDataPlaneLocator srcSfDpl = sfcProviderUtils.getSfDataPlaneLocator(
-                    sfcProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId()), entry.getSrcSff());
+            SfName prevSfName = entry.getPrevSf();
+            ServiceFunctionForwarder prevSff = sfcProviderUtils.getServiceFunctionForwarder(srcSff, pathId);
+            ServiceFunction prevSf = sfcProviderUtils.getServiceFunction(prevSfName, pathId);
+            boolean isForwardPath = entry.isForwardPath();
+            SfDataPlaneLocator srcSfDpl = sfcProviderUtils.getIngressSfDataPlaneLocator(prevSff, prevSf, isForwardPath);
             MacAddress sfMacAddress = getMacAddress(srcSfDpl, false)
                     .orElseThrow(() -> new SfcRenderingException(
                             "Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]"));
 
-            DpnIdType srcDpid = entry.getSrcDpnId();
-            IpAddress sffIpAddress = Optional.ofNullable(sfcGeniusRpcClient.getDpnIpFromGeniusRPC(srcDpid))
+            IpAddress sffIpAddress = Optional.ofNullable(sfcGeniusRpcClient.getDpnIpFromGeniusRPC(srcDpnId))
                     .filter(ipAddresses -> !ipAddresses.isEmpty())
                     .map(ipAddresses -> ipAddresses.get(0))
                     .orElse(null);
@@ -272,19 +281,18 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
             if (entry.isIntraLogicalSFFEntry()) {
                 // in this case, use Genius to program egress flow
                 // 1. Get dpid for both source sff, dst sff
-                DpnIdType srcDpid = entry.getSrcDpnId();
-                DpnIdType dstDpid = entry.getDstDpnId();
+
                 // 2, use genius to retrieve dst interface name (ITM manager
                 // RPC)
-                Optional<String> targetInterfaceName = sfcGeniusRpcClient.getTargetInterfaceFromGeniusRPC(srcDpid,
-                        dstDpid);
+                Optional<String> targetInterfaceName = sfcGeniusRpcClient.getTargetInterfaceFromGeniusRPC(srcDpnId,
+                        dstDpnId);
                 if (!targetInterfaceName.isPresent()) {
-                    throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
-                            + " the interface to use between src dpnid:" + srcDpid + "and dst dpnid:" + dstDpid + ")");
+                    throw new SfcRenderingException("Failure during transport egress config. Genius did not return the"
+                            + " interface to use between src dpnid:" + srcDpnId + "and dst dpnid:" + dstDpnId + ")");
                 }
 
-                LOG.debug("configureSffTransportEgressFlow: srcDpn [{}] destDpn [{}] interface to use: [{}]", srcDpid,
-                        dstDpid, targetInterfaceName.get());
+                LOG.debug("configureSffTransportEgressFlow: srcDpn [{}] destDpn [{}] interface to use: [{}]", srcDpnId,
+                        dstDpnId, targetInterfaceName.get());
                 // 3, use genius for retrieving egress actions (Interface
                 // Manager RPC)
                 Optional<List<Action>> actionList = sfcGeniusRpcClient
@@ -293,7 +301,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                 if (!actionList.isPresent() || actionList.get().isEmpty()) {
                     throw new SfcRenderingException("Failure during transport egress config. Genius did not return"
                             + " egress actions for logical interface [" + targetInterfaceName.get() + "] (src dpnid:"
-                            + srcDpid + "; dst dpnid:" + dstDpid + ")");
+                            + srcDpnId + "; dst dpnid:" + dstDpnId + ")");
                 }
 
                 LOG.debug("configureSffTransportEgressFlow: adding NSH as NP to GPE encap");
@@ -302,7 +310,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
                 StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
                 flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
-                    .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
+                    .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(pathId));
 
                 // 4, write those actions
                 this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(

@@ -228,6 +228,7 @@ public class RspBuilder {
         rspBuilder.setPathId(rspPathIdIndex++);
         rspBuilder.setTransportType(sfp.getTransportType());
         rspBuilder.setSfcEncapsulation(sfp.getSfcEncapsulation());
+        rspBuilder.setReversePath(false);
 
         short index = 0;
         short serviceIndex = STARTING_INDEX;

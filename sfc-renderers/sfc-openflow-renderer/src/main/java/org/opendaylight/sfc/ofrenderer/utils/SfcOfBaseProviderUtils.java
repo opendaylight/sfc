@@ -9,6 +9,7 @@
 package org.opendaylight.sfc.ofrenderer.utils;
 
 import java.util.List;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -25,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.LocatorType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Mac;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
-import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.port.details.OfsPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SfcOfBaseProviderUtils {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(SfcOfBaseProviderUtils.class);
-
     public abstract void addRsp(long rspId);
+
+    protected static final Logger LOG = LoggerFactory.getLogger(SfcOfBaseProviderUtils.class);
 
     public abstract void removeRsp(long rspId);
 
@@ -76,7 +76,7 @@ public abstract class SfcOfBaseProviderUtils {
     public SffDataPlaneLocator getSffDataPlaneLocator(ServiceFunctionForwarder sff, SffDataPlaneLocatorName dplName) {
         SffDataPlaneLocator sffDpl = null;
 
-        if (dplName == null || dplName.getValue() == null) {
+        if (sff == null || sff.getSffDataPlaneLocator() == null || dplName == null || dplName.getValue() == null) {
             return null;
         }
 
@@ -93,7 +93,36 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Return the SfDataPlaneLocator on the SF that connects to the named SFF.
+     * Return a named SfDataPlaneLocator on a SF.
+     *
+     * @param sf
+     *            - The SF to search in
+     * @param dplName
+     *            - The name of the DPL to look for
+     * @return SfDataPlaneLocator or null if not found
+     */
+    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, SfDataPlaneLocatorName dplName) {
+        SfDataPlaneLocator sfDpl = null;
+
+        if (sf == null || sf.getSfDataPlaneLocator() == null || dplName == null || dplName.getValue() == null) {
+            return null;
+        }
+
+        List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
+        for (SfDataPlaneLocator sfDataPlanelocator : sfDataPlanelocatorList) {
+            if (sfDataPlanelocator.getName() != null
+                    && sfDataPlanelocator.getName().getValue().equals(dplName.getValue())) {
+                sfDpl = sfDataPlanelocator;
+                break;
+            }
+        }
+
+        return sfDpl;
+    }
+
+    /**
+     * Return any of the SfDataPlaneLocator on the SF that connects to the named
+     * SFF.
      *
      * @param sf
      *            the ServiceFunction to search through
@@ -113,25 +142,124 @@ public abstract class SfcOfBaseProviderUtils {
     }
 
     /**
-     * Given a ServiceFunction get the SF DPL name from the
-     * SffSfDataPlaneLocator and return the SF DPL.
+     * Returns the SfDataPlaneLocator for SFF Egress in relation to a path
+     * direction. On a forward path, this is the forward SF DPL, while on a
+     * reverse path, this is the reverse SF DPL.
      *
+     * @param sff
+     *            - The SFF
      * @param sf
-     *            the ServiceFunction to search through
-     * @param sffSfDpl
-     *            The SffSf DPL to compare against
-     * @return SfDataPlaneLocator if found, else null
+     *            - The SF
+     * @param isForwardPath
+     *            - True if the path is a forward path, false otherwise
+     * @return SfDataPlaneLocator or null if not found
      */
-    public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, SffSfDataPlaneLocator sffSfDpl) {
-        List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
+    public SfDataPlaneLocator getEgressSfDataPlaneLocator(ServiceFunctionForwarder sff,
+                                                          ServiceFunction sf,
+                                                          boolean isForwardPath) {
+        SffSfDataPlaneLocator sffSfDpl = getSffSfDataPlaneLocator(sff, sf);
 
-        for (SfDataPlaneLocator sfDpl : sfDataPlanelocatorList) {
-            if (sfDpl.getName().getValue().equals(sffSfDpl.getSfDplName().getValue())) {
-                return sfDpl;
-            }
+        if (sffSfDpl == null) {
+            // revert to look by SFF name when using old provisioning model
+            // with no SFF dictionary
+            return sff != null ? getSfDataPlaneLocator(sf, sff.getName()) : null;
         }
 
-        return null;
+        final SfDataPlaneLocatorName sfForwardDplName = sffSfDpl.getSfForwardDplName();
+        final SfDataPlaneLocatorName sfReverseDplName = sffSfDpl.getSfReverseDplName();
+        SfDataPlaneLocatorName sfDplName = isForwardPath ? sfForwardDplName : sfReverseDplName;
+        if (sfDplName == null) {
+            // fallback to non directional DPL
+            sfDplName = sffSfDpl.getSfDplName();
+        }
+
+        return getSfDataPlaneLocator(sf, sfDplName);
+    }
+
+    /**
+     * Returns the SffDataPlaneLocator for SFF Egress in relation to a path
+     * direction. On a forward path, this is the forward SFF DPL, while on a
+     * reverse path, this is the reverse SFF DPL.
+     *
+     * @param sff
+     *            - The SFF
+     * @param sf
+     *            - The SF
+     * @param isForwardPath
+     *            - True if the path is a forward path, false otherwise
+     * @return SffDataPlaneLocator or null if not found
+     */
+    public SffDataPlaneLocator getEgressSffDataPlaneLocator(ServiceFunctionForwarder sff,
+                                                            ServiceFunction sf,
+                                                            boolean isForwardPath) {
+        SffSfDataPlaneLocator sffSfDpl = getSffSfDataPlaneLocator(sff, sf);
+
+        if (sffSfDpl == null) {
+            return null;
+        }
+
+        final SffDataPlaneLocatorName sffForwardDplName = sffSfDpl.getSffForwardDplName();
+        final SffDataPlaneLocatorName sffReverseDplName = sffSfDpl.getSffReverseDplName();
+        SffDataPlaneLocatorName sffDplName = isForwardPath ? sffForwardDplName : sffReverseDplName;
+        if (sffDplName == null) {
+            // fallback to non directional DPL
+            sffDplName = sffSfDpl.getSffDplName();
+        }
+
+        return getSffDataPlaneLocator(sff, sffDplName);
+    }
+
+    /**
+     * Returns the SfDataPlaneLocator for SFF Ingress in relation to a path
+     * direction. On a forward path, this is the reverse SF DPL, while on a
+     * reverse path, this is the forward SF DPL.
+     *
+     * @param sff
+     *            - The SFF
+     * @param sf
+     *            - The SF
+     * @param isForwardPath
+     *            - True if the path is a forward path, false otherwise
+     * @return SfDataPlaneLocator or null if not found
+     */
+    public SfDataPlaneLocator getIngressSfDataPlaneLocator(ServiceFunctionForwarder sff,
+                                                           ServiceFunction sf,
+                                                           boolean isForwardPath) {
+
+        SffSfDataPlaneLocator sffSfDpl = getSffSfDataPlaneLocator(sff, sf);
+
+        if (sffSfDpl == null) {
+            // revert to look by SFF name when using old provisioning model
+            // with no SFF dictionary
+            return sff != null ? getSfDataPlaneLocator(sf, sff.getName()) : null;
+        }
+
+        final SfDataPlaneLocatorName sfForwardDplName = sffSfDpl.getSfForwardDplName();
+        final SfDataPlaneLocatorName sfReverseDplName = sffSfDpl.getSfReverseDplName();
+        SfDataPlaneLocatorName sfDplName = isForwardPath ? sfReverseDplName : sfForwardDplName;
+        if (sfDplName == null) {
+            // fallback to non directional DPL
+            sfDplName = sffSfDpl.getSfDplName();
+        }
+
+        return getSfDataPlaneLocator(sf, sfDplName);
+    }
+
+    /**
+     * Return the named SF ServiceFunctionDictionary SffSfDataPlaneLocator from
+     * the sff sf-dictionary list.
+     *
+     * @param sff
+     *            - The SFF to search in
+     * @param sf
+     *            - The SF to look for
+     * @return SffSfDataPlaneLocator or null if not found
+     */
+    public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, ServiceFunction sf) {
+        if (sf == null) {
+            return null;
+        }
+        return getSffSfDataPlaneLocator(sff, sf.getName());
     }
 
     /**
@@ -141,7 +269,7 @@ public abstract class SfcOfBaseProviderUtils {
      * @param sff
      *            - The SFF to search in
      * @param sfName
-     *            - The name of the DPL to look for
+     *            - The name of the SF to look for
      * @return SffSfDataPlaneLocator or null if not found
      */
     public SffSfDataPlaneLocator getSffSfDataPlaneLocator(ServiceFunctionForwarder sff, SfName sfName) {
@@ -167,6 +295,10 @@ public abstract class SfcOfBaseProviderUtils {
      */
     public ServiceFunctionDictionary getSffSfDictionary(ServiceFunctionForwarder sff, SfName sfName) {
         ServiceFunctionDictionary sffSfDict = null;
+
+        if (sff == null || sfName == null) {
+            return null;
+        }
 
         List<ServiceFunctionDictionary> sffSfDictList = sff.getServiceFunctionDictionary();
         if (sffSfDictList != null) {
@@ -406,33 +538,6 @@ public abstract class SfcOfBaseProviderUtils {
 
         // it its not an sff-ovs, then just return the ServiceNode
         return sff.getServiceNode().getValue();
-    }
-
-    /**
-     * Given a SF, retrieve the logical interface name.
-     *
-     * @param sf
-     *            The service function to use
-     * @return String the logical interface name when the SF is using a logical
-     *         interface; null otherwise
-     */
-    public String getSfLogicalInterfaceName(ServiceFunction sf) {
-        String interfaceName = null;
-        LOG.debug("getSfLogicalInterfaceName: called for sf {}", sf.getName());
-        if (sf.getSfDataPlaneLocator() != null && sf.getSfDataPlaneLocator().get(0) != null) {
-            SfDataPlaneLocator sfdpl = sf.getSfDataPlaneLocator().get(0);
-            LOG.debug("getSfLogicalInterfaceName: dpl 0 is not null! it is {}", sfdpl);
-            if (sfdpl.getLocatorType() != null
-                    && sfdpl.getLocatorType().getImplementedInterface() == LogicalInterface.class) {
-                LogicalInterface logicalInterface = (LogicalInterface) sfdpl.getLocatorType();
-                if (logicalInterface != null && logicalInterface.getInterfaceName() != null) {
-                    LOG.debug("getSfLogicalInterfaceName: hop is using a logical interface [{}]",
-                            logicalInterface.getInterfaceName());
-                    interfaceName = logicalInterface.getInterfaceName();
-                }
-            }
-        }
-        return interfaceName;
     }
 
     public SffDataPlaneLocator getSffSfDictSffDpl(SfName sfName, SffName sffName, long rspId) {

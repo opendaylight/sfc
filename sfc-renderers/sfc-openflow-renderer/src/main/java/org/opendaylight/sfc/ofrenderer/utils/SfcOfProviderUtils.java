@@ -89,6 +89,11 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
      */
     @Override
     public ServiceFunction getServiceFunction(final SfName sfName, long rspId) {
+
+        if (sfName == null) {
+            return null;
+        }
+
         RspContext rspContext = rspIdToContext.get(rspId);
 
         ServiceFunction sf = rspContext.serviceFunctions.get(sfName);
@@ -125,6 +130,11 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
      */
     @Override
     public ServiceFunctionForwarder getServiceFunctionForwarder(final SffName sffName, long rspId) {
+
+        if (sffName == null) {
+            return null;
+        }
+
         RspContext rspContext = rspIdToContext.get(rspId);
 
         ServiceFunctionForwarder sff = rspContext.serviceFunctionFowarders.get(sffName);

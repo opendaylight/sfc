@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.T
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_LOCAL_COOKIE;
 import static org.opendaylight.sfc.ofrenderer.openflow.SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_NSH_ETH_LASTHOP_TUNNEL_REMOTE_COOKIE;
 import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.replace;
 import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 
 import com.google.common.net.InetAddresses;
@@ -63,8 +65,6 @@ import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterImpl;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -222,7 +222,6 @@ public class SfcOfLogicalSffRspProcessorTest {
     public void setUp() throws Exception {
         sfcUtils.resetCache();
 
-        PowerMockito.mockStatic(SfcGeniusDataUtils.class);
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(Mockito.mock(WriteTransaction.class));
         PowerMockito.when(sfcOfRspProcessor, "getGeniusRpcClient").thenReturn(geniusClient);
         PowerMockito.doReturn(logicalSffProcessor).when(sfcOfRspProcessor, "getReusableTransportProcessor", any(),
@@ -231,24 +230,29 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.when(geniusClient, "getItmRpcService").thenReturn(itmRpcService);
 
         String ifName0 = rspBuilder.getLogicalInterfaceName(0);
-        PowerMockito.mockStatic(SfcGeniusDataUtils.class);
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName0))
-                .thenReturn(Optional.of(MAC_ADDRESS_SF_SIDE[0]));
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName0))
-                .thenReturn(Optional.of(MAC_ADDRESS_OVS_SIDE[0]));
-
         String ifName1 = rspBuilder.getLogicalInterfaceName(1);
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName1))
-                .thenReturn(Optional.of(MAC_ADDRESS_SF_SIDE[1]));
-        PowerMockito.when(SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName1))
-                .thenReturn(Optional.of(MAC_ADDRESS_OVS_SIDE[1]));
+        PowerMockito.mockStatic(SfcGeniusDataUtils.class, CALLS_REAL_METHODS);
 
-        PowerMockito.when(SfcGeniusDataUtils.getLogicalInterfaceNameFromLocator(any(SfDataPlaneLocator.class)))
-                .thenReturn(LOGICAL_INTERFACE_NAME);
+        replace(method(SfcGeniusDataUtils.class,"getServiceFunctionMacAddress", String.class))
+                .with((object, method, arguments) -> {
+                    if (arguments[0].equals(ifName0)) {
+                        return Optional.of(MAC_ADDRESS_SF_SIDE[0]);
+                    } else if (arguments[0].equals(ifName1)) {
+                        return Optional.of(MAC_ADDRESS_SF_SIDE[1]);
+                    }
+                    return Optional.empty();
+                });
+        replace(method(SfcGeniusDataUtils.class,"getServiceFunctionForwarderPortMacAddress", String.class))
+                .with((object, method, arguments) -> {
+                    if (arguments[0].equals(ifName0)) {
+                        return Optional.of(MAC_ADDRESS_OVS_SIDE[0]);
+                    } else if (arguments[0].equals(ifName1)) {
+                        return Optional.of(MAC_ADDRESS_OVS_SIDE[1]);
+                    }
+                    return Optional.empty();
+                });
 
         PowerMockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(null);
-
-        PowerMockito.when(SfcGeniusDataUtils.isSfUsingALogicalInterface(any(ServiceFunction.class))).thenReturn(true);
 
         when(interfaceManagerRpcService.getEgressActionsForInterface(any(GetEgressActionsForInterfaceInput.class)))
                 .thenReturn(Futures.immediateFuture(RpcResultBuilder

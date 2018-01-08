@@ -20,8 +20,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -39,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana._if.type.re
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.InterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.InterfaceKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -82,9 +79,6 @@ public class SfcGeniusDataUtilsTest {
     private final String macAddress = "b2:0e:19:ad:1e:22";
     private final BigInteger theDpnId = new BigInteger("79268612506848");
     private final String logicalIfName = "tap40c552e0-36";
-
-    @Captor
-    ArgumentCaptor<Interface> interfaceCaptor;
 
     public SfcGeniusDataUtilsTest() {
     }
@@ -326,7 +320,6 @@ public class SfcGeniusDataUtilsTest {
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 
-        Assert.assertFalse(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         List<String> sfLogicalInterfaces = SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode);
         Assert.assertTrue("There are no logical interfaces", sfLogicalInterfaces.isEmpty());
     }
@@ -362,7 +355,6 @@ public class SfcGeniusDataUtilsTest {
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 
-        Assert.assertTrue(SfcGeniusDataUtils.isSfUsingALogicalInterface(dpiNode));
         Assert.assertEquals(
                 Arrays.asList("40c552e0-3695-472d-bace-7618786aba27", "12345678-3695-472d-bace-7618786aba27"),
                 SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode));

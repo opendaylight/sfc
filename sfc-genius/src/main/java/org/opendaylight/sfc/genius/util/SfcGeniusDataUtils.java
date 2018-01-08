@@ -78,18 +78,6 @@ public final class SfcGeniusDataUtils {
     }
 
     /**
-     * Checks if a given Service Function has logical interfaces attached to it.
-     *
-     * @param sf
-     *            The service function we want to check
-     * @return True if it has a LogicalInterface attached attached, False
-     *         otherwise
-     */
-    public static boolean isSfUsingALogicalInterface(ServiceFunction sf) {
-        return !getSfLogicalInterfaces(sf).isEmpty();
-    }
-
-    /**
      * Get the information of all physical interfaces mapped to a given logical
      * interface.
      *

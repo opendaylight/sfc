@@ -46,6 +46,7 @@ public class SffGraph {
         private final short serviceIndex;
         private DpnIdType logicalSffSrcDpnId;
         private DpnIdType logicalSffDstDpnId;
+        private boolean isForwardPath;
 
         public SffName getSrcSff() {
             return srcSff;
@@ -80,12 +81,13 @@ public class SffGraph {
         }
 
         public SffGraphEntry(final SffName srcSff, final SffName dstSff, final SfName sf, final String sfg, long pathId,
-                short serviceIndex) {
+                             boolean isForwardPath, short serviceIndex) {
             this.srcSff = srcSff;
             this.dstSff = dstSff;
             this.sf = sf;
             this.sfg = sfg;
             this.pathId = pathId;
+            this.isForwardPath = isForwardPath;
             this.serviceIndex = serviceIndex;
             this.prevSf = null;
         }
@@ -93,7 +95,8 @@ public class SffGraph {
         @Override
         public String toString() {
             String str = "SffGraphEntry [srcSff=" + srcSff + ", dstSff=" + dstSff + ", sf=" + sf + ", prevSf=" + prevSf
-                    + ", sfg=" + sfg + ", pathId=" + pathId + ", serviceIndex=" + serviceIndex;
+                    + ", sfg=" + sfg + ", pathId=" + pathId + ", isForwardPath=" + isForwardPath + ", serviceIndex="
+                    + serviceIndex;
             if (getSrcDpnId() != null || getDstDpnId() != null) {
                 str += ", Logical SFF params: src dpnid [" + getSrcDpnId() + "], dst dpnid [" + getDstDpnId() + "]";
             }
@@ -124,6 +127,10 @@ public class SffGraph {
 
         public void setDstDpnId(DpnIdType dpnId) {
             this.logicalSffDstDpnId = dpnId;
+        }
+
+        public boolean isForwardPath() {
+            return isForwardPath;
         }
     }
 
@@ -190,12 +197,11 @@ public class SffGraph {
     // Graph methods
     //
     public SffGraphEntry addGraphEntry(final SffName srcSff, final SffName dstSff, final SfName sf, final String sfg,
-            long pathId, short serviceIndex) {
-        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, sfg, pathId, serviceIndex);
+            long pathId, boolean isReversePath, short serviceIndex) {
+        SffGraphEntry entry = new SffGraphEntry(srcSff, dstSff, sf, sfg, pathId, isReversePath, serviceIndex);
         graphEntries.add(entry);
 
-        LOG.info("SffGraphEntry addEntry srcSff [{}] dstSff [{}] sf [{}] sfg [{}] pathId [{}] serviceIndex [{}] ",
-                srcSff.getValue(), dstSff.getValue(), sf.getValue(), sfg, pathId, serviceIndex);
+        LOG.info("addGraphEntry [{}]", entry);
 
         return entry;
     }

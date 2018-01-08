@@ -10,6 +10,7 @@ package org.opendaylight.sfc.ofrenderer.processors;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.opendaylight.sfc.ofrenderer.utils.operdsupdate.OperDsUpdateHandlerLSF
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
@@ -33,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Mac;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacChaining;
@@ -255,6 +256,7 @@ public class SfcOfRspProcessor {
         String sfgName = null;
         SffGraph.SffGraphEntry entry;
         short lastServiceIndex = rsp.getStartingIndex();
+        boolean isForwardPath = !rsp.isReversePath();
 
         while (servicePathHopIter.hasNext()) {
             RenderedServicePathHop rspHop = servicePathHopIter.next();
@@ -263,15 +265,17 @@ public class SfcOfRspProcessor {
             sfgName = rspHop.getServiceFunctionGroupName();
 
             entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(),
-                    rspHop.getServiceIndex());
+                    isForwardPath, rspHop.getServiceIndex());
             entry.setPrevSf(prevSfName);
             lastServiceIndex = rspHop.getServiceIndex();
             prevSfName = sfName;
             prevSffName = curSffName;
             ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(sfName, rsp.getPathId());
-            if (SfcGeniusDataUtils.isSfUsingALogicalInterface(sf)) {
-                String logicalInterfaceName = sfcOfProviderUtils.getSfLogicalInterfaceName(sf);
-                LOG.debug("SF uses a logical interface -> storing id for the dataplane node (interface:{})",
+            List<String> logicalInterfaces = SfcGeniusDataUtils.getSfLogicalInterfaces(sf);
+            if (!logicalInterfaces.isEmpty()) {
+                // All logical interfaces of the SF should be on the same DPN, use the first one
+                String logicalInterfaceName = logicalInterfaces.get(0);
+                LOG.debug("SF uses logical interfaces -> storing id for the dataplane node (interface:{})",
                         logicalInterfaceName);
                 Optional<DpnIdType> dpnid = getGeniusRpcClient()
                         .getDpnIdFromInterfaceNameFromGeniusRPC(logicalInterfaceName);
@@ -290,7 +294,7 @@ public class SfcOfRspProcessor {
         }
         // Add the final connection, which will be the RSP Egress
         // Using the previous sfName as the SrcSf
-        entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(),
+        entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), isForwardPath,
                 (short) (lastServiceIndex - 1));
         entry.setPrevSf(prevSfName);
         entry.setSrcDpnId(srcDpnId);
@@ -327,7 +331,8 @@ public class SfcOfRspProcessor {
         // Configure the SF related flows
         if (entry.getSf() != null) {
             ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-            SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sf, entry.getDstSff());
+            boolean isForwardPath = entry.isForwardPath();
+            SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getIngressSfDataPlaneLocator(sf, sffDst, isForwardPath);
             transportProcessor.configureSfTransportIngressFlow(entry, sfDpl);
         }
     }
@@ -358,8 +363,11 @@ public class SfcOfRspProcessor {
 
         // configure the SF Ingress Flow
         if (entry.getSf() != null) {
+            ServiceFunctionForwarder sffDst = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
+                    entry.getPathId());
             ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-            SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sf, entry.getDstSff());
+            boolean isForwardPath = entry.isForwardPath();
+            SfDataPlaneLocator sfDpl = sfcOfProviderUtils.getIngressSfDataPlaneLocator(sf, sffDst, isForwardPath);
             transportProcessor.configureSfPathMapperFlow(entry, sfDpl);
         }
     }
@@ -379,34 +387,42 @@ public class SfcOfRspProcessor {
             SfcRspTransportProcessorBase transportProcessor) {
 
         LOG.debug("configureNextHopFlows: entry:{}, sffGraph:{}", entry, sffGraph);
-        ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        SfDataPlaneLocator sfDstDpl = sfDst == null ? null
-                : sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
-        if (sfDstDpl != null) {
-            if (entry.getSrcSff().equals(SffGraph.INGRESS)) {
+
+        long pathId = entry.getPathId();
+        boolean isForwardPath = entry.isForwardPath();
+        SfName dstSfName = entry.getSf();
+        SfName srcSfName = entry.getPrevSf();
+        SffName dstSffName = entry.getDstSff();
+        SffName srcSffName = entry.getSrcSff();
+        ServiceFunction dstSf = sfcOfProviderUtils.getServiceFunction(dstSfName, pathId);
+        ServiceFunction srcSf = sfcOfProviderUtils.getServiceFunction(srcSfName, pathId);
+        ServiceFunctionForwarder dstSff = sfcOfProviderUtils.getServiceFunctionForwarder(dstSffName, pathId);
+        ServiceFunctionForwarder srcSff = sfcOfProviderUtils.getServiceFunctionForwarder(srcSffName, pathId);
+        SfDataPlaneLocator dstSfDpl;
+        SfDataPlaneLocator srcSfDpl;
+        dstSfDpl = sfcOfProviderUtils.getEgressSfDataPlaneLocator(dstSf, dstSff, isForwardPath);
+        srcSfDpl = sfcOfProviderUtils.getIngressSfDataPlaneLocator(srcSf, srcSff, isForwardPath);
+
+        if (dstSfDpl != null) {
+            if (srcSffName.equals(SffGraph.INGRESS)) {
                 // Configure the GW-SFF-SF NextHop using sfDpl
-                transportProcessor.configureNextHopFlow(entry, (SffDataPlaneLocator) null, sfDstDpl);
+                transportProcessor.configureNextHopFlow(entry, (SffDataPlaneLocator) null, dstSfDpl);
 
                 // If its Ingress, nothing else to be done
                 return;
             } else {
-
-                ServiceFunctionForwarder sffSrc = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(),
-                        entry.getPathId());
-                SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffSrc,
-                        sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+                SffDataPlaneLocatorName sffEgressDpl = sffGraph.getSffEgressDpl(srcSffName, pathId);
+                SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(srcSff, sffEgressDpl);
                 // Configure the SFF-SFF-SF NextHop using sfDpl
-                transportProcessor.configureNextHopFlow(entry, sffSrcEgressDpl, sfDstDpl);
+                transportProcessor.configureNextHopFlow(entry, sffSrcEgressDpl, dstSfDpl);
             }
         }
 
-        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
+        if (dstSffName.equals(SffGraph.EGRESS)) {
             // If dstSff is EGRESS, the SF is actually on the srcSff
-            SfDataPlaneLocator sfSrcDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getSrcSff());
-
             // Configure the SF-SFF-GW NextHop, we dont have the DstDpl, leaving
             // it blank
-            transportProcessor.configureNextHopFlow(entry, sfSrcDpl, (SffDataPlaneLocator) null);
+            transportProcessor.configureNextHopFlow(entry, srcSfDpl, (SffDataPlaneLocator) null);
         }
 
         if (entry.isIntraLogicalSFFEntry()) {
@@ -415,27 +431,19 @@ public class SfcOfRspProcessor {
             return;
         }
 
-        SfDataPlaneLocator sfSrcDpl = null;
-        if (entry.getPrevSf() != null) {
-            sfSrcDpl = sfcOfProviderUtils.getSfDataPlaneLocator(
-                    sfcOfProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId()), entry.getSrcSff());
-        }
-
         // Configure the SFF-SFF NextHop using the sfDpl and sffDstIngressDpl
-        if (sfSrcDpl != null) {
-            if (entry.getSrcSff().getValue().equals(entry.getDstSff().getValue())) {
+        if (srcSfDpl != null) {
+            if (srcSffName.getValue().equals(dstSffName.getValue())) {
                 // If the next hop is on this SFF then go straight to the next
                 // SF
                 // Configure SF-SFF-SF NextHop on the same SFF
-                transportProcessor.configureNextHopFlow(entry, sfSrcDpl, sfDstDpl);
+                transportProcessor.configureNextHopFlow(entry, srcSfDpl, dstSfDpl);
             } else {
                 // Configure the SFF-SFF NextHop using the sfDpl and
                 // sffDstIngressDpl
-                ServiceFunctionForwarder sffDst = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
-                        entry.getPathId());
-                SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst,
-                        sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
-                transportProcessor.configureNextHopFlow(entry, sfSrcDpl, sffDstIngressDpl);
+                SffDataPlaneLocatorName sffIngressDpl = sffGraph.getSffIngressDpl(dstSffName, pathId);
+                SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(dstSff, sffIngressDpl);
+                transportProcessor.configureNextHopFlow(entry, srcSfDpl, sffDstIngressDpl);
             }
         }
     }
@@ -454,49 +462,47 @@ public class SfcOfRspProcessor {
     private void configureTransportEgressFlows(SffGraph.SffGraphEntry entry, SffGraph sffGraph,
             SfcRspTransportProcessorBase transportProcessor) {
 
-        // Configure the SFF-Egress Transport Egress
-        ServiceFunctionForwarder sffSrc = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(),
-                entry.getPathId());
-        if (entry.getDstSff().equals(SffGraph.EGRESS)) {
-            SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffSrc,
-                    sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+        long pathId = entry.getPathId();
+        boolean isForwardPath = entry.isForwardPath();
+        SfName dstSfName = entry.getSf();
+        SffName dstSffName = entry.getDstSff();
+        SffName srcSffName = entry.getSrcSff();
+        ServiceFunction dstSf = sfcOfProviderUtils.getServiceFunction(dstSfName, pathId);
+        ServiceFunctionForwarder dstSff = sfcOfProviderUtils.getServiceFunctionForwarder(dstSffName, pathId);
+        ServiceFunctionForwarder srcSff = sfcOfProviderUtils.getServiceFunctionForwarder(srcSffName, pathId);
+        SfDataPlaneLocator dstSfDpl;
+        SffDataPlaneLocator dstSffDpl;
+        dstSfDpl = sfcOfProviderUtils.getEgressSfDataPlaneLocator(dstSf, dstSff, isForwardPath);
+        dstSffDpl = sfcOfProviderUtils.getEgressSffDataPlaneLocator(dstSf, dstSff, isForwardPath);
+        SffDataPlaneLocatorName sffEgressDpl = sffGraph.getSffEgressDpl(srcSffName, pathId);
+        SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(srcSff, sffEgressDpl);
 
-            transportProcessor.configureSffTransportEgressFlow(entry, sffSrcEgressDpl, null,
-                    sffGraph.getPathEgressDpl(entry.getPathId()));
+        // Configure the SFF-Egress Transport Egress
+
+        if (dstSffName.equals(SffGraph.EGRESS)) {
+            DataPlaneLocator pathEgressDpl = sffGraph.getPathEgressDpl(pathId);
+            transportProcessor.configureSffTransportEgressFlow(entry, sffSrcEgressDpl, null, pathEgressDpl);
             return;
         }
 
-        // Configure the SFF-SF Transport Egress using sfDpl
-        ServiceFunction sfDst = sfcOfProviderUtils.getServiceFunction(entry.getSf(), entry.getPathId());
-        SfDataPlaneLocator sfDstDpl = sfcOfProviderUtils.getSfDataPlaneLocator(sfDst, entry.getDstSff());
-        ServiceFunctionForwarder sffDst = sfcOfProviderUtils.getServiceFunctionForwarder(entry.getDstSff(),
-                entry.getPathId());
-
-        if (sfDstDpl != null) {
-            SffDataPlaneLocator sffDstDpl = null;
-            SffSfDataPlaneLocator sffSfDpl = sfcOfProviderUtils.getSffSfDataPlaneLocator(sffDst, entry.getSf());
-            if (sffSfDpl != null) {
-                sffDstDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst, sffSfDpl.getSffDplName());
-            }
-            transportProcessor.configureSfTransportEgressFlow(entry, sffDstDpl, sfDstDpl, sfDstDpl);
+        if (dstSfDpl != null) {
+            transportProcessor.configureSfTransportEgressFlow(entry, dstSffDpl, dstSfDpl, dstSfDpl);
         }
 
         // Nothing else to be done for Ingress
-        if (entry.getSrcSff().equals(SffGraph.INGRESS)) {
+        if (srcSffName.equals(SffGraph.INGRESS)) {
             return;
         }
 
         // Configure the SFF-SFF Transport Egress using the sffDstIngressDpl
-        if (!entry.getSrcSff().getValue().equals(entry.getDstSff().getValue()) || entry.isIntraLogicalSFFEntry()
+        if (!srcSffName.getValue().equals(dstSffName.getValue()) || entry.isIntraLogicalSFFEntry()
                 && !entry.getSrcDpnId().getValue().equals(entry.getDstDpnId().getValue())) {
 
-            SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffDst,
-                    sffGraph.getSffIngressDpl(entry.getDstSff(), entry.getPathId()));
-            SffDataPlaneLocator sffSrcEgressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(sffSrc,
-                    sffGraph.getSffEgressDpl(entry.getSrcSff(), entry.getPathId()));
+            SffDataPlaneLocatorName sffIngressDpl = sffGraph.getSffIngressDpl(dstSffName, entry.getPathId());
+            SffDataPlaneLocator sffDstIngressDpl = sfcOfProviderUtils.getSffDataPlaneLocator(dstSff, sffIngressDpl);
             // This is the HOP DPL details between srcSFF and dstSFF, for
             // example: VLAN ID 100
-            DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(entry.getDstSff(), entry.getPathId());
+            DataPlaneLocator dstHopIngressDpl = sffGraph.getHopIngressDpl(dstSffName, pathId);
 
             transportProcessor.configureSffTransportEgressFlow(entry, sffSrcEgressDpl, sffDstIngressDpl,
                     dstHopIngressDpl);

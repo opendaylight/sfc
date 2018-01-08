@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.LogicalInterfaceLocator;
@@ -246,15 +247,17 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
-        long nsp = entry.getPathId();
+        long pathId = entry.getPathId();
+        long nsp = pathId;
         short nsi = entry.getServiceIndex();
-        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId(),
-                entry.getSrcDpnId());
+        String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), pathId, entry.getSrcDpnId());
 
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {
             LOG.debug("configureSffTransportEgressFlow: called for chain egress");
-            SfDataPlaneLocator srcSfDpl = sfcProviderUtils.getSfDataPlaneLocator(
-                    sfcProviderUtils.getServiceFunction(entry.getPrevSf(), entry.getPathId()), entry.getSrcSff());
+            ServiceFunction prevSf = sfcProviderUtils.getServiceFunction(entry.getPrevSf(), pathId);
+            ServiceFunctionForwarder prevSff = sfcProviderUtils.getServiceFunctionForwarder(entry.getSrcSff(), pathId);
+            boolean isForwardPath = entry.isForwardPath();
+            SfDataPlaneLocator srcSfDpl = sfcProviderUtils.getEgressSfDataPlaneLocator(prevSf, prevSff, isForwardPath);
             MacAddress sfMacAddress = getMacAddress(srcSfDpl, false)
                     .orElseThrow(() -> new SfcRenderingException(
                             "Failed on mac address retrieval for dst SF dpl [" + srcSfDpl + "]"));
@@ -302,7 +305,7 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
                 StringJoiner flowName = new StringJoiner(SfcOfFlowProgrammerImpl.FLOW_NAME_DELIMITER);
                 flowName.add(SfcOfFlowProgrammerImpl.FLOW_NAME_TRANSPORT_EGRESS)
-                    .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(entry.getPathId()));
+                    .add("SFF").add(String.valueOf(entry.getServiceIndex())).add(String.valueOf(pathId));
 
                 // 4, write those actions
                 this.sfcFlowProgrammer.configureNshEthTransportEgressFlow(

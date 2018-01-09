@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4ad6609d_e170d70a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "No longer needed right?",
+      "range": {
+        "startLine": 89,
+        "startChar": 32,
+        "endLine": 89,
+        "endChar": 47
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "13204036_ee667f76",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "Delete?",
+      "range": {
+        "startLine": 154,
+        "startChar": 72,
+        "endLine": 154,
+        "endChar": 80
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f54c1866_7fda42d3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "If I understand correctly, for symmetric paths: \n1. If I remove a forward config RSP, both the forward and reverse oper RSPs are removed, but the reverse config RSP remains?\n2. If instead I remove the reverse config RSP, both the config and oper forward RSP remain?",
+      "range": {
+        "startLine": 78,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 22
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "430db7e0_c9f18995",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "Should also delete the RSP from the ServicePathState?",
+      "range": {
+        "startLine": 78,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 22
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b8af8cc6_37e78c75",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "It makes more sense to me that the association between the symmetric paths, and the their association with the operational states of the different elements be handled within the core API and not in the listener. (i.e RSPs are added to SFF,SF,SFP operational states within the core API, so it does not make sense to remove them in a listener)",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 9
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0aad1f53_7392c3fd",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "I think that for the log to be useful a different condition is needed, this only covers any non symmetric path id updates between create and and the symmetric path id update.\nSomething like \ncopy(original).setSymPath(updated).equals(updated) -\u003e not supported",
+      "range": {
+        "startLine": 121,
+        "startChar": 12,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "234329f1_b5573dfe",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionPathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-09T18:49:36Z",
+      "side": 1,
+      "message": "A general suggestion here: isnt it better to have a method in SfcRenderedPathAPI that does it all:\n1. create the forward RSP\n2. create the reverse RSP\n3. set the symmetric path id in the forward RSP\n4. write the forward RSP in config data store\n5. write the reverse RSP in config data store\nBenefits:\na. you do away with the hassle of handling symmetric path id updates\nb. step 4 \u0026 5 can actually be done within the same transaction which would be an improvement (I admit the limited improvement here as many other associated things are done in separate transactions, but it\u0027s a start)\nc. cleaner listener\nd. Symmetric paths are assocated by definition, so it is beter to handle it in the core api than in a listener.",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 9
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

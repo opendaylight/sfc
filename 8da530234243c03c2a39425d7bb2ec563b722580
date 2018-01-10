@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "498f9742_a2604f48",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ad6609d_e170d70a",
+      "range": {
+        "startLine": 89,
+        "startChar": 32,
+        "endLine": 89,
+        "endChar": 47
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "13204036_ee667f76",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
         "patchSetId": 5
@@ -36,6 +60,30 @@
       "writtenOn": "2018-01-09T18:49:36Z",
       "side": 1,
       "message": "Delete?",
+      "range": {
+        "startLine": 154,
+        "startChar": 72,
+        "endLine": 154,
+        "endChar": 80
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "77ed164d_a7680fe2",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "13204036_ee667f76",
       "range": {
         "startLine": 154,
         "startChar": 72,
@@ -94,6 +142,54 @@
     },
     {
       "key": {
+        "uuid": "fb727557_b79d0160",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "430db7e0_c9f18995",
+      "range": {
+        "startLine": 78,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 22
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9051627d_2666b4c7",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "I improved this in the next patch set.",
+      "parentUuid": "f54c1866_7fda42d3",
+      "range": {
+        "startLine": 78,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 22
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b8af8cc6_37e78c75",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
         "patchSetId": 5
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "e8803692_198118f3",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "I fixed this in the next patch set.",
+      "parentUuid": "b8af8cc6_37e78c75",
+      "range": {
+        "startLine": 82,
+        "startChar": 0,
+        "endLine": 112,
+        "endChar": 9
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0aad1f53_7392c3fd",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
         "patchSetId": 5
@@ -128,6 +248,30 @@
       "writtenOn": "2018-01-09T18:49:36Z",
       "side": 1,
       "message": "I think that for the log to be useful a different condition is needed, this only covers any non symmetric path id updates between create and and the symmetric path id update.\nSomething like \ncopy(original).setSymPath(updated).equals(updated) -\u003e not supported",
+      "range": {
+        "startLine": 121,
+        "startChar": 12,
+        "endLine": 121,
+        "endChar": 67
+      },
+      "revId": "8da530234243c03c2a39425d7bb2ec563b722580",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "96d34f9e_a28db381",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-10T23:36:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0aad1f53_7392c3fd",
       "range": {
         "startLine": 121,
         "startChar": 12,

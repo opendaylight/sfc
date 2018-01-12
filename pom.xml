@@ -36,7 +36,6 @@
   <modules>
     <module>sfc-model</module>
     <module>sfc-provider</module>
-    <module>sfc-test-consumer</module>
     <module>sfc-ui</module>
     <module>sfc-sb-rest</module>
     <module>sfclisp</module>
@@ -102,11 +101,6 @@
       <dependency>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-ovs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opendaylight.sfc</groupId>
-        <artifactId>sfc-test-consumer</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

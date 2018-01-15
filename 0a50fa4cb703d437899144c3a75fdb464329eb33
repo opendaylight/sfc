@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e10b9a5f_0384221f",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-15T11:14:00Z",
+      "side": 1,
+      "message": "There is a race condition between SFP events and config RSP. Think of this scenario:\n1. A northbound application needs to change a configuration parameter of a SFP. For that, it deletes the SFP and creates a new one.\n2. SFP listener deletes the config RSP\n3. Config RSP listener deletes the new SFP\n\nSo the northbound application is bound to check that the oper RSP is deleted before proceeding with the creation of a SFP of the same name. Are we happy to assume this will be the case?\nOr maybe it is not worth to keep things in sync if then we might run into other problems.",
+      "range": {
+        "startLine": 77,
+        "startChar": 16,
+        "endLine": 77,
+        "endChar": 22
+      },
+      "revId": "0a50fa4cb703d437899144c3a75fdb464329eb33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ef40f494_4537685d",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-15T11:14:00Z",
+      "side": 1,
+      "message": "deleteServiceFunctionPath also reads the SFP. So you end up reading the SFP twice. For me is not even worth it reading the one time.",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 9
+      },
+      "revId": "0a50fa4cb703d437899144c3a75fdb464329eb33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

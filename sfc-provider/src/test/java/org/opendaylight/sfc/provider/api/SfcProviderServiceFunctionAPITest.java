@@ -321,7 +321,8 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SF_NAME)
             .setKey(new ServiceFunctionKey(SF_NAME))
-            .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)));
+            .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
+            .setType(new SftTypeName("dpi"));
 
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
             .child(ServiceFunction.class, new ServiceFunctionKey(SF_NAME))
@@ -411,7 +412,9 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         renderedServicePathBuilder.setName(pathName)
             .setKey(new RenderedServicePathKey(pathName))
-            .setRenderedServicePathHop(renderedServicePathHops);
+            .setRenderedServicePathHop(renderedServicePathHops)
+            .setPathId(0L)
+            .setReversePath(false);
 
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
             .child(RenderedServicePath.class, new RenderedServicePathKey(pathName))

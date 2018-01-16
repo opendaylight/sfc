@@ -155,7 +155,6 @@ module rendered-service-path {
       }
       leaf service-chain-name {
         type sfc-common:sfc-name;
-        mandatory true;
         description
           "The Service Function Chain used as blueprint for this
            path";

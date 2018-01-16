@@ -92,6 +92,8 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         renderedServicePathHopList.add(renderedServicePathHop);
 
         renderedServicePathBuilder.setRenderedServicePathHop(renderedServicePathHopList);
+        renderedServicePathBuilder.setPathId(0L);
+        renderedServicePathBuilder.setReversePath(false);
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, new RenderedServicePathKey(rspName)).build();
         SfcDataStoreAPI.writePutTransactionAPI(rspIID, renderedServicePathBuilder.build(),
@@ -289,8 +291,11 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         assertNotEquals("Must be not equal", pathId, -1);
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
-        renderedServicePathBuilder.setName(rspName).setKey(new RenderedServicePathKey(rspName))
-                .setRenderedServicePathHop(renderedServicePathHops).setPathId(pathId);
+        renderedServicePathBuilder.setName(rspName)
+                .setKey(new RenderedServicePathKey(rspName))
+                .setRenderedServicePathHop(renderedServicePathHops)
+                .setPathId(pathId)
+                .setReversePath(false);
 
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
                 .child(RenderedServicePath.class, new RenderedServicePathKey(rspName)).build();

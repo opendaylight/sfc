@@ -61,7 +61,6 @@ module service-function-group {
       }
       leaf algorithm {
         type sfc-sfg-alg:service-function-group-algorithm-ref;
-        mandatory true;
         description
           "The name of the service-function-group-algorithm used by this group";
       }
@@ -76,7 +75,6 @@ module service-function-group {
       }
       leaf type {
         type sfc-common:sft-type-name;
-        mandatory true;
         description
           "Service Function Type from service-function-type yang
            model";

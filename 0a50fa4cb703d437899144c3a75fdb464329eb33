@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "57cfe260_d24273a6",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-16T21:31:44Z",
+      "side": 1,
+      "message": "I see your point. In Fluorine, we should make it so that its not necessary to delete the SFP to modify it. I see the SFP as not being updatable as a temporary limitation.\nThe trade-off here is a possible race condition as compared to an inconsistency.\n\nI think the inconsistency is worse. Imagine the following if a user incorrectly updates an SFP/RSP and the SFP is not deleted when deleting the RSP in config:\n1) RSP in config is deleted, which in turn deletes the RSP in oper\n2) The original SFP is left hanging\n3) User tries to create a new SFP, but its already there and updates arent allowed. Now what???\n\nWhereas with the race condition with this code, things will be left consistent:\n1) the SFP is deleted and immediately created again with the same name\n2) the RSP in config is deleted, which also deletes the SFP and RSP in oper\n3) whatever entities (RSP config, oper) that may have been created when the SFP was newly created, will be deleted when the SFP is deleted in the RSP config listener.\n4) Everything will be consistent: the SFP, RSP in config, and RSP in oper will all be deleted.",
+      "parentUuid": "e10b9a5f_0384221f",
+      "range": {
+        "startLine": 77,
+        "startChar": 16,
+        "endLine": 77,
+        "endChar": 22
+      },
+      "revId": "0a50fa4cb703d437899144c3a75fdb464329eb33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef40f494_4537685d",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
         "patchSetId": 7
@@ -36,6 +60,30 @@
       "writtenOn": "2018-01-15T11:14:00Z",
       "side": 1,
       "message": "deleteServiceFunctionPath also reads the SFP. So you end up reading the SFP twice. For me is not even worth it reading the one time.",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 85,
+        "endChar": 9
+      },
+      "revId": "0a50fa4cb703d437899144c3a75fdb464329eb33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7cb60fc8_6d1cfee1",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-16T21:31:44Z",
+      "side": 1,
+      "message": "If you try to delete something that\u0027s not in the datastore, you\u0027ll get a nasty exception. There are 2 signatures for deleteServiceFunctionPath(), and the one being used here does NOT read the SFP, so we would only be reading the SFP once. The signature not being used here which takes an SfpName does read the SFP.",
+      "parentUuid": "ef40f494_4537685d",
       "range": {
         "startLine": 79,
         "startChar": 0,

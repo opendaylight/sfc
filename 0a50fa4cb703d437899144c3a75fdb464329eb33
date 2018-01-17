@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "eb537b66_2f20589c",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-17T20:14:20Z",
+      "side": 1,
+      "message": "After the discussion in today\u0027s ODL SFC meeting, we will not delete the SFP here. We will check if it exists, and if so, we will write an ERROR log message.",
+      "parentUuid": "57cfe260_d24273a6",
+      "range": {
+        "startLine": 77,
+        "startChar": 16,
+        "endLine": 77,
+        "endChar": 22
+      },
+      "revId": "0a50fa4cb703d437899144c3a75fdb464329eb33",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ef40f494_4537685d",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/RenderedServicePathListener.java",
         "patchSetId": 7

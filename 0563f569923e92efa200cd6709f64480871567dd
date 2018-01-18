@@ -45,6 +45,30 @@
       "revId": "0563f569923e92efa200cd6709f64480871567dd",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "cf60193c_8caf616e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-18T22:06:55Z",
+      "side": 1,
+      "message": "You\u0027re right about the RSP in oper, but not in config. I\u0027ll change that. The idea behind the logic here is to create the RSP if they specify the name, otherwise, just return the already created RSP that corresponds to the SFP. It seems incorrect to ignore the RspName if specified. Currently, its possible to create multiple RSPs for 1 SFP, which is what Im trying to maintain here until we remove this RPC.",
+      "parentUuid": "071cba79_2455c631",
+      "range": {
+        "startLine": 249,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 9
+      },
+      "revId": "0563f569923e92efa200cd6709f64480871567dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

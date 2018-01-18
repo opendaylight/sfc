@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "543bab7a_ad130945",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-18T13:30:15Z",
+      "side": 1,
+      "message": "The RPC might be called just after the SFP is configured when the oper RSP might have yet not been added. I would probably check again after a delay. CompletableFutures runAsync/supplyAsync can be used to check within a loop and a sleep timer. It is not very good but might be enough while we remove the RPC.",
+      "range": {
+        "startLine": 234,
+        "startChar": 0,
+        "endLine": 234,
+        "endChar": 62
+      },
+      "revId": "0563f569923e92efa200cd6709f64480871567dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "071cba79_2455c631",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-18T13:30:15Z",
+      "side": 1,
+      "message": "I am not sure about this. You will end up with oper RSPs that have no corresponding config RSPs, and they will not be handled in some cases like on the SF/SFF updates.\nIt might be better to ignore the input name and just output the name of the existing RSP.",
+      "range": {
+        "startLine": 249,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 9
+      },
+      "revId": "0563f569923e92efa200cd6709f64480871567dd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

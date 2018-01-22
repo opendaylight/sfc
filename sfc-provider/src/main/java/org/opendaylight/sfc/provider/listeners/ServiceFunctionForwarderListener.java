@@ -7,9 +7,12 @@
  */
 package org.opendaylight.sfc.provider.listeners;
 
+import com.google.common.collect.Sets;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -21,13 +24,16 @@ import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionary;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -101,50 +107,99 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
             return rspNames;
         }
 
-        // If any data plane locator changed, all RSPs are affected
-        // TODO Current data model does not allow to know which DPL is used on a RSP
-        List<SffDataPlaneLocator> originalLocators = originalSff.getSffDataPlaneLocator();
         List<SffDataPlaneLocator> updatedLocators = updatedSff.getSffDataPlaneLocator();
-        boolean isAnyLocatorChanged = originalLocators != null && !originalLocators.isEmpty() && (
-                updatedLocators == null || !updatedLocators.containsAll(originalLocators));
-        if (isAnyLocatorChanged) {
-            LOG.debug("SFF locators changed: original {} updated {}", originalLocators, updatedLocators);
+        if (updatedLocators == null || updatedLocators.isEmpty()) {
+            LOG.debug("Updated SFF has no locators");
             return rspNames;
         }
 
-        // If a dictionary changed, any RSP making use of it is affected
-        List<ServiceFunctionDictionary> originalDictList =
-                originalSff.getServiceFunctionDictionary() != null ? originalSff
-                        .getServiceFunctionDictionary() : Collections.emptyList();
-        List<ServiceFunctionDictionary> updatedDictList = updatedSff.getServiceFunctionDictionary() != null ? updatedSff
-                .getServiceFunctionDictionary() : Collections.emptyList();
-        List<ServiceFunctionDictionary> removedDictList = updatedDictList
-                .isEmpty() ? originalDictList : originalDictList.stream().filter(d -> !updatedDictList.contains(d))
-                .collect(Collectors.toList());
-        if (!removedDictList.isEmpty()) {
-            LOG.debug("SFF dictionaries removed {}", removedDictList);
-            return rspNames.stream().map(SfcProviderRenderedPathAPI::readRenderedServicePath)
-                    .filter(rsp -> isAnyDictionaryUsedInRsp(sffName, rsp, removedDictList))
-                    .map(RenderedServicePath::getName).collect(Collectors.toList());
+        List<ServiceFunctionDictionary> updatedDictList = updatedSff.getServiceFunctionDictionary();
+        if (updatedDictList == null || updatedDictList.isEmpty()) {
+            LOG.debug("Updated SFF has no dictionary entries");
+            return rspNames;
         }
-        return Collections.emptyList();
+
+        List<SffDataPlaneLocator> originalLocators = originalSff.getSffDataPlaneLocator();
+        if (originalLocators == null || originalLocators.isEmpty()) {
+            LOG.debug("Original SFF has no locators");
+            return Collections.emptyList();
+        }
+
+        List<ServiceFunctionDictionary> originalDictList = originalSff.getServiceFunctionDictionary();
+        if (originalDictList == null || originalDictList.isEmpty()) {
+            LOG.debug("Original SFF has no dictionary entries");
+            return Collections.emptyList();
+        }
+
+        // What follows  might require quite a bit of processing for a big SFF.
+        // Enhancements to the data model could help.
+
+        // Find out about removed locators
+        Set<SffDataPlaneLocatorName> removedLocatorNames;
+        removedLocatorNames = Sets.difference(new HashSet<>(originalLocators), new HashSet<>(updatedLocators)).stream()
+            .map(SffDataPlaneLocator::getName)
+            .collect(Collectors.toSet());
+
+        // Find out about removed dictionary entries
+        Set<ServiceFunctionDictionary> removedDictEntries;
+        removedDictEntries =  Sets.difference(new HashSet<>(originalDictList), new HashSet<>(updatedDictList));
+        Set<ServiceFunctionDictionary> invalidDictEntries = new HashSet<>(removedDictEntries);
+        // A removed locator use in a dictionary entry invalidates it
+        if (!removedLocatorNames.isEmpty()) {
+            invalidDictEntries = updatedDictList.stream().collect(
+                HashSet::new,
+                (hash, dict) -> {
+                    SffSfDataPlaneLocator sffSfDataPlaneLocator = dict.getSffSfDataPlaneLocator();
+                    if (sffSfDataPlaneLocator == null) {
+                        return;
+                    }
+                    boolean isInvalid = removedLocatorNames.contains(sffSfDataPlaneLocator.getSffDplName())
+                           || removedLocatorNames.contains(sffSfDataPlaneLocator.getSffForwardDplName())
+                           || removedLocatorNames.contains(sffSfDataPlaneLocator.getSffReverseDplName());
+                    if (isInvalid) {
+                        hash.add(dict);
+                    }
+                },
+                HashSet::addAll);
+        }
+        // SFs cannot be used in the RSP if they have no dictionary entry
+        List<SfName> invalidSfs = invalidDictEntries.stream()
+                .map(ServiceFunctionDictionary::getName)
+                .collect(Collectors.toList());
+        // Removed locators may not affect single SFF RSPs
+        boolean onlyAllowThisSff = removedLocatorNames.size() > 0;
+
+        // check affected RSPs
+        return rspNames.stream()
+                .filter(rspName -> !isRspValid(rspName, sffName, onlyAllowThisSff, invalidSfs))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Whether any hop of a RSP makes use of any SF dictionary of a given list for
-     * the given SFF.
+     * Inspect an RSP validness.
      *
-     * @param sffName             the SFF name.
-     * @param renderedServicePath the RSP.
-     * @param dictionaries        the list of SF dictionaries.
-     * @return true if the RSP makes use of the dictionary.
+     * @param rspName       the RSP name.
+     * @param sffName       the SFF name.
+     * @param isSingleSff   if the RSP must have a single SFF and is sffName.
+     * @param invalidSfList the disallowed SFs for the RSP
+     * @return true if the RSP makes has the SFF or SFs as indicated.
      */
-    private boolean isAnyDictionaryUsedInRsp(final SffName sffName, final RenderedServicePath renderedServicePath,
-                                             final List<ServiceFunctionDictionary> dictionaries) {
-        List<SfName> dictionarySfNames = dictionaries.stream().map(ServiceFunctionDictionary::getName)
-                .collect(Collectors.toList());
-        return renderedServicePath.getRenderedServicePathHop().stream()
-                .filter(rspHop -> sffName.equals(rspHop.getServiceFunctionForwarder()))
-                .anyMatch(rspHop -> dictionarySfNames.contains(rspHop.getServiceFunctionName()));
+    private boolean isRspValid(final RspName rspName,
+                               final SffName sffName,
+                               final boolean isSingleSff,
+                               final List<SfName> invalidSfList) {
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName);
+        for (RenderedServicePathHop hop : renderedServicePath.getRenderedServicePathHop()) {
+            SffName serviceFunctionForwarder = hop.getServiceFunctionForwarder();
+            SfName serviceFunctionName = hop.getServiceFunctionName();
+            boolean sameSff = sffName.equals(serviceFunctionForwarder);
+            if (!sameSff && isSingleSff) {
+                return false;
+            }
+            if (sameSff && invalidSfList.contains(serviceFunctionName)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -15,9 +15,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +38,6 @@ import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
@@ -44,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorKey;
@@ -53,15 +56,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
@@ -77,6 +79,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -438,7 +441,108 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // Now we prepare the updated data. Change the DataPlaneLocator
         ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder(
                 originalServiceFunctionForwarder);
-        removeSffDpl(updatedServiceFunctionForwarderBuilder);
+        removeAnySffDpl(updatedServiceFunctionForwarderBuilder);
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will remove the RSP
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNull(sffServicePathList);
+        /*
+         * for (SffServicePath sffServicePath : sffServicePathList) {
+         * assertNotEquals(sffServicePath.getName(),
+         * renderedServicePath.getName()); }
+         */
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
+    }
+
+    /**
+     * Test that the removal of a SFF DPL that it is not used in any SF
+     * dictionary entry, will not cause the removal of RSP that only traverses
+     * that SFF.
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdateUnusedDplWontRemoveSingleSffRsp() throws Exception {
+        RenderedServicePath renderedServicePath = buildAndCommitRenderedServicePathSingleSff();
+        assertNotNull(renderedServicePath);
+
+        // Prepare to remove the first SF used by the RSP.
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder = SfcProviderServiceForwarderAPI
+                .readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the DataPlaneLocator
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder(
+                originalServiceFunctionForwarder);
+        removeSffDpl(updatedServiceFunctionForwarderBuilder, "196.168.66.106");
+        ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
+
+        // Now we prepare to update the entry through the listener
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
+        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
+        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
+
+        // The listener will NOT remove the RSP
+        collection.add(dataTreeModification);
+        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        Thread.sleep(500);
+        assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
+
+        // Verify that State was NOT removed
+        List<SffServicePath> sffServicePathList = SfcProviderServiceForwarderAPI.readSffState(sffName);
+        assertNotNull(sffServicePathList);
+
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SF_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFC_IID,
+                LogicalDatastoreType.CONFIGURATION));
+        assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFP_IID,
+                LogicalDatastoreType.CONFIGURATION));
+    }
+
+    /**
+     * Test that the removal of a SFF DPL that it is used in a SF dictionary
+     * entry, will cause the removal of RSP even though it only traverses that
+     * SFF.
+     */
+    @Test
+    public void testOnServiceFunctionForwarderUpdateUsedDplWillRemoveSingleSffRsp() throws Exception {
+        RenderedServicePath renderedServicePath = buildAndCommitRenderedServicePathSingleSff();
+        assertNotNull(renderedServicePath);
+
+        // Prepare to remove the first SF used by the RSP.
+        SffName sffName = renderedServicePath.getRenderedServicePathHop().get(0).getServiceFunctionForwarder();
+        ServiceFunctionForwarder originalServiceFunctionForwarder = SfcProviderServiceForwarderAPI
+                .readServiceFunctionForwarder(sffName);
+        assertNotNull(originalServiceFunctionForwarder);
+
+        // Now we prepare the updated data. Change the DataPlaneLocator
+        ServiceFunctionForwarderBuilder updatedServiceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder(
+                originalServiceFunctionForwarder);
+        removeSffDpl(updatedServiceFunctionForwarderBuilder, "196.168.66.105");
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
         // Now we prepare to update the entry through the listener
@@ -477,12 +581,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         List<ServiceFunctionDictionary> newSffSfDict = new ArrayList<>();
 
         // First create a builder by copying the existing entries
-        for (ServiceFunctionDictionary sffSfDictEntry : sffSfDict) {
-            ServiceFunctionDictionaryBuilder sffSfDictBuilder = new ServiceFunctionDictionaryBuilder();
-            sffSfDictBuilder.setName(sffSfDictEntry.getName()).setKey(sffSfDictEntry.getKey())
-                    .setSffSfDataPlaneLocator(sffSfDictEntry.getSffSfDataPlaneLocator()).setFailmode(Open.class)
-                    .setSffInterfaces(null);
-            newSffSfDict.add(sffSfDictBuilder.build());
+        if (sffSfDict != null) {
+            newSffSfDict.addAll(sffSfDict);
         }
 
         // Now add another entry
@@ -500,15 +600,28 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         sffBuilder.setServiceFunctionDictionary(newSffSfDict);
     }
 
-    private void removeSffDpl(ServiceFunctionForwarderBuilder sffBuilder) {
+    private void removeAnySffDpl(ServiceFunctionForwarderBuilder sffBuilder) {
         List<SffDataPlaneLocator> sffDplList = sffBuilder.getSffDataPlaneLocator();
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
 
         // We want to remove a DPL entry, so just copy all but the last one
         for (int i = 0; i < sffDplList.size() - 1; i++) {
-            SffDataPlaneLocator sffDpl = sffDplList.get(i);
-            SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder(sffDpl);
-            locatorList.add(locatorBuilder.build());
+            locatorList.add(sffDplList.get(i));
+        }
+
+        sffBuilder.setSffDataPlaneLocator(locatorList);
+    }
+
+    private void removeSffDpl(ServiceFunctionForwarderBuilder sffBuilder, String dplName) {
+        List<SffDataPlaneLocator> sffDplList = sffBuilder.getSffDataPlaneLocator();
+        List<SffDataPlaneLocator> locatorList = new ArrayList<>();
+
+        // We want to remove a DPL entry, so just copy all but the last one
+        for (SffDataPlaneLocator sffDataPlaneLocator : sffDplList) {
+            if (Objects.equals(dplName, sffDataPlaneLocator.getName().getValue())) {
+                continue;
+            }
+            locatorList.add(sffDataPlaneLocator);
         }
 
         sffBuilder.setSffDataPlaneLocator(locatorList);
@@ -588,6 +701,77 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
     }
 
     /**
+     * Builds and return a complete RSP Object that traverses a single SFF.
+     * The SFF has one unused locator, "196.168.66.106".
+     *
+     * @return RSP object
+     */
+    @SuppressWarnings("serial")
+    RenderedServicePath buildAndCommitRenderedServicePathSingleSff() throws Exception {
+
+        final String[] managementIPAddress = {
+            "196.168.55.101",
+        };
+
+        final String[] serviceFunctionTypes = {
+            "firewall",
+            "dpi",
+            "napt44",
+            "http-header-enrichment",
+            "qos"
+        };
+
+        final String[] serviceFunctionAbstractNames = {
+            "firewall",
+            "dpi",
+            "napt",
+            "http-header-enrichment",
+            "qos"
+        };
+
+        final String sfcName = "unittest-chain-1";
+        final String sfpName = "unittest-sfp-1";
+        final String rspName = "unittest-rsp-1";
+
+        final String[][] rsp = {
+                { "SFF1", "unittest-fw-1" },
+                { "SFF1", "unittest-dpi-1" },
+                { "SFF1", "unittest-napt-1" },
+                { "SFF1", "unittest-http-header-enrichment-1" },
+                { "SFF1", "unittest-qos-1" }
+        };
+
+        final String[][] sfLocatorIps = {
+                {"196.168.55.1"},
+                {"196.168.55.2"},
+                {"196.168.55.3"},
+                {"196.168.55.4"},
+                {"196.168.55.5"}
+        };
+
+        final String[][] sffLocatorIps = {
+            {
+                "196.168.66.101",
+                "196.168.66.102",
+                "196.168.66.103",
+                "196.168.66.104",
+                "196.168.66.105",
+                "196.168.66.106"
+            }
+        };
+
+        return buildAndCommitRenderedServicePath(serviceFunctionTypes,
+                serviceFunctionAbstractNames,
+                managementIPAddress,
+                sfLocatorIps,
+                sffLocatorIps,
+                rsp,
+                sfcName,
+                sfpName,
+                rspName);
+    }
+
+    /**
      * Builds and return a complete RSP Object.
      *
      * @return RSP object
@@ -595,211 +779,229 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
     @SuppressWarnings("serial")
     RenderedServicePath buildAndCommitRenderedServicePath() throws Exception {
 
-        final List<String> locatorIPAddresses = new ArrayList<String>() {
-
-            {
-                add("196.168.55.1");
-                add("196.168.55.2");
-                add("196.168.55.3");
-                add("196.168.55.4");
-                add("196.168.55.5");
-            }
+        final String[] managementIPAddress = {
+            "196.168.55.101",
+            "196.168.55.102",
+            "196.168.55.103",
+            "196.168.55.104",
+            "196.168.55.105"
         };
 
-        final List<String> managementIPAddress = new ArrayList<String>() {
-
-            {
-                add("196.168.55.101");
-                add("196.168.55.102");
-                add("196.168.55.103");
-                add("196.168.55.104");
-                add("196.168.55.105");
-            }
+        final String[] serviceFunctionTypes = {
+            "firewall",
+            "dpi",
+            "napt44",
+            "http-header-enrichment",
+            "qos"
         };
 
-        final List<Integer> ports = new ArrayList<Integer>() {
-
-            {
-                add(1111);
-                add(2222);
-                add(3333);
-                add(4444);
-                add(5555);
-            }
+        final String[] serviceFunctionAbstractNames = {
+            "firewall",
+            "dpi",
+            "napt",
+            "http-header-enrichment",
+            "qos"
         };
 
-        final List<SftTypeName> serviceFunctionTypes = new ArrayList<SftTypeName>() {
+        final String sfcName = "unittest-chain-1";
+        final String sfpName = "unittest-sfp-1";
+        final String rspName = "unittest-rsp-1";
 
-            {
-                add(new SftTypeName("firewall"));
-                add(new SftTypeName("dpi"));
-                add(new SftTypeName("napt44"));
-                add(new SftTypeName("http-header-enrichment"));
-                add(new SftTypeName("qos"));
-            }
+        final String[][] rsp = {
+                { "SFF1", "unittest-fw-1" },
+                { "SFF2", "unittest-dpi-1" },
+                { "SFF3", "unittest-napt-1" },
+                { "SFF4", "unittest-http-header-enrichment-1" },
+                { "SFF5", "unittest-qos-1" }
         };
 
-        final List<String> serviceFunctionAbstractNames = new ArrayList<String>() {
-
-            {
-                add("firewall");
-                add("dpi");
-                add("napt");
-                add("http-header-enrichment");
-                add("qos");
-            }
+        final String[][] sfLocatorIps = {
+                {"196.168.55.1"},
+                {"196.168.55.2"},
+                {"196.168.55.3"},
+                {"196.168.55.4"},
+                {"196.168.55.5"}
         };
 
-        final SfcName SFC_NAME = new SfcName("unittest-chain-1");
-        final SfpName SFP_NAME = new SfpName("unittest-sfp-1");
-        final RspName RSP_NAME = new RspName("unittest-rsp-1");
-
-        List<SfName> sfNames = new ArrayList<SfName>() {
-
-            {
-                add(new SfName("unittest-fw-1"));
-                add(new SfName("unittest-dpi-1"));
-                add(new SfName("unittest-napt-1"));
-                add(new SfName("unittest-http-header-enrichment-1"));
-                add(new SfName("unittest-qos-1"));
-            }
+        final String[][] sffLocatorIps = {
+                {"196.168.66.101"},
+                {"196.168.66.102"},
+                {"196.168.66.103"},
+                {"196.168.66.104"},
+                {"196.168.66.105"}
         };
 
-        final List<SffName> sffNames = new ArrayList<SffName>() {
+        return buildAndCommitRenderedServicePath(serviceFunctionTypes,
+                serviceFunctionAbstractNames,
+                managementIPAddress,
+                sfLocatorIps,
+                sffLocatorIps,
+                rsp,
+                sfcName,
+                sfpName,
+                rspName);
+    }
 
-            {
-                add(new SffName("SFF1"));
-                add(new SffName("SFF2"));
-                add(new SffName("SFF3"));
-                add(new SffName("SFF4"));
-                add(new SffName("SFF5"));
-            }
-        };
+    private RenderedServicePath buildAndCommitRenderedServicePath(String[] serviceFunctionTypes,
+                                                                  String[] serviceFunctionAbstractNames,
+                                                                  String[] managementIPAddress,
+                                                                  String[][] sfLocatorIps,
+                                                                  String[][] sffLocatorIps,
+                                                                  String[][] rsp,
+                                                                  String sfcName,
+                                                                  String sfpName,
+                                                                  String rspName)
+            throws InterruptedException {
 
-        final String[][] toSffNames = { { "SFF2", "SFF5" }, { "SFF3", "SFF1" }, { "SFF4", "SFF2" }, { "SFF5", "SFF3" },
-                                        { "SFF1", "SFF4" } };
+        Map<String, ServiceFunction> sfMap = new HashMap<>();
+        Map<String, ServiceFunctionForwarder> sffMap = new HashMap<>();
 
-        final List<String> sffLocatorIPs = new ArrayList<String>() {
+        // for each hop
+        for (int i = 0; i < rsp.length; i++) {
+            final int pos = i;
+            final int numSfs = sfMap.size();
+            final String sfName = rsp[pos][1];
+            final int numSffs = sffMap.size();
+            final String sffName = rsp[pos][0];
 
-            {
-                add("196.168.66.101");
-                add("196.168.66.102");
-                add("196.168.66.103");
-                add("196.168.66.104");
-                add("196.168.66.105");
-            }
-        };
-
-        List<ServiceFunction> sfList = new ArrayList<>();
-        List<ServiceFunctionForwarder> sffList = new ArrayList<>();
-
-        final IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
-        final IpAddress[] locatorIpAddress = new IpAddress[sfNames.size()];
-        SfDataPlaneLocator[] sfDataPlaneLocator = new SfDataPlaneLocator[sfNames.size()];
-        ServiceFunctionKey[] key = new ServiceFunctionKey[sfNames.size()];
-        for (int i = 0; i < sfNames.size(); i++) {
-            ipMgmtAddress[i] = new IpAddress(new Ipv4Address(managementIPAddress.get(0)));
-            locatorIpAddress[i] = new IpAddress(new Ipv4Address(locatorIPAddresses.get(0)));
-            PortNumber portNumber = new PortNumber(ports.get(i));
-            key[i] = new ServiceFunctionKey(new SfName(sfNames.get(i)));
-
-            IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(locatorIpAddress[i]).setPort(portNumber);
-            SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SfDataPlaneLocatorName(locatorIPAddresses.get(i)))
-                    .setLocatorType(ipBuilder.build()).setServiceFunctionForwarder(new SffName(sffNames.get(i)));
-            sfDataPlaneLocator[i] = locatorBuilder.build();
-
-            ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-            List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
-            dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(sfNames.get(i))).setKey(key[i]).setType(serviceFunctionTypes.get(i))
-                    .setIpMgmtAddress(ipMgmtAddress[i]).setSfDataPlaneLocator(dataPlaneLocatorList);
-            sfList.add(sfBuilder.build());
-        }
-
-        ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
-        sfsBuilder.setServiceFunction(sfList);
-
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
-                LogicalDatastoreType.CONFIGURATION));
-        // executor.submit(SfcProviderServiceFunctionAPI.getPutAll(new
-        // Object[]{sfsBuilder.build()},
-        // new Class[]{ServiceFunctions.class})).get();
-        Thread.sleep(1000); // Wait they are really created
-
-        // Create ServiceFunctionTypeEntry for all ServiceFunctions
-        for (ServiceFunction serviceFunction : sfList) {
-            assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
-        }
-
-        // Create Service Function Forwarders
-        for (int i = 0; i < sffNames.size(); i++) {
-            // ServiceFunctionForwarders connected to SFF_NAMES[i]
-            List<ConnectedSffDictionary> sffDictionaryList = new ArrayList<>();
-            for (int j = 0; j < 2; j++) {
-                ConnectedSffDictionaryBuilder sffDictionaryEntryBuilder = new ConnectedSffDictionaryBuilder();
-                ConnectedSffDictionary sffDictEntry = sffDictionaryEntryBuilder.setName(new SffName(toSffNames[i][j]))
+            // update service function
+            ServiceFunction serviceFunction = sfMap.computeIfAbsent(sfName, (name) -> {
+                List<SfDataPlaneLocator> sfDataPlaneLocatorList = Arrays
+                        .stream(sfLocatorIps[numSfs])
+                        .map(ipStr -> {
+                            Ip ip = new IpBuilder()
+                                    .setIp(new IpAddress(new Ipv4Address(ipStr)))
+                                    .build();
+                            return new SfDataPlaneLocatorBuilder()
+                                    .setName(new SfDataPlaneLocatorName(ipStr))
+                                    .setLocatorType(ip)
+                                    .setServiceFunctionForwarder(new SffName(rsp[pos][0]))
+                                    .build();
+                        })
+                        .collect(Collectors.toList());
+                return new ServiceFunctionBuilder()
+                        .setName(new SfName(name))
+                        .setType(new SftTypeName(serviceFunctionTypes[numSfs]))
+                        .setIpMgmtAddress(new IpAddress(new Ipv4Address(managementIPAddress[0])))
+                        .setSfDataPlaneLocator(sfDataPlaneLocatorList)
                         .build();
-                sffDictionaryList.add(sffDictEntry);
+            });
+            assertTrue(SfcDataStoreAPI.writeMergeTransactionAPI(
+                    SfcInstanceIdentifiers.SF_IID.child(ServiceFunction.class, serviceFunction.getKey()),
+                    serviceFunction,
+                    LogicalDatastoreType.CONFIGURATION));
+
+            // update service function forwarder
+            ServiceFunctionForwarder serviceFunctionForwarder = sffMap.computeIfAbsent(sffName, (name) -> {
+                List<SffDataPlaneLocator> sffDataPlaneLocatorList = Arrays
+                        .stream(sffLocatorIps[numSffs])
+                        .map(ipStr -> {
+                            Ip ip = new IpBuilder()
+                                    .setIp(new IpAddress(new Ipv4Address(ipStr)))
+                                    .build();
+                            DataPlaneLocator locator = new DataPlaneLocatorBuilder()
+                                    .setLocatorType(ip)
+                                    .setTransport(VxlanGpe.class)
+                                    .build();
+                            return new SffDataPlaneLocatorBuilder()
+                                    .setName(new SffDataPlaneLocatorName(ipStr))
+                                    .setDataPlaneLocator(locator)
+                                    .build();
+                        })
+                        .collect(Collectors.toList());
+                return new ServiceFunctionForwarderBuilder()
+                        .setName(new SffName(name))
+                        .setSffDataPlaneLocator(sffDataPlaneLocatorList)
+                        .setServiceFunctionDictionary(new ArrayList<>())
+                        .setConnectedSffDictionary(new ArrayList<>())
+                        .setIpMgmtAddress(new IpAddress(new Ipv4Address(managementIPAddress[pos])))
+                        .setServiceNode(new SnName(sffName))
+                        .build();
+            });
+            ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder;
+            serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
+
+            // update SFF-SFF dictionary
+            List<ConnectedSffDictionary> sffDictionaryList;
+            sffDictionaryList = new ArrayList<>(serviceFunctionForwarderBuilder.getConnectedSffDictionary());
+            // previous hop sff
+            if (i > 0 && !Objects.equals(rsp[i - 1][0], sffName)) {
+                ConnectedSffDictionary prevSff = new ConnectedSffDictionaryBuilder()
+                        .setName(new SffName(rsp[i - 1][0]))
+                        .build();
+                if (!sffDictionaryList.contains(prevSff)) {
+                    sffDictionaryList.add(prevSff);
+                }
+            }
+            // next hop sff
+            if (i < rsp.length - 1 && !Objects.equals(rsp[i + 1][0], sffName)) {
+                ConnectedSffDictionary nextSff = new ConnectedSffDictionaryBuilder()
+                        .setName(new SffName(rsp[i + 1][0]))
+                        .build();
+                if (!sffDictionaryList.contains(nextSff)) {
+                    sffDictionaryList.add(nextSff);
+                }
             }
 
-            // ServiceFunctions attached to SFF_NAMES[i]
-            List<ServiceFunctionDictionary> sfDictionaryList = new ArrayList<>();
-            ServiceFunction serviceFunction = sfList.get(i);
-            SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
-            sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
-            SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
-            ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
-            dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
-                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
-            ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
-            sfDictionaryList.add(sfDictEntry);
+            // update SF dictionary
+            List<ServiceFunctionDictionary> sfDictionaryList;
+            sfDictionaryList = serviceFunctionForwarderBuilder.getServiceFunctionDictionary();
+            SffSfDataPlaneLocator sffSfDataPlaneLocator = new SffSfDataPlaneLocatorBuilder()
+                    .setSfDplName(
+                            serviceFunction.getSfDataPlaneLocator().stream()
+                                    .filter(sfDpl -> sfDpl.getServiceFunctionForwarder().getValue().equals(sffName))
+                                    .map(SfDataPlaneLocator::getName)
+                                    .findAny()
+                                    .orElse(null))
+                    .setSffDplName(
+                            serviceFunctionForwarder.getSffDataPlaneLocator().get(sfDictionaryList.size()).getName())
+                    .build();
+            ServiceFunctionDictionary sfDictEntry = new ServiceFunctionDictionaryBuilder()
+                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocator)
+                    .setFailmode(Open.class)
+                    .setSffInterfaces(null)
+                    .setName(new SfName(sfName))
+                    .build();
+            if (!sfDictionaryList.contains(sfDictEntry)) {
+                sfDictionaryList.add(sfDictEntry);
+            }
 
-            IpBuilder ipBuilder = new IpBuilder();
-            ipBuilder.setIp(new IpAddress(new Ipv4Address(sffLocatorIPs.get(i)))).setPort(new PortNumber(ports.get(i)));
-            DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
-            sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
-            SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-            locatorBuilder.setName(new SffDataPlaneLocatorName(sffLocatorIPs.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
-                    .setDataPlaneLocator(sffLocatorBuilder.build());
-            List<SffDataPlaneLocator> locatorList = new ArrayList<>();
-            locatorList.add(locatorBuilder.build());
-            ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(new SffName(sffNames.get(i)))
-                    .setKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
-                    .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
-                    .setConnectedSffDictionary(sffDictionaryList)
-                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(managementIPAddress.get(i))))
-                    .setServiceNode(new SnName(sffNames.get(i).getValue()));
-            ServiceFunctionForwarder sff = sffBuilder.build();
-            sffList.add(sff);
+            // finally update sff in db
+            assertTrue(SfcDataStoreAPI.writeMergeTransactionAPI(
+                    SfcInstanceIdentifiers.SFF_IID.child(
+                            ServiceFunctionForwarder.class,
+                            serviceFunctionForwarder.getKey()),
+                    serviceFunctionForwarderBuilder.build(),
+                    LogicalDatastoreType.CONFIGURATION));
         }
-        ServiceFunctionForwardersBuilder serviceFunctionForwardersBuilder = new ServiceFunctionForwardersBuilder();
-        serviceFunctionForwardersBuilder.setServiceFunctionForwarder(sffList);
-        assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
-                serviceFunctionForwardersBuilder.build(), LogicalDatastoreType.CONFIGURATION));
+
+        // wait for sff and sf listeners to trigger
+        Thread.sleep(1000);
+
+        // add sf types
+        sfMap.values().forEach(sf -> assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(sf)));
+
         // Create Service Function Chain
-        ServiceFunctionChainKey sfcKey = new ServiceFunctionChainKey(SFC_NAME);
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        for (int i = 0; i < serviceFunctionAbstractNames.size(); i++) {
+        for (int i = 0; i < serviceFunctionAbstractNames.length; i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(serviceFunctionAbstractNames.get(i))
-                    .setKey(new SfcServiceFunctionKey(serviceFunctionAbstractNames.get(i)))
-                    .setType(serviceFunctionTypes.get(i)).build();
+            SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(serviceFunctionAbstractNames[i])
+                    .setKey(new SfcServiceFunctionKey(serviceFunctionAbstractNames[i]))
+                    .setType(new SftTypeName(serviceFunctionTypes[i])).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
+        sfcBuilder.setName(new SfcName(sfcName))
+                .setSfcServiceFunction(sfcServiceFunctionList)
+                .setSymmetric(true);
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
 
         Thread.sleep(1000); // Wait SFC is really crated
 
-        ServiceFunctionChain readServiceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(SFC_NAME);
+        ServiceFunctionChain readServiceFunctionChain;
+        readServiceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(new SfcName(sfcName));
 
         assertNotNull(readServiceFunctionChain);
 
@@ -807,7 +1009,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
 
         /* Create ServiceFunctionPath */
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
-        pathBuilder.setName(new SfpName(SFP_NAME)).setServiceChainName(SFC_NAME).setSymmetric(true);
+        pathBuilder.setName(new SfpName(sfpName)).setServiceChainName(new SfcName(sfcName)).setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
@@ -818,7 +1020,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         RenderedServicePath renderedServicePath = null;
 
         CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME.getValue());
+        createRenderedPathInputBuilder.setName(rspName);
         createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
         renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
                 createRenderedPathInputBuilder.build());

@@ -280,7 +280,7 @@ def decode_udp(payload, udp_header_values):
     udp_header_values.udp_sum = _header_values[3]
 
 def decode_tcp(payload, offset, tcp_header_values):
-    tcp_header = payload[(108+offset):(116+offset)]
+    tcp_header = payload[offset:(offset+8)]
 
     _header_values = unpack('!H H H H', tcp_header)
     tcp_header_values.tcp_sport = _header_values[0]
@@ -871,7 +871,9 @@ def main():
             """ Check if Firewall checking is enabled, and block/drop if its the same TCP port """
             if (args.block != 0):
                 mytcpheader = TCPHEADER()
-                decode_tcp(packet, 0, mytcpheader)
+                # When ETH+NSH the TCP header is after ETH, NSH, ETH, IP
+                tcp_offset = eth_length * 2 + ip_length + nshbase_length + nshcontext_length
+                decode_tcp(packet, tcp_offset, mytcpheader)
                 if (mytcpheader.tcp_dport == args.block):
                     print bcolors.WARNING + "TCP packet dropped on port: " + str(args.block) + bcolors.ENDC
                     continue
@@ -1065,7 +1067,9 @@ def main():
             """ Check if Firewall checking is enabled, and block/drop if its the same TCP port """
             if (args.block != 0):
                 mytcpheader = TCPHEADER()
-                decode_tcp(packet, eth_length, mytcpheader)
+                # TCP header is after ETH, IP, UDP, VXLAN, ETH, NSH, ETH, IP
+                tcp_offset = eth_length * 2 + ip_length * 2 + nshbase_length + nshcontext_length + udp_length + vxlan_length
+                decode_tcp(packet, tcp_offset, mytcpheader)
                 if (mytcpheader.tcp_dport == args.block):
                     print bcolors.WARNING + "TCP packet dropped on port: " + str(args.block) + bcolors.ENDC
                     continue

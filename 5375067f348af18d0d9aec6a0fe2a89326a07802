@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4ece503f_fafa7552",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionForwarderListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2018-01-25T10:55:40Z",
+      "side": 1,
+      "message": "Could this JavaDoc elaborate a little on what the validness criteria is?",
+      "range": {
+        "startLine": 179,
+        "startChar": 7,
+        "endLine": 179,
+        "endChar": 32
+      },
+      "revId": "5375067f348af18d0d9aec6a0fe2a89326a07802",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

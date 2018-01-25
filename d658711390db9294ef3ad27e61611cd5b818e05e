@@ -22,6 +22,30 @@
       "revId": "d658711390db9294ef3ad27e61611cd5b818e05e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "acbd180d_56b9c7b7",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-25T15:18:13Z",
+      "side": 1,
+      "message": "The RPC response needs to be synchronous, will it still be synchronous if we do this?",
+      "parentUuid": "e810d1f4_67b1b89e",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 114
+      },
+      "revId": "d658711390db9294ef3ad27e61611cd5b818e05e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

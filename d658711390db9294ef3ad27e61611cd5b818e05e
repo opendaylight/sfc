@@ -70,6 +70,54 @@
       "revId": "d658711390db9294ef3ad27e61611cd5b818e05e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e3867deb_b5d7da5b",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-26T09:01:43Z",
+      "side": 1,
+      "message": "It will be asynchronous. Hmm why does it need to be synchronous if the method signature calls for a Future?",
+      "parentUuid": "acbd180d_56b9c7b7",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 114
+      },
+      "revId": "d658711390db9294ef3ad27e61611cd5b818e05e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4283edb2_7f243d60",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/SfcProviderRpc.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-26T09:01:43Z",
+      "side": 1,
+      "message": "The sleep(500) is expensive. Granted it does not happen always but being it easy to put it in a separate thread...",
+      "parentUuid": "e88e9f6e_d43a9257",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 272,
+        "endChar": 114
+      },
+      "revId": "d658711390db9294ef3ad27e61611cd5b818e05e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

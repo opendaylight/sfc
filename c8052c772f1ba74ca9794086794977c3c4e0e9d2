@@ -73,6 +73,30 @@
     },
     {
       "key": {
+        "uuid": "ab40a9c1_41ce1023",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T23:43:51Z",
+      "side": 1,
+      "message": "I dont know how to do that. I didnt find any specific ios related augmentations or anything. The only thing I could figure out is it uses netconf. The above SffNetconfAugmentation is indeed used by Vpp, but not by ios.",
+      "parentUuid": "a2d4dec4_01ba115c",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 53
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d3695ae_7c42f685",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
         "patchSetId": 4

@@ -1,0 +1,8 @@
+Code-Review+1: David Suárez Fuentes <david.suarez.fuentes@gmail.com>
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-by: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-at: Mon, 29 Jan 2018 18:22:10 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/67127
+Project: sfc
+Branch: refs/heads/master

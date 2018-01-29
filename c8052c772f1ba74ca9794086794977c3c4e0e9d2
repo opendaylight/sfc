@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "22b1ad75_c37946c6",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "I added a check to see if its a Logical SFF.",
+      "parentUuid": "1e510701_76e49f4f",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 53
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d3695ae_7c42f685",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "Why not import it? (Here and other instances of this)",
+      "range": {
+        "startLine": 36,
+        "startChar": 25,
+        "endLine": 36,
+        "endChar": 75
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f0786696_5dbab4d3",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "That was craziness from my IDE. Done.",
+      "parentUuid": "0d3695ae_7c42f685",
       "range": {
         "startLine": 36,
         "startChar": 25,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "edddbcf3_4311627e",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75c380dd_556b38dd",
+      "range": {
+        "startLine": 41,
+        "startChar": 41,
+        "endLine": 41,
+        "endChar": 56
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c3ed2399_37023bc6",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
         "patchSetId": 4
@@ -82,6 +154,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "Should be lastHop",
+      "range": {
+        "startLine": 65,
+        "startChar": 16,
+        "endLine": 65,
+        "endChar": 24
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "471a25da_9d3f7dfe",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3ed2399_37023bc6",
       "range": {
         "startLine": 65,
         "startChar": 16,
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "b553c6e1_74b4523e",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "43ca9373_65001750",
+      "range": {
+        "startLine": 98,
+        "startChar": 27,
+        "endLine": 98,
+        "endChar": 34
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e8186c8c_80db892d",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
         "patchSetId": 4
@@ -128,6 +248,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "non binding style nitpick\nreturn Optional.ofNullable(rsp)\n  .map(RenderedServicePath::getRenderedServicePathHop)\n  .filter(hops -\u003e !hops.isEmpty())\n  .map(hops -\u003e hops.get(getFirstHop? 0 : rspHopList.size() - 1))\n  .filter(hop -\u003e Objects.nonNull(hop.getServiceFunctionForwarder()))\n  .filter(hopt -\u003e Objects.nonNull(hop.getServiceIndex())",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 32
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "adfde854_b97f98c6",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Personally I find these sorts of 1-liners harder to read and debug.",
+      "parentUuid": "e8186c8c_80db892d",
       "range": {
         "startLine": 102,
         "startChar": 0,
@@ -163,6 +307,30 @@
     },
     {
       "key": {
+        "uuid": "4a28606e_800a9ae8",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2d1395e_e0e971f7",
+      "range": {
+        "startLine": 32,
+        "startChar": 39,
+        "endLine": 32,
+        "endChar": 54
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7503d92f_d849b402",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfcStatisticsHandlerBase.java",
         "patchSetId": 4
@@ -174,6 +342,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "I would set both fields as private, and setup a protected getter. In case of the timestamp, the field could be avoided and just built on each call of the getter.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 56
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "6dfa3a8a_f8aea6e0",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfcStatisticsHandlerBase.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7503d92f_d849b402",
       "range": {
         "startLine": 20,
         "startChar": 0,
@@ -209,6 +401,30 @@
     },
     {
       "key": {
+        "uuid": "b9ca4941_f7a1fdf1",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SfcStatisticsHandlerBase.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "I removed this method and added a protected getTimestampKey()",
+      "parentUuid": "51698925_2d1cecbe",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 13
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b271d5fa_44d15c59",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SffStatisticsHandler.java",
         "patchSetId": 4
@@ -220,6 +436,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "doGetStatistics?",
+      "range": {
+        "startLine": 30,
+        "startChar": 40,
+        "endLine": 30,
+        "endChar": 55
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3f0f0ce1_b11aaf72",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/SffStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b271d5fa_44d15c59",
       "range": {
         "startLine": 30,
         "startChar": 40,
@@ -255,6 +495,30 @@
     },
     {
       "key": {
+        "uuid": "6d4230a8_f7fde51b",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "The best way to indicate an error/problem in a constructor is to throw an exception to be caught/handled by the constructor caller. If the class cant be correctly created, then the constructor caller needs to know and not continue using the class. I prefer to send errors in the RPC output if there is an error in the RPC input.",
+      "parentUuid": "ddd72dd2_3bb24974",
+      "range": {
+        "startLine": 51,
+        "startChar": 22,
+        "endLine": 51,
+        "endChar": 46
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "301655c1_20377a2a",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
         "patchSetId": 4
@@ -266,6 +530,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "We should have utility methods in openflow utils that centralize building the flow names/keys.",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 71
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8cc268c8_8618d9e8",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "I prefer to do this in the openflow utils lib as a separate patch, that would affect this class, the SfcOfFlowProgrammerImpl, and several unit tests. For now, I\u0027ll just add a util method in this class.",
+      "parentUuid": "301655c1_20377a2a",
       "range": {
         "startLine": 63,
         "startChar": 0,
@@ -347,6 +635,30 @@
     },
     {
       "key": {
+        "uuid": "b2f8831d_7598fef3",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dae76e28_69e8261d",
+      "range": {
+        "startLine": 68,
+        "startChar": 12,
+        "endLine": 69,
+        "endChar": 29
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "cfdd2c89_4b68a225",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
         "patchSetId": 4
@@ -381,6 +693,30 @@
       "writtenOn": "2018-01-26T13:50:05Z",
       "side": 1,
       "message": "Check for emptyness",
+      "range": {
+        "startLine": 149,
+        "startChar": 42,
+        "endLine": 149,
+        "endChar": 59
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0b9cfd60_d3cfd86e",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T20:26:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9f9c1e14_4ff1ac6f",
       "range": {
         "startLine": 149,
         "startChar": 42,

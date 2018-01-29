@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b5cd368a_9f4e7fef",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "This probably should go to genius utils, now in the future. We already have there methods that do similar for a service function.",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f8cffb1c_e7a45183",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "This will happen for logical sff, and this will be printed for every RSP iteration of every call to the RPC.",
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "22510655_8b0c2854",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "All the LOG.info in here, are they expected situations, or maybe they should be logged at warn or error levels?",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 13
+      },
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

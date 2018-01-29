@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "a2d4dec4_01ba115c",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "Is it not possible to explicitly check if it is ios-xe based?",
+      "parentUuid": "22b1ad75_c37946c6",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 53
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0d3695ae_7c42f685",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
         "patchSetId": 4
@@ -272,6 +296,30 @@
       "side": 1,
       "message": "Personally I find these sorts of 1-liners harder to read and debug.",
       "parentUuid": "e8186c8c_80db892d",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 32
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "be301f6e_89f1bdc8",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandler.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "Fair enough.",
+      "parentUuid": "adfde854_b97f98c6",
       "range": {
         "startLine": 102,
         "startChar": 0,
@@ -519,6 +567,30 @@
     },
     {
       "key": {
+        "uuid": "3551fc69_08ee1788",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "I would argue that it would be best for constructors not to possibly fail and also not to access DB or incur in heavy operations. You could lazy initialize all this and still convey the same information to the caller at a later time through an exception.\nAnyway, I think that at least this error messaged included in the exception should be logged somewhere.",
+      "parentUuid": "6d4230a8_f7fde51b",
+      "range": {
+        "startLine": 51,
+        "startChar": 22,
+        "endLine": 51,
+        "endChar": 46
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "301655c1_20377a2a",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
         "patchSetId": 4
@@ -554,6 +626,30 @@
       "side": 1,
       "message": "I prefer to do this in the openflow utils lib as a separate patch, that would affect this class, the SfcOfFlowProgrammerImpl, and several unit tests. For now, I\u0027ll just add a util method in this class.",
       "parentUuid": "301655c1_20377a2a",
+      "range": {
+        "startLine": 63,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 71
+      },
+      "revId": "c8052c772f1ba74ca9794086794977c3c4e0e9d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8690ca95_e0b31ad8",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-29T23:07:59Z",
+      "side": 1,
+      "message": "Ok.",
+      "parentUuid": "8cc268c8_8618d9e8",
       "range": {
         "startLine": 63,
         "startChar": 0,

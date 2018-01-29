@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "6562857e_fb5a2192",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T23:43:51Z",
+      "side": 1,
+      "message": "Id prefer to not add a dependency on Genius just for a simple util function.",
+      "parentUuid": "b5cd368a_9f4e7fef",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8cffb1c_e7a45183",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
         "patchSetId": 5
@@ -42,6 +66,24 @@
     },
     {
       "key": {
+        "uuid": "20f564bb_0059f935",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T23:43:51Z",
+      "side": 1,
+      "message": "How should we get the NodeId for a logical SFF then? Will it be in the dpn-id stored in the rsp-logical-sff-augmentation?",
+      "parentUuid": "f8cffb1c_e7a45183",
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22510655_8b0c2854",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
         "patchSetId": 5
@@ -53,6 +95,30 @@
       "writtenOn": "2018-01-29T23:07:59Z",
       "side": 1,
       "message": "All the LOG.info in here, are they expected situations, or maybe they should be logged at warn or error levels?",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 13
+      },
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64366216_aea8e5db",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-29T23:43:51Z",
+      "side": 1,
+      "message": "They shouldnt normally happen, I\u0027ll change them to warnings.",
+      "parentUuid": "22510655_8b0c2854",
       "range": {
         "startLine": 74,
         "startChar": 0,

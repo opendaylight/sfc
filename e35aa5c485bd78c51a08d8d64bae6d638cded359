@@ -144,6 +144,24 @@
     },
     {
       "key": {
+        "uuid": "abd72154_01bdb1f2",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-01-30T21:27:14Z",
+      "side": 1,
+      "message": "Yep, exactly what I was thinking. But it needs the RSP and the hop. The hop is the same as the NSI, so we already have that.",
+      "parentUuid": "3e12f00d_14eed9e3",
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22510655_8b0c2854",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
         "patchSetId": 5

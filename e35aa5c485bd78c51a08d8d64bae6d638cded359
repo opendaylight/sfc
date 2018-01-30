@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "d4a0c2b6_c9dc2833",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/SfcStatisticsFactory.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-30T00:23:53Z",
+      "side": 1,
+      "message": "Ok, fyi just in case, the provider already has a dependency so we can\u0027t do without the genius feature anyway.",
+      "parentUuid": "6562857e_fb5a2192",
+      "range": {
+        "startLine": 98,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 5
+      },
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8cffb1c_e7a45183",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
         "patchSetId": 5
@@ -78,6 +102,24 @@
       "side": 1,
       "message": "How should we get the NodeId for a logical SFF then? Will it be in the dpn-id stored in the rsp-logical-sff-augmentation?",
       "parentUuid": "f8cffb1c_e7a45183",
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c072c93_64e77ee0",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-30T00:23:53Z",
+      "side": 1,
+      "message": "yes, it should be.",
+      "parentUuid": "20f564bb_0059f935",
       "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

@@ -126,6 +126,24 @@
     },
     {
       "key": {
+        "uuid": "3e12f00d_14eed9e3",
+        "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReader.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-01-30T11:31:04Z",
+      "side": 1,
+      "message": "So maybe an idea is that the getNextHopStatistics receives the hop as parameter instead of the SFF. The you can make a specific stats reader for logical sff that overloads getNode to get it from that augmentation.",
+      "parentUuid": "5c072c93_64e77ee0",
+      "revId": "e35aa5c485bd78c51a08d8d64bae6d638cded359",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22510655_8b0c2854",
         "filename": "sfc-statistics/src/main/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpc.java",
         "patchSetId": 5

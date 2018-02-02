@@ -31,7 +31,7 @@ public abstract class SfcStatisticsHandlerBase {
 
     public abstract <T extends DataObject> List<StatisticByTimestamp> getStatistics(T data);
 
-    protected SfcStatisticsReaderBase getStatsReader() {
+    public SfcStatisticsReaderBase getStatsReader() {
         return this.statsReader;
     }
 

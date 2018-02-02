@@ -103,6 +103,10 @@ public final class SfcStatisticsFactory {
 
     private static boolean hasLogicalSff(RenderedServicePath rsp, ServiceFunctionForwarder sff) {
         List<RenderedServicePathHop> rspHops = rsp.getRenderedServicePathHop();
+        if (rspHops == null) {
+            return false;
+        }
+
         for (RenderedServicePathHop rspHop : rspHops) {
             if (rspHop.getAugmentation(RspLogicalSffAugmentation.class) != null) {
                 if (rspHop.getServiceFunctionForwarder().getValue().equals(sff.getName().getValue())) {

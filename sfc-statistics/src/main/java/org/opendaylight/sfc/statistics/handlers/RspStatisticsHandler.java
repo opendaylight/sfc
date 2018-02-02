@@ -101,10 +101,12 @@ public class RspStatisticsHandler extends SfcStatisticsHandlerBase {
     private Optional<RenderedServicePathHop> getRspHop(RenderedServicePath rsp, boolean getFirstHop) {
         List<RenderedServicePathHop> rspHopList = rsp.getRenderedServicePathHop();
         if (rspHopList == null) {
+            LOG.warn("RSP Hop list is null for RSP [{}]", rsp.getName().getValue());
             return Optional.empty();
         }
 
         if (rspHopList.isEmpty()) {
+            LOG.warn("RSP Hop list is empty for RSP [{}]", rsp.getName().getValue());
             return Optional.empty();
         }
 
@@ -117,14 +119,17 @@ public class RspStatisticsHandler extends SfcStatisticsHandlerBase {
         }
 
         if (hop == null) {
+            LOG.warn("The RSP Hop is NULL for RSP [{}]", rsp.getName().getValue());
             return Optional.empty();
         }
 
         if (hop.getServiceFunctionForwarder() == null) {
+            LOG.warn("The RSP Hop has no SFF for RSP [{}]", rsp.getName().getValue());
             return Optional.empty();
         }
 
         if (hop.getServiceIndex() == null) {
+            LOG.warn("The RSP Hop has no Service Index for RSP [{}]", rsp.getName().getValue());
             return Optional.empty();
         }
 

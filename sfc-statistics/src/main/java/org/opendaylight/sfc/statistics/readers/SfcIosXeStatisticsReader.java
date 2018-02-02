@@ -12,8 +12,11 @@ import java.util.Optional;
 
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.statistic.fields.ServiceStatistic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfcIosXeStatisticsReader extends SfcStatisticsReaderBase {
+    private static final Logger LOG = LoggerFactory.getLogger(SfcIosXeStatisticsReader.class);
 
     public SfcIosXeStatisticsReader(ServiceFunctionForwarder sff) {
     }
@@ -22,18 +25,24 @@ public class SfcIosXeStatisticsReader extends SfcStatisticsReaderBase {
     public Optional<ServiceStatistic>
         getNextHopStatistics(boolean inputStats, ServiceFunctionForwarder sff, long nsp, short nsi) {
         // Not implemented yet
+        LOG.warn("SfcIosXeStatisticsReader.getNextHopStatistics() is not implemented yet");
+
         return Optional.empty();
     }
 
     @Override
     public Optional<ServiceStatistic> getTransportIngressStatistics(ServiceFunctionForwarder sff) {
         // Not implemented yet
+        LOG.warn("SfcIosXeStatisticsReader.getTransportIngressStatistics() is not implemented yet");
+
         return Optional.empty();
     }
 
     @Override
     public Optional<ServiceStatistic> getTransportEgressStatistics(ServiceFunctionForwarder sff) {
         // Not implemented yet
+        LOG.warn("SfcIosXeStatisticsReader.getTransportEgressStatistics() is not implemented yet");
+
         return Optional.empty();
     }
 

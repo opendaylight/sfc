@@ -70,18 +70,18 @@ public class SfcOpenFlowStatisticsReader extends SfcStatisticsReaderBase {
                 .child(Flow.class, flowKey).build();
         Flow flow = SfcDataStoreAPI.readTransactionAPI(iidFlow, LogicalDatastoreType.OPERATIONAL);
         if (flow == null) {
-            LOG.warn("SfcStatisticsOpenFlowUtils getSffNextHopStats flow null for flowName [{}]", flowName);
+            LOG.warn("getSffNextHopStats flow null for flowName [{}]", flowName);
             return Optional.empty();
         }
 
         FlowStatisticsData flowStatsData = flow.getAugmentation(FlowStatisticsData.class);
         if (flowStatsData == null) {
-            LOG.warn("SfcStatisticsOpenFlowUtils getSffNextHopStats flowStatsData null for nsp [{}] nsi [{}]",
+            LOG.warn("getSffNextHopStats flowStatsData null for nsp [{}] nsi [{}]",
                     nsp, nsi);
             return Optional.empty();
         }
 
-        LOG.debug("SfcStatisticsOpenFlowUtils stats nsp [{}] nsi [{}] bytes [{}] packets [{}]", nsp, nsi,
+        LOG.debug("Stats nsp [{}] nsi [{}] bytes [{}] packets [{}]", nsp, nsi,
                 flowStatsData.getFlowStatistics().getByteCount().getValue(),
                 flowStatsData.getFlowStatistics().getPacketCount().getValue());
 

@@ -1,0 +1,489 @@
+/**
+ * Copyright (c) 2018 Inocybe Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.sfc.statistics.testutils;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
+
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
+import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
+import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceChainAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.sfc.provider.api.SfcProviderServiceTypeAPI;
+import org.opendaylight.sfc.util.openflow.OpenflowConstants;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.Open;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarderKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.ServiceFunctionDictionaryKey;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.service.function.forwarder.service.function.dictionary.SffSfDataPlaneLocatorBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfTableOffsets;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTable;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableBuilder;
+import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.sfc.of.table.offsets.SfcOfTablesByBaseTableKey;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsData;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsDataBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SfcStatisticsTestUtils extends AbstractDataStoreManager {
+
+    protected static final Logger LOG = LoggerFactory.getLogger(SfcStatisticsTestUtils.class);
+
+    @SuppressWarnings("serial")
+    protected static final List<String> LOCATOR_IP_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.1");
+            add("196.168.55.2");
+            add("196.168.55.3");
+            add("196.168.55.4");
+            add("196.168.55.5");
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<String> IP_MGMT_ADDRESS = new ArrayList<String>() {
+
+        {
+            add("196.168.55.101");
+            add("196.168.55.102");
+            add("196.168.55.103");
+            add("196.168.55.104");
+            add("196.168.55.105");
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<SfName> SERVICE_FUNCTION_NAMES = new ArrayList<SfName>() {
+
+        {
+            add(new SfName("unittest-fw-1"));
+            add(new SfName("unittest-dpi-1"));
+            add(new SfName("unittest-napt-1"));
+            add(new SfName("unittest-http-header-enrichment-1"));
+            add(new SfName("unittest-qos-1"));
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<Integer> PORT = new ArrayList<Integer>() {
+
+        {
+            add(1111);
+            add(2222);
+            add(3333);
+            add(4444);
+            add(5555);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<SftTypeName> SERVICE_FUNCTION_TYPES = new ArrayList<SftTypeName>() {
+
+        {
+            add(new SftTypeName("firewall"));
+            add(new SftTypeName("dpi"));
+            add(new SftTypeName("napt44"));
+            add(new SftTypeName("http-header-enrichment"));
+            add(new SftTypeName("qos"));
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<String> SF_ABSTRACT_NAMES = new ArrayList<String>() {
+
+        {
+            add("firewall");
+            add("dpi");
+            add("napt");
+            add("http-header-enrichment");
+            add("qos");
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<SffName> SFF_NAMES = new ArrayList<SffName>() {
+
+        {
+            add(new SffName("SFF1"));
+            add(new SffName("SFF2"));
+            add(new SffName("SFF3"));
+            add(new SffName("SFF4"));
+            add(new SffName("SFF5"));
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<String> SFF_LOCATOR_IP = new ArrayList<String>() {
+
+        {
+            add("196.168.66.101");
+            add("196.168.66.102");
+            add("196.168.66.103");
+            add("196.168.66.104");
+            add("196.168.66.105");
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<SfcName> SFC_NAMES = new ArrayList<SfcName>() {
+
+        {
+            add(new SfcName("UT-SFC1"));
+            add(new SfcName("UT-SFC2"));
+            add(new SfcName("UT-SFC3"));
+        }
+    };
+
+    @SuppressWarnings("serial")
+    protected static final List<SfpName> SFP_NAMES = new ArrayList<SfpName>() {
+
+        {
+            add(new SfpName("UT-SFP1"));
+            add(new SfpName("UT-SFP2"));
+            add(new SfpName("UT-SFP3"));
+        }
+    };
+
+    protected static final String OPENFLOW_NODEID = "openflow:112233445566";
+    protected static short BASE_TABLE_NUMBER = 0;
+
+    /**
+     * Creates SFs, SFFs, SFCs, and SFPs. For each SFP the config RSP will be created SFP listener
+     * and the operational RSP will be created by the RSP listener. Since this UT doesnt have the
+     * listeners registered, we'll have to do the RSP creation steps manually.
+     *
+     * @param numRsps - number of SFCs, SFPs, and RSPs to create
+     * @param isSymmetric - if the SFP and RSP should be symmetric
+     * @return a list of the RSPs created
+     */
+    protected List<RenderedServicePath> createOperationalRsps(int numRsps, boolean isSymmetric) {
+        int numHops   = 2;
+        int numSffs   = 1;
+        int numSfs    = 2;
+
+        List<ServiceFunction> sfList = createSfs(numSfs, SFF_NAMES.get(0));
+        createSffs(numSffs, sfList);
+        List<ServiceFunctionChain> sfcList = createSfcs(numRsps, numHops);
+        List<ServiceFunctionPath> sfpList = createSfps(numRsps, sfcList, isSymmetric);
+
+        // Create the RSPs
+        List<RenderedServicePath> operRsps = new ArrayList<>();
+        for (int i = 0; i < numRsps; i++) {
+            ServiceFunctionPath sfp = sfpList.get(i);
+
+            // Create the Config RSP, this normally happens in the SFP listener
+            // This call will optionally create the symmetric RSP
+            RenderedServicePath configRsp = SfcProviderRenderedPathAPI.createRenderedServicePathInConfig(sfp);
+
+            // Create the Operational RSP, this normally happens in the RSP Config datastore listener
+            RenderedServicePath operRsp = SfcProviderRenderedPathAPI
+                    .createRenderedServicePathAndState(sfp, configRsp);
+            operRsps.add(operRsp);
+            LOG.info("createOperationalRsps Created Oper RSP [{}]", operRsp.getName().getValue());
+
+            // Optionally create the Symmetric RSP
+            if (isSymmetric) {
+                configRsp = getConfigRsp(sfp, true);
+                if (configRsp == null) {
+                    LOG.warn("Could not get symmetric RSP for SFP [{}]", sfp.getName().getValue());
+                    continue;
+                }
+                // Create the Symmetric Operational RSP
+                operRsp = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(sfp, configRsp);
+                operRsps.add(operRsp);
+                LOG.info("createOperationalRsps Created Symmetric Oper RSP [{}]", operRsp.getName().getValue());
+            }
+
+            createNextHopFlow(operRsp);
+        }
+
+        return operRsps;
+    }
+
+    protected List<ServiceFunctionPath> createSfps(int numSfps, List<ServiceFunctionChain> sfcList,
+                                                   boolean isSymmetric) {
+        List<ServiceFunctionPath> sfpList = new ArrayList<>();
+
+        for (int i = 0; i < numSfps; i++) {
+            ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
+            pathBuilder.setName(SFP_NAMES.get(i))
+                    .setServiceChainName(sfcList.get(i).getName())
+                    .setSymmetric(isSymmetric);
+            ServiceFunctionPath sfp = pathBuilder.build();
+            assertTrue("SFP creation must return true",
+                    SfcProviderServicePathAPI.putServiceFunctionPath(sfp));
+
+            sfpList.add(sfp);
+        }
+
+        return sfpList;
+    }
+
+    protected List<ServiceFunctionChain> createSfcs(int numSfcs, int numHops) {
+        List<ServiceFunctionChain> sfcList = new ArrayList<>();
+
+        for (int i = 0; i < numSfcs; i++) {
+            List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
+            for (int j = 0; j < numHops; j++) {
+                SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
+                SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(j))
+                        .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(j)))
+                        .setType(SERVICE_FUNCTION_TYPES.get(j))
+                        .build();
+                sfcServiceFunctionList.add(sfcServiceFunction);
+            }
+            ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
+            sfcBuilder.setName(SFC_NAMES.get(i))
+                    .setKey(new ServiceFunctionChainKey(SFC_NAMES.get(i)))
+                    .setSfcServiceFunction(sfcServiceFunctionList);
+
+            ServiceFunctionChain sfc = sfcBuilder.build();
+            sfcList.add(sfc);
+            SfcProviderServiceChainAPI.putServiceFunctionChain(sfc);
+
+            // Check if Service Function Chain was created
+            ServiceFunctionChain createdSfc = SfcProviderServiceChainAPI.readServiceFunctionChain(SFC_NAMES.get(i));
+            assertNotNull("Created SFC must not be null", createdSfc);
+        }
+
+        return sfcList;
+    }
+
+    protected List<ServiceFunctionForwarder> createSffs(int numSffs, List<ServiceFunction> sfList) {
+
+        List<ServiceFunctionForwarder> sffList = new ArrayList<>();
+        for (int i = 0; i < numSffs; i++) {
+            // ServiceFunctions attached to SFF_NAMES[i]
+            ServiceFunction serviceFunction = sfList.get(i);
+            SffSfDataPlaneLocatorBuilder sffSfDataPlaneLocatorBuilder = new SffSfDataPlaneLocatorBuilder();
+            sffSfDataPlaneLocatorBuilder.setSfDplName(serviceFunction.getSfDataPlaneLocator().get(0).getName());
+
+            ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
+            dictionaryEntryBuilder.setName(serviceFunction.getName())
+                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build())
+                    .setFailmode(Open.class)
+                    .setSffInterfaces(null);
+
+            IpBuilder ipBuilder = new IpBuilder();
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(SFF_LOCATOR_IP.get(i))))
+                    .setPort(new PortNumber(PORT.get(i)));
+            DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
+            sffLocatorBuilder.setLocatorType(ipBuilder.build())
+                    .setTransport(VxlanGpe.class);
+            SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
+            locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
+                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+                    .setDataPlaneLocator(sffLocatorBuilder.build());
+
+            ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
+            sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
+                    .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
+                    .setSffDataPlaneLocator(Collections.singletonList(locatorBuilder.build()))
+                    .setServiceFunctionDictionary(Collections.singletonList(dictionaryEntryBuilder.build()))
+                    .setServiceNode(null);
+
+            // This makes sure the SfcOpenFlowStatisticsReader will be returned by the SfcStatisticsFactory
+            // Set the NodeId on the SFF, this is usually done by the SfcOvsListener
+            SffOvsBridgeAugmentationBuilder sffOvsBridgeAugmentationBuilder = new SffOvsBridgeAugmentationBuilder();
+            OvsBridgeBuilder bridgeBuilder = new OvsBridgeBuilder();
+            bridgeBuilder.setOpenflowNodeId(OPENFLOW_NODEID);
+            sffOvsBridgeAugmentationBuilder.setOvsBridge(bridgeBuilder.build());
+            sffBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build());
+
+            ServiceFunctionForwarder sff = sffBuilder.build();
+            sffList.add(sff);
+            SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);
+            setTableOffsets(sff.getName(), BASE_TABLE_NUMBER);
+        }
+
+        return sffList;
+    }
+
+    protected List<ServiceFunction> createSfs(int numSfs, SffName createSfOnSff) {
+        final List<ServiceFunction> sfList = new ArrayList<>();
+
+        for (int i = 0; i < numSfs; i++) {
+            IpBuilder ipBuilder = new IpBuilder();
+            ipBuilder.setIp(new IpAddress(new Ipv4Address(LOCATOR_IP_ADDRESS.get(0))))
+                    .setPort(new PortNumber(PORT.get(i)));
+
+            SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
+            locatorBuilder.setName(new SfDataPlaneLocatorName(LOCATOR_IP_ADDRESS.get(i)))
+                    .setLocatorType(ipBuilder.build())
+                    .setServiceFunctionForwarder(createSfOnSff);
+
+            List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
+            dataPlaneLocatorList.add(locatorBuilder.build());
+
+            SfName sfName = SERVICE_FUNCTION_NAMES.get(i);
+            ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
+            sfBuilder.setName(sfName)
+                    .setKey(new ServiceFunctionKey(sfName))
+                    .setType(SERVICE_FUNCTION_TYPES.get(i))
+                    .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))))
+                    .setSfDataPlaneLocator(dataPlaneLocatorList);
+            sfList.add(sfBuilder.build());
+        }
+
+        ServiceFunctionsBuilder sfsBuilder = new ServiceFunctionsBuilder();
+        sfsBuilder.setServiceFunction(sfList);
+
+        SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
+                LogicalDatastoreType.CONFIGURATION);
+
+        // Create ServiceFunctionTypeEntry for all ServiceFunctions
+        for (ServiceFunction serviceFunction : sfList) {
+            LOG.debug("call createServiceFunctionTypeEntryExecutor for {}", serviceFunction.getName());
+            assertTrue("ServiceFunctionTypeEntry creation must be true",
+                    SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
+        }
+
+        return sfList;
+    }
+
+    private RenderedServicePath getConfigRsp(ServiceFunctionPath sfp, boolean isReverse) {
+
+        // The RSP name is based on the SFP name: "<SFP-Name>-<PathId>" and "<SFP-Name>-<PathId>-Reverse"
+
+        InstanceIdentifier<RenderedServicePaths> rspIID = InstanceIdentifier.create(RenderedServicePaths.class);
+        RenderedServicePaths rsps = SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.CONFIGURATION);
+        List<RenderedServicePath> rspList = rsps.getRenderedServicePath();
+        for (RenderedServicePath rsp : rspList) {
+            if (rsp.getName().getValue().startsWith(sfp.getName().getValue())) {
+                // If we're looking for the Reverse RSP, then check the suffix
+                if (isReverse) {
+                    if (rsp.getName().getValue().endsWith("Reverse")) {
+                        // We found the reverse RSP
+                        return rsp;
+                    } else {
+                        continue;
+                    }
+                } else {
+                    // We found the RSP
+                    return rsp;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void setTableOffsets(SffName sffName, long tableBase) {
+        long tableBaseValue = tableBase < 0
+                ? 0
+                : tableBase;
+
+        SfcOfTablesByBaseTableBuilder sfcOfTablesByBaseTableBuilder = new SfcOfTablesByBaseTableBuilder();
+        sfcOfTablesByBaseTableBuilder.setSffName(sffName);
+        sfcOfTablesByBaseTableBuilder.setKey(new SfcOfTablesByBaseTableKey(sffName));
+        sfcOfTablesByBaseTableBuilder.setBaseTable(tableBaseValue);
+        sfcOfTablesByBaseTableBuilder.setTransportIngressTable(tableBaseValue + 1);
+        sfcOfTablesByBaseTableBuilder.setPathMapperTable(tableBaseValue + 2);
+        sfcOfTablesByBaseTableBuilder.setPathMapperAclTable(tableBaseValue + 3);
+        sfcOfTablesByBaseTableBuilder.setNextHopTable(tableBaseValue + 4);
+        sfcOfTablesByBaseTableBuilder.setTransportEgressTable(tableBaseValue + 10);
+
+        InstanceIdentifier<SfcOfTablesByBaseTable> iid = InstanceIdentifier.create(SfcOfTableOffsets.class)
+                .child(SfcOfTablesByBaseTable.class, new SfcOfTablesByBaseTableKey(sffName));
+
+        SfcDataStoreAPI.writeMergeTransactionAPI(iid, sfcOfTablesByBaseTableBuilder.build(),
+                LogicalDatastoreType.OPERATIONAL);
+    }
+
+    private void createNextHopFlow(RenderedServicePath rsp) {
+        // Create a NextHop flow for each RSP hop
+        for (RenderedServicePathHop rspHop : rsp.getRenderedServicePathHop()) {
+            StringJoiner flowName = new StringJoiner(OpenflowConstants.OF_NAME_DELIMITER);
+            flowName.add(OpenflowConstants.OF_NAME_NEXT_HOP)
+                    .add(String.valueOf(rspHop.getServiceIndex()))
+                    .add(String.valueOf(rsp.getPathId()));
+            FlowKey flowKey = new FlowKey(new FlowId(flowName.toString()));
+
+            FlowBuilder flowBuilder = new FlowBuilder();
+            flowBuilder.setFlowName(flowName.toString());
+            flowBuilder.setKey(flowKey);
+
+            FlowStatisticsBuilder flowStatsBuilder = new FlowStatisticsBuilder();
+            flowStatsBuilder.setByteCount(new Counter64(new BigInteger("0")));
+            flowStatsBuilder.setPacketCount(new Counter64(new BigInteger("0")));
+            FlowStatisticsDataBuilder flowStatsDataBuilder = new FlowStatisticsDataBuilder();
+            flowStatsDataBuilder.setFlowStatistics(flowStatsBuilder.build());
+            flowBuilder.addAugmentation(FlowStatisticsData.class, flowStatsDataBuilder.build());
+
+            InstanceIdentifier<Flow> iidFlow = InstanceIdentifier.builder(Nodes.class)
+                    .child(Node.class, new NodeKey(new NodeId(OPENFLOW_NODEID)))
+                    .augmentation(FlowCapableNode.class)
+                    .child(Table.class, new TableKey((short) (BASE_TABLE_NUMBER + 4)))
+                    .child(Flow.class, flowKey).build();
+            SfcDataStoreAPI.writeMergeTransactionAPI(iidFlow, flowBuilder.build(), LogicalDatastoreType.OPERATIONAL);
+        }
+    }
+}

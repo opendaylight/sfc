@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Before;
@@ -948,4 +947,38 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         createRenderedPathInputBuilder.setParentServiceFunctionPath(pathName);
         return createRenderedPathInputBuilder.build();
     }
+
+    @Test(timeout = 1000)
+    public void createRenderedPathNoNameTest() throws ExecutionException, InterruptedException {
+        init();
+
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setParentServiceFunctionPath(SFP_NAME.getValue()).setSymmetric(true);
+        CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
+
+        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
+        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
+
+        Future<RpcResult<CreateRenderedPathOutput>> future = sfcProviderRpc.createRenderedPath(createRenderedPathInput);
+        assertNotNull(future);
+        RpcResult<CreateRenderedPathOutput> result = future.get();
+        assertNotNull(result);
+        CreateRenderedPathOutput output = result.getResult();
+        assertNotNull(output);
+        assertNotNull(output.getName());
+        assertTrue(output.getName().startsWith(SFP_NAME.getValue()));
+    }
+
+    @Test(timeout = 1000)
+    public void createRenderedPathNoSfpTest() throws ExecutionException, InterruptedException {
+        init();
+
+        Future<RpcResult<CreateRenderedPathOutput>> future = sfcProviderRpc.createRenderedPath(
+                new CreateRenderedPathInputBuilder().build());
+        assertNotNull(future);
+        RpcResult<CreateRenderedPathOutput> result = future.get();
+        assertNotNull(result);
+        assertFalse(result.isSuccessful());
+    }
+
 }

@@ -246,8 +246,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     // and cancel itself.
     private static class CreateRenderedPathImpl implements Runnable {
 
-        private CreateRenderedPathInput createRenderedPathInput;
-        private SettableFuture<RpcResult<CreateRenderedPathOutput>> result;
+        private final CreateRenderedPathInput createRenderedPathInput;
+        private final SettableFuture<RpcResult<CreateRenderedPathOutput>> result;
         private volatile Future backingFuture = null;
 
         CreateRenderedPathImpl(CreateRenderedPathInput createRenderedPathInput,
@@ -257,6 +257,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         }
 
         @Override
+        @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
 
             // if we are done but somehow still running, cancel ourself.
@@ -265,29 +266,25 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 return;
             }
 
-            final String inputRspNameValue = createRenderedPathInput.getName();
-            final RspName inputRspName = new RspName(inputRspNameValue);
-
-            // If the operational RSP already exists, give it back and complete
-            RenderedServicePath operRSp = SfcProviderRenderedPathAPI.readRenderedServicePath(
-                    inputRspName,
-                    LogicalDatastoreType.OPERATIONAL);
-            if (operRSp != null) {
-                completeSuccess(inputRspNameValue);
-                return;
+            try {
+                createRenderedPath();
+            } catch (RuntimeException e) {
+                result.setException(e);
+                cancelBackingFuture();
             }
+        }
 
-            // If the config RSP already exists, we just have to wait for the operational RSP
-            RenderedServicePath configRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
-                    inputRspName,
-                    LogicalDatastoreType.CONFIGURATION);
-            if (configRsp != null) {
-                return;
+        private void createRenderedPath() {
+            final String inputRspNameValue = createRenderedPathInput.getName();
+            final String inputSfpName = createRenderedPathInput.getParentServiceFunctionPath();
+
+            if (inputSfpName == null) {
+                completeError("Service Function Path not specified");
             }
 
             // Fail if the SFP doesnt exist
             ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI
-                    .readServiceFunctionPath(new SfpName(createRenderedPathInput.getParentServiceFunctionPath()));
+                    .readServiceFunctionPath(new SfpName(inputSfpName));
             if (serviceFunctionPath == null) {
                 completeError("Service Function Path does not exist");
                 return;
@@ -315,6 +312,27 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                         return;
                     }
                 }
+
+                // Otherwise the RSP might still not be created, wait for that
+                return;
+            }
+
+            final RspName inputRspName = new RspName(inputRspNameValue);
+            // If the operational RSP already exists, give it back and complete
+            RenderedServicePath operRSp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    inputRspName,
+                    LogicalDatastoreType.OPERATIONAL);
+            if (operRSp != null) {
+                completeSuccess(inputRspNameValue);
+                return;
+            }
+
+            // If the config RSP already exists, we just have to wait for the operational RSP
+            RenderedServicePath configRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    inputRspName,
+                    LogicalDatastoreType.CONFIGURATION);
+            if (configRsp != null) {
+                return;
             }
 
             // Go ahead and create the RSP with the provided inputRspNameValue

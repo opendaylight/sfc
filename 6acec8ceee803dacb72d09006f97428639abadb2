@@ -1,0 +1,274 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "cd4f7e7c_af7ec380",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/SfcStatisticsFactoryTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Can be removed?",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 5
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "335bbe50_260361c3",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/SfcStatisticsFactoryTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "This sounded weird. Had to stop and think, whats a logical RSP? Maybe createRspWithLogicalSff? But maybe it\u0027s just me.",
+      "range": {
+        "startLine": 64,
+        "startChar": 52,
+        "endLine": 64,
+        "endChar": 68
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "616b2271_8f489b13",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/SfcStatisticsFactoryTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Same as before.",
+      "range": {
+        "startLine": 104,
+        "startChar": 52,
+        "endLine": 104,
+        "endChar": 68
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "778f7a1d_6832fc15",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/SfcStatisticsFactoryTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Empty test?",
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8a2d5c9_d9f5db3c",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/handlers/RspStatisticsHandlerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Can be removed?",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 5
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1b23d1a_ed48bf5d",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReaderTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Can be removed?",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 5
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f8c2691e_27d49485",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReaderTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "This is not needed actually, the catch block could be empty.",
+      "range": {
+        "startLine": 58,
+        "startChar": 12,
+        "endLine": 58,
+        "endChar": 29
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "44277068_4f89bac5",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/readers/SfcOpenFlowStatisticsReaderTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "use local variable rsp.",
+      "range": {
+        "startLine": 72,
+        "startChar": 71,
+        "endLine": 72,
+        "endChar": 85
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d57c41e6_ebbaf130",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpcTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Can be removed?",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 5
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "80f15eb9_bd718886",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/rpc/SfcStatisticsRpcTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "I think that runtime result of catching these might be more distracting than the usual way a test would fail due to an exception.",
+      "range": {
+        "startLine": 65,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 9
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a8cc3867_a1aaf04f",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/testutils/SfcStatisticsTestUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "I think that it would be good to include an assert in all the create* methods in case a greater number if items or sub-items than supported are attempted to be created. Just so that in a future use of this class doesnt catch you off guard.",
+      "range": {
+        "startLine": 101,
+        "startChar": 13,
+        "endLine": 101,
+        "endChar": 35
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8984a998_fdb3c4c6",
+        "filename": "sfc-statistics/src/test/java/org/opendaylight/sfc/statistics/testutils/SfcStatisticsTestUtils.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 596,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-08T16:48:05Z",
+      "side": 1,
+      "message": "Should the isReverse property be used instead?",
+      "range": {
+        "startLine": 596,
+        "startChar": 24,
+        "endLine": 596,
+        "endChar": 68
+      },
+      "revId": "6acec8ceee803dacb72d09006f97428639abadb2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -76,6 +76,11 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
+
+        if (locations == null) {
+            return serviceFunctionForwarder;
+        }
+
         Lisp lispLocation = getLispLocationFromSff(locations);
         if (lispLocation != null) {
             return updateLispData(lispLocation, serviceFunctionForwarder);
@@ -86,6 +91,11 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     public ServiceFunction updateLispData(ServiceFunction serviceFunction) {
         List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
+
+        if (locations == null) {
+            return serviceFunction;
+        }
+
         Lisp lispLocation = getLispLocationFromSf(locations);
         if (lispLocation != null) {
             return updateLispData(lispLocation, serviceFunction);
@@ -163,6 +173,11 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     public boolean containsLispAddress(ServiceFunction serviceFunction) {
         List<SfDataPlaneLocator> locations = serviceFunction.getSfDataPlaneLocator();
+
+        if (locations == null) {
+            return false;
+        }
+
         for (SfDataPlaneLocator location : locations) {
             if (location.getLocatorType() instanceof Lisp) {
                 return true;
@@ -173,6 +188,11 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     public boolean containsLispAddress(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
+
+        if (locations == null) {
+            return false;
+        }
+
         for (SffDataPlaneLocator location : locations) {
             if (location.getDataPlaneLocator().getLocatorType() instanceof Lisp) {
                 return true;
@@ -400,6 +420,10 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
             }
 
             List<SffDataPlaneLocator> locators = sff.getSffDataPlaneLocator();
+            if (locators == null) {
+                LOG.debug("SFF {} has no locators. Aborting!", sff);
+                return;
+            }
 
             boolean found = false;
             for (SffDataPlaneLocator locator : locators) {

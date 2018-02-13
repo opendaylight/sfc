@@ -70,7 +70,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
         }
 
         LOG.info("createClassifierOutFlow - Validated inputs");
-        List<Action> theActions = buildNshActions(sfcRspInfo);
+        List<Action> theActions = SfcScfOfUtils.buildNshActions(sfcRspInfo);
 
         InstructionsBuilder isb;
         // if the classifier is co-located w/ the first SFF, we simply jump to
@@ -155,31 +155,6 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
      */
     private Optional<Long> getInPort(String interfaceName) {
         return LogicalClassifierDataGetter.getOpenflowPort(interfaceName);
-    }
-
-    /**
-     * Build a list of actions which will be installed into the classifier.
-     *
-     * @param sfcRspInfo
-     *            the {@link SfcRspInfo} object encapsulating all NSH related
-     *            data
-     * @return the List of {@link Action} related to NSH which will be pushed
-     *         into the classifier
-     */
-    private List<Action> buildNshActions(SfcRspInfo sfcRspInfo) {
-        List<Action> theActions = new ArrayList<>();
-        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(sfcRspInfo.getNshMetaC2(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(sfcRspInfo.getNshMetaC3(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(sfcRspInfo.getNshMetaC4(), theActions.size()));
-        theActions
-                .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
-        return theActions;
     }
 
     @Override

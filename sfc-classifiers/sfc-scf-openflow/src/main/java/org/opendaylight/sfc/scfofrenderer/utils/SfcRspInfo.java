@@ -171,14 +171,14 @@ public class SfcRspInfo {
         RenderedServicePathHop lastRspHop = Iterables.getLast(theRsp.getRenderedServicePathHop());
 
         if (lastRspHop == null) {
-            LOG.error("getSfcRspInfo: last rsp hop is null\n");
+            LOG.error("getSfcRspInfo: last rsp hop is null");
             return null;
         }
 
         RenderedServicePathFirstHop rspFirstHop = SfcProviderRenderedPathAPI
                 .readRenderedServicePathFirstHop(theRsp.getName());
         if (rspFirstHop == null) {
-            LOG.error("getSfcRspInfo: rsp first hop is null\n");
+            LOG.error("getSfcRspInfo: rsp first hop is null");
             return null;
         }
 
@@ -195,16 +195,20 @@ public class SfcRspInfo {
 
         String context = theRsp.getContextMetadata();
         if (context == null) {
-            LOG.error("getSfcRspInfo: context is null\n");
+            LOG.debug("getSfcRspInfo: rsp context metadata is null");
+            return sfcRspInfo;
         }
 
         ContextMetadata md = SfcProviderServiceFunctionMetadataAPI.readContextMetadata(context);
         if (md == null) {
-            LOG.error("getSfcRspInfo: metadata is null\n");
-        } else {
-            sfcRspInfo.setNshMetaC1(md.getContextHeader1()).setNshMetaC2(md.getContextHeader2())
-                    .setNshMetaC3(md.getContextHeader3()).setNshMetaC4(md.getContextHeader4());
+            LOG.debug("getSfcRspInfo: metadata could not be read from data store");
+            return sfcRspInfo;
         }
+
+        sfcRspInfo.setNshMetaC1(md.getContextHeader1())
+                .setNshMetaC2(md.getContextHeader2())
+                .setNshMetaC3(md.getContextHeader3())
+                .setNshMetaC4(md.getContextHeader4());
 
         return sfcRspInfo;
     }

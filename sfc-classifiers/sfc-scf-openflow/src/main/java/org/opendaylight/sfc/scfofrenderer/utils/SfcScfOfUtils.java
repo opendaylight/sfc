@@ -129,18 +129,7 @@ public final class SfcScfOfUtils {
 
         String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
 
-        List<Action> theActions = new ArrayList<>();
-        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(NSH_MDTYPE_ONE, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(NSH_NP_ETH, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC2(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC3(), theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC4(), theActions.size()));
-        theActions
-                .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        List<Action> theActions = buildNshActions(sfcRspInfo);
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
         theActions.add(outPort == null
                 ? SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size())
@@ -152,6 +141,39 @@ public final class SfcScfOfUtils {
         flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(match).setInstructions(isb.build());
         return flowb;
+    }
+
+    /**
+     * Build a list of actions which will be installed into the classifier.
+     *
+     * @param sfcRspInfo
+     *            the {@link SfcRspInfo} object encapsulating all NSH related
+     *            data
+     * @return the List of {@link Action} related to NSH which will be pushed
+     *         into the classifier
+     */
+    public static List<Action> buildNshActions(SfcRspInfo sfcRspInfo) {
+        List<Action> theActions = new ArrayList<>();
+        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
+        if (sfcRspInfo.getNshMetaC1() != null) {
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
+        }
+        if (sfcRspInfo.getNshMetaC2() != null) {
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC2(), theActions.size()));
+        }
+        if (sfcRspInfo.getNshMetaC3() != null) {
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC3(), theActions.size()));
+        }
+        if (sfcRspInfo.getNshMetaC4() != null) {
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC4(), theActions.size()));
+        }
+        theActions.add(
+                SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
+        return theActions;
     }
 
     /**

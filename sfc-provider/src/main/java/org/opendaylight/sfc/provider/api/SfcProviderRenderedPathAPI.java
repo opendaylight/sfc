@@ -116,15 +116,11 @@ public final class SfcProviderRenderedPathAPI {
         return scheduler;
     }
 
-    @SuppressWarnings("checkstyle:IllegalCatch")
     private static SfcServiceFunctionSchedulerAPI getDefaultServiceFunctionScheduler() {
         Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType;
-
-        try {
-            serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntry()
-                    .getType();
-        } catch (RuntimeException e) {
-            LOG.debug("readEnabledServiceFunctionScheduleTypeEntry failed", e);
+        serviceFunctionSchedulerType = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntry();
+        if (serviceFunctionSchedulerType == null) {
+            LOG.debug("No enabled service function scheduler type found, default to random");
             serviceFunctionSchedulerType = Random.class;
         }
 

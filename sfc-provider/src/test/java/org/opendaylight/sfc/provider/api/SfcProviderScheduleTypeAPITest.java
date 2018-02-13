@@ -72,13 +72,10 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder1.build());
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder2.build());
 
-        Object result = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntry();
-        ServiceFunctionSchedulerType sfst = (ServiceFunctionSchedulerType) result;
+        Class<? extends ServiceFunctionSchedulerTypeIdentity> scheduleTypeEntry;
+        scheduleTypeEntry = SfcProviderScheduleTypeAPI.readEnabledServiceFunctionScheduleTypeEntry();
 
-        assertNotNull("Must be not null", sfst);
-        assertEquals("Must be equal", sfst.getName(), name1);
-        assertEquals("Must be equal", sfst.getType(), type1);
-        assertEquals("Must be equal", sfst.isEnabled(), true);
+        assertEquals("Must be equal", scheduleTypeEntry, type1);
     }
 
     @Test

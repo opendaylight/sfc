@@ -11,7 +11,8 @@ package org.opendaylight.sfc.provider.api;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypes;
@@ -37,21 +38,15 @@ public final class SfcProviderScheduleTypeAPI {
     private SfcProviderScheduleTypeAPI() {
     }
 
-    public static ServiceFunctionSchedulerType readEnabledServiceFunctionScheduleTypeEntry() {
-        ServiceFunctionSchedulerType ret = null;
-        printTraceStart(LOG);
-        ServiceFunctionSchedulerTypes serviceFunctionSchedulerTypes = SfcProviderScheduleTypeAPI
-                .readAllServiceFunctionScheduleTypes();
-        List<ServiceFunctionSchedulerType> sfScheduleTypeList = serviceFunctionSchedulerTypes
-                .getServiceFunctionSchedulerType();
-        for (ServiceFunctionSchedulerType serviceFunctionSchedulerType : sfScheduleTypeList) {
-            if (serviceFunctionSchedulerType.isEnabled()) {
-                ret = serviceFunctionSchedulerType;
-                break;
-            }
-        }
-        printTraceStop(LOG);
-        return ret;
+    public static Class<? extends ServiceFunctionSchedulerTypeIdentity> readEnabledServiceFunctionScheduleTypeEntry() {
+        return Optional.ofNullable(SfcProviderScheduleTypeAPI.readAllServiceFunctionScheduleTypes())
+                .map(ServiceFunctionSchedulerTypes::getServiceFunctionSchedulerType)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(ServiceFunctionSchedulerType::isEnabled)
+                .findFirst()
+                .map(ServiceFunctionSchedulerType::getType)
+                .orElse(null);
     }
 
     public static boolean putServiceFunctionScheduleType(ServiceFunctionSchedulerType serviceFunctionSchedulerType) {

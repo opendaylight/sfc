@@ -19,6 +19,7 @@ package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -31,8 +32,10 @@ import org.opendaylight.sfc.ovs.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridge;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNode;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwarders;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -544,7 +547,7 @@ public final class SfcOvsUtil {
     }
 
     public static NodeId getOvsdbAugmentationNodeIdBySff(ServiceFunctionForwarder serviceFunctionForwarder) {
-        Node managerNode = lookupTopologyNode(serviceFunctionForwarder);
+        Node managerNode = SfcOvsUtil.getOvsNode(serviceFunctionForwarder);
         if (managerNode == null) {
             LOG.warn("No Topology Node for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -619,24 +622,56 @@ public final class SfcOvsUtil {
         }
     }
 
-    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef) {
-        Preconditions.checkNotNull(executor);
-        if (nodeRef.getValue().getTargetType().equals(Node.class)) {
-            Object[] methodParams = { nodeRef };
-            SfcOvsDataStoreAPI readOvsdbNode = new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
-                    methodParams);
+    /**
+     * Gets the Ovs node for a service function forwarder. The node reference
+     * provided through the service function forwarder ovs augmentation has
+     * priority and is attempted first ({@code getOvsNodeByNodeRef}),
+     * otherwise IP matching of service function forwarders locators against
+     * topology information is attempted second ({@code lookupTopologyNode}).
+     *
+     * @param serviceFunctionForwarder the service function forwarder.
+     * @return the Ovs Node.
+     */
+    public static Node getOvsNode(ServiceFunctionForwarder serviceFunctionForwarder) {
+        return Optional.ofNullable(serviceFunctionForwarder)
+                .map(sff -> sff.getAugmentation(SffOvsNodeAugmentation.class))
+                .map(org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.Node::getOvsNode)
+                .map(OvsNode::getNodeId)
+                .map(SfcOvsUtil::getOvsNodeByNodeRef)
+                .orElseGet(() -> lookupTopologyNode(serviceFunctionForwarder));
+    }
 
-            Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
-
-            if (ovsdbNode != null) {
-                return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
-            } else {
-                LOG.warn("Could not find ovsdb-node for connection for {}", nodeRef);
-            }
-        } else {
+    /**
+     * Gets the Ovs node by reference.
+     *
+     * @param nodeRef the node reference.
+     * @return the Ovs node.
+     */
+    public static Node getOvsNodeByNodeRef(OvsdbNodeRef nodeRef) {
+        if (!Node.class.equals(nodeRef.getValue().getTargetType())) {
             LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
+            return null;
         }
-        return null;
+
+        Object[] methodParams = {nodeRef};
+        SfcOvsDataStoreAPI readOvsdbNode = new SfcOvsDataStoreAPI(
+                SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
+                methodParams);
+
+        return (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
+    }
+
+    /**
+     * Gets the Ovs node augmentation by Ovs node reference.
+     *
+     * @param nodeRef the node reference.
+     * @return the Ovs node augmentation.
+     */
+    public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef) {
+        return Optional.ofNullable(nodeRef)
+                .map(SfcOvsUtil::getOvsNodeByNodeRef)
+                .map(node -> node.getAugmentation(OvsdbNodeAugmentation.class))
+                .orElse(null);
     }
 
     interface OvsdbTPComp {

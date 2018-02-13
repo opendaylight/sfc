@@ -13,6 +13,9 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsLocatorOptionsAugmentationBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsNodeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.bridge.OvsBridgeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.node.OvsNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.options.OvsOptionsBuilder;
@@ -388,6 +393,40 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         // ip address assigned to data plane locator, we can recover it from node
         assertNotNull("Must not be null", node);
         assertEquals("Must be equal", node.getNodeId().getValue(), IP_ADDRESS);
+    }
+
+    @Test
+    public void getOvsNodeNull() {
+        ServiceFunctionForwarder sff = new ServiceFunctionForwarderBuilder().build();
+        Node node = SfcOvsUtil.getOvsNode(sff);
+        assertThat(node, nullValue());
+    }
+
+    @Test
+    public void getOvsNodeByTopology() {
+        IpBuilder ipBuilder = new IpBuilder();
+        ipBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS)));
+        ServiceFunctionForwarder sff = new ServiceFunctionForwarderBuilder()
+                .setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()))
+                .build();
+
+        Node node = SfcOvsUtil.getOvsNode(sff);
+
+        assertThat(node.getNodeId().getValue(), is(IP_ADDRESS));
+    }
+
+    @Test
+    public void getOvsNodeBySffNodeAugmentation() {
+        ServiceFunctionForwarder sff = new ServiceFunctionForwarderBuilder()
+                .addAugmentation(SffOvsNodeAugmentation.class,
+                        new SffOvsNodeAugmentationBuilder().setOvsNode(
+                                new OvsNodeBuilder().setNodeId(new OvsdbNodeRef(nodeIID)).build())
+                                .build())
+                .build();
+
+        Node node = SfcOvsUtil.getOvsNode(sff);
+
+        assertThat(node.getNodeId().getValue(), is(TEST_IP_ADDRESS));
     }
 
     @Test

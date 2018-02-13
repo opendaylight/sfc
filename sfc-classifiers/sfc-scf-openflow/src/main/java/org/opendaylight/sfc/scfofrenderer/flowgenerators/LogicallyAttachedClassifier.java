@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,13 +63,10 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
     @Override
     public FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo) {
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(sfcRspInfo, "sfcRspInfo is required");
+        Preconditions.checkNotNull(nodeId, "nodeId is required");
 
-        if (Strings.isNullOrEmpty(flowKey) || sfcRspInfo == null || Strings.isNullOrEmpty(nodeId)) {
-            LOG.error("createClassifierOutFlow - Wrong inputs; either the flow key of the NSH header are not correct");
-            return null;
-        }
-
-        LOG.info("createClassifierOutFlow - Validated inputs");
         List<Action> theActions = SfcScfOfUtils.buildNshActions(sfcRspInfo);
 
         InstructionsBuilder isb;

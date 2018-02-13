@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.scfofrenderer.utils;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.sfc.util.macchaining.VirtualMacAddress;
@@ -15,7 +16,6 @@ import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -122,10 +122,9 @@ public final class SfcScfOfUtils {
      */
     public static FlowBuilder createClassifierOutFlow(String flowKey, Match match, SfcRspInfo sfcRspInfo,
             Long outPort) {
-
-        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(sfcRspInfo, "sfcRspInfo is required");
+        Preconditions.checkNotNull(sfcRspInfo.getVxlanIpDst(), "VxlanIpDst is required");
 
         String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
 
@@ -188,9 +187,9 @@ public final class SfcScfOfUtils {
      * @return create in result
      */
     public static FlowBuilder createClassifierInFlow(String flowKey, SfcRspInfo sfcRspInfo, Long outPort) {
-        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(sfcRspInfo, "sfcRspInfo is required");
+        Preconditions.checkNotNull(sfcRspInfo.getVxlanIpDst(), "VxlanIpDst is required");
 
         MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
 
@@ -219,9 +218,10 @@ public final class SfcScfOfUtils {
      * @return the FlowBuilder containing the classifier relay flow
      */
     public static FlowBuilder createClassifierRelayFlow(String flowKey, SfcRspInfo sfcRspInfo) {
-        if (flowKey == null || sfcRspInfo == null || sfcRspInfo.getVxlanIpDst() == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(sfcRspInfo, "sfcRspInfo is required");
+        Preconditions.checkNotNull(sfcRspInfo.getVxlanIpDst(), "VxlanIpDst is required");
+
         String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
         List<Action> theActions = new ArrayList<>();
         theActions
@@ -242,26 +242,6 @@ public final class SfcScfOfUtils {
     }
 
     /**
-     * delete classifier flow. The function returns true if successful. The
-     * function returns false if unsuccessful.
-     *
-     * @param nodeName
-     *            flow table node name
-     * @param flowKey
-     *            flow key
-     * @return delete result
-     */
-    public static boolean deleteClassifierFlow(String nodeName, String flowKey) {
-
-        if (nodeName == null || flowKey == null) {
-            return false;
-        }
-
-        return SfcOpenflowUtils.removeFlowFromDataStore(nodeName, new TableKey(TABLE_INDEX_CLASSIFIER),
-                new FlowKey(new FlowId(flowKey)));
-    }
-
-    /**
      * create classifier out flow for MAC Chaining.
      * The function returns true if successful.
      * The function returns false if unsuccessful.
@@ -276,18 +256,13 @@ public final class SfcScfOfUtils {
      */
     public static FlowBuilder createMacChainClassifierOutFlow(String nodeName, String flowKey, Match match,
                                                               String outPort, Long pathId, short startIndex) {
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(nodeName, "nodeName is required");
+
         int order = 0;
-
         VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
-
-        if (nodeName == null || flowKey == null) {
-            return null;
-        }
-
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
-
         Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);
-
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
@@ -316,20 +291,15 @@ public final class SfcScfOfUtils {
      */
     public static FlowBuilder createClassifierMacChainingRelayFlow(String nodeName, String flowKey, String outPort,
                                                                    Long pathId, short startIndex, short lastIndex) {
-        int order = 0;
-
-        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
-
-        if (nodeName == null || flowKey == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(nodeName, "nodeName is required");
 
         MatchBuilder mb = new MatchBuilder();
-
+        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
         SfcOpenflowUtils.addMatchDstMac(mb, vmac.getHop(lastIndex).getValue());
 
+        int order = 0;
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(vmac.getHop(startIndex).getValue(), order++);
-
         Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);
 
         FlowBuilder flowb = new FlowBuilder();
@@ -360,18 +330,14 @@ public final class SfcScfOfUtils {
      */
     public static FlowBuilder createMacChainClassifierInFlow(String nodeName, String flowKey, String outPort,
                                                              String gwMac, Long pathId, short startIndex) {
-        int order = 0;
-
-        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
-
-        if (nodeName == null || flowKey == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(flowKey, "flowKey is required");
+        Preconditions.checkNotNull(nodeName, "nodeName is required");
 
         MatchBuilder mb = new MatchBuilder();
-
+        VirtualMacAddress vmac = VirtualMacAddress.getForwardAddress(pathId, 0);
         SfcOpenflowUtils.addMatchDstMac(mb, vmac.getHop(startIndex).getValue());
 
+        int order = 0;
         //set here the gateway MAC to end the chain
         Action macDst = SfcOpenflowUtils.createActionSetDlDst(gwMac, order++);
         Action out = SfcOpenflowUtils.createActionOutPort(Integer.parseInt(outPort), order);

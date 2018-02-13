@@ -210,15 +210,4 @@ public class LogicallyAttachedClassifierTest {
         Assert.assertEquals(10, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
                 .getApplyActions().getAction().size());
     }
-
-    @Test
-    public void outFlowEmptyFlowKey() {
-        Assert.assertNull(logicalScf.createClassifierOutFlow(FIRST_SF_NODE_NAME, null, aclMatch,
-                SfcRspInfo.getSfcRspInfo(new RspName("RSP_1"))));
-    }
-
-    @Test
-    public void outFlowEmptyNshHeader() {
-        Assert.assertNull(logicalScf.createClassifierOutFlow(FIRST_SF_NODE_NAME, "the-key", aclMatch, null));
-    }
 }

@@ -64,11 +64,9 @@ public interface ClassifierInterface {
      *            the key for the flow objects
      * @param sfcRspInfo
      *            the RSP info
-     * @param classifierName
-     *            the node name of the classifier
      * @return a FlowDetails object containing the desired flow
      */
-    FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, String classifierName);
+    FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo);
 
     /**
      * Create DPDK flows.

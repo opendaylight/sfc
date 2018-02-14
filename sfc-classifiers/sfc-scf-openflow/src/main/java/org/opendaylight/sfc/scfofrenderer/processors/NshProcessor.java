@@ -227,7 +227,7 @@ public class NshProcessor implements ClassifierProcessorInterface {
                     .map(theSfcRspInfo -> theSfcRspInfo.setVxlanIpDst(
                             ip.getIp().getIpv4Address()).setVxlanUdpPort(ip.getPort()))
                     .map(theSfcRspInfo -> classifierInterface.createClassifierRelayFlow(
-                            nodeName, flowKey, theSfcRspInfo, theScfName));
+                            nodeName, flowKey, theSfcRspInfo));
         } else {
             relayFlow = Optional.of(classifierHandler.deleteFlowFromTable(nodeName, flowKey,
                     classifierInterface.getClassifierTable()));

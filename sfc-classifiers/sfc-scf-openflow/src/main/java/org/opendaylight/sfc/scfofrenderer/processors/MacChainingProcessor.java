@@ -210,8 +210,7 @@ public class MacChainingProcessor implements ClassifierProcessorInterface {
         String flowKey = theFlowKey.replaceFirst(".in", ".relay");
         if (addClassifier) {
 
-            relayFlow = Optional.of(classifierInterface.createClassifierRelayFlow(
-                    nodeName, flowKey, sfcRspInfo, classifierName));
+            relayFlow = Optional.of(classifierInterface.createClassifierRelayFlow(nodeName, flowKey, sfcRspInfo));
         } else {
             relayFlow = Optional.of(classifierHandler.deleteFlowFromTable(nodeName,
                     flowKey,

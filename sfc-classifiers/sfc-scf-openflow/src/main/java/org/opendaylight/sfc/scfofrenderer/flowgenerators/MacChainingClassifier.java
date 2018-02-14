@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.scfofrenderer.utils.ClassifierHandler;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
@@ -20,7 +19,6 @@ import org.opendaylight.sfc.util.macchaining.SfcModelUtil;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.ofs.rev150408.SffDataPlaneLocator1;
@@ -33,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class MacChainingClassifier implements ClassifierInterface {
-    private ServiceFunctionForwarder serviceFunctionForwarder;
+    private ServiceFunctionForwarder classifierSff;
 
     private final ClassifierHandler classifierHandler;
 
@@ -45,11 +43,11 @@ public class MacChainingClassifier implements ClassifierInterface {
 
     public MacChainingClassifier(ServiceFunctionForwarder theSff) {
         this();
-        serviceFunctionForwarder = theSff;
+        classifierSff = theSff;
     }
 
     public MacChainingClassifier setSff(ServiceFunctionForwarder theSff) {
-        serviceFunctionForwarder = theSff;
+        classifierSff = theSff;
         return this;
     }
 
@@ -64,11 +62,11 @@ public class MacChainingClassifier implements ClassifierInterface {
     public FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo) {
 
         SffName firstSffName = sfcRspInfo.getFirstSffName();
-        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(nodeId));
+        SffName classifierName = classifierSff.getName();
 
-        SffDataPlaneLocator outputDpl = SfcModelUtil.searchSrcDplInConnectedSffs(classifier, firstSffName);
+        SffDataPlaneLocator outputDpl = SfcModelUtil.searchSrcDplInConnectedSffs(classifierName, firstSffName);
         if (outputDpl == null) {
-            LOG.error("Could not get source locator that connects SFFs {} and {}", classifier, firstSffName);
+            LOG.error("Could not get source locator that connects SFFs {} and {}", classifierName, firstSffName);
             return null;
         }
 
@@ -89,10 +87,7 @@ public class MacChainingClassifier implements ClassifierInterface {
     @Override
     public FlowDetails createClassifierInFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo, Long outPort) {
 
-        SffName classifier = new SffName(SfcProviderServiceForwarderAPI.getSffName(nodeId));
-        ServiceFunctionForwarder sff = SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(classifier);
-
-        List<SffDataPlaneLocator> sffDataPlaneLocatorList = sff.getSffDataPlaneLocator();
+        List<SffDataPlaneLocator> sffDataPlaneLocatorList = classifierSff.getSffDataPlaneLocator();
 
         TerminationPoint terminationPoint = null;
         for (SffDataPlaneLocator dpl : sffDataPlaneLocatorList) {
@@ -103,23 +98,17 @@ public class MacChainingClassifier implements ClassifierInterface {
             }
         }
         if (terminationPoint == null) {
-            LOG.error("There is no chain termination point specified in any locator of classifier SFF {}", classifier);
-            return null;
-        }
-
-        String classifierNodeName = SfcOvsUtil.getOpenFlowNodeIdForSff(
-                SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(classifier));
-        if (classifierNodeName == null) {
-            LOG.error("Could not find the openflow node for classifier SFF {}", classifier);
+            LOG.error("There is no chain termination point specified in any locator of classifier SFF {}",
+                    classifierSff.getName());
             return null;
         }
 
         FlowBuilder fb = SfcScfOfUtils.createMacChainClassifierInFlow(
-                classifierNodeName, String.format("%s.%s", flowKey, sfcRspInfo.getNshNsp().toString()),
+                nodeId, String.format("%s.%s", flowKey, sfcRspInfo.getNshNsp().toString()),
                 terminationPoint.getPortId(), terminationPoint.getMacAddress().getValue(),
                 sfcRspInfo.getNshNsp(), sfcRspInfo.getNshStartNsi());
 
-        return classifierHandler.addRspRelatedFlowIntoNode(classifierNodeName, fb,sfcRspInfo.getNshNsp());
+        return classifierHandler.addRspRelatedFlowIntoNode(nodeId, fb,sfcRspInfo.getNshNsp());
 
     }
 
@@ -130,15 +119,14 @@ public class MacChainingClassifier implements ClassifierInterface {
 
 
     @Override
-    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo,
-                                                 String classifierName) {
+    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo) {
 
         SffName lastSff = sfcRspInfo.getLastSffName();
-        SffName classifierSff = new SffName(classifierName);
+        SffName classifierName = classifierSff.getName();
 
-        SffDataPlaneLocator returnSffDpl = SfcModelUtil.searchSrcDplInConnectedSffs(lastSff, classifierSff);
+        SffDataPlaneLocator returnSffDpl = SfcModelUtil.searchSrcDplInConnectedSffs(lastSff, classifierName);
         if (returnSffDpl == null) {
-            LOG.error("Could not get source locator that connects SFFs {} and {}", lastSff, classifierSff);
+            LOG.error("Could not get source locator that connects SFFs {} and {}", lastSff, classifierName);
             return null;
         }
 
@@ -158,9 +146,7 @@ public class MacChainingClassifier implements ClassifierInterface {
 
     @Override
     public Optional<String> getNodeName(String interfaceName) {
-        return Optional.ofNullable(serviceFunctionForwarder)
-                .filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
-                .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
+        return Optional.ofNullable(classifierSff).map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }
 
 

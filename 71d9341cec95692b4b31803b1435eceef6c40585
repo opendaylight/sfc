@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "870fccc1_59536d41",
+        "filename": "sfc-demo/mac_chaining/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2018-02-14T21:27:58Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 20,
+        "startChar": 25,
+        "endLine": 20,
+        "endChar": 30
+      },
+      "revId": "71d9341cec95692b4b31803b1435eceef6c40585",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}

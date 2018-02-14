@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>sfc-classifiers</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.6.2</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>sfc-scf-openflow</artifactId>

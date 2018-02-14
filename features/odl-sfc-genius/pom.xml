@@ -26,7 +26,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-genius</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.6.2</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -34,14 +34,14 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>odl-mdsal-broker</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.6.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.genius</groupId>
             <artifactId>odl-genius</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

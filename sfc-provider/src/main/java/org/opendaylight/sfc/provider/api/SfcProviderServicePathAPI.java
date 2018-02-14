@@ -52,27 +52,21 @@ public final class SfcProviderServicePathAPI {
      *
      * @param servicePathName
      *            Service Path Name
-     * @return List of RSP name objects
+     * @return List of RSP name objects if the operational state exists, null
+     *         otherwise.
      */
     public static List<SfpRenderedServicePath> readServicePathState(SfpName servicePathName) {
-
-        printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionPathState> sfpIID;
-        List<SfpRenderedServicePath> ret = Collections.emptyList();
-
-        ServiceFunctionPathStateKey serviceFunctionPathStateKey = new ServiceFunctionPathStateKey(servicePathName);
-
         sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
-                .child(ServiceFunctionPathState.class, serviceFunctionPathStateKey).build();
-
-        ServiceFunctionPathState serviceFunctionPathState = SfcDataStoreAPI.readTransactionAPI(sfpIID,
-                LogicalDatastoreType.OPERATIONAL);
-        if (serviceFunctionPathState != null) {
-            ret = serviceFunctionPathState.getSfpRenderedServicePath();
+                .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(servicePathName))
+                .build();
+        ServiceFunctionPathState serviceFunctionPathState;
+        serviceFunctionPathState = SfcDataStoreAPI.readTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL);
+        if (serviceFunctionPathState == null) {
+            return null;
         }
-        printTraceStop(LOG);
-
-        return ret;
+        List<SfpRenderedServicePath> pathList = serviceFunctionPathState.getSfpRenderedServicePath();
+        return pathList == null ? Collections.emptyList() : pathList;
     }
 
     /**
@@ -188,5 +182,21 @@ public final class SfcProviderServicePathAPI {
         }
 
         return false;
+    }
+
+    /**
+     * This method deletes the operational state for a service function.
+     *
+     * @param sfpName
+     *            Service Path Name
+     * @return A ServiceFunctionState object that is a list of all paths using
+     *         this service function, null otherwise
+     */
+    public static boolean deleteServiceFunctionState(SfpName sfpName) {
+        InstanceIdentifier<ServiceFunctionPathState> sfpIID;
+        sfpIID = InstanceIdentifier.builder(ServiceFunctionPathsState.class)
+                .child(ServiceFunctionPathState.class, new ServiceFunctionPathStateKey(sfpName))
+                .build();
+        return SfcDataStoreAPI.deleteTransactionAPI(sfpIID, LogicalDatastoreType.OPERATIONAL);
     }
 }

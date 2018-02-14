@@ -118,8 +118,7 @@ class odlConf(ConfigBase):
         sff['service-function-forwarder-ovs:ovs-bridge']['openflow-node-id'] = "openflow:" + id
         #sff['service-function-forwarder-ovs:ovs-bridge']['uuid'] = uuid
         sff['service-function-forwarder-ovs:ovs-node'] = {}
-        #sff['service-function-forwarder-ovs:ovs-node']['node-id'] = "/network-topology:network-topology/network-topology:topology[network-topology:topology-id='ovsdb=1']/network-topology:node[network-topology:node-id='ovsdb://uuid/"+uuid+"']"
-        sff['service-function-forwarder-ovs:ovs-node']['node-id'] = "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:"+id+"']"
+        #sff['service-function-forwarder-ovs:ovs-node']['node-id'] = "/network-topology:network-topology/network-topology:topology[network-topology:topology-id='ovsdb:1']/network-topology:node[network-topology:node-id='ovsdb://uuid/"+uuid+"']"
         sff['sff-data-plane-locator'] = []
 
         sfdpl = {}

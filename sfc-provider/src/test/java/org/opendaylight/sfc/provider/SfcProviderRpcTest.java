@@ -511,7 +511,9 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
     }
 
     private static void assertRenderedServicePathDoesNotExist(RspName pathName) {
-        RenderedServicePath path = SfcProviderRenderedPathAPI.readRenderedServicePath(pathName);
+        RenderedServicePath path = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                pathName,
+                LogicalDatastoreType.CONFIGURATION);
         assertNull("Unexpected rendered service path found.", path);
     }
 

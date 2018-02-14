@@ -853,14 +853,15 @@ public final class SfcProviderRenderedPathAPI {
      *            SffServicePath object
      * @return Nothing.
      */
-    public static boolean deleteRenderedServicePaths(List<RspName> servicePaths) {
+    public static boolean deleteRenderedServicePaths(List<RspName> servicePaths,
+                                                     LogicalDatastoreType logicalDatastoreType) {
 
         printTraceStart(LOG);
         boolean ret = false;
 
         for (RspName rspName : servicePaths) {
-            if (SfcProviderRenderedPathAPI.readRenderedServicePath(rspName) != null) {
-                if (SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName)) {
+            if (SfcProviderRenderedPathAPI.readRenderedServicePath(rspName, logicalDatastoreType) != null) {
+                if (SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName, logicalDatastoreType)) {
                     ret = true;
                 } else {
                     LOG.error("Could not delete RSP: {}", rspName);
@@ -884,7 +885,9 @@ public final class SfcProviderRenderedPathAPI {
     public static boolean deleteRenderedServicePathsAndStates(List<RspName> rspNames) {
         boolean sfStateOk = SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(rspNames);
         boolean sffStateOk = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspNames);
-        boolean rspOk = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(rspNames);
+        boolean rspOk = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(
+                rspNames,
+                LogicalDatastoreType.OPERATIONAL);
         return sfStateOk && sffStateOk && rspOk;
     }
 

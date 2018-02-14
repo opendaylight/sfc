@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -29,8 +30,6 @@ import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
-import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
 import org.opendaylight.sfc.provider.api.SfcServicePathId;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.AllocatePathIdInput;
@@ -372,25 +371,6 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     /**
-     * When a RSP is deleted, it has to be removed from: SFF, SF and RSP
-     * operational state.
-     *
-     * <p>
-     * @param rspName
-     *            RspName object with the Rendered Service Path
-     * @return true if all path was deleted, false otherwise.
-     */
-    private boolean deleteRenderedPathWithRspName(RspName rspName) {
-
-        boolean ret;
-        ret = SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(rspName);
-        ret = ret && SfcProviderServiceFunctionAPI.deleteRspFromServiceFunctionState(rspName);
-
-        ret = ret && SfcProviderRenderedPathAPI.deleteRenderedServicePath(rspName);
-        return ret;
-    }
-
-    /**
      * Remove RSP from all the operational state.
      *
      * <p>
@@ -402,19 +382,32 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     @Override
     public Future<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(DeleteRenderedPathInput input) {
 
-        boolean ret = true;
-        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
+        String rspNameInput = input.getName();
+        if (rspNameInput == null) {
+            return Futures.immediateFuture(
+                    RpcResultBuilder.<DeleteRenderedPathOutput>failed()
+                            .withError(ErrorType.APPLICATION, "Rendered Service Path name not specified")
+                            .build());
+        }
+
         RspName rspName = new RspName(input.getName());
         RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
+
+        List<RspName> rspNames = new ArrayList<>();
+        rspNames.add(rspName);
         if (reverseRspName != null) {
             // The RSP has a symmetric ("Reverse") Path
-            ret = this.deleteRenderedPathWithRspName(reverseRspName);
+            rspNames.add(reverseRspName);
         }
-        ret = ret && this.deleteRenderedPathWithRspName(rspName);
 
-        DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
-        deleteRenderedPathOutputBuilder.setResult(ret);
-        if (ret) {
+        boolean ok = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(
+                rspNames,
+                LogicalDatastoreType.CONFIGURATION);
+
+        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
+        if (ok) {
+            DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
+            deleteRenderedPathOutputBuilder.setResult(true);
             rpcResultBuilder = RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
         } else {
             String message = "Error Deleting Rendered Service Path: " + input.getName();

@@ -14,6 +14,7 @@ This is a Mininet wrapper to create SFC topologies with dummy SFs to evaluate tw
 ## Usage
 
 - ODL must be running locally or remotely with SFC installed (odl-sfc-provider, odl-sfc-scf-openflow, odl-sfc-openflow-renderer)
+- There is a vagrant setup available with the above dependencies provided
 - The API usage can be seen in the files sfc-macChain-topo.py and sfc-vlan-topo.py
 - Run any of those files with sudo and IP where the ODL is running
     - sudo python sfc-macChain-topo.py <ODL IP>
@@ -21,7 +22,7 @@ This is a Mininet wrapper to create SFC topologies with dummy SFs to evaluate tw
 - At the end of the chain a gateway will recover the original mac addresses
 - dummy SFs and gateway logs can be found on \tmp dir
 - To exercise the chain: in the mininet console, run any kind of UDP/TCP traffic between h1 and h2
-    - ex: h1 hping3 --udp -p 5010 -o 2  -S 10.0.0.2 -c 1
+    - ex: h1 hping3 -p 5010 -o 2  -S 10.0.0.2 -c 1
 - See ACL (classifier) rules in the odlConfGeneration.py
 
 ## Topology of sfc-macChain-topo.py file

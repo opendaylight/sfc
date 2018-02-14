@@ -170,7 +170,6 @@ public class OpenflowClassifierProcessor {
             return Collections.emptyList();
         }
 
-
         Optional<RspName> rspName = Optional.ofNullable(theAce.getActions())
                 .map(theActions -> theActions.getAugmentation(Actions1.class))
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
@@ -178,32 +177,29 @@ public class OpenflowClassifierProcessor {
 
         RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(rspName.get());
 
-        ClassifierProcessorInterface classifierProcessor;
+        final ClassifierProcessorInterface classifierProcessor;
 
-        final Optional<String> nodeName;
+        // choose which handler to use
         if (rsp.getSfcEncapsulation() == MacChaining.class) {
-            nodeName = Optional.of(theSff.getServiceNode().getValue());
+            classifierInterface = macChainingClassifier.setSff(theSff);
             classifierProcessor = new MacChainingProcessor(
                     this.classifierHandler, macChainingClassifier, addClassifier);
         } else {
-
-            // choose which handler to use
             classifierInterface = classifierHandler.usesLogicalInterfaces(theSff)
                     ? logicallyAttachedClassifier : bareClassifier.setSff(theSff);
-
-            nodeName = itfName.flatMap(classifierInterface::getNodeName);
-
-            if (!nodeName.isPresent()) {
-                LOG.error("createdServiceFunctionClassifier: Could not extract the node name from the OVS interface");
-                return Collections.emptyList();
-            }
             classifierProcessor = new NshProcessor(this.classifierInterface, this.classifierHandler, addClassifier);
+        }
+
+        final Optional<String> nodeName = itfName.flatMap(classifierInterface::getNodeName);
+        if (!nodeName.isPresent()) {
+            LOG.error("Could not extract the node name from classifier on SFF {}", theSff.getName());
+            return Collections.emptyList();
         }
 
         LOG.info("processAce - NodeName: {}; IF name: {}", nodeName, itfName.get());
 
         return classifierProcessor.processAceByProcessor(
-                nodeName.get(), theSff,theScfName, aclName, itfName.get(), theAce, rspName);
+                nodeName.get(), theSff, theScfName, aclName, itfName.get(), theAce, rspName);
     }
 
     /**

@@ -19,6 +19,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServicePathAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
@@ -57,15 +58,18 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
 
     @Override
     public void remove(@Nonnull ServiceFunctionPath serviceFunctionPath) {
-        LOG.info("remove: Deleting SFP: {}", serviceFunctionPath.getName().getValue());
+        SfpName sfpName = serviceFunctionPath.getName();
+        LOG.info("remove: Deleting SFP: {}", sfpName.getValue());
 
         // Delete each RSP in config connected to this SFP
         // When the config RSP is deleted, it will delete the operational RSP
-        List<SfpRenderedServicePath> sfpRspList =
-                SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
-        for (SfpRenderedServicePath sfpRsp : sfpRspList) {
-            // Delete the RSP from config, which in turn will delete the RSP from operational
-            SfcProviderRenderedPathAPI.deleteRenderedServicePath(sfpRsp.getName(), LogicalDatastoreType.CONFIGURATION);
+        List<SfpRenderedServicePath> sfpRspList = SfcProviderServicePathAPI.readServicePathState(sfpName);
+        if (sfpRspList != null) {
+            sfpRspList.forEach(rsp ->
+                    SfcProviderRenderedPathAPI.deleteRenderedServicePath(
+                            rsp.getName(),
+                            LogicalDatastoreType.CONFIGURATION));
+            SfcProviderServicePathAPI.deleteServiceFunctionState(sfpName);
         }
     }
 

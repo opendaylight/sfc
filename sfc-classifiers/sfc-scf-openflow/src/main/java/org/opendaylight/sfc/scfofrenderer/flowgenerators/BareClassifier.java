@@ -18,7 +18,6 @@ import org.opendaylight.sfc.scfofrenderer.utils.SfcRspInfo;
 import org.opendaylight.sfc.scfofrenderer.utils.SfcScfOfUtils;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
 import org.opendaylight.sfc.util.openflow.writer.FlowDetails;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.SffOvsBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 
@@ -61,8 +60,7 @@ public class BareClassifier implements ClassifierInterface {
     }
 
     @Override
-    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo,
-                                                 String classifierName) {
+    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo) {
         return classifierHandler.addRspRelatedFlowIntoNode(nodeId,
                 SfcScfOfUtils.createClassifierRelayFlow(flowKey, sfcRspInfo), sfcRspInfo.getNshNsp());
     }
@@ -84,8 +82,7 @@ public class BareClassifier implements ClassifierInterface {
 
     @Override
     public Optional<String> getNodeName(String interfaceName) {
-        return Optional.ofNullable(sff).filter(theSff -> theSff.getAugmentation(SffOvsBridgeAugmentation.class) != null)
-                .map(SfcOvsUtil::getOpenFlowNodeIdForSff);
+        return Optional.ofNullable(sff).map(SfcOvsUtil::getOpenFlowNodeIdForSff);
     }
 
     @Override

@@ -122,8 +122,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
     // this type of classifier does not require 'relay' flows
     @Override
-    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo,
-                                                 String classifierName) {
+    public FlowDetails createClassifierRelayFlow(String nodeId, String flowKey, SfcRspInfo sfcRspInfo) {
         return null;
     }
 

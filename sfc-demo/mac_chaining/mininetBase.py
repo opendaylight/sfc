@@ -103,9 +103,9 @@ class SFC:
         if self.odl.sfcEncap == sfcEncap.VLAN:
             sfConf[sf]['CMD'].append("vconfig add sf%s-eth0 %s" % (num, str(tag)))
             sfConf[sf]['CMD'].append("ip link set up sf%s-eth0.%s" % (num, str(tag)))
-            sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0.%s %s > /tmp/sf%s.out  &" % (num, str(tag), str(tag), num))
+            sfConf[sf]['CMD'].append("python -u ./functions/sf_dummy.py sf%s-eth0.%s %s > /tmp/sf%s.out  &" % (num, str(tag), str(tag), num))
         elif self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
-            sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0 > /tmp/sf%s.out  &" % (num, num))
+            sfConf[sf]['CMD'].append("python -u ./functions/sf_dummy.py sf%s-eth0 > /tmp/sf%s.out  &" % (num, num))
 
         sfConf[sf]['CONF'] = self.odl.sfConf(sf.name, num, type, sfConf[sf]['IP'], sw.name, tag, sfConf[sf]['MAC'], ports, self.getODLSwConf(sw))
         self.callBackConfs['sf'].append(sfConf)
@@ -186,7 +186,7 @@ class SFC:
         gwConf[gw]['MAC'].append('00:00:00:00:00:FE')
         gwConf[gw]['iface'].append(link.intf1)
         gwConf[gw]['CMD'] = []
-        gwConf[gw]['CMD'].append("python ./functions/gw.py gw-eth0 > /tmp/gw.out &")
+        gwConf[gw]['CMD'].append("python -u ./functions/gw.py gw-eth0 > /tmp/gw.out &")
 
         # set chain termination point to mac chain
         if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
@@ -248,9 +248,9 @@ class SFC:
                 hostTopo.cmd("/usr/sbin/sshd")
                 self.popens[hostTopo] = []
                 if hostTopo.name == 'h2':
-                    hostTopo.cmd("pushd /var/www/html/; python -m SimpleHTTPServer 5040 > /tmp/server1.out 2>&1 &")
+                    hostTopo.cmd("pushd /var/www/html/; python -u -m SimpleHTTPServer 5040 > /tmp/server1.out 2>&1 &")
                     self.popens[hostTopo].append(int(hostTopo.cmd('echo $!')))
-                    hostTopo.cmd("pushd /var/www/html/; python -m SimpleHTTPServer 5050 > /tmp/server2.out 2>&1 &")
+                    hostTopo.cmd("pushd /var/www/html/; python -u -m SimpleHTTPServer 5050 > /tmp/server2.out 2>&1 &")
                     self.popens[hostTopo].append(int(hostTopo.cmd('echo $!')))
 
     def deploySfConf(self):

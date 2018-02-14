@@ -5,7 +5,10 @@ import time
 import sys
 import os
 import pprint
+import socket
+
 class ConfigBase:
+    localIp = None
     controller = None
     DEFAULT_PORT = '8181'
 
@@ -30,13 +33,23 @@ class ConfigBase:
 
     def readParameters(self):
         if len(sys.argv) <= 1:
-            print "missng controller IP information"
-            exit(0)
+            print "missing controller IP information"
+            exit(1)
         print sys.argv[1]
         self.controller = sys.argv[1]
-
+        self.local = self.getLocalIp()
         if len(sys.argv) > 2:
             self.deleteAll = bool(sys.argv[2])
+
+    def getLocalIp(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect((self.controller, int(self.DEFAULT_PORT)))
+        except:
+            print "Can't connect to controller on %s:%s" % (self.controller, self.DEFAULT_PORT)
+            raise
+        self.localIp = s.getsockname()[0]
+        s.close()
 
     def get(self, host, port, uri):
         url = 'http://' + host + ":" + port + uri

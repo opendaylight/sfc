@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.3-SNAPSHOT</version>
+        <version>1.8.3-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-openflow-renderer</artifactId>
-    <version>0.5.3-SNAPSHOT</version>
+    <version>0.5.3-Carbon</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -34,21 +34,21 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>0.4.3-SNAPSHOT</version>
+            <version>0.4.3-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
-            <version>0.4.3-SNAPSHOT</version>
+            <version>0.4.3-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.genius</groupId>
             <artifactId>odl-genius-api</artifactId>
-            <version>0.2.3-SNAPSHOT</version>
+            <version>0.2.3-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

@@ -22,6 +22,30 @@
       "revId": "1d0701db08c3323cdac655dedad073a8d9ac0986",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b4f32dae_6ebf6bf0",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-15T16:43:20Z",
+      "side": 1,
+      "message": "So null is returned when the state does not exist, as oposed to being empty. This is useful for the caller ( as you can see in the SFP listener changes) to know if it should attempt to delete the state or not, in order to avoid that nasty exception when deleting non existant stuff.\n\nI know it\u0027s not the best API but it is what is being done for other resources, like the service functions. So just aligned to that.",
+      "parentUuid": "a94388fd_6ab18bfd",
+      "range": {
+        "startLine": 66,
+        "startChar": 12,
+        "endLine": 66,
+        "endChar": 23
+      },
+      "revId": "1d0701db08c3323cdac655dedad073a8d9ac0986",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

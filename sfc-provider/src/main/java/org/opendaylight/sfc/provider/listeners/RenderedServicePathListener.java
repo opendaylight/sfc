@@ -82,7 +82,7 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
         ServiceFunctionPath sfp = SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath());
         if (sfp != null) {
-            LOG.error("The RSP has been deleted without first deleting the corresponding SFP.");
+            LOG.warn("The RSP has been deleted without first deleting the corresponding SFP.");
         }
 
         // Now delete the Operational RSP

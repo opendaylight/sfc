@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "30c7db8e_e05365da",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderRenderedPathAPI.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2018-02-16T07:44:52Z",
+      "side": 1,
+      "message": "Since you removed the RuntimeException, there\u0027s no need of this SuppressWarnings directive",
+      "range": {
+        "startLine": 119,
+        "startChar": 4,
+        "endLine": 119,
+        "endChar": 48
+      },
+      "revId": "7fc20b75733729788e85beff874977ba427a352f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}

@@ -12,10 +12,11 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -83,6 +84,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.state.service.function.path.state.SfpRenderedServicePath;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -228,7 +230,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
         SettableFuture<RpcResult<CreateRenderedPathOutput>> futureResult = SettableFuture.create();
-        CreateRenderedPathImpl runnable = new CreateRenderedPathImpl(createRenderedPathInput, futureResult);
+        CreateRenderedPathImpl runnable = new CreateRenderedPathImpl(createRenderedPathInput, futureResult, 100);
         ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(
                 runnable,
                 0,
@@ -238,92 +240,159 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         return futureResult;
     }
 
-    // This runnable will be scheduled with periodic delay
-    // as a result createRenderedPath RPC. It is in charge of creating
-    // the config RSP and waiting for the corresponding oper RSP.
-    // Once it happens, it will provide the result of the RPC
-    // and cancel itself.
-    private static class CreateRenderedPathImpl implements Runnable {
+    /**
+     * Delete an RSP via an RPC operation. As of Oxygen, this method is
+     * deprecated. Now, instead of using the RPC, the RSP deletion will
+     * be triggered via SFP deletion.
+     * This will delete an RSP in the config data store, which will trigger
+     * deleting the RSP in the operational data store. This will be for the
+     * case where the end-user wants multiple RPSs for 1 SFP. This methodology
+     * will no longer be supported when this deprecated RPC is removed.
+     *
+     * <p>
+     * @param DeleteRenderedPathInput
+     *        Input information used to delete the RSP.
+     * @return RPC Output
+     */
+    @Deprecated
+    @Override
+    public Future<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(DeleteRenderedPathInput input) {
+        SettableFuture<RpcResult<DeleteRenderedPathOutput>> futureResult = SettableFuture.create();
+        DeleteRenderedPathImpl runnable = new DeleteRenderedPathImpl(input, futureResult, 100);
+        ScheduledFuture<?> scheduledFuture = executor.scheduleWithFixedDelay(
+                runnable,
+                0,
+                100,
+                TimeUnit.MILLISECONDS);
+        runnable.setBackingFuture(scheduledFuture);
+        return futureResult;
+    }
 
-        private final CreateRenderedPathInput createRenderedPathInput;
-        private final SettableFuture<RpcResult<CreateRenderedPathOutput>> result;
+    // This runnable will be scheduled with periodic delay as a result of
+    // create/delete Rendered Path RPC. It is in charge of dealing with the
+    // config RSP and waiting to be reflected in the operational data store.
+    // Once it happens, it will provide the result of the RPC and cancel itself.
+    private abstract static class RenderedPathOperImpl<T extends DataObject> implements Runnable {
         private volatile Future backingFuture = null;
+        private final SettableFuture<RpcResult<T>> result;
+        private int retriesLeft;
 
-        CreateRenderedPathImpl(CreateRenderedPathInput createRenderedPathInput,
-                               SettableFuture<RpcResult<CreateRenderedPathOutput>> result) {
-            this.createRenderedPathInput = createRenderedPathInput;
+        private RenderedPathOperImpl(SettableFuture<RpcResult<T>> result, int retries) {
+            Preconditions.checkArgument(retries > 0, "retries must be greater than 0");
             this.result = result;
+            this.retriesLeft = retries;
         }
 
         @Override
         @SuppressWarnings("checkstyle:illegalcatch")
         public void run() {
-
-            // if we are done but somehow still running, cancel ourself.
+            // if we are done but somehow still running, cancel ourselves.
             if (result.isDone()) {
                 cancelBackingFuture();
                 return;
             }
 
+            RpcResult<T> operationResult = null;
             try {
-                createRenderedPath();
+                operationResult = doOperation();
             } catch (RuntimeException e) {
                 result.setException(e);
+                cancelBackingFuture();
+                return;
+            }
+
+            if (operationResult != null) {
+                result.set(operationResult);
+                cancelBackingFuture();
+                return;
+            }
+
+            if (!result.isDone() && retriesLeft-- <= 0) {
+                result.set(completeError("Unexpected timeout while waiting for operation to complete"));
                 cancelBackingFuture();
             }
         }
 
-        private void createRenderedPath() {
+        void setBackingFuture(Future backingFuture) {
+            this.backingFuture = backingFuture;
+        }
+
+        boolean cancelBackingFuture() {
+            return backingFuture != null && backingFuture.cancel(false);
+        }
+
+        // Should return null if result not available yet.
+        protected abstract RpcResult<T> doOperation();
+
+        RpcResult<T> completeError(String errorMsg) {
+            return RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, errorMsg).build();
+        }
+    }
+
+    // Implementation of RenderedPathOperImpl for create RPC rpc.
+    private static class CreateRenderedPathImpl extends RenderedPathOperImpl<CreateRenderedPathOutput> {
+        private final CreateRenderedPathInput createRenderedPathInput;
+
+        CreateRenderedPathImpl(CreateRenderedPathInput createRenderedPathInput,
+                               SettableFuture<RpcResult<CreateRenderedPathOutput>> result,
+                               int retries) {
+            super(result, retries);
+            this.createRenderedPathInput = createRenderedPathInput;
+        }
+
+        @Override
+        protected RpcResult<CreateRenderedPathOutput> doOperation() {
+            return createRenderedPath();
+        }
+
+        private RpcResult<CreateRenderedPathOutput> createRenderedPath() {
             final String inputRspNameValue = createRenderedPathInput.getName();
             final String inputSfpName = createRenderedPathInput.getParentServiceFunctionPath();
 
             if (inputSfpName == null) {
-                completeError("Service Function Path not specified");
+                return completeError("Service Function Path not specified");
             }
 
-            // Fail if the SFP doesnt exist
+            // Fail if the SFP doesn't exist
             ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI
                     .readServiceFunctionPath(new SfpName(inputSfpName));
             if (serviceFunctionPath == null) {
-                completeError("Service Function Path does not exist");
-                return;
+                return completeError("Service Function Path does not exist");
             }
 
             // If the input name is empty, then the RSP was already created when
             // the SFP was created, so nothing to do but to return the RSP name
             if (inputRspNameValue == null || inputRspNameValue.isEmpty()) {
                 // Iterate the RPSs created for this SFP looking for the correct name to return
-                // If the RspName isnt found, then fall through and create the RSP
+                // If the RspName isn't found, then fall through and create the RSP
                 List<SfpRenderedServicePath> sfpRspList =
                         SfcProviderServicePathAPI.readServicePathState(serviceFunctionPath.getName());
                 // In case this RPC was called before the RSP listeners complete and
-                // the sfpRspList hasnt been created yet, git it a chance to complete.
+                // the sfpRspList hasn't been created yet, git it a chance to complete.
                 // This RPC will be removed in Fluorine.
                 if (sfpRspList == null || sfpRspList.isEmpty()) {
-                    return;
+                    return null;
                 }
 
                 for (SfpRenderedServicePath sfpRsp : sfpRspList) {
                     RspName rspName = sfpRsp.getName();
                     if (rspName.getValue().startsWith(serviceFunctionPath.getName().getValue())
                             && !rspName.getValue().endsWith("-Reverse")) {
-                        completeSuccess(rspName.getValue());
-                        return;
+                        return completeSuccess(rspName.getValue());
                     }
                 }
 
                 // Otherwise the RSP might still not be created, wait for that
-                return;
+                return null;
             }
 
             final RspName inputRspName = new RspName(inputRspNameValue);
             // If the operational RSP already exists, give it back and complete
-            RenderedServicePath operRSp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+            RenderedServicePath operRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
                     inputRspName,
                     LogicalDatastoreType.OPERATIONAL);
-            if (operRSp != null) {
-                completeSuccess(inputRspNameValue);
-                return;
+            if (operRsp != null) {
+                return completeSuccess(inputRspNameValue);
             }
 
             // If the config RSP already exists, we just have to wait for the operational RSP
@@ -331,7 +400,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                     inputRspName,
                     LogicalDatastoreType.CONFIGURATION);
             if (configRsp != null) {
-                return;
+                return null;
             }
 
             // Go ahead and create the RSP with the provided inputRspNameValue
@@ -340,82 +409,77 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                     serviceFunctionPath,
                     inputRspNameValue);
             if (configRsp == null) {
-                completeError("Failed to create RSP");
+                return completeError("Failed to create RSP");
             }
+
+            return null;
         }
 
-        private void setBackingFuture(Future backingFuture) {
-            this.backingFuture = backingFuture;
-        }
-
-        private boolean cancelBackingFuture() {
-            return backingFuture != null && backingFuture.cancel(false);
-        }
-
-        private boolean completeSuccess(String rspName) {
+        private RpcResult<CreateRenderedPathOutput> completeSuccess(String rspName) {
             CreateRenderedPathOutput createRenderedPathOutput = new CreateRenderedPathOutputBuilder()
                     .setName(rspName)
                     .build();
             RpcResult<CreateRenderedPathOutput> rpcResult = RpcResultBuilder.success(createRenderedPathOutput).build();
-            result.set(rpcResult);
-            return cancelBackingFuture();
+            return rpcResult;
         }
-
-        private boolean completeError(String errorMsg) {
-            RpcResult<CreateRenderedPathOutput> rpcResult = RpcResultBuilder.<CreateRenderedPathOutput>failed()
-                    .withError(ErrorType.APPLICATION, errorMsg).build();
-            result.set(rpcResult);
-            return cancelBackingFuture();
-        }
-
     }
 
-    /**
-     * Remove RSP from all the operational state.
-     *
-     * <p>
-     * @param input
-     *            schema path
-     *            <i>rendered-service-path/delete-rendered-path/input</i>
-     * @return RPC output
-     */
-    @Override
-    public Future<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(DeleteRenderedPathInput input) {
+    // Implementation of RenderedPathOperImpl for delete RPC rpc.
+    private static class DeleteRenderedPathImpl extends RenderedPathOperImpl<DeleteRenderedPathOutput> {
+        private final DeleteRenderedPathInput deleteRenderedPathInput;
 
-        String rspNameInput = input.getName();
-        if (rspNameInput == null) {
-            return Futures.immediateFuture(
-                    RpcResultBuilder.<DeleteRenderedPathOutput>failed()
-                            .withError(ErrorType.APPLICATION, "Rendered Service Path name not specified")
-                            .build());
+        DeleteRenderedPathImpl(DeleteRenderedPathInput createRenderedPathInput,
+                               SettableFuture<RpcResult<DeleteRenderedPathOutput>> result,
+                               int retries) {
+            super(result, retries);
+            this.deleteRenderedPathInput = createRenderedPathInput;
         }
 
-        RspName rspName = new RspName(input.getName());
-        RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
-
-        List<RspName> rspNames = new ArrayList<>();
-        rspNames.add(rspName);
-        if (reverseRspName != null) {
-            // The RSP has a symmetric ("Reverse") Path
-            rspNames.add(reverseRspName);
+        @Override
+        protected RpcResult<DeleteRenderedPathOutput> doOperation() {
+            return deleteRenderedPath();
         }
 
-        boolean ok = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(
-                rspNames,
-                LogicalDatastoreType.CONFIGURATION);
+        private RpcResult<DeleteRenderedPathOutput> deleteRenderedPath() {
+            final String inputRspNameValue = deleteRenderedPathInput.getName();
 
-        RpcResultBuilder<DeleteRenderedPathOutput> rpcResultBuilder;
-        if (ok) {
-            DeleteRenderedPathOutputBuilder deleteRenderedPathOutputBuilder = new DeleteRenderedPathOutputBuilder();
-            deleteRenderedPathOutputBuilder.setResult(true);
-            rpcResultBuilder = RpcResultBuilder.success(deleteRenderedPathOutputBuilder.build());
-        } else {
-            String message = "Error Deleting Rendered Service Path: " + input.getName();
-            rpcResultBuilder = RpcResultBuilder.<DeleteRenderedPathOutput>failed().withError(ErrorType.APPLICATION,
-                    message);
+            // Fail if the input RSP name not specified
+            if (inputRspNameValue == null) {
+                return completeError("Rendered Service Path name not specified");
+            }
+
+            final RspName inputRspName = new RspName(inputRspNameValue);
+            final RspName reverseRspName = SfcProviderRenderedPathAPI.generateReversedPathName(inputRspName);
+
+            RenderedServicePath operRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    inputRspName,
+                    LogicalDatastoreType.OPERATIONAL);
+            RenderedServicePath operReverseRsp = SfcProviderRenderedPathAPI.readRenderedServicePath(
+                    reverseRspName,
+                    LogicalDatastoreType.OPERATIONAL);
+
+            // If the operational RSPs don't exist, complete successfully
+            if (operRsp == null && operReverseRsp == null) {
+                return completeSuccess();
+            }
+
+            boolean ok = SfcProviderRenderedPathAPI.deleteRenderedServicePaths(
+                    Arrays.asList(inputRspName, reverseRspName),
+                    LogicalDatastoreType.CONFIGURATION);
+
+            if (!ok) {
+                return completeError("Error Deleting Rendered Service Path: " + inputRspNameValue);
+            }
+
+            return null;
         }
 
-        return Futures.immediateFuture(rpcResultBuilder.build());
+        private RpcResult<DeleteRenderedPathOutput> completeSuccess() {
+            DeleteRenderedPathOutput deleteRenderedPathOutput = new DeleteRenderedPathOutputBuilder()
+                    .setResult(true)
+                    .build();
+            return RpcResultBuilder.success(deleteRenderedPathOutput).build();
+        }
     }
 
     /**

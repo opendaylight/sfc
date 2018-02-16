@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -305,7 +306,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         assertNotNull("Must not be null", createdRsp);
         assertNotNull("RSP is symmetric", createdRsp.getSymmetricPathId());
 
-        RspName reverseRspName = SfcProviderRenderedPathAPI.getReversedRspName(rspName);
+        RspName reverseRspName = SfcProviderRenderedPathAPI.generateReversedPathName(rspName);
         RenderedServicePath reverseRsp = SfcProviderRenderedPathAPI
                 .readRenderedServicePath(reverseRspName, LogicalDatastoreType.CONFIGURATION);
         assertNotNull("Reverse Rsp should not be null", reverseRsp);
@@ -499,6 +500,10 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         inputBuilder.setName(pathName.getValue());
         DeleteRenderedPathInput input = inputBuilder.build();
         Future<RpcResult<DeleteRenderedPathOutput>> result = sfcProviderRpc.deleteRenderedPath(input);
+        String reversePathName = SfcProviderRenderedPathAPI.generateReversedPathName(pathName).getValue();
+        boolean ok = SfcProviderRenderedPathAPI.deleteRenderedServicePathsAndStates(
+                Arrays.asList(pathName, new RspName(reversePathName)));
+        assertTrue("Failed to delete operational RSPs", ok);
         assertTrue("Failed to delete rendered service path.",
                 result != null && result.get() != null && result.get().isSuccessful());
     }

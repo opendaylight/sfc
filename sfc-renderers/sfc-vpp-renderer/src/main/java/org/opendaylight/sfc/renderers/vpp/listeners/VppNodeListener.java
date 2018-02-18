@@ -9,13 +9,13 @@
 /**
  * DataChangeListener attached to the Network Topology
  */
-package org.opendaylight.sfc.sfc_vpp_renderer.listener;
+package org.opendaylight.sfc.renderers.vpp.listeners;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
-import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppNodeManager;
+import org.opendaylight.sfc.renderers.vpp.VppNodeManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;

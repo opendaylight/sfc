@@ -10,7 +10,7 @@
     interface="org.opendaylight.controller.sal.binding.api.BindingAwareBroker" />
 
   <bean id="renderer"
-    class="org.opendaylight.sfc.sfc_vpp_renderer.SfcVppRenderer"
+    class="org.opendaylight.sfc.renderers.vpp.SfcVppRenderer"
     destroy-method="close">
     <argument ref="dataBroker"/>
     <argument ref="bindingRegistry"/>

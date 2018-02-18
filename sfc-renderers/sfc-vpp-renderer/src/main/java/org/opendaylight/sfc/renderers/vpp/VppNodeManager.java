@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_vpp_renderer.renderer;
+package org.opendaylight.sfc.renderers.vpp;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

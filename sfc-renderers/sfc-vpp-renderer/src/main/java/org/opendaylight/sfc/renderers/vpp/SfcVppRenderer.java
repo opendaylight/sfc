@@ -6,16 +6,13 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.sfc_vpp_renderer;
+package org.opendaylight.sfc.renderers.vpp;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.RenderedPathListener;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.ServiceForwarderListener;
-import org.opendaylight.sfc.sfc_vpp_renderer.listener.VppNodeListener;
-import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppNodeManager;
-import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppRspProcessor;
-import org.opendaylight.sfc.sfc_vpp_renderer.renderer.VppSffManager;
+import org.opendaylight.sfc.renderers.vpp.listeners.RenderedPathListener;
+import org.opendaylight.sfc.renderers.vpp.listeners.ServiceForwarderListener;
+import org.opendaylight.sfc.renderers.vpp.listeners.VppNodeListener;
 
 /**
  * Initialize all necessary vpp renderer components.

@@ -19,13 +19,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.3-SNAPSHOT</version>
+        <version>1.8.4-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-ios-xe-renderer</artifactId>
-    <version>0.5.3-SNAPSHOT</version>
+    <version>0.5.4-SNAPSHOT</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-connector</artifactId>
-            <version>1.2.3-SNAPSHOT</version>
+            <version>1.2.4-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

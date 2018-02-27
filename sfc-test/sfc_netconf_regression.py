@@ -5,6 +5,8 @@ import subprocess
 import argparse
 import time
 import requests
+import urllib2
+import os
 
 __author__ = "Reinaldo Penno"
 __author__ = "Andrej Kincel"
@@ -19,15 +21,14 @@ __status__ = "Tested with SFC-Karaf distribution as of 02/06/2015"
 # netconf-testtool-0.3.0-20150320.211342-654-executable.jar
 
 
-def run_netconf_tests():
+def run_netconf_tests(jarfile):
     process = None
     device_name = "sfc-netconf"
     print("Starting Netconf Server")
     try:
         process = subprocess.Popen(
             ['java', '-Xmx1G', '-XX:MaxPermSize=256M', '-jar',
-             'netconf-testtool-0.3.0-20150320.211342-654-executable.jar',
-             '--device-count', '2'])
+             jarfile, '--device-count', '2'])
 
         time.sleep(5)
 
@@ -55,6 +56,39 @@ def run_netconf_tests():
 
     return
 
+def download_netconf_jar():
+    url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.release&g=org.opendaylight.controller&a=netconf-testtool&v=0.3.0-Lithium&e=jar&c=executable'
+    # In the future, maybe use one of the following URLs instead
+    #url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.release&g=org.opendaylight.controller&a=netconf-testtool&v=0.3.4-Lithium-SR4&e=jar&c=executable'
+    #url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.snapshot&g=org.opendaylight.netconf&a=netconf-testtool&v=1.5.0-SNAPSHOT&e=jar&c=executable'
+    attempts = 0
+    jarfile = ''
+
+    while attempts < 3:
+        try:
+            response = urllib2.urlopen(url, timeout = 5)
+            # Get the local filename based on the URL
+            url_list = response.geturl().split('/')
+            jarfile = url_list[len(url_list)-1]
+            content_length = response.info().get('Content-Length', 0)
+
+            print "Downloading %s bytes to: %s" % (content_length, jarfile)
+            print "From: %s" % response.geturl()
+
+            if (os.path.exists(jarfile) and os.path.isfile(jarfile)):
+                count = os.path.getsize(jarfile)
+                print "\nFile already downloaded, size %d bytes\n" % count
+                break
+
+            content = response.read()
+            with open(jarfile, 'w') as jf:
+                jf.write(content)
+                attempts = 4
+        except urllib2.URLError as e:
+            attempts += 1
+            print type(e)
+
+    return jarfile
 
 def main():
 
@@ -71,6 +105,8 @@ def main():
 
     #: parse CMD arguments ----------------------------------------------------
     args = parser.parse_args()
+
+    jarfile = download_netconf_jar()
 
     if args.run_karaf:
         run_karaf = True
@@ -94,7 +130,7 @@ def main():
         # netconf_state, right = child.match.groups()
 
         else:
-            run_netconf_tests()
+            run_netconf_tests(jarfile)
 
     except KeyboardInterrupt:
         pass

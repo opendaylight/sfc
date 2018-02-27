@@ -9,6 +9,8 @@ package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
@@ -19,12 +21,14 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListener<ServiceFunctionForwarder> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SbRestSffEntryDataListener.class);
 
     private final ExecutorService executorService;
 
+    @Inject
     public SbRestSffEntryDataListener(DataBroker dataBroker, ExecutorService executorService) {
         super(dataBroker, LogicalDatastoreType.CONFIGURATION, SfcInstanceIdentifiers.SFF_ENTRY_IID);
         this.executorService = executorService;

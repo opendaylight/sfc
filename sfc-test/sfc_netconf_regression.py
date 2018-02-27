@@ -5,6 +5,8 @@ import subprocess
 import argparse
 import time
 import requests
+import urllib2
+import os
 
 __author__ = "Reinaldo Penno"
 __author__ = "Andrej Kincel"
@@ -55,6 +57,38 @@ def run_netconf_tests():
 
     return
 
+def download_netconf_jar():
+    url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.release&g=org.opendaylight.controller&a=netconf-testtool&v=0.3.0-Lithium&e=jar&c=executable'
+    # In the future, maybe use one of the following URLs instead
+    #url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.release&g=org.opendaylight.controller&a=netconf-testtool&v=0.3.4-Lithium-SR4&e=jar&c=executable'
+    #url='https://nexus.opendaylight.org/service/local/artifact/maven/redirect?r=opendaylight.snapshot&g=org.opendaylight.netconf&a=netconf-testtool&v=1.5.0-SNAPSHOT&e=jar&c=executable'
+    attempts = 0
+
+    while attempts < 3:
+        try:
+            response = urllib2.urlopen(url, timeout = 5)
+            # Get the local filename based on the URL
+            url_list = response.geturl().split('/')
+            localfile = url_list[len(url_list)-1]
+            content_length = response.info()['Content-Length']
+
+            print "Downloading %s bytes to: %s" % (content_length, localfile)
+            print "From: %s" % response.geturl()
+
+            if (os.path.exists(localfile) and os.path.isfile(localfile)):
+                count = os.path.getsize(localfile)
+                print "\nFile already downloaded, size %d bytes\n" % count
+                break
+
+            content = response.read()
+            f = open(localfile, 'w')
+            f.write(content)
+            f.close()
+            break
+        except urllib2.URLError as e:
+            attempts += 1
+            print type(e)
+
 
 def main():
 
@@ -71,6 +105,8 @@ def main():
 
     #: parse CMD arguments ----------------------------------------------------
     args = parser.parse_args()
+
+    download_netconf_jar()
 
     if args.run_karaf:
         run_karaf = True

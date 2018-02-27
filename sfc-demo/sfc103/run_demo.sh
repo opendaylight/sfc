@@ -5,7 +5,7 @@ function clean {
     printf "Stopping karaf ...  "
     spin=('/' '-' '\' '|' '-')
     i=0
-    while $HOME/sfc/sfc-karaf/target/assembly/bin/client -u karaf 'system:shutdown -f' &> /dev/null
+    while $HOME/sfc/karaf/target/assembly/bin/client -u karaf -p karaf 'system:shutdown -f' &> /dev/null
     do
         printf "\b${spin[$i]}"
         i=$(( (( $i + 1 )) % 5 ))
@@ -16,7 +16,7 @@ function clean {
 }
 
 function start_sfc {
-    cd $HOME/sfc/sfc-karaf/target/assembly/
+    cd $HOME/sfc/karaf/target/assembly/
     sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-model,odl-sfc-provider,odl-sfc-ui,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs,odl-sfc-netconf/" etc/org.apache.karaf.features.cfg;
     echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg;
     rm -rf journal snapshots data; bin/start
@@ -25,7 +25,7 @@ function start_sfc {
     while [ $retries -gt 0 ]
     do
         sleep 60
-        sfcfeatures=$($HOME/sfc/sfc-karaf/target/assembly/bin/client -u karaf 'feature:list -i' 2>&1 | grep odl-sfc | wc -l)
+        sfcfeatures=$($HOME/sfc/karaf/target/assembly/bin/client -u karaf -p karaf 'feature:list -i' 2>&1 | grep odl-sfc | wc -l)
         if [ $sfcfeatures -eq 9 ]; then
             break
         fi

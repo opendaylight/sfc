@@ -38,6 +38,10 @@ public abstract class SbRestAbstractTask implements Runnable {
         }
     }
 
+    public static Class getLoggerClass() {
+        return SbRestAbstractTask.class;
+    }
+
     @Override
     public void run() {
         for (String restUri : this.restUriList) {

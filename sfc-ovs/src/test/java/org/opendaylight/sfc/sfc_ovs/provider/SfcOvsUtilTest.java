@@ -172,9 +172,9 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
         ovsdbBridgeAugmentationBuilder.setBridgeName(OvsdbBridgeName.getDefaultInstance(TEST_BRIDGE_NAME))
             .setManagedBy(new OvsdbNodeRef(nodeIID));
 
-        // TODO remove reflection for "getManagedByNodeId"
+        // TODO remove reflection for "getOvsBridgeNodeId"
         NodeId nodeId =
-                Whitebox.invokeMethod(SfcOvsUtil.class, "getManagedByNodeId", ovsdbBridgeAugmentationBuilder.build());
+                Whitebox.invokeMethod(SfcOvsUtil.class, "getOvsBridgeNodeId", ovsdbBridgeAugmentationBuilder.build());
 
         assertNotNull("Must not be null", nodeId);
         assertFalse("Must be false", nodeId.getValue().isEmpty());

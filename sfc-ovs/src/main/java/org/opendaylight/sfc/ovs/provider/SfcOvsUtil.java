@@ -431,7 +431,11 @@ public final class SfcOvsUtil {
     }
 
     public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(ServiceFunctionForwarder sff) {
-        String ofNodeId = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
+        return augmentSffWithOpenFlowNodeId(sff, SfcOvsUtil.getOpenFlowNodeIdForSff(sff));
+    }
+
+    public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(
+            ServiceFunctionForwarder sff, String ofNodeId) {
 
         if (ofNodeId != null) {
             SffOvsBridgeAugmentationBuilder sffOvsBrAugBuilder;
@@ -538,9 +542,8 @@ public final class SfcOvsUtil {
             LOG.warn("No DatapathId for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
         }
-        Long macLong = getLongFromDpid(datapathId.getValue());
 
-        return OPENFLOW + macLong;
+        return getOpenflowNodeIdFromDpid(datapathId.getValue());
     }
 
     public static NodeId getOvsdbAugmentationNodeIdBySff(ServiceFunctionForwarder serviceFunctionForwarder) {
@@ -581,12 +584,17 @@ public final class SfcOvsUtil {
                 executor);
 
         if (readBridge == null) {
+            LOG.warn("getOvsDataPathId cant readBridge from data store");
             return null;
         }
         return readBridge.getDatapathId();
     }
 
-    private static Long getLongFromDpid(String dpid) {
+    public static String getOpenflowNodeIdFromDpid(String dpid) {
+        return OPENFLOW + getLongFromDpid(dpid);
+    }
+
+    public static Long getLongFromDpid(String dpid) {
         String[] addressInBytes = dpid.split(":");
         Long address = Long.decode(HEX + addressInBytes[2]) << 40 | Long.decode(HEX + addressInBytes[3]) << 32
                 | Long.decode(HEX + addressInBytes[4]) << 24 | Long.decode(HEX + addressInBytes[5]) << 16
@@ -668,8 +676,8 @@ public final class SfcOvsUtil {
                 continue;
             }
 
-            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals(OPENFLOW + dpid)) {
+            String ofNodeId = getOpenflowNodeIdFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals(ofNodeId)) {
                 for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
                     if (comp.compare(otp)) {
@@ -805,8 +813,8 @@ public final class SfcOvsUtil {
                 continue;
             }
 
-            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals(OPENFLOW + dpid)) {
+            String ofNodeId = getOpenflowNodeIdFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals(ofNodeId)) {
                 if (!ovsdbBridgeAugmentation.getDatapathType().equals(DatapathTypeNetdev.class)) {
                     break;
                 }

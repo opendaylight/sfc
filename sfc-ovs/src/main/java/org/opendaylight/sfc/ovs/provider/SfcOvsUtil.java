@@ -159,24 +159,53 @@ public final class SfcOvsUtil {
      *            OvsdbBridgeAugmentation
      * @return NodeId
      */
-    private static NodeId getManagedByNodeId(OvsdbBridgeAugmentation ovsdbBridge) {
-        Preconditions.checkNotNull(ovsdbBridge, "Cannot getManagedByNodeId, OvsdbBridgeAugmentation is null.");
+    private static NodeId getOvsBridgeNodeId(OvsdbBridgeAugmentation ovsdbBridge) {
+        Preconditions.checkNotNull(ovsdbBridge, "Cannot getOvsBridgeNodeId, OvsdbBridgeAugmentation is null.");
 
-        Preconditions.checkNotNull(ovsdbBridge.getBridgeName(), "Cannot build getManagedByNodeId, BridgeName is null.");
-        Preconditions.checkNotNull(ovsdbBridge.getManagedBy(), "Cannot build getManagedByNodeId, ManagedBy is null.");
+        Preconditions.checkNotNull(ovsdbBridge.getBridgeName(), "Cannot build getOvsBridgeNodeId, BridgeName is null.");
+        Preconditions.checkNotNull(ovsdbBridge.getManagedBy(), "Cannot build getOvsBridgeNodeId, ManagedBy is null.");
         String bridgeName = ovsdbBridge.getBridgeName().getValue();
         InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) ovsdbBridge.getManagedBy().getValue();
 
         KeyedInstanceIdentifier<?, ?> keyedInstanceIdentifier = (KeyedInstanceIdentifier<?, ?>) nodeIID
                 .firstIdentifierOf(Node.class);
         Preconditions.checkNotNull(keyedInstanceIdentifier,
-                "Cannot build getManagedByNodeId, parent OVS Node is null.");
+                "Cannot build getOvsBridgeNodeId, parent OVS Node is null.");
 
         NodeKey nodeKey = (NodeKey) keyedInstanceIdentifier.getKey();
         String nodeId = nodeKey.getNodeId().getValue();
         nodeId = nodeId.concat(OVSDB_BRIDGE_PREFIX + bridgeName);
 
         return new NodeId(nodeId);
+    }
+
+    /**
+     * Given an OVS bridge Node, return the Managing OvsdbNode.
+     *
+     * @param ovsdbBridge
+     *            OvsdbBridgeAugmentation
+     * @return OvsdbNodeAugmentation - the managing node
+     */
+    public static OvsdbNodeAugmentation getManagerNodeByBridgeNode(OvsdbBridgeAugmentation ovsdbBridge) {
+        if (ovsdbBridge.getManagedBy() == null) {
+            LOG.warn("OVS bridge [{}] has a null ManagedBy entry", ovsdbBridge.getBridgeName().getValue());
+            return null;
+        }
+
+        if (ovsdbBridge.getManagedBy().getValue() == null) {
+            LOG.warn("OVS bridge [{}] has a null ManagedBy value", ovsdbBridge.getBridgeName().getValue());
+            return null;
+        }
+
+        InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) ovsdbBridge.getManagedBy().getValue();
+        Node node = SfcDataStoreAPI.readTransactionAPI(nodeIID, LogicalDatastoreType.OPERATIONAL);
+
+        if (node == null) {
+            LOG.warn("OVS bridge [{}] ManagedBy node does not exist", ovsdbBridge.getBridgeName().getValue());
+            return null;
+        }
+
+        return node.getAugmentation(OvsdbNodeAugmentation.class);
     }
 
     /**
@@ -187,12 +216,12 @@ public final class SfcOvsUtil {
      * @param ovsdbBridge
      *            OvsdbBridgeAugmentation
      * @return InstanceIdentifier&lt;Node&gt;
-     * @see SfcOvsUtil getManagedByNodeId
+     * @see SfcOvsUtil getOvsBridgeNodeId
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(OvsdbBridgeAugmentation ovsdbBridge) {
         InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)));
+                .child(Node.class, new NodeKey(getOvsBridgeNodeId(ovsdbBridge)));
 
         return nodeIID;
     }
@@ -241,12 +270,12 @@ public final class SfcOvsUtil {
      * @param ovsdbBridge
      *            OvsdbBridgeAugmentation
      * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
-     * @see SfcOvsUtil getManagedByNodeId
+     * @see SfcOvsUtil getOvsBridgeNodeId
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(OvsdbBridgeAugmentation ovsdbBridge) {
         InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, new NodeKey(getManagedByNodeId(ovsdbBridge)))
+                .child(Node.class, new NodeKey(getOvsBridgeNodeId(ovsdbBridge)))
                 .augmentation(OvsdbBridgeAugmentation.class);
 
         return bridgeEntryIID;
@@ -313,7 +342,7 @@ public final class SfcOvsUtil {
         Preconditions.checkNotNull(ovsdbBridge,
                 "Cannot build OvsdbTerminationPointAugmentation InstanceIdentifier, OvsdbBridgeAugmentation is null.");
 
-        NodeId nodeId = getManagedByNodeId(ovsdbBridge);
+        NodeId nodeId = getOvsBridgeNodeId(ovsdbBridge);
         String terminationPointId = ovsdbTerminationPoint.getName();
 
         InstanceIdentifier<OvsdbTerminationPointAugmentation> terminationPointIID = InstanceIdentifier
@@ -431,7 +460,11 @@ public final class SfcOvsUtil {
     }
 
     public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(ServiceFunctionForwarder sff) {
-        String ofNodeId = SfcOvsUtil.getOpenFlowNodeIdForSff(sff);
+        return augmentSffWithOpenFlowNodeId(sff, SfcOvsUtil.getOpenFlowNodeIdForSff(sff));
+    }
+
+    public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(
+            ServiceFunctionForwarder sff, String ofNodeId) {
 
         if (ofNodeId != null) {
             SffOvsBridgeAugmentationBuilder sffOvsBrAugBuilder;
@@ -538,9 +571,8 @@ public final class SfcOvsUtil {
             LOG.warn("No DatapathId for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
         }
-        Long macLong = getLongFromDpid(datapathId.getValue());
 
-        return OPENFLOW + macLong;
+        return getOpenflowNodeIdFromDpid(datapathId.getValue());
     }
 
     public static NodeId getOvsdbAugmentationNodeIdBySff(ServiceFunctionForwarder serviceFunctionForwarder) {
@@ -569,7 +601,7 @@ public final class SfcOvsUtil {
         builder.setManagedBy(ovsdbNodeRef);
         builder.setBridgeName(new OvsdbBridgeName(sffOvsBridge.getBridgeName()));
 
-        return getManagedByNodeId(builder.build());
+        return getOvsBridgeNodeId(builder.build());
     }
 
     private static DatapathId getOvsDataPathId(NodeId nodeId) {
@@ -581,12 +613,17 @@ public final class SfcOvsUtil {
                 executor);
 
         if (readBridge == null) {
+            LOG.warn("getOvsDataPathId cant readBridge from data store");
             return null;
         }
         return readBridge.getDatapathId();
     }
 
-    private static Long getLongFromDpid(String dpid) {
+    public static String getOpenflowNodeIdFromDpid(String dpid) {
+        return OPENFLOW + getLongFromDpid(dpid);
+    }
+
+    public static Long getLongFromDpid(String dpid) {
         String[] addressInBytes = dpid.split(":");
         Long address = Long.decode(HEX + addressInBytes[2]) << 40 | Long.decode(HEX + addressInBytes[3]) << 32
                 | Long.decode(HEX + addressInBytes[4]) << 24 | Long.decode(HEX + addressInBytes[5]) << 16
@@ -668,8 +705,8 @@ public final class SfcOvsUtil {
                 continue;
             }
 
-            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals(OPENFLOW + dpid)) {
+            String ofNodeId = getOpenflowNodeIdFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals(ofNodeId)) {
                 for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
                     if (comp.compare(otp)) {
@@ -805,8 +842,8 @@ public final class SfcOvsUtil {
                 continue;
             }
 
-            Long dpid = getLongFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
-            if (nodeName.equals(OPENFLOW + dpid)) {
+            String ofNodeId = getOpenflowNodeIdFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
+            if (nodeName.equals(ofNodeId)) {
                 if (!ovsdbBridgeAugmentation.getDatapathType().equals(DatapathTypeNetdev.class)) {
                     break;
                 }

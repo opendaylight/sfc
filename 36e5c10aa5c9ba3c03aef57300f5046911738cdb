@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "609b3ce5_520e69d0",
+        "filename": "sfc-test/sfc_netconf_regression.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2018-02-27T16:50:16Z",
+      "side": 1,
+      "message": "hey, you\u0027re cheating! By DL\u0027ing an artifact back from Lithium  into a Fluorine (Oxygen) build!  But you\u0027re smart enough to do it in a PY, so autorelease won\u0027t catch you and slap your wrist - I\u0027ll +1 that, for ingenuity! :))",
+      "revId": "36e5c10aa5c9ba3c03aef57300f5046911738cdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

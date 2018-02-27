@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup sfc from pre-build. If DIST_URL is null, build sfc from scratch
-DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/distribution-karaf/0.5.1-SNAPSHOT/
+DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/karaf/
 
 function install_packages {
     sudo apt-get install npm vim git git-review diffstat bridge-utils -y
@@ -53,10 +53,11 @@ function install_ovs {
 function install_sfc {
     cd $HOME
     if [[ -n $DIST_URL ]]; then
-        curl $DIST_URL/maven-metadata.xml | grep -A2 tar.gz | grep value | cut -f2 -d'>' | cut -f1 -d'<' | \
-            xargs -I {} curl $DIST_URL/distribution-karaf-{}.tar.gz | tar xvz-
-        rm -rf $HOME/sfc; mkdir -p $HOME/sfc/sfc-karaf/target
-        mv distribution-karaf* $HOME/sfc/sfc-karaf/target/assembly
+        latest_version=$(curl $DIST_URL/maven-metadata.xml | grep latest | cut -f2 -d'>' | cut -f1 -d'<')
+        latest_build=$(curl $DIST_URL/${latest_version}/maven-metadata.xml | grep -A2 tar.gz | grep value | cut -f2 -d'>' | cut -f1 -d'<')
+        curl $DIST_URL/${latest_version}/karaf-${latest_build}.tar.gz | tar xvz-
+        rm -rf $HOME/sfc; mkdir -p $HOME/sfc/karaf/target
+        mv karaf* $HOME/sfc/karaf/target/assembly
     else
         source $HOME/maven.env
         mkdir $HOME/.m2

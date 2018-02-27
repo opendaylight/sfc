@@ -129,20 +129,36 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     /**
      * Store the Openflow NodeId in the SFF OvsBridge Augmentation.
      * This makes it easier to get the Openflow NodeId from other parts of the SFC code.
+     * This will usually be executed when the ovs bridge is already created.
      *
      * @param sff - The SFF to modify
      */
     static void setSffOvsBridgeAugOpenflowNodeId(ServiceFunctionForwarder sff) {
-        ServiceFunctionForwarder augmentedSff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
-        InstanceIdentifier<SffOvsBridgeAugmentation> sffOvsBridgeAugIid = InstanceIdentifier
-                .builder(ServiceFunctionForwarders.class)
-                .child(ServiceFunctionForwarder.class, sff.getKey())
-                .augmentation(SffOvsBridgeAugmentation.class).build();
-        LOG.info("SfcOvsSffEntryDataListener::setSffOvsBridgeAugOpenflowNodeId OpenFlow ID: [{}]",
-                augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId());
+        SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        if (sffOvsBrAug != null) {
+            if (sffOvsBrAug.getOvsBridge() != null && sffOvsBrAug.getOvsBridge().getOpenflowNodeId() != null) {
+                // The OpenFlow NodeId is already set on the SFF, nothing needs to be done here
+                LOG.debug("setSffOvsBridgeAugOpenflowNodeId SFF [{}] already has OpenFlow ID",
+                        sff.getName().getValue());
+                return;
+            }
+        }
 
-        SfcDataStoreAPI.writePutTransactionAPI(sffOvsBridgeAugIid,
-                augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class),
-                LogicalDatastoreType.CONFIGURATION);
+        ServiceFunctionForwarder augmentedSff = SfcOvsUtil.augmentSffWithOpenFlowNodeId(sff);
+
+        // There is no sense in writing the augmented SFF if the ofNodeId is null
+        if (augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId() != null) {
+            LOG.info("SfcOvsSffEntryDataListener::setSffOvsBridgeAugOpenflowNodeId SFF [{}] OpenFlow ID: [{}]",
+                    augmentedSff.getName().getValue(),
+                    augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId());
+
+            InstanceIdentifier<SffOvsBridgeAugmentation> sffOvsBridgeAugIid = InstanceIdentifier
+                    .builder(ServiceFunctionForwarders.class)
+                    .child(ServiceFunctionForwarder.class, sff.getKey())
+                    .augmentation(SffOvsBridgeAugmentation.class).build();
+            SfcDataStoreAPI.writePutTransactionAPI(sffOvsBridgeAugIid,
+                    augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class),
+                    LogicalDatastoreType.CONFIGURATION);
+        }
     }
 }

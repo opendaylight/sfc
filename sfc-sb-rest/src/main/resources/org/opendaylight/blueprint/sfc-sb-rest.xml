@@ -15,19 +15,13 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <bean id="executor" class="org.opendaylight.yangtools.util.concurrent.SpecialExecutors"
+  <bean id="executorService" class="org.opendaylight.yangtools.util.concurrent.SpecialExecutors"
       factory-method="newBlockingBoundedCachedThreadPool" destroy-method="shutdown">
     <argument value="${max-pool-size}"/>
     <argument value="${max-queue-size}"/>
-    <argument value="SfcSbRestDataListener"/>
+    <argument value="SbRestAbstractTask"/>
     <argument>
-      <!-- We should use a more specific class -->
-      <bean factory-ref="dataBroker" factory-method="getClass"/>
+      <bean class="org.opendaylight.sfc.sbrest.provider.task.SbRestAbstractTask" factory-method="getLoggerClass"/>
     </argument>
-  </bean>
-
-  <bean id="sfcSbRestProviderModule"
-    class="org.opendaylight.controller.config.yang.config.sfc_sb_rest_provider.impl.SfcSbRestProviderModule"
-    init-method="startSbRestKeepAliveSocket">
   </bean>
 </blueprint>

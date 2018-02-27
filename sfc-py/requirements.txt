@@ -4,7 +4,6 @@ ipaddress==1.0.15
 itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
-messages==0.0.0
 netifaces==0.10.4
 paramiko==1.16.0
 pexpect==4.0.1

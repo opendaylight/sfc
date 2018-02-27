@@ -11,6 +11,8 @@ package org.opendaylight.sfc.util.openflow;
 import static com.fasterxml.uuid.EthernetAddress.constructMulticastAddress;
 import static junitparams.JUnitParamsRunner.$;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.addMatchVlan;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionOutPort;
 import static org.opendaylight.sfc.util.openflow.SfcOpenflowUtils.createActionPopVlan;
@@ -167,11 +169,11 @@ public class SfcOpenflowUtilsTest {
         // Test that badly formatted MAC addresses cannot be used
         try {
             createActionSetDlSrc(mac, order);
+            fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertEquals("Error message does not match",
-                    "Supplied value \"" + mac + "\" "
-                            + "does not match required pattern \"^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$\"",
-                    e.getMessage());
+            assertTrue("Error message does not match",
+                    e.getMessage().contains("Supplied value \"" + mac + "\" does not match required pattern")
+                            && e.getMessage().contains("[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"));
         }
     }
 

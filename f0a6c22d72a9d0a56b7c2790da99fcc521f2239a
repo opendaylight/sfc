@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5dcc0536_069b6061",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-28T13:57:52Z",
+      "side": 1,
+      "message": "I am not sure this will work? Since we can have bridges with the same name on multiple ovs nodes, we would also need to verify the node where the bridge is running?",
+      "range": {
+        "startLine": 187,
+        "startChar": 24,
+        "endLine": 187,
+        "endChar": 97
+      },
+      "revId": "f0a6c22d72a9d0a56b7c2790da99fcc521f2239a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

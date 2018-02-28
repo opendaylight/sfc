@@ -16,6 +16,52 @@
       "revId": "36e5c10aa5c9ba3c03aef57300f5046911738cdb",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5743b1ee_e32e341f",
+        "filename": "sfc-test/sfc_netconf_regression.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-28T09:37:44Z",
+      "side": 1,
+      "message": "Is this always going to equate to the hardcoded filename of L31? Should we explicitly set the filename?",
+      "range": {
+        "startLine": 72,
+        "startChar": 12,
+        "endLine": 72,
+        "endChar": 49
+      },
+      "revId": "36e5c10aa5c9ba3c03aef57300f5046911738cdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "51b36213_984d579c",
+        "filename": "sfc-test/sfc_netconf_regression.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-02-28T09:37:44Z",
+      "side": 1,
+      "message": "This whole thing L69-L86 can be replaced by urllib.urlretrieve I think. urlretrieve also allows you to easily set the local filename, in regards to comment on L72",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 21
+      },
+      "revId": "36e5c10aa5c9ba3c03aef57300f5046911738cdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

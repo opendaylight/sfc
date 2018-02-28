@@ -253,7 +253,7 @@ class BasicService(object):
         packet = (data, addr)
         try:
             self.packet_queue.put_nowait(packet)
-        except:
+        except Exception:
             msg = 'Putting into queue failed'
             # logger.info(msg)
             logger.exception(msg)
@@ -308,7 +308,7 @@ class BasicService(object):
                 packet = self.packet_queue.get(block=True)
                 self.process_datagram(data=packet[0], addr=packet[1])
                 self.packet_queue.task_done()
-        except:
+        except Exception:
             msg = 'Reading from queue failed'
             logger.info(msg)
             logger.exception(msg)

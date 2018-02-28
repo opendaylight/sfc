@@ -89,7 +89,7 @@ def get_ip_address(ifname):
 
 
 def NSHForward(pkt):
-    print ("{" + pkt[NSH].mysummary()+"} "+pkt[NSH].summary())
+    print("{" + pkt[NSH].mysummary()+"} "+pkt[NSH].summary())
     next = pkt[NSH]
     next.ServiceIndex = next.ServiceIndex - 1
     sendp(next, iface=egress)

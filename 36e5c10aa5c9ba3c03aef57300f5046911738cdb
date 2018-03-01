@@ -42,6 +42,30 @@
     },
     {
       "key": {
+        "uuid": "e86a41ca_472159c2",
+        "filename": "sfc-test/sfc_netconf_regression.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-03-01T16:36:06Z",
+      "side": 1,
+      "message": "I just submit a patch set so the downloaded file name is used on L31, so nothing is hard-coded.",
+      "parentUuid": "5743b1ee_e32e341f",
+      "range": {
+        "startLine": 72,
+        "startChar": 12,
+        "endLine": 72,
+        "endChar": 49
+      },
+      "revId": "36e5c10aa5c9ba3c03aef57300f5046911738cdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "51b36213_984d579c",
         "filename": "sfc-test/sfc_netconf_regression.py",
         "patchSetId": 1

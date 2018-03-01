@@ -64,8 +64,7 @@ script
     mount -t hugetlbfs nodev /run/hugepages/kvm
 end script
 EOF
-nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
-if [ "$nr_hugepages" != "1024" ] ; then
+if [ "$(stat -f -c '%T' /run/hugepages/kvm)" != "hugetlbfs" ] ; then
     echo "---"
     echo -n "  Allocating hugepages... "
     start hugepages

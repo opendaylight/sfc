@@ -22,7 +22,7 @@ echo "Acquire::https::No-Cache true;" >> /etc/apt/apt.conf
 echo "Acquire::https::Pipeline-Depth 0;" >> /etc/apt/apt.conf
 cat /etc/apt/apt.conf
 
-apt-get install software-properties-common python-software-properties
+apt-get install -y software-properties-common python-software-properties
 add-apt-repository -r ppa:openjdk-r/ppa -y
 add-apt-repository ppa:openjdk-r/ppa -y
 rm -f /etc/apt/sources.list.d/99fd.io.list
@@ -46,8 +46,7 @@ script
     mount -t hugetlbfs nodev /run/hugepages/kvm
 end script
 EOF
-nr_hugepages=$(cat /proc/sys/vm/nr_hugepages)
-if [ "$nr_hugepages" != "1024" ] ; then
+if [ "$(stat -f -c '%T' /run/hugepages/kvm)" != "hugetlbfs" ] ; then
     echo "---"
     echo -n "  Allocating hugepages... "
     start hugepages

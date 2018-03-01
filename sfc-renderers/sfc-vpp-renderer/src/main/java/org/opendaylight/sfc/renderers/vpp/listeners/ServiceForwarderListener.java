@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
 
 
 public class ServiceForwarderListener extends AbstractDataTreeChangeListener<ServiceFunctionForwarder> {
+
     private static final Logger LOG = LoggerFactory.getLogger(ServiceForwarderListener.class);
+
     private final ListenerRegistration<ServiceForwarderListener> vppSffListenerRegistration;
     private final VppSffManager sffManager;
 
@@ -60,5 +62,4 @@ public class ServiceForwarderListener extends AbstractDataTreeChangeListener<Ser
         LOG.info("SFF updated original [{}] updated [{}]", originalDataObject.getName(), updatedDataObject.getName());
         sffManager.disposeSff(updatedDataObject, false);
     }
-
 }

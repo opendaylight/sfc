@@ -8,56 +8,48 @@
 
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.renderers.vpp.VppRspProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
+public class RenderedPathListener extends AbstractSyncDataTreeChangeListener<RenderedServicePath> {
 
-public class RenderedPathListener extends AbstractDataTreeChangeListener<RenderedServicePath> {
-
-    private final VppRspProcessor rspProcessor;
-    private final ListenerRegistration<RenderedPathListener> vppRspListenerRegistration;
     private static final Logger LOG = LoggerFactory.getLogger(RenderedPathListener.class);
 
+    private final VppRspProcessor rspProcessor;
+
+    @Inject
     public RenderedPathListener(DataBroker dataBroker, VppRspProcessor rspProcessor) {
+        super(dataBroker, LogicalDatastoreType.CONFIGURATION,
+              InstanceIdentifier.create(RenderedServicePaths.class).child(RenderedServicePath.class));
         this.rspProcessor = rspProcessor;
-        // Register listener
-        final DataTreeIdentifier<RenderedServicePath> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(RenderedServicePaths.class).child(RenderedServicePath.class));
-        vppRspListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
-    public void close() {
-        LOG.debug("Closing listener...");
-        if (vppRspListenerRegistration != null) {
-            vppRspListenerRegistration.close();
-        }
+    public void add(@Nonnull RenderedServicePath renderedServicePath) {
+        LOG.debug("RSP created");
+        this.rspProcessor.updateRsp(renderedServicePath);
     }
 
     @Override
-    protected void add(RenderedServicePath newDataObject) {
-        LOG.info("RSP created");
-        this.rspProcessor.updateRsp(newDataObject);
+    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+        LOG.debug("RSP deleted");
+        this.rspProcessor.deleteRsp(renderedServicePath);
     }
 
     @Override
-    protected void remove(RenderedServicePath removedDataObject) {
-        LOG.info("RSP deleted");
-        this.rspProcessor.deleteRsp(removedDataObject);
-    }
-
-    @Override
-    protected void update(RenderedServicePath originalDataObject, RenderedServicePath updatedDataObject) {
-        //Needn't care it
+    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+        // Needn't care it
     }
 }

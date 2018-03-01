@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.renderers.vpp;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.vpp.rev160706.SffNetconfAugmentation;
@@ -16,13 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Singleton
 public class VppSffManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppSffManager.class);
 
     private final VppNodeManager nodeManager;
 
+    @Inject
     public VppSffManager(VppNodeManager nodeManager) {
         // Register SFF listener
         this.nodeManager = nodeManager;

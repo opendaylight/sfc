@@ -11,66 +11,56 @@
  */
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.provider.listeners.AbstractDataTreeChangeListener;
+import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.renderers.vpp.VppNodeManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VppNodeListener extends AbstractDataTreeChangeListener<Node> {
+@Singleton
+public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppNodeListener.class);
 
-    private final ListenerRegistration<VppNodeListener> listenerRegistration;
     private final VppNodeManager vppNodeManager;
 
+    @Inject
     public VppNodeListener(DataBroker dataBroker, VppNodeManager nodeManager) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)
+                .child(Topology.class)
+                .child(Node.class));
         this.vppNodeManager = nodeManager;
-        // Register listener
-        final DataTreeIdentifier<Node> treeId = new DataTreeIdentifier<>(
-                LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(NetworkTopology.class)
-                    .child(Topology.class)
-                    .child(Node.class));
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
     }
 
     @Override
-    public void close() {
-        LOG.debug("Closing listener...");
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
+    public void add(@Nonnull Node node) {
+        if (vppNodeManager.isCapableNetconfDevice(node)) {
+            LOG.debug("Adding node");
+            vppNodeManager.updateNode(node);
         }
     }
 
     @Override
-    protected void add(Node newDataObject) {
-        if (vppNodeManager.isCapableNetconfDevice(newDataObject)) {
-            LOG.info("Adding node");
-            vppNodeManager.updateNode(newDataObject);
+    public void remove(@Nonnull Node node) {
+        if (vppNodeManager.isCapableNetconfDevice(node)) {
+            LOG.debug("Removing node");
+            vppNodeManager.removeNode(node);
         }
     }
 
     @Override
-    protected void remove(Node removedDataObject) {
-        if (vppNodeManager.isCapableNetconfDevice(removedDataObject)) {
-            LOG.info("Removing node");
-            vppNodeManager.removeNode(removedDataObject);
-        }
-    }
-
-    @Override
-    protected void update(Node originalDataObject, Node updatedDataObject) {
-        if (vppNodeManager.isCapableNetconfDevice(updatedDataObject)) {
+    public void update(@Nonnull Node originalNode, Node updatedNode) {
+        if (vppNodeManager.isCapableNetconfDevice(updatedNode)) {
             LOG.info("Updating node");
-            vppNodeManager.updateNode(updatedDataObject);
+            vppNodeManager.updateNode(updatedNode);
         }
     }
 }

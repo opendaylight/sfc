@@ -55,16 +55,16 @@ case "${1}" in
 "ovs")
     demo="./ovs/run_demo_ovs.sh"
     features="${features} odl-sfc-scf-openflow odl-sfc-openflow-renderer"
-    uninstall_features="odl-sfc-vpp-renderer"
+    uninstall_features="odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     ;;
 "ovs_dpdk")
     demo="./ovs_dpdk/run_demo_ovs_dpdk.sh"
     features="${features} odl-sfc-scf-openflow odl-sfc-openflow-renderer"
-    uninstall_features="odl-sfc-vpp-renderer"
+    uninstall_features="odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     ;;
 "vpp")
     demo="./vpp/run_demo_vpp.sh"
-    features="${features} odl-sfc-vpp-renderer"
+    features="${features} odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     uninstall_features="odl-sfc-openflow-renderer odl-sfc-scf-openflow"
     ;;
 *)
@@ -138,7 +138,7 @@ if [ "${1}" == "vpp" ] ; then
 retries=10
 while [ $retries -gt 0 ]
 do
-    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} display | grep " Netconf connector initialized successfully")
+    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} bundle:list | grep "Active" | grep "sal-netconf-connector")
     if [ $? -eq 0 ] ; then
         break
     fi
@@ -154,9 +154,9 @@ do
     OK=0
     result=$(curl -H "Content-Type: application/json" -H "Cache-Control: no-cache" -X GET --user admin:admin http://${LOCALHOST}:8181/restconf/operational/network-topology:network-topology/)
     OK=$((OK+$?))
-    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} display | grep "successfully started the SfcOfRenderer")
+    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} bundle:list | grep "Active" | grep "sfc-openflow-renderer")
     OK=$((OK+$?))
-    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} display | grep "successfully started the SfcScfOfRenderer")
+    result=$(sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} bundle:list | grep "Active" | grep "sfc-scf-openflow")
     OK=$((OK+$?))
     if [ $OK -eq 0 ] ; then
         break

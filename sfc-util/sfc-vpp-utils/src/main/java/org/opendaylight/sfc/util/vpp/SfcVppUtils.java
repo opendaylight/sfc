@@ -106,6 +106,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -289,7 +290,9 @@ public final class SfcVppUtils {
         return ipList;
     }
 
-    private static void addFuturesCallback(final WriteTransaction transaction) {
+    private static void addFuturesCallback(final WriteTransaction transaction,
+                                           InstanceIdentifier id,
+                                           @Nullable DataObject data) {
         Futures.addCallback(transaction.submit(), new FutureCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void result) {
@@ -297,6 +300,11 @@ public final class SfcVppUtils {
 
             @Override
             public void onFailure(@Nonnull Throwable throwable) {
+                if (data == null) {
+                    LOG.error("Error deleting {}", id, throwable);
+                } else {
+                    LOG.error("Error writing to {} with data {}", id, data, throwable);
+                }
             }
         }, MoreExecutors.directExecutor());
     }
@@ -319,8 +327,9 @@ public final class SfcVppUtils {
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         InstanceIdentifier<BridgeDomains> bridgeDomainsIId = InstanceIdentifier.create(Vpp.class)
                 .child(BridgeDomains.class);
-        wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainsIId, bdsBuilder.build());
-        addFuturesCallback(wTx);
+        BridgeDomains bridgeDomains = bdsBuilder.build();
+        wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainsIId, bridgeDomains);
+        addFuturesCallback(wTx, bridgeDomainsIId, bridgeDomains);
     }
 
     public static void addBridgeDomain(final DataBroker dataBroker, String bridgeDomainName, String vppNode) {
@@ -336,8 +345,9 @@ public final class SfcVppUtils {
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         InstanceIdentifier<BridgeDomain> bridgeDomainIId = InstanceIdentifier.create(Vpp.class)
                 .child(BridgeDomains.class).child(BridgeDomain.class, new BridgeDomainKey(bridgeDomainName));
-        wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainIId, bdBuilder.build());
-        addFuturesCallback(wTx);
+        BridgeDomain bridgeDomain = bdBuilder.build();
+        wTx.put(LogicalDatastoreType.CONFIGURATION, bridgeDomainIId, bridgeDomain);
+        addFuturesCallback(wTx, bridgeDomainIId, bridgeDomain);
     }
 
     public static String buildVxlanGpePortKey(final IpAddress remote) {
@@ -410,8 +420,9 @@ public final class SfcVppUtils {
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final KeyedInstanceIdentifier<Interface, InterfaceKey> interfaceIid = InstanceIdentifier
                 .create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceBuilder.getName()));
-        wTx.put(LogicalDatastoreType.CONFIGURATION, interfaceIid, interfaceBuilder.build());
-        addFuturesCallback(wTx);
+        Interface anInterface = interfaceBuilder.build();
+        wTx.put(LogicalDatastoreType.CONFIGURATION, interfaceIid, anInterface);
+        addFuturesCallback(wTx, interfaceIid, anInterface);
     }
 
     public static void removeVxlanGpePort(final DataBroker dataBroker, final IpAddress local, final IpAddress remote,
@@ -429,7 +440,7 @@ public final class SfcVppUtils {
                 .create(Interfaces.class).child(Interface.class, new InterfaceKey(interfaceKey));
         LOG.info("removeVxlanGpePort {} on vpp node {}", interfaceKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, interfaceIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, interfaceIid, null);
     }
 
     private static String buildNshEntryKey(final Long nsp, final Short nsi) {
@@ -467,7 +478,7 @@ public final class SfcVppUtils {
         final InstanceIdentifier<NshEntries> nshEntriesIid = InstanceIdentifier.create(VppNsh.class)
                 .child(NshEntries.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntriesIid, nshEntriesBuilder.build());
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, nshEntriesIid, null);
     }
 
     public static void addNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
@@ -497,7 +508,7 @@ public final class SfcVppUtils {
         final InstanceIdentifier<NshEntry> nshEntryIid = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class)
                 .child(NshEntry.class, nshEntry.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntryIid, nshEntry);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, nshEntryIid, nshEntry);
     }
 
     public static void removeNshEntry(final DataBroker dataBroker, final Long nsp, final Short nsi, String vppNode) {
@@ -508,7 +519,7 @@ public final class SfcVppUtils {
                 .child(NshEntry.class, new NshEntryKey(nshEntryKey));
         LOG.info("removeNshEntry {} on vpp node {}", nshEntryKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshEntryIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, nshEntryIid, null);
     }
 
     private static String buildNshMapKey(final Long nsp, final Short nsi, final Long mappedNsp, final Short mappedNsi) {
@@ -539,7 +550,7 @@ public final class SfcVppUtils {
         final InstanceIdentifier<NshMap> nshMapIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class)
                 .child(NshMap.class, nshMap.getKey());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapIid, nshMap);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, nshMapIid, nshMap);
     }
 
     public static void addDummyNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi,
@@ -556,8 +567,9 @@ public final class SfcVppUtils {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final InstanceIdentifier<NshMaps> nshMapsIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class);
-        wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapsIid, nshMapsBuilder.build());
-        addFuturesCallback(wTx);
+        NshMaps nshMaps = nshMapsBuilder.build();
+        wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapsIid, nshMaps);
+        addFuturesCallback(wTx, nshMapsIid, nshMaps);
     }
 
     private static void addNshMap(final DataBroker dataBroker, final Long nsp, final Short nsi, final Long mappedNsp,
@@ -590,7 +602,7 @@ public final class SfcVppUtils {
                 .child(NshMap.class, new NshMapKey(nshMapKey));
         LOG.info("removeNshMap {} on vpp node {}", nshMapKey, vppNode);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, nshMapIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, nshMapIid, null);
     }
 
     public static boolean configureVxlanGpeNsh(final DataBroker dataBroker, final SffName sffName,
@@ -653,17 +665,19 @@ public final class SfcVppUtils {
             List<ClassifyTable> classifyTableList = new ArrayList<>();
             classifyTableList.add(classifyTable);
             vppClassifierBuilder.setClassifyTable(classifyTableList);
-            LOG.info("addClassifyTable: {}", vppClassifierBuilder.build());
+            VppClassifier vppClassifier = vppClassifierBuilder.build();
+            LOG.info("addClassifyTable: {}", vppClassifier);
 
             final InstanceIdentifier<VppClassifier> vppClassifierIid = InstanceIdentifier.create(VppClassifier.class);
-            wTx.put(LogicalDatastoreType.CONFIGURATION, vppClassifierIid, vppClassifierBuilder.build());
+            wTx.put(LogicalDatastoreType.CONFIGURATION, vppClassifierIid, vppClassifier);
+            addFuturesCallback(wTx, vppClassifierIid, vppClassifier);
         } else {
             final InstanceIdentifier<ClassifyTable> classifyTableIid = InstanceIdentifier.create(VppClassifier.class)
                     .child(ClassifyTable.class, classifyTable.getKey());
             wTx.put(LogicalDatastoreType.CONFIGURATION, classifyTableIid, classifyTable);
             LOG.info("addClassifyTable: {}", classifyTable);
+            addFuturesCallback(wTx, classifyTableIid, classifyTable);
         }
-        addFuturesCallback(wTx);
     }
 
     private static void removeClassifyTable(final DataBroker dataBroker, final String classifyTableKey,
@@ -674,7 +688,7 @@ public final class SfcVppUtils {
                 .child(ClassifyTable.class, new ClassifyTableKey(classifyTableKey));
         LOG.info("removeClassifyTable on vpp node {}: table: {}", vppNode, classifyTableKey);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, classifyTableIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, classifyTableIid, null);
     }
 
     private static ClassifySessionBuilder buildClassifySession(final String classifyTableKey, Long nsp, Short nsi,
@@ -696,7 +710,7 @@ public final class SfcVppUtils {
                 .child(ClassifySession.class, new ClassifySessionKey(match));
         LOG.info("removeClassifySession on vpp node {}: table: {}, session: {}", vppNode, classifyTableKey, match);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, classifySessionIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, classifySessionIid, null);
     }
 
     public static void enableIngressAcl(final DataBroker dataBroker, final String interfaceName,
@@ -712,7 +726,7 @@ public final class SfcVppUtils {
                 .child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class)
                 .child(Acl.class).child(Ingress.class);
         wTx.put(LogicalDatastoreType.CONFIGURATION, ingressIid, ingress);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, ingressIid, ingress);
     }
 
     public static void disableIngressAcl(final DataBroker dataBroker, final String interfaceName,
@@ -723,7 +737,7 @@ public final class SfcVppUtils {
                 .child(Interface.class, new InterfaceKey(interfaceName)).augmentation(VppInterfaceAugmentation.class)
                 .child(Acl.class).child(Ingress.class);
         wTx.delete(LogicalDatastoreType.CONFIGURATION, ingressIid);
-        addFuturesCallback(wTx);
+        addFuturesCallback(wTx, ingressIid, null);
     }
 
     private static void saveClassifyTableKey(String vppNode, String rsp, String classifyTableKey) {

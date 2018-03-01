@@ -11,6 +11,8 @@ import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.util.vpp.SfcVppUtils;
@@ -23,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class VppRspProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppRspProcessor.class);
@@ -32,6 +35,7 @@ public class VppRspProcessor {
     private static final String DUMMY_BD_NAME = "SFCDUMMY";
     private final Map<String, String> bridgeDomainCreated = new HashMap<>();
 
+    @Inject
     public VppRspProcessor(VppNodeManager nodeManager) {
         this.nodeManager = Preconditions.checkNotNull(nodeManager);
     }
@@ -190,5 +194,4 @@ public class VppRspProcessor {
         }
         /* vpp classifier will remove VxlanGpeNsh for last hop to classifier */
     }
-
 }

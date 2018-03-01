@@ -11,19 +11,20 @@ package org.opendaylight.sfc.renderers.vpp;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Host;
@@ -50,13 +51,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class VppNodeManager implements BindingAwareProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppNodeManager.class);
 
     private MountPointService mountService = null;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
-    private List<String> requiredCapabilities = new ArrayList<>();
+    private List<String> requiredCapabilities;
     private static final InstanceIdentifier<Topology> NETCONF_TOPOLOGY_IID = InstanceIdentifier.builder(
         NetworkTopology.class).child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME
         .getLocalName()))).build();
@@ -65,6 +67,7 @@ public class VppNodeManager implements BindingAwareProvider {
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
+    @Inject
     public VppNodeManager(BindingAwareBroker bindingAwareBroker) {
         // Register provider
         ProviderContext providerContext = bindingAwareBroker.registerProvider(this);

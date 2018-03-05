@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d25b3499_e26c3fcc",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsSffEntryDataListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-03-05T18:07:02Z",
+      "side": 1,
+      "message": "There is going to be a NPE here if augmentSffWithOpenFlowNodeId above does not manage to augment the SFF (i.e when there is no OVS bridge found for that SFF)",
+      "range": {
+        "startLine": 150,
+        "startChar": 12,
+        "endLine": 150,
+        "endChar": 115
+      },
+      "revId": "b2e6ebffda0354461d2296024db209dad231ee71",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.test.renderer;
+package org.opendaylight.sfc.renderers.iosxe.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.sfc.iosxe.provider.renderer.IosXeServiceForwarderMapper;
-import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
+import org.opendaylight.sfc.renderers.iosxe.IosXeServiceForwarderMapper;
+import org.opendaylight.sfc.renderers.iosxe.NodeManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocatorBuilder;

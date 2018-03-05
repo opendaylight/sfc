@@ -6,18 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.renderer;
-
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
+package org.opendaylight.sfc.renderers.iosxe;
 
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
+import org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.renderers.iosxe.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -64,10 +61,10 @@ public class IosXeServiceFunctionMapper {
                         org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction
                                 serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
-                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint, serviceFunction,
-                                                                                           WRITE_FUNCTION,
-                                                                                           LogicalDatastoreType
-                                                                                                   .CONFIGURATION);
+                            IosXeDataStoreAPI writeServiceFunction =
+                                    new IosXeDataStoreAPI(mountPoint, serviceFunction,
+                                                          IosXeDataStoreAPI.Transaction.WRITE_FUNCTION,
+                                                          LogicalDatastoreType.CONFIGURATION);
                             Object result = writeServiceFunction.call();
                             if (Boolean.TRUE.equals(result)) {
                                 LOG.info("Service function {} created on node {}", serviceFunction.getName(),
@@ -79,9 +76,9 @@ public class IosXeServiceFunctionMapper {
                         org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.ServiceFunction
                                 serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
-                            IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
-                                                                                           serviceFunction.getKey(),
-                                                                                           DELETE_FUNCTION,
+                            IosXeDataStoreAPI writeServiceFunction =
+                                    new IosXeDataStoreAPI(mountPoint, serviceFunction.getKey(),
+                                                          IosXeDataStoreAPI.Transaction.DELETE_FUNCTION,
                                                                                            LogicalDatastoreType
                                                                                                    .CONFIGURATION);
                             Object result = writeServiceFunction.call();

@@ -6,29 +6,29 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.test.utils;
+package org.opendaylight.sfc.renderers.iosxe.test.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_REMOTE;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_REMOTE;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.DELETE_FUNCTION;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.DELETE_REMOTE;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.READ_FUNCTION;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.READ_LOCAL;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.READ_REMOTE;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.WRITE_FUNCTION;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;

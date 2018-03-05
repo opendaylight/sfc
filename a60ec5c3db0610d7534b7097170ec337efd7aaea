@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e715e317_1630ae8f",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-03-05T15:50:47Z",
+      "side": 1,
+      "message": "Possibly pass this as parameter, so the SFFs are not read twice: here and in runAdrunSffOvsBridgeAugmentOpenflowNodeId",
+      "range": {
+        "startLine": 142,
+        "startChar": 8,
+        "endLine": 142,
+        "endChar": 109
+      },
+      "revId": "a60ec5c3db0610d7534b7097170ec337efd7aaea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e31121f7_c8d2ca45",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-03-05T15:50:47Z",
+      "side": 1,
+      "message": "Possibly pass this as parameter, so the SFFs are not read twice: here and in runAddOvsdbAugmentations.",
+      "range": {
+        "startLine": 166,
+        "startChar": 8,
+        "endLine": 166,
+        "endChar": 109
+      },
+      "revId": "a60ec5c3db0610d7534b7097170ec337efd7aaea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "29cdb598_d48ad468",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-03-05T15:50:47Z",
+      "side": 1,
+      "message": "So we wont support dpid updates then? What if it is actually different?",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 194,
+        "endChar": 21
+      },
+      "revId": "a60ec5c3db0610d7534b7097170ec337efd7aaea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f6224a7_5cddcbf1",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/sfc/ovs/listener/SfcOvsNodeDataListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-03-05T15:50:47Z",
+      "side": 1,
+      "message": "Why not use thre already defined SfcOvsUtil#findSffByIp like above L148? Is the same thing.",
+      "range": {
+        "startLine": 202,
+        "startChar": 36,
+        "endLine": 202,
+        "endChar": 54
+      },
+      "revId": "a60ec5c3db0610d7534b7097170ec337efd7aaea",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

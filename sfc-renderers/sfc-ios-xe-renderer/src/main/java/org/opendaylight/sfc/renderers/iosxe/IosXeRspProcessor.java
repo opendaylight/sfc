@@ -6,11 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.renderer;
+package org.opendaylight.sfc.renderers.iosxe;
 
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_PATH;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_REMOTE;
 import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Failure;
 import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.InProgress;
 import static org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.rsp.manager.rev160421.renderer.path.states.renderer.path.state.configured.rendered.paths.ConfiguredRenderedPath.PathStatus.Success;
@@ -23,11 +20,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.iosxe.provider.utils.RspStatus;
-import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.renderers.iosxe.utils.RspStatus;
+import org.opendaylight.sfc.renderers.iosxe.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -148,8 +145,9 @@ public class IosXeRspProcessor {
                     status.writeStatus(Failure);
                     return;
                 }
-                new IosXeDataStoreAPI(previousMountPoint, currentRemoteForwarder, WRITE_REMOTE,
-                        LogicalDatastoreType.CONFIGURATION).call();
+                new IosXeDataStoreAPI(previousMountPoint, currentRemoteForwarder,
+                                      IosXeDataStoreAPI.Transaction.WRITE_REMOTE, LogicalDatastoreType.CONFIGURATION)
+                        .call();
                 // Create last service entry to previous node which sends
                 // traffic to current node
                 serviceTypeChoice = buildServiceFunctionForwarderChoice(currentSffName.getValue());
@@ -158,8 +156,8 @@ public class IosXeRspProcessor {
                 // List of services completed for last mountpoint, create
                 // service path entries and write it
                 ServicePath servicePath = createServicePath(pathId, services);
-                new IosXeDataStoreAPI(previousMountPoint, servicePath, WRITE_PATH, LogicalDatastoreType.CONFIGURATION)
-                        .call();
+                new IosXeDataStoreAPI(previousMountPoint, servicePath, IosXeDataStoreAPI.Transaction.WRITE_PATH,
+                                      LogicalDatastoreType.CONFIGURATION).call();
                 // Start with new services list
                 services = new ArrayList<>();
                 sfName = hop.getServiceFunctionName();
@@ -183,7 +181,8 @@ public class IosXeRspProcessor {
         // List of services completed for last mountpoint, create last service
         // path entries and write it
         ServicePath servicePath = createServicePath(pathId, services);
-        new IosXeDataStoreAPI(currentMountpoint, servicePath, WRITE_PATH, LogicalDatastoreType.CONFIGURATION).call();
+        new IosXeDataStoreAPI(currentMountpoint, servicePath, IosXeDataStoreAPI.Transaction.WRITE_PATH,
+                              LogicalDatastoreType.CONFIGURATION).call();
         LOG.info("Rendered service path {} successfully processed", renderedServicePath.getName().getValue());
         status.writeStatus(Success);
     }
@@ -195,8 +194,9 @@ public class IosXeRspProcessor {
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePath.getRenderedServicePathHop()) {
             SffName sffName = renderedServicePathHop.getServiceFunctionForwarder();
             DataBroker sffDataBroker = getSffMountpoint(sffName);
-            boolean transaction = (boolean) new IosXeDataStoreAPI(sffDataBroker, servicePathKey, DELETE_PATH,
-                    LogicalDatastoreType.CONFIGURATION).call();
+            boolean transaction = (boolean) new IosXeDataStoreAPI(sffDataBroker, servicePathKey,
+                                                                  IosXeDataStoreAPI.Transaction.DELETE_PATH,
+                                                                  LogicalDatastoreType.CONFIGURATION).call();
             if (!transaction) {
                 success = false;
             }

@@ -6,18 +6,15 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.renderer;
-
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.DELETE_LOCAL;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.WRITE_LOCAL;
+package org.opendaylight.sfc.renderers.iosxe;
 
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
-import org.opendaylight.sfc.iosxe.provider.utils.SfcIosXeUtils;
+import org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI;
+import org.opendaylight.sfc.renderers.iosxe.utils.SfcIosXeUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.sff.data.plane.locator.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
@@ -71,8 +68,10 @@ public class IosXeServiceForwarderMapper {
                                     .ServiceFunctionForwarder localForwarder =
                                     SfcIosXeUtils.createLocalForwarder(ipAddress);
                                 if (localForwarder != null && !delete) {
-                                    IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
-                                            localForwarder.getLocal(), WRITE_LOCAL, LogicalDatastoreType.CONFIGURATION);
+                                    IosXeDataStoreAPI writeServiceFunction =
+                                            new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(),
+                                                                  IosXeDataStoreAPI.Transaction.WRITE_LOCAL,
+                                                                  LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
                                     if (Boolean.TRUE.equals(result)) {
                                         LOG.info("Local forwarder with ip {} created on node {}",
@@ -81,9 +80,10 @@ public class IosXeServiceForwarderMapper {
                                     }
                                 }
                                 if (localForwarder != null && delete) {
-                                    IosXeDataStoreAPI writeServiceFunction = new IosXeDataStoreAPI(mountPoint,
-                                            localForwarder.getLocal(), DELETE_LOCAL,
-                                            LogicalDatastoreType.CONFIGURATION);
+                                    IosXeDataStoreAPI writeServiceFunction =
+                                            new IosXeDataStoreAPI(mountPoint, localForwarder.getLocal(),
+                                                                  IosXeDataStoreAPI.Transaction.DELETE_LOCAL,
+                                                                  LogicalDatastoreType.CONFIGURATION);
                                     Object result = writeServiceFunction.call();
                                     if (Boolean.TRUE.equals(result)) {
                                         LOG.info("Local forwarder removed from node {}", netconfNode.getNodeId()

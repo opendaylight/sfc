@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.iosxe.provider.test.renderer;
+package org.opendaylight.sfc.renderers.iosxe.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -14,21 +14,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
+import static org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI.Transaction.READ_PATH;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
-//import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
-import org.opendaylight.sfc.iosxe.provider.renderer.NodeManager;
-import org.opendaylight.sfc.iosxe.provider.utils.IosXeDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
+import org.opendaylight.sfc.renderers.iosxe.IosXeRspProcessor;
+import org.opendaylight.sfc.renderers.iosxe.NodeManager;
+import org.opendaylight.sfc.renderers.iosxe.utils.IosXeDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;

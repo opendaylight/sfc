@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson S.A. and others. All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson S.A. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,12 +11,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +23,6 @@ import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -78,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -91,19 +86,13 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  */
 public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManager {
-    private final Collection<DataTreeModification<ServiceFunctionForwarder>> collection = new ArrayList<>();
-    private DataTreeModification<ServiceFunctionForwarder> dataTreeModification;
-    private DataObjectModification<ServiceFunctionForwarder> dataObjectModification;
 
     // Class under test
     private ServiceFunctionForwarderListener serviceFunctionForwarderListener;
 
-    @SuppressWarnings("unchecked")
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupSfc();
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionForwarderListener = new ServiceFunctionForwarderListener(getDataBroker());
         serviceFunctionForwarderListener.register();
     }
@@ -120,16 +109,10 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * up.
      */
     @Test
-    public void testOnServiceFunctionForwarderCreated() throws Exception {
-        ServiceFunctionForwarder serviceFunctionForwarder = build_service_function_forwarder();
+    public void testOnServiceFunctionForwarderCreated() {
+        ServiceFunctionForwarder serviceFunctionForwarder = buildServiceFunctionForwarder();
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(serviceFunctionForwarder);
-
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.add(serviceFunctionForwarder);
     }
 
     /**
@@ -138,15 +121,10 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * cleans up.
      */
     @Test
-    public void testOnServiceFunctionForwarderRemoved() throws Exception {
-        ServiceFunctionForwarder serviceFunctionForwarder = build_service_function_forwarder();
+    public void testOnServiceFunctionForwarderRemoved() {
+        ServiceFunctionForwarder serviceFunctionForwarder = buildServiceFunctionForwarder();
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionForwarder);
-
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.remove(serviceFunctionForwarder);
     }
 
     /**
@@ -170,14 +148,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
                 .readServiceFunctionForwarder(sffName);
         assertNotNull(serviceFunctionForwarder);
 
-        // Now we prepare to remove the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionForwarder);
-
         // The listener will remove the Service Function Forwarder Entry
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.remove(serviceFunctionForwarder);
         // Verify that SFP was removed
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
@@ -214,16 +186,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         updatedServiceFunctionForwarderBuilder.setIpMgmtAddress(updatedIpMgmtAddress);
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
-        // The listener will remove the Original Service Function Forwarder
-        // Entry and associated RSPs
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        // The listener will remove the Original Service Function Forwarder Entry and associated RSPs
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
 
@@ -265,16 +229,9 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         updatedServiceFunctionForwarderBuilder.setServiceNode(null);
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will remove the Original Service Function Forwarder
         // Entry and associated RSPs
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
 
@@ -317,15 +274,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         addSfToSfDict(updatedServiceFunctionForwarderBuilder);
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will NOT remove the RSP
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was NOT removed
@@ -335,11 +285,9 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         // Now we remove the added unused dictionary
         updatedServiceFunctionForwarder = originalServiceFunctionForwarder;
         originalServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
 
         // The listener will NOT remove the RSP
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was NOT removed
@@ -382,15 +330,8 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         updatedServiceFunctionForwarderBuilder.setServiceFunctionDictionary(Collections.emptyList());
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will remove the SFP
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
 
@@ -432,25 +373,12 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         removeAnySffDpl(updatedServiceFunctionForwarderBuilder);
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will remove the SFP
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
 
         // The State is removed by the SFP listener
-
-        /*
-         * for (SffServicePath sffServicePath : sffServicePathList) {
-         * assertNotEquals(sffServicePath.getName(),
-         * renderedServicePath.getName()); }
-         */
 
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
                 LogicalDatastoreType.CONFIGURATION));
@@ -484,15 +412,9 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         removeSffDpl(updatedServiceFunctionForwarderBuilder, "196.168.66.106");
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will NOT remove the RSP
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
+
         Thread.sleep(500);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
@@ -532,25 +454,12 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         removeSffDpl(updatedServiceFunctionForwarderBuilder, "196.168.66.105");
         ServiceFunctionForwarder updatedServiceFunctionForwarder = updatedServiceFunctionForwarderBuilder.build();
 
-        // Now we prepare to update the entry through the listener
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionForwarder);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionForwarder);
-
         // The listener will remove the SFP
-        collection.add(dataTreeModification);
-        serviceFunctionForwarderListener.onDataTreeChanged(collection);
+        serviceFunctionForwarderListener.update(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
 
         // The SFP State is removed in the SFP listener
-
-        /*
-         * for (SffServicePath sffServicePath : sffServicePathList) {
-         * assertNotEquals(sffServicePath.getName(),
-         * renderedServicePath.getName()); }
-         */
 
         assertTrue(SfcDataStoreAPI.deleteTransactionAPI(SfcInstanceIdentifiers.SFF_IID,
                 LogicalDatastoreType.CONFIGURATION));
@@ -619,7 +528,7 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
      * @return ServiceFunction object
      */
     @SuppressWarnings("serial")
-    ServiceFunctionForwarder build_service_function_forwarder() {
+    ServiceFunctionForwarder buildServiceFunctionForwarder() {
         final SffName name = new SffName("SFF1");
         List<SfName> sfNames = new ArrayList<SfName>() {
             {

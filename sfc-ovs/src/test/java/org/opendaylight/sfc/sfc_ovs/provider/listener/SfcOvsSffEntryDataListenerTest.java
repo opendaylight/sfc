@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2017, 2018 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,18 +10,12 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.listener.SfcOvsSffEntryDataListener;
@@ -71,21 +65,16 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  */
 public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
-    private final Collection<DataTreeModification<ServiceFunctionForwarder>> collection = new ArrayList<>();
-    private DataTreeModification<ServiceFunctionForwarder> dataTreeModification;
-    private DataObjectModification<ServiceFunctionForwarder> dataObjectModification;
-    private static IpAddress testIpAddress = new IpAddress(new Ipv4Address("10.1.1.101"));
-    private static PortNumber testPort = new PortNumber(6633);
 
-    // class under test
-    SfcOvsSffEntryDataListener sfcOvsSffEntryDataListener;
+    private static final IpAddress IP_ADDRESS = new IpAddress(new Ipv4Address("10.1.1.101"));
+    private static final PortNumber PORT_NUMBER = new PortNumber(6633);
 
-    @SuppressWarnings("unchecked")
+    // Class under test
+    private SfcOvsSffEntryDataListener sfcOvsSffEntryDataListener;
+
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupSfc();
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
         sfcOvsSffEntryDataListener = new SfcOvsSffEntryDataListener(getDataBroker());
     }
 
@@ -96,18 +85,11 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
     }
 
     @Test
-    public void testAddSff_NoDpl() {
+    public void testAddSffNoDpl() {
         final ServiceFunctionForwarder sff = buildServiceFunctionForwarderNoDPL();
-        createOvsdbNodeForSff(testIpAddress, testPort);
+        createOvsdbNodeForSff(IP_ADDRESS, PORT_NUMBER);
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(sff);
-
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         // The DPL is used to lookup the topology node
@@ -117,22 +99,15 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
     }
 
     @Test
-    public void testAddSff_WithDpl() {
-        ServiceFunctionForwarder sff = build_service_function_forwarder_withDpl();
+    public void testAddSffWithDpl() {
+        ServiceFunctionForwarder sff = buildServiceFunctionForwarderWithDpl();
         // For this test, If there's a DPL, there will only ever be just 1
         // SffDpl
         IpPortLocator ipLocator = (IpPortLocator) sff.getSffDataPlaneLocator().get(0).getDataPlaneLocator()
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(sff);
-
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -148,21 +123,14 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         //
         // Add the SFF
         //
-        ServiceFunctionForwarder sff = build_service_function_forwarder_withDpl();
+        ServiceFunctionForwarder sff = buildServiceFunctionForwarderWithDpl();
         // For this test, If there's a DPL, there will only ever be just 1
         // SffDpl
         IpPortLocator ipLocator = (IpPortLocator) sff.getSffDataPlaneLocator().get(0).getDataPlaneLocator()
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(sff);
-
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -171,14 +139,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         //
         // Now delete the SFF
         //
-
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(sff);
-
-        // This will call sfcOvsSffEntryDataListener.remove()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.remove(sff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNull(getSffTerminationPoint(ovsdbBridgeId, sff));
@@ -194,16 +155,9 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         // Create an SFF with no DPL
         //
         final ServiceFunctionForwarder originalSff = buildServiceFunctionForwarderNoDPL();
-        createOvsdbNodeForSff(testIpAddress, testPort);
+        createOvsdbNodeForSff(IP_ADDRESS, PORT_NUMBER);
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(originalSff);
-
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(originalSff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(originalSff);
         assertNull(ovsdbBridgeId);
@@ -212,21 +166,14 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         //
         // Now update the SFF, adding a DPL
         //
-        ServiceFunctionForwarder updatedSff = build_service_function_forwarder_withDpl();
+        ServiceFunctionForwarder updatedSff = buildServiceFunctionForwarderWithDpl();
         // For this test, If there's a DPL, there will only ever be just 1
         // SffDpl
         IpPortLocator ipLocator = (IpPortLocator) updatedSff.getSffDataPlaneLocator().get(0).getDataPlaneLocator()
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalSff);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedSff);
-
-        // This will call sfcOvsSffEntryDataListener.update()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.update(originalSff, updatedSff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(updatedSff);
         assertNotNull(ovsdbBridgeId);
@@ -253,7 +200,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
     }
 
     private ServiceFunctionForwarder buildServiceFunctionForwarderNoDPL() {
-        ServiceFunctionForwarderBuilder sffBuilder = build_sff_common();
+        ServiceFunctionForwarderBuilder sffBuilder = buildSffCommon();
 
         // Notice: putting the sff now will cause the listener to execute,
         // before all test setup is completed
@@ -262,7 +209,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         return sffBuilder.build();
     }
 
-    private ServiceFunctionForwarder build_service_function_forwarder_withDpl() {
+    private ServiceFunctionForwarder buildServiceFunctionForwarderWithDpl() {
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
         ovsOptionsBuilder.setExts("gpe");
         ovsOptionsBuilder.setKey("flow");
@@ -273,7 +220,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         sffOvsLocatorOptionsBuilder.setOvsOptions(ovsOptionsBuilder.build());
 
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(testIpAddress).setPort(testPort);
+        ipBuilder.setIp(IP_ADDRESS).setPort(PORT_NUMBER);
 
         DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
         sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
@@ -287,7 +234,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
         locatorList.add(locatorBuilder.build());
 
-        ServiceFunctionForwarderBuilder sffBuilder = build_sff_common();
+        ServiceFunctionForwarderBuilder sffBuilder = buildSffCommon();
         sffBuilder.setSffDataPlaneLocator(locatorList);
 
         // Notice: putting the sff now will cause the listener to execute,
@@ -298,8 +245,8 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
     }
 
     // Internal method called by either build_service_function_forwarder_noDpl()
-    // or build_service_function_forwarder_withDpl()
-    private ServiceFunctionForwarderBuilder build_sff_common() {
+    // or buildServiceFunctionForwarderWithDpl()
+    private ServiceFunctionForwarderBuilder buildSffCommon() {
         OvsBridgeBuilder ovsBridgeBuilder = new OvsBridgeBuilder();
         ovsBridgeBuilder.setBridgeName("br-int");
         ovsBridgeBuilder.setUuid(new Uuid("12345678-1234-1234-1234-123456789012"));

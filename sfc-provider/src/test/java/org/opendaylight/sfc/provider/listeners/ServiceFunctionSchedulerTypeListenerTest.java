@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2017 Ericsson and others. All rights reserved.
+ * Copyright (c) 2015, 2018 Ericsson and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,18 +12,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
@@ -42,9 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
  */
 public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreManager {
-    private final Collection<DataTreeModification<ServiceFunctionSchedulerType>> collection = new ArrayList<>();
-    private DataTreeModification<ServiceFunctionSchedulerType> dataTreeModification;
-    DataObjectModification<ServiceFunctionSchedulerType> dataObjectModification;
 
     private static final String SFST_NAME = "listernerSFST";
     private static final List<String> SFST_NAMES = new ArrayList<String>() {
@@ -64,12 +55,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     // Class under test
     private ServiceFunctionSchedulerTypeListener serviceFunctionSchedulerTypeListener;
 
-    @SuppressWarnings("unchecked")
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupSfc();
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionSchedulerTypeListener = new ServiceFunctionSchedulerTypeListener(getDataBroker());
         serviceFunctionSchedulerTypeListener.register();
     }
@@ -85,7 +73,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeCreated() throws Exception {
-
         // Builds a List of Service Function Scheduler Type Objects:
         // ShortestPath, RoundRobin and LoadBalance
         buildServiceFunctionSchedulerTypes();
@@ -93,12 +80,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         // Builds a complete Random Service Function Scheduler Type Object
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = buildServiceFunctionSchedulerType(true);
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(serviceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+        serviceFunctionSchedulerTypeListener.add(serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -111,7 +93,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeRemoved() throws Exception {
-
         // Builds a List of Service Function Scheduler Type Objects:
         // ShortestPath, RoundRobin and LoadBalance
         buildServiceFunctionSchedulerTypes();
@@ -122,20 +103,14 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         Thread.sleep(500);
 
-        // Check the new Service Function Scheduler Type Object is the desired
-        // one
+        // Check the new Service Function Scheduler Type Object is the desired one
         ServiceFunctionSchedulerType sfst = SfcProviderScheduleTypeAPI
                 .readServiceFunctionScheduleType(serviceFunctionSchedulerType.getType());
         assertNotNull(sfst);
         assertEquals(serviceFunctionSchedulerType, sfst);
 
-        // We trigger the removal of the new service Function Scheduler Type
-        // Object
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+        // We trigger the removal of the new service Function Scheduler Type Object
+        serviceFunctionSchedulerTypeListener.remove(serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -148,7 +123,6 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      */
     @Test
     public void testOnServiceFunctionSchedulerTypeUpdated() throws Exception {
-
         // Builds a List of Service Function Scheduler Type Objects:
         // ShortestPath, RoundRobin and LoadBalance
         buildServiceFunctionSchedulerTypes();
@@ -177,12 +151,8 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
                 .build();
 
         // We trigger the update of the service Function Scheduler Type Object
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionSchedulerType);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+        serviceFunctionSchedulerTypeListener
+                .update(originalServiceFunctionSchedulerType, updatedServiceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -196,7 +166,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      *
      * @return ServiceFunctionSchedulerType object
      */
-    public ServiceFunctionSchedulerType buildServiceFunctionSchedulerType(boolean enabledStatus) {
+    private ServiceFunctionSchedulerType buildServiceFunctionSchedulerType(boolean enabledStatus) {
 
         Boolean enabled;
         enabled = enabledStatus;
@@ -212,8 +182,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
     /**
      * Builds a complete service Function Scheduler Types Object.
      */
-    @SuppressWarnings("unchecked")
-    public void buildServiceFunctionSchedulerTypes() throws Exception {
+    private void buildServiceFunctionSchedulerTypes() throws Exception {
 
         Boolean enabledStatus = true;
 

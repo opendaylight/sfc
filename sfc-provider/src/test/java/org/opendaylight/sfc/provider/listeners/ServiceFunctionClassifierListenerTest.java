@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -12,18 +12,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.acl.rev151001.access.lists.state.AccessListState;
@@ -41,9 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
  * @author Ursicio Martin (ursicio.javier.martin@ericsson.com)
  */
 public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreManager {
-    private final Collection<DataTreeModification<ServiceFunctionClassifier>> collection = new ArrayList<>();
-    private DataTreeModification<ServiceFunctionClassifier> dataTreeModification;
-    DataObjectModification<ServiceFunctionClassifier> dataObjectModification;
 
     private static final String SFC_NAME = "listernerSFC";
     private static final String ACL_NAME = "aclName";
@@ -53,12 +43,9 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
     // Class under test
     private ServiceFunctionClassifierListener serviceFunctionClassifierListener;
 
-    @SuppressWarnings("unchecked")
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupSfc();
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
         serviceFunctionClassifierListener = new ServiceFunctionClassifierListener(getDataBroker());
         serviceFunctionClassifierListener.register();
     }
@@ -79,19 +66,11 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
         // We trigger the adding of <ACL, Classifier> entry into ACL
-
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(serviceFunctionClassifier);
-
-        collection.add(dataTreeModification);
-        serviceFunctionClassifierListener.onDataTreeChanged(collection);
+        serviceFunctionClassifierListener.add(serviceFunctionClassifier);
 
         Thread.sleep(500);
 
         // We verify the adding of <ACL, Classifier> entry into ACL
-
         AccessListState acl = SfcProviderAclAPI.readAccessListState(serviceFunctionClassifier.getAcl().getName(),
                 serviceFunctionClassifier.getAcl().getType());
         assertNotNull(acl);
@@ -108,7 +87,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
      */
     @Test
     public void testOnServiceFunctionClassifierRemoved() throws Exception {
-
         // We create a ServiceFunctionClassifier
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
         assertNull(SfcProviderAclAPI.readAccessListState(serviceFunctionClassifier.getAcl().getName(),
@@ -124,13 +102,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
                 .getAclServiceFunctionClassifier();
         assertTrue(sfc.get(0).getName().equals(SFC_NAME));
 
-        // We trigger the removal of <ACL, Classifier> entry from ACL
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionClassifier);
-
-        collection.add(dataTreeModification);
-        serviceFunctionClassifierListener.onDataTreeChanged(collection);
+        serviceFunctionClassifierListener.remove(serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -138,7 +110,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         // no ServiceFunctionClassifier is assigned to the ACL
         assertEquals(SfcProviderAclAPI.readAccessListState(serviceFunctionClassifier.getAcl().getName(),
                 serviceFunctionClassifier.getAcl().getType()).getAclServiceFunctionClassifier().size(), 0);
-
     }
 
     /**
@@ -148,7 +119,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
      */
     @Test
     public void testOnServiceFunctionClassifierUpdated() throws Exception {
-
         // We create the Original ServiceFunctionClassifier
         ServiceFunctionClassifier originalServiceFunctionClassifier = buildServiceFunctionClassifier();
         assertNull(SfcProviderAclAPI.readAccessListState(originalServiceFunctionClassifier.getAcl().getName(),
@@ -177,15 +147,8 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         updatedServiceFunctionClassifierBuilder.setAcl(dummyACL);
         ServiceFunctionClassifier updatedServiceFunctionClassifier = updatedServiceFunctionClassifierBuilder.build();
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionClassifier);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionClassifier);
+        serviceFunctionClassifierListener.update(originalServiceFunctionClassifier, updatedServiceFunctionClassifier);
 
-        // The listener will update the original <ACL, Classifier> entry into
-        // ACL
-        collection.add(dataTreeModification);
-        serviceFunctionClassifierListener.onDataTreeChanged(collection);
         Thread.sleep(500);
 
         // We verify the removal of the Original <ACL, Classifier> entry from
@@ -224,8 +187,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         sfcBuilder.setName(SFC_NAME);
         sfcBuilder.setAcl(dummyACL);
 
-        ServiceFunctionClassifier serviceFunctionClassifier = sfcBuilder.build();
-
-        return serviceFunctionClassifier;
+        return sfcBuilder.build();
     }
 }

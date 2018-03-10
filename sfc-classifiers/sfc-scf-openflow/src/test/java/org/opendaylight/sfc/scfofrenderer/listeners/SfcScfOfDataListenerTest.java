@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -8,19 +8,14 @@
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.scfofrenderer.processors.SfcScfOfProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierBuilder;
@@ -37,34 +32,29 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.cont
 
 public class SfcScfOfDataListenerTest {
 
-    private final Collection<DataTreeModification<ServiceFunctionClassifier>> collection = new ArrayList<>();
-    private DataTreeModification<ServiceFunctionClassifier> dataTreeModification;
-    private DataObjectModification<ServiceFunctionClassifier> dataObjectModification;
-
-    private DataBroker dataProvider;
-    private SfcScfOfProcessor sfcScfOfProcessor;
-
-    private static final String SFC_NAME = "listernerSFC";
+    private static final String SFC_NAME = "listenerSFC";
     private static final String ACL_NAME = "aclName";
     private static final String ACL_NAME2 = "aclName2";
     private static final java.lang.Class<? extends AclBase> ACL_TYPE = Ipv4Acl.class;
 
+    @Mock
+    private DataBroker dataProvider;
+
+    @Mock
+    private SfcScfOfProcessor sfcScfOfProcessor;
+
     // Class under test
     private SfcScfOfDataListener sfcScfOfDataListener;
 
-    @SuppressWarnings("unchecked")
     @Before
-    public void before() throws Exception {
-        dataProvider = mock(DataBroker.class);
-        sfcScfOfProcessor = mock(SfcScfOfProcessor.class);
-
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
+    public void before() {
+        initMocks(this);
         sfcScfOfDataListener = new SfcScfOfDataListener(dataProvider, sfcScfOfProcessor);
+        sfcScfOfDataListener.register();
     }
 
     @After
-    public void after() throws Exception {
+    public void after() {
         sfcScfOfDataListener.close();
     }
 
@@ -76,15 +66,7 @@ public class SfcScfOfDataListenerTest {
     public void testOnSfcScfOfDataCreated() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
-        // We trigger the adding of a Service Function Classifier
-
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(serviceFunctionClassifier);
-
-        collection.add(dataTreeModification);
-        sfcScfOfDataListener.onDataTreeChanged(collection);
+        sfcScfOfDataListener.add(serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -100,14 +82,7 @@ public class SfcScfOfDataListenerTest {
     public void testOnSfcScfOfDataRemoved() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
-        // We trigger the removal of a Service Function Classifier
-
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
-        when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionClassifier);
-
-        collection.add(dataTreeModification);
-        sfcScfOfDataListener.onDataTreeChanged(collection);
+        sfcScfOfDataListener.remove(serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -135,14 +110,7 @@ public class SfcScfOfDataListenerTest {
         updatedServiceFunctionClassifierBuilder.setAcl(aclDummy2);
         ServiceFunctionClassifier updatedServiceFunctionClassifier = updatedServiceFunctionClassifierBuilder.build();
 
-        // We trigger the updating of a Service Function Classifier
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
-        when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionClassifier);
-        when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionClassifier);
-
-        collection.add(dataTreeModification);
-        sfcScfOfDataListener.onDataTreeChanged(collection);
+        sfcScfOfDataListener.update(originalServiceFunctionClassifier, updatedServiceFunctionClassifier);
 
         Thread.sleep(500);
 

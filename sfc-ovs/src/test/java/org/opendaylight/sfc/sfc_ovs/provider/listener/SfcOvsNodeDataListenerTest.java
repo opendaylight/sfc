@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 Ericsson Spain and others. All rights reserved.
+ * Copyright (c) 2017, 2018 Ericsson Spain and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,18 +11,12 @@ package org.opendaylight.sfc.sfc_ovs.provider.listener;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.listener.SfcOvsNodeDataListener;
@@ -73,30 +67,22 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  */
 public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
-    private final Collection<DataTreeModification<Node>> collection = new ArrayList<>();
-    private DataTreeModification<Node> dataTreeModification;
-    private DataObjectModification<Node> dataObjectModification;
-    private static IpAddress testIpAddress = new IpAddress(new Ipv4Address("10.1.1.101"));
-    private static PortNumber testPort = new PortNumber(6633);
 
-    // class under test
-    SfcOvsNodeDataListener sfcOvsNodeDataListener;
+    private static final IpAddress IP_ADDRESS = new IpAddress(new Ipv4Address("10.1.1.101"));
+    private static final PortNumber PORT_NUMBER = new PortNumber(6633);
+
+    // Class under test
+    private SfcOvsNodeDataListener sfcOvsNodeDataListener;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         setupSfc();
-        dataTreeModification = mock(DataTreeModification.class);
-        dataObjectModification = mock(DataObjectModification.class);
         sfcOvsNodeDataListener = new SfcOvsNodeDataListener(getDataBroker());
-        // Dont initialize it since the listener may launch when we're not ready
-        // yet
-        // sfcOvsNodeDataListener.init();
     }
 
     @After
     public void after() throws Exception {
-        // The listener wasnt initialized on purpose, so dont close it
-        // sfcOvsNodeDataListener.close();
+        sfcOvsNodeDataListener.close();
         close();
     }
 
@@ -109,7 +95,7 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
      */
     @Test
     public void testAddNode() {
-        ServiceFunctionForwarder sff = build_sff();
+        ServiceFunctionForwarder sff = buildSff();
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNull(ovsdbBridgeId);
@@ -121,14 +107,8 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
                 .getLocatorType();
         Node node = createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
-        when(dataObjectModification.getDataBefore()).thenReturn(null);
-        when(dataObjectModification.getDataAfter()).thenReturn(node);
-
         // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsNodeDataListener.onDataTreeChanged(collection);
+        sfcOvsNodeDataListener.add(node);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -157,7 +137,7 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         return node;
     }
 
-    private ServiceFunctionForwarder build_sff() {
+    private ServiceFunctionForwarder buildSff() {
         OvsOptionsBuilder ovsOptionsBuilder = new OvsOptionsBuilder();
         ovsOptionsBuilder.setExts("gpe");
         ovsOptionsBuilder.setKey("flow");
@@ -168,7 +148,7 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         sffOvsLocatorOptionsBuilder.setOvsOptions(ovsOptionsBuilder.build());
 
         IpBuilder ipBuilder = new IpBuilder();
-        ipBuilder.setIp(testIpAddress).setPort(testPort);
+        ipBuilder.setIp(IP_ADDRESS).setPort(PORT_NUMBER);
 
         DataPlaneLocatorBuilder sffLocatorBuilder = new DataPlaneLocatorBuilder();
         sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);

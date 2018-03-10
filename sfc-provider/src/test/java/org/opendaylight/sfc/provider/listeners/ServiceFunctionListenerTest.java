@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -116,6 +117,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * that Service Function Type was created and cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionCreated() throws Exception {
         ServiceFunction serviceFunction = buildServiceFunction();
 
@@ -140,6 +142,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * that the Service Function Type was removed and cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionRemoved() throws Exception {
         ServiceFunction serviceFunction = buildServiceFunction();
 
@@ -164,6 +167,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * created a new entry.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionUpdated() throws Exception {
         final String updatedManagementIPAddress = "196.168.55.102";
         ServiceFunction originalServiceFunction = buildServiceFunction();
@@ -203,6 +207,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionRemovedWithRSP() throws Exception {
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
@@ -253,6 +258,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionUpdatedWithRSP_updateIpMgmt() throws Exception {
         final String updatedManagementIPAddress = "196.168.55.112";
         // Build the RSP in which the SF is included
@@ -315,6 +321,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionUpdatedWithRSP_UpdateSfType() throws Exception {
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
@@ -374,6 +381,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionUpdatedWithRSP_UpdateDpl() throws Exception {
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();
@@ -434,6 +442,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
      * explicitly. - Cleans up
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionUpdatedWithRSP_UpdateNoDeleteRsp() throws Exception {
         // Build the RSP in which the SF is included
         RenderedServicePath renderedServicePath = build_and_commit_rendered_service_path();

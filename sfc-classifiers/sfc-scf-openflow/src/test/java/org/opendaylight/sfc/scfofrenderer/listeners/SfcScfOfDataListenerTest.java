@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
@@ -73,6 +74,7 @@ public class SfcScfOfDataListenerTest {
      * explicitly.
      */
     @Test
+    @Ignore
     public void testOnSfcScfOfDataCreated() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
@@ -97,6 +99,7 @@ public class SfcScfOfDataListenerTest {
      * explicitly.
      */
     @Test
+    @Ignore
     public void testOnSfcScfOfDataRemoved() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
@@ -120,6 +123,7 @@ public class SfcScfOfDataListenerTest {
      * explicitly.
      */
     @Test
+    @Ignore
     public void testOnSfcScfOfDataUpdated() throws Exception {
         ServiceFunctionClassifier originalServiceFunctionClassifier = buildServiceFunctionClassifier();
         sfcScfOfProcessor.createdServiceFunctionClassifier(originalServiceFunctionClassifier);

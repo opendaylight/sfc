@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -107,6 +108,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
      * cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionClassifierRemoved() throws Exception {
 
         // We create a ServiceFunctionClassifier
@@ -147,6 +149,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
      * cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionClassifierUpdated() throws Exception {
 
         // We create the Original ServiceFunctionClassifier

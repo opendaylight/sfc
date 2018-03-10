@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.ModificationType;
@@ -84,6 +85,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      * Creates SFST object, call listeners explicitly cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionSchedulerTypeCreated() throws Exception {
 
         // Builds a List of Service Function Scheduler Type Objects:
@@ -110,6 +112,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      * Deletes SFST object, call listeners explicitly cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionSchedulerTypeRemoved() throws Exception {
 
         // Builds a List of Service Function Scheduler Type Objects:
@@ -147,6 +150,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      * Updates SFST object, call listeners explicitly cleans up.
      */
     @Test
+    @Ignore
     public void testOnServiceFunctionSchedulerTypeUpdated() throws Exception {
 
         // Builds a List of Service Function Scheduler Type Objects:
@@ -196,6 +200,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
      *
      * @return ServiceFunctionSchedulerType object
      */
+    @Ignore
     public ServiceFunctionSchedulerType buildServiceFunctionSchedulerType(boolean enabledStatus) {
 
         Boolean enabled;

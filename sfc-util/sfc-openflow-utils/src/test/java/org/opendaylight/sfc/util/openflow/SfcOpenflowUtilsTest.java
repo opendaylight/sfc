@@ -30,12 +30,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 
 @RunWith(JUnitParamsRunner.class)
 public class SfcOpenflowUtilsTest {
 
+    private static final int ETHERTYPE_VLAN = 33024;
     private static final int RANDOM_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS = 100;
     private static final int TOTAL_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS =
             5 + RANDOM_PATTERNS_GENERATED_FOR_TEST_CREATE_ACTIONS;
@@ -133,14 +138,11 @@ public class SfcOpenflowUtilsTest {
                 mac, order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "SetFieldCase [_setField=SetField [_ethernetMatch=EthernetMatch [_ethernetSource=EthernetSource "
-                        + "[_address=MacAddress [_value=" + mac
-                        + "], augmentation=[]], augmentation=[]], augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase",
-                testAct.getImplementedInterface().getName());
+        // org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase
+        assertTrue(testAct instanceof SetFieldCase);
+        assertEquals("Wrong Src Mac",
+                ((SetFieldCase)testAct).getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(),
+                mac);
         assertEquals("Wrong Order", new Integer(order), testActList.getOrder());
     }
 
@@ -151,15 +153,10 @@ public class SfcOpenflowUtilsTest {
             .Action testActList = createActionSetDlDst(mac, order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "SetFieldCase [_setField=SetField [_ethernetMatch=EthernetMatch"
-                + " [_ethernetDestination=EthernetDestination "
-                        + "[_address=MacAddress [_value=" + mac
-                        + "], augmentation=[]], augmentation=[]], augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase",
-                testAct.getImplementedInterface().getName());
+        assertTrue(testAct instanceof SetFieldCase);
+        assertEquals("Wrong Dst Mac",
+            ((SetFieldCase)testAct).getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue(),
+            mac);
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
@@ -194,13 +191,9 @@ public class SfcOpenflowUtilsTest {
             .list.Action testActList = createActionOutPort(uriStr, order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "OutputActionCase [_outputAction=OutputAction [_outputNodeConnector=Uri [_value=" + uriStr
-                        + "], augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase",
-                testAct.getImplementedInterface().getName());
+        assertTrue(testAct instanceof OutputActionCase);
+        assertEquals("Wrong uriStr",
+                ((OutputActionCase) testAct).getOutputAction().getOutputNodeConnector().getValue(), uriStr);
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
@@ -211,13 +204,8 @@ public class SfcOpenflowUtilsTest {
             .Action testActList = createActionPushVlan(order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "PushVlanActionCase [_pushVlanAction=PushVlanAction [_ethernetType=33024,"
-                + " augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCase",
-                testAct.getImplementedInterface().getName());
+        assertTrue(testAct instanceof PushVlanActionCase);
+        assertEquals(((PushVlanActionCase) testAct).getPushVlanAction().getEthernetType().intValue(), ETHERTYPE_VLAN);
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
@@ -228,14 +216,10 @@ public class SfcOpenflowUtilsTest {
             .list.Action testActList = createActionSetVlanId(vlan, order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "SetFieldCase [_setField=SetField [_vlanMatch=VlanMatch [_vlanId=VlanId [_vlanId=VlanId [_value=" + vlan
-                        + "], _vlanIdPresent=true, augmentation=[]], "
-                        + "augmentation=[]], augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetFieldCase",
-                testAct.getImplementedInterface().getName());
+        assertTrue(testAct instanceof SetFieldCase);
+        assertEquals("Wrong VlanId",
+                ((SetFieldCase) testAct).getSetField().getVlanMatch().getVlanId().getVlanId().getValue().intValue(),
+                vlan);
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
@@ -246,12 +230,7 @@ public class SfcOpenflowUtilsTest {
             .action.list.Action testActList = createActionPopVlan(order);
         Action testAct = testActList.getAction();
 
-        assertEquals("Wrong toString response",
-                "PopVlanActionCase [_popVlanAction=PopVlanAction [augmentation=[]], augmentation=[]]",
-                testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCase",
-                testAct.getImplementedInterface().getName());
+        assertTrue(testAct instanceof PopVlanActionCase);
         assertEquals("Wrong order", new Integer(order), testActList.getOrder());
     }
 
@@ -262,11 +241,8 @@ public class SfcOpenflowUtilsTest {
         addMatchVlan(match, vlan);
         VlanMatch testAct = match.getVlanMatch();
 
-        assertEquals("Wrong toString response", "VlanMatch [_vlanId=VlanId [_vlanId=VlanId [_value=" + vlan
-                + "], _vlanIdPresent=true, augmentation=[]], augmentation=[]]", testAct.toString());
-        assertEquals("Wrong action type",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch",
-                testAct.getImplementedInterface().getName());
+        assertEquals("Wrong VlanId", vlan, testAct.getVlanId().getVlanId().getValue().intValue());
+        assertTrue(testAct instanceof VlanMatch);
     }
 
     @Test

@@ -45,7 +45,8 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionPath serviceFunctionPath) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                    @Nonnull ServiceFunctionPath serviceFunctionPath) {
         LOG.info("add: SFP: {}", serviceFunctionPath.getName().getValue());
 
         // Internally, this will optionally create the symmetric RSP
@@ -57,7 +58,8 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionPath serviceFunctionPath) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                       @Nonnull ServiceFunctionPath serviceFunctionPath) {
         SfpName sfpName = serviceFunctionPath.getName();
         LOG.info("remove: Deleting SFP: {}", sfpName.getValue());
 
@@ -74,7 +76,8 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionPath originalServiceFunctionPath,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                       @Nonnull ServiceFunctionPath originalServiceFunctionPath,
                        @Nonnull ServiceFunctionPath updatedServiceFunctionPath) {
         LOG.warn("Updating the SFP is not supported: {}", updatedServiceFunctionPath.getName().getValue());
     }

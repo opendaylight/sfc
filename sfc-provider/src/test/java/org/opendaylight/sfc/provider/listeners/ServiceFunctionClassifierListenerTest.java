@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.AclBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test Suite to test the ServiceFunctionClassifierListener class.
@@ -66,7 +67,8 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
         // We trigger the adding of <ACL, Classifier> entry into ACL
-        serviceFunctionClassifierListener.add(serviceFunctionClassifier);
+        serviceFunctionClassifierListener
+                .add(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -102,7 +104,8 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
                 .getAclServiceFunctionClassifier();
         assertTrue(sfc.get(0).getName().equals(SFC_NAME));
 
-        serviceFunctionClassifierListener.remove(serviceFunctionClassifier);
+        serviceFunctionClassifierListener
+                .remove(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -147,7 +150,9 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         updatedServiceFunctionClassifierBuilder.setAcl(dummyACL);
         ServiceFunctionClassifier updatedServiceFunctionClassifier = updatedServiceFunctionClassifierBuilder.build();
 
-        serviceFunctionClassifierListener.update(originalServiceFunctionClassifier, updatedServiceFunctionClassifier);
+        serviceFunctionClassifierListener
+                .update(InstanceIdentifier.create(ServiceFunctionClassifier.class), originalServiceFunctionClassifier,
+                        updatedServiceFunctionClassifier);
 
         Thread.sleep(500);
 

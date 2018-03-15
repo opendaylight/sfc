@@ -38,7 +38,8 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Adding Service Function Classifier: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getName() != null && serviceFunctionClassifier.getAcl() != null) {
@@ -51,7 +52,8 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
         if (serviceFunctionClassifier.getAcl() != null) {
             LOG.debug("Removing Service Function Classifier: {}", serviceFunctionClassifier.getName());
             if (serviceFunctionClassifier.getName() != null) {
@@ -65,7 +67,8 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
                        @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         if (originalServiceFunctionClassifier.getAcl() != null
                 && updatedServiceFunctionClassifier.getAcl() != null && !originalServiceFunctionClassifier.getAcl()

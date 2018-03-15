@@ -41,7 +41,8 @@ public class ServiceFunctionSchedulerTypeListener extends
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                    @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Adding Service Function Scheduler Type {} {}", serviceFunctionSchedulerType.getType(),
                   serviceFunctionSchedulerType.getName());
         if (serviceFunctionSchedulerType.isEnabled()) {
@@ -64,14 +65,16 @@ public class ServiceFunctionSchedulerTypeListener extends
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Deleting Service FunctionScheduler Type {} {}", serviceFunctionSchedulerType.getType(),
                   serviceFunctionSchedulerType.getName());
     }
 
     // SF Scheduler Type UPDATE
     @Override
-    public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
                        @Nonnull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         if (originalServiceFunctionSchedulerType.getType() != null
                 && updatedServiceFunctionSchedulerType.getType() != null && originalServiceFunctionSchedulerType

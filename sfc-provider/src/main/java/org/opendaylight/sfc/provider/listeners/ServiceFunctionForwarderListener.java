@@ -58,12 +58,14 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.info("Adding Service Function Forwarder: {}", serviceFunctionForwarder.getName());
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         SffName sffName = serviceFunctionForwarder.getName();
         // Get RSPs of SFF
         LOG.info("Deleting Service Function Forwarder {}", sffName);
@@ -78,7 +80,8 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.info("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
         List<RspName> rspNames = findAffectedRsp(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);

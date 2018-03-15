@@ -44,7 +44,8 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void add(@Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @Nonnull RenderedServicePath renderedServicePath) {
 
         // As of the Oxygen release, the RSP creation workflow is as follows:
         // - An SFP creation in the Config Data Store triggers an RSP and
@@ -74,7 +75,8 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath renderedServicePath) {
         LOG.info("remove: Deleting RSP {}", renderedServicePath.getName().getValue());
         // It may be that someone deleted the Config RSP without first deleting
         // the SFP, but if we delete the SFP here, that could cause a race condition
@@ -91,7 +93,8 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath originalRenderedServicePath,
                        @Nonnull RenderedServicePath updatedRenderedServicePath) {
         LOG.warn("Updating the RSP in config is not supported: {}",
                 updatedRenderedServicePath.getName().getValue());

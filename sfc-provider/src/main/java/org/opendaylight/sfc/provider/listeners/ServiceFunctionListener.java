@@ -47,7 +47,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void add(@Nonnull ServiceFunction serviceFunction) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                    @Nonnull ServiceFunction serviceFunction) {
         LOG.debug("add: storing name [{}] type [{}]", serviceFunction.getName().getValue(),
                   serviceFunction.getType().getValue());
         SfcDatastoreCache.getSfToSfTypeCache().put(serviceFunction.getName(), serviceFunction.getType().getValue());
@@ -57,7 +58,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunction serviceFunction) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @Nonnull ServiceFunction serviceFunction) {
         LOG.debug("remove: Deleting Service Function: {}", serviceFunction.getName());
 
         // delete cache
@@ -70,7 +72,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void update(@Nonnull ServiceFunction originalServiceFunction,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @Nonnull ServiceFunction originalServiceFunction,
                        @Nonnull ServiceFunction updatedServiceFunction) {
         LOG.debug("update:Updating Service Function: {}", originalServiceFunction.getName());
 

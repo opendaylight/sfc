@@ -75,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test Suite to test the ServiceFunctionListener class.
@@ -107,7 +108,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     public void testOnServiceFunctionCreated() throws Exception {
         ServiceFunction serviceFunction = buildServiceFunction();
 
-        serviceFunctionListener.add(serviceFunction);
+        serviceFunctionListener.add(InstanceIdentifier.create(ServiceFunction.class), serviceFunction);
 
         SftServiceFunctionName sftServiceFunctionName = SfcProviderServiceTypeAPI
                 .readServiceFunctionTypeEntry(serviceFunction);
@@ -129,7 +130,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         // First we create a Service Function Type Entry
         assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
 
-        serviceFunctionListener.remove(serviceFunction);
+        serviceFunctionListener.remove(InstanceIdentifier.create(ServiceFunction.class), serviceFunction);
 
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(serviceFunction));
     }
@@ -157,7 +158,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
         // The listener will remove the Original Service Function Type Entry and
         // create a new one with the new type
-        serviceFunctionListener.update(originalServiceFunction, updatedServiceFunction);
+        serviceFunctionListener.update(InstanceIdentifier.create(ServiceFunction.class), originalServiceFunction,
+                                       updatedServiceFunction);
 
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
@@ -188,7 +190,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertNotNull(serviceFunction);
 
         // The listener will remove the Service Function Type Entry
-        serviceFunctionListener.remove(serviceFunction);
+        serviceFunctionListener.remove(InstanceIdentifier.create(ServiceFunction.class), serviceFunction);
 
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
                 renderedServicePath.getParentServiceFunctionPath()));
@@ -243,7 +245,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
         // The listener will remove the Original Service Function Type Entry and
         // create a new one with the new type
-        serviceFunctionListener.update(originalServiceFunction, updatedServiceFunction);
+        serviceFunctionListener.update(InstanceIdentifier.create(ServiceFunction.class), originalServiceFunction,
+                                       updatedServiceFunction);
 
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
@@ -296,7 +299,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
         // The listener will remove the Original Service Function Type Entry and
         // create a new one with the new type
-        serviceFunctionListener.update(originalServiceFunction, updatedServiceFunction);
+        serviceFunctionListener.update(InstanceIdentifier.create(ServiceFunction.class), originalServiceFunction,
+                                       updatedServiceFunction);
         assertNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(updatedServiceFunction));
         assertNull(SfcProviderServicePathAPI.readServiceFunctionPath(
@@ -347,7 +351,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
 
         // The listener will remove the Original Service Function Type Entry and
         // create a new one with the new type
-        serviceFunctionListener.update(originalServiceFunction, updatedServiceFunction);
+        serviceFunctionListener.update(InstanceIdentifier.create(ServiceFunction.class), originalServiceFunction,
+                                       updatedServiceFunction);
 
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));
@@ -399,7 +404,8 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunction updatedServiceFunction = updatedServiceFunctionBuilder.build();
 
         // The listener will NOT remove anything
-        serviceFunctionListener.update(originalServiceFunction, updatedServiceFunction);
+        serviceFunctionListener.update(InstanceIdentifier.create(ServiceFunction.class), originalServiceFunction,
+                                       updatedServiceFunction);
 
         // The original SF type is only deleted if the SF type changes
         assertNotNull(SfcProviderServiceTypeAPI.readServiceFunctionTypeEntry(originalServiceFunction));

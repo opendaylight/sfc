@@ -30,6 +30,8 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
 
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
 /**
  * Test Suite to test the ServiceFunctionSchedulerTypeListener class.
  *
@@ -80,7 +82,8 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         // Builds a complete Random Service Function Scheduler Type Object
         ServiceFunctionSchedulerType serviceFunctionSchedulerType = buildServiceFunctionSchedulerType(true);
 
-        serviceFunctionSchedulerTypeListener.add(serviceFunctionSchedulerType);
+        serviceFunctionSchedulerTypeListener
+                .add(InstanceIdentifier.create(ServiceFunctionSchedulerType.class), serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -110,7 +113,8 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         assertEquals(serviceFunctionSchedulerType, sfst);
 
         // We trigger the removal of the new service Function Scheduler Type Object
-        serviceFunctionSchedulerTypeListener.remove(serviceFunctionSchedulerType);
+        serviceFunctionSchedulerTypeListener.remove(InstanceIdentifier.create(ServiceFunctionSchedulerType.class),
+                                                    serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -152,7 +156,8 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
 
         // We trigger the update of the service Function Scheduler Type Object
         serviceFunctionSchedulerTypeListener
-                .update(originalServiceFunctionSchedulerType, updatedServiceFunctionSchedulerType);
+                .update(InstanceIdentifier.create(ServiceFunctionSchedulerType.class),
+                        originalServiceFunctionSchedulerType, updatedServiceFunctionSchedulerType);
 
         Thread.sleep(500);
 

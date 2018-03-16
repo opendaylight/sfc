@@ -18,6 +18,8 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfgTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,21 @@ public class SbRestSfgEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionGroup serviceFunctionGroup) {
-        update(serviceFunctionGroup, serviceFunctionGroup);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                    @Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+        update(instanceIdentifier, serviceFunctionGroup, serviceFunctionGroup);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                       @Nonnull ServiceFunctionGroup serviceFunctionGroup) {
         LOG.debug("Deleted Service Function Name: {}", serviceFunctionGroup.getName());
         new SbRestSfgTask(RestOperation.DELETE, serviceFunctionGroup, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionGroup originalServiceFunctionGroup,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                       @Nonnull ServiceFunctionGroup originalServiceFunctionGroup,
                        @Nonnull ServiceFunctionGroup updatedServiceFunctionGroup) {
         LOG.debug("Modified Service Function Name: {}", updatedServiceFunctionGroup.getName());
         new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executorService).run();

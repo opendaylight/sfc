@@ -18,6 +18,7 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +36,19 @@ public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull Acl acl) {
-        update(acl, acl);
+    public void add(@Nonnull InstanceIdentifier<Acl> instanceIdentifier, @Nonnull Acl acl) {
+        update(instanceIdentifier, acl, acl);
     }
 
     @Override
-    public void remove(@Nonnull Acl acl) {
+    public void remove(@Nonnull InstanceIdentifier<Acl> instanceIdentifier, @Nonnull Acl acl) {
         LOG.debug("Deleted Access List Name: {}", acl.getAclName());
         new SbRestAclTask(RestOperation.DELETE, acl, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull Acl originalAcl, @Nonnull Acl updatedAcl) {
+    public void update(@Nonnull InstanceIdentifier<Acl> instanceIdentifier,
+                       @Nonnull Acl originalAcl, @Nonnull Acl updatedAcl) {
         LOG.debug("Updated Access List Name: {}", updatedAcl.getAclName());
         new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService).run();
     }

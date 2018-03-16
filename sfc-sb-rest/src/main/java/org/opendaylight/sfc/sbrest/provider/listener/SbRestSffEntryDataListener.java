@@ -18,6 +18,8 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSffTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,21 @@ public class SbRestSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
-        update(serviceFunctionForwarder, serviceFunctionForwarder);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+        update(instanceIdentifier, serviceFunctionForwarder, serviceFunctionForwarder);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.debug("Deleted Service Function Forwarder Name: {}", serviceFunctionForwarder.getName());
         new SbRestSffTask(RestOperation.DELETE, serviceFunctionForwarder, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.debug("Updated Service Function Forwarder Name: {}", updatedServiceFunctionForwarder.getName());
         new SbRestSffTask(RestOperation.PUT, updatedServiceFunctionForwarder, executorService).run();

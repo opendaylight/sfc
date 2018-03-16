@@ -18,6 +18,8 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstTask;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,21 @@ public class SbRestSfstEntryDataListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
-        update(serviceFunctionSchedulerType, serviceFunctionSchedulerType);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                    @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+        update(instanceIdentifier, serviceFunctionSchedulerType, serviceFunctionSchedulerType);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Deleted Service Function Schedule Type Name: {}", serviceFunctionSchedulerType.getName());
         new SbRestSfstTask(RestOperation.DELETE, serviceFunctionSchedulerType, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
                        @Nonnull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         LOG.debug("Updated Service Function Schedule Type Name: {}", updatedServiceFunctionSchedulerType.getName());
         new SbRestSfstTask(RestOperation.PUT, updatedServiceFunctionSchedulerType, executorService).run();

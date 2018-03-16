@@ -18,6 +18,8 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestSfstateTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,21 @@ public class SbRestSfstateEntryDataListener extends AbstractSyncDataTreeChangeLi
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionState serviceFunctionState) {
-        update(serviceFunctionState, serviceFunctionState);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                    @Nonnull ServiceFunctionState serviceFunctionState) {
+        update(instanceIdentifier, serviceFunctionState, serviceFunctionState);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionState serviceFunctionState) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @Nonnull ServiceFunctionState serviceFunctionState) {
         LOG.debug("Deleted Service Function State Name: {}", serviceFunctionState.getName());
         new SbRestSfstateTask(RestOperation.DELETE, serviceFunctionState, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionState originalServiceFunctionState,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @Nonnull ServiceFunctionState originalServiceFunctionState,
                        @Nonnull ServiceFunctionState updatedServiceFunctionState) {
         LOG.debug("Updated Service Function State Name: {}", updatedServiceFunctionState.getName());
         new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService).run();

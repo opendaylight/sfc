@@ -20,6 +20,7 @@ import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestAclTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +38,14 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
-        update(serviceFunctionClassifier, serviceFunctionClassifier);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+        update(instanceIdentifier, serviceFunctionClassifier, serviceFunctionClassifier);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Deleted Service Classifier Name: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getAcl() != null) {
@@ -53,7 +56,8 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionClassifier originalDataObject,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier originalDataObject,
                        @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         LOG.debug("Updated Service Classifier Name: {}", updatedServiceFunctionClassifier.getName());
 

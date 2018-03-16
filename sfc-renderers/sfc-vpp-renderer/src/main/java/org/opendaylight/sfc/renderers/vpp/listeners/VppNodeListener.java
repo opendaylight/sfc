@@ -41,7 +41,7 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void add(@Nonnull Node node) {
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
         if (vppNodeManager.isCapableNetconfDevice(node)) {
             LOG.debug("Adding node");
             vppNodeManager.updateNode(node);
@@ -49,7 +49,8 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void remove(@Nonnull Node node) {
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node node) {
         if (vppNodeManager.isCapableNetconfDevice(node)) {
             LOG.debug("Removing node");
             vppNodeManager.removeNode(node);
@@ -57,7 +58,8 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void update(@Nonnull Node originalNode, Node updatedNode) {
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node originalNode, @Nonnull Node updatedNode) {
         if (vppNodeManager.isCapableNetconfDevice(updatedNode)) {
             LOG.info("Updating node");
             vppNodeManager.updateNode(updatedNode);

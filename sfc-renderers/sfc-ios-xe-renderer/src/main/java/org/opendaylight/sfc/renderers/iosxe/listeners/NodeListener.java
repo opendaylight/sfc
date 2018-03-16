@@ -36,19 +36,20 @@ public class NodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void add(@Nonnull Node node) {
-        update(node, node);
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+        update(instanceIdentifier, node, node);
     }
 
     @Override
-    public void remove(@Nonnull Node node) {
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
         if (nodeManager.isCapableNetconfDevice(node)) {
             nodeManager.removeNode(node);
         }
     }
 
     @Override
-    public void update(@Nonnull Node originalNode, Node updatedNode) {
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node originalNode, Node updatedNode) {
         if (nodeManager.isCapableNetconfDevice(originalNode)) {
             nodeManager.updateNode(originalNode);
         }

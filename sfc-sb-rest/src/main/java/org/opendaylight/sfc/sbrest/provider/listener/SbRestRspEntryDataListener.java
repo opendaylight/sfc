@@ -18,6 +18,8 @@ import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.sfc.sbrest.provider.task.RestOperation;
 import org.opendaylight.sfc.sbrest.provider.task.SbRestRspTask;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,22 @@ public class SbRestRspEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull RenderedServicePath renderedServicePath) {
-        update(renderedServicePath, renderedServicePath);
+    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @Nonnull RenderedServicePath renderedServicePath) {
+        update(instanceIdentifier,
+               renderedServicePath, renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath renderedServicePath) {
         LOG.debug("Deleted Rendered Service Path Name: {}", renderedServicePath.getName());
         new SbRestRspTask(RestOperation.DELETE, renderedServicePath, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath originalRenderedServicePath,
                        @Nonnull RenderedServicePath updatedRenderedServicePath) {
         LOG.debug("Updated Rendered Service Path: {}", updatedRenderedServicePath.getName());
         new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService).run();

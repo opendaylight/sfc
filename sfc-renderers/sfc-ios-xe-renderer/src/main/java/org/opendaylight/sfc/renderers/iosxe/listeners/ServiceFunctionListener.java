@@ -31,19 +31,23 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctions serviceFunctions) {
-        update(serviceFunctions, serviceFunctions);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                    @Nonnull ServiceFunctions serviceFunctions) {
+        update(instanceIdentifier, serviceFunctions, serviceFunctions);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctions serviceFunctions) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                       @Nonnull ServiceFunctions serviceFunctions) {
         if (serviceFunctions.getServiceFunction() != null) {
             sfManager.syncFunctions(serviceFunctions.getServiceFunction(), true);
         }
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctions originalServiceFunctions, ServiceFunctions updatedServiceFunctions) {
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                       @Nonnull ServiceFunctions originalServiceFunctions,
+                       @Nonnull ServiceFunctions updatedServiceFunctions) {
         if (updatedServiceFunctions.getServiceFunction() != null) {
             sfManager.syncFunctions(originalServiceFunctions.getServiceFunction(), false);
         }

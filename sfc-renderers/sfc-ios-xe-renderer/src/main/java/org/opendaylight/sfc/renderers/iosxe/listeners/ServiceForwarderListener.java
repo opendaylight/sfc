@@ -31,20 +31,23 @@ public class ServiceForwarderListener extends AbstractSyncDataTreeChangeListener
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
-        update(serviceFunctionForwarders, serviceFunctionForwarders);
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                    @Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+        update(instanceIdentifier, serviceFunctionForwarders, serviceFunctionForwarders);
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
         if (serviceFunctionForwarders.getServiceFunctionForwarder() != null) {
             sffManager.syncForwarders(serviceFunctionForwarders.getServiceFunctionForwarder(), true);
         }
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionForwarders originalServiceFunctionForwarders,
-                       ServiceFunctionForwarders updatedServiceFunctionForwarders) {
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarders originalServiceFunctionForwarders,
+                       @Nonnull ServiceFunctionForwarders updatedServiceFunctionForwarders) {
         if (updatedServiceFunctionForwarders.getServiceFunctionForwarder() != null) {
             sffManager.syncForwarders(updatedServiceFunctionForwarders.getServiceFunctionForwarder(), false);
         }

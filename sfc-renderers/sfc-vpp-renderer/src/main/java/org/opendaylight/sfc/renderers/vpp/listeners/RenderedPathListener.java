@@ -36,19 +36,22 @@ public class RenderedPathListener extends AbstractSyncDataTreeChangeListener<Ren
     }
 
     @Override
-    public void add(@Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @Nonnull RenderedServicePath renderedServicePath) {
         LOG.debug("RSP created");
         this.rspProcessor.updateRsp(renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath renderedServicePath) {
         LOG.debug("RSP deleted");
         this.rspProcessor.deleteRsp(renderedServicePath);
     }
 
     @Override
-    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath originalRenderedServicePath,
                        @Nonnull RenderedServicePath updatedRenderedServicePath) {
         // Needn't care it
     }

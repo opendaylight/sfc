@@ -63,7 +63,7 @@ def _odl_is_runing():
 
         if out:
             odl_runing = True
-    except:
+    except: # noqa: E722
         pass
     finally:
         return odl_runing
@@ -276,7 +276,7 @@ def clear_sfc_data():
             session.delete(url,
                            stream=False,
                            auth=sfc_globals.odl_credentials)
-    except:
+    except: # noqa: E722
         pytest.fail('Failed to clear SFC data from ODL')
 
 
@@ -305,7 +305,7 @@ def produce_rsp():
 
             if not response.ok:
                 raise
-    except:
+    except: # noqa: E722
         pytest.fail('Failed to create RSP')
 
 
@@ -409,7 +409,7 @@ def test_odl_rsp_retrieval(capfd, clear_sfc_data, produce_rsp,
     """
     try:
         sff_data = classifier._fetch_rsp_first_hop_from_odl(rsp_name)
-    except:
+    except: # noqa: E722
         _, err = capfd.readouterr()
         pytest.fail(err)
 
@@ -549,7 +549,7 @@ def test_process_acl_1(capfd, acl_json, acl_data,
     """
     try:
         classifier.process_acl(acl_data['access-lists'])
-    except:
+    except: # noqa: E722
         _, err = capfd.readouterr()
         pytest.fail(err)
 
@@ -580,7 +580,7 @@ def test_process_acl_2(capfd, acl_json, acl_data,
     """
     try:
         classifier.process_acl(acl_data['access-lists'])
-    except:
+    except: # noqa: E722
         _, err = capfd.readouterr()
         pytest.fail(err)
 
@@ -594,7 +594,7 @@ def test_process_acl_2(capfd, acl_json, acl_data,
 
     try:
         classifier.process_acl(acl_data)
-    except:
+    except: # noqa: E722
         _, err = capfd.readouterr()
         pytest.fail(err)
 

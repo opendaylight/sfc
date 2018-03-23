@@ -174,7 +174,7 @@ def apply_acl(acl_name):
         with open("jsonputACL.txt", "w") as outfile:
             json.dump(r_json, outfile)
         nfq_classifier.process_acl(r_json)
-    except:
+    except: # noqa: E722
         return '', 500
 
     return '', 201

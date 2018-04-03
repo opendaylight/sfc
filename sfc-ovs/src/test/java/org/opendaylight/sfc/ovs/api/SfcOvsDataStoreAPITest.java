@@ -16,7 +16,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -65,7 +64,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SfcDataStoreAPI.class)
-public class SfcOvsDataStoreAPITest extends AbstractDataBrokerTest {
+public class SfcOvsDataStoreAPITest {
 
     private static final String BRIDGE_NAME = "bridge_name";
     private final Object[] methodParams = new Object[2];

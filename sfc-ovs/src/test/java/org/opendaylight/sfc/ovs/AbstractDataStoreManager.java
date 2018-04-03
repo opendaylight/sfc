@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
@@ -43,7 +43,7 @@ import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
  * @author ebrjohn
  *
  */
-public class AbstractDataStoreManager extends AbstractDataBrokerTest {
+public class AbstractDataStoreManager extends AbstractConcurrentDataBrokerTest {
     protected DataBroker dataBroker;
     protected SfcInstanceIdentifiers sfcIids;
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);

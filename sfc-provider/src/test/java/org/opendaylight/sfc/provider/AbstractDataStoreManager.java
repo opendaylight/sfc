@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcInstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.service.path.id.rev150804.service.path.ids.ServicePathId;
@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.ServiceFunctionTypes;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AccessLists;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rev141201.ServiceFunctionState1;
 import org.opendaylight.yangtools.yang.binding.YangModuleInfo;
@@ -47,11 +48,15 @@ import org.opendaylight.yangtools.yang.binding.util.BindingReflections;
 /*
  * The purpose of this class is to manage abstract data store used in tests
  */
-public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
+public abstract class AbstractDataStoreManager extends AbstractConcurrentDataBrokerTest {
 
     protected DataBroker dataBroker;
     protected SfcInstanceIdentifiers sfcIids;
     protected static ExecutorService executor = Executors.newFixedThreadPool(5);
+
+    public AbstractDataStoreManager() {
+        super(false);
+    }
 
     // initial sfc setup, executor is set only once, new data broker
     // is created before every set, it ensures empty data store
@@ -88,6 +93,7 @@ public abstract class AbstractDataStoreManager extends AbstractDataBrokerTest {
         loadModuleInfos(ServiceFunctionState.class, moduleInfoSet);
         loadModuleInfos(ServiceFunctionState1.class, moduleInfoSet);
         loadModuleInfos(ServiceFunctionTypes.class, moduleInfoSet);
+        loadModuleInfos(ServiceNode.class, moduleInfoSet);
         return moduleInfoSet.build();
     }
 

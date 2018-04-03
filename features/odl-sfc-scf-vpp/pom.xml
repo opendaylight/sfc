@@ -61,12 +61,14 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-scf-vpp</artifactId>
+            <artifactId>odl-sfc-vpp-renderer</artifactId>
             <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-vpp-utils</artifactId>
+            <artifactId>sfc-scf-vpp</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

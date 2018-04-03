@@ -46,9 +46,9 @@
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.genius</groupId>
-            <artifactId>odl-genius-api</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <groupId>org.opendaylight.sfc</groupId>
+            <artifactId>odl-sfc-genius</artifactId>
+            <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
@@ -58,11 +58,6 @@
             <version>${project.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-genius</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>

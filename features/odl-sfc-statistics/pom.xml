@@ -47,10 +47,11 @@
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <!-- Bring in the sfc-openflow-utils bundle -->
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>sfc-openflow-utils</artifactId>
+            <artifactId>odl-sfc-openflow-renderer</artifactId>
             <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>

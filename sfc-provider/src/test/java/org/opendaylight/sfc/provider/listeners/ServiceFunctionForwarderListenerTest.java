@@ -95,12 +95,10 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
     public void before() {
         setupSfc();
         serviceFunctionForwarderListener = new ServiceFunctionForwarderListener(getDataBroker());
-        serviceFunctionForwarderListener.register();
     }
 
     @After
     public void after() throws Exception {
-        serviceFunctionForwarderListener.close();
         close();
     }
 
@@ -426,7 +424,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         serviceFunctionForwarderListener.update(InstanceIdentifier.create(ServiceFunctionForwarder.class),
                                                 originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
 
-        Thread.sleep(500);
         assertNotNull(SfcProviderRenderedPathAPI.readRenderedServicePath(renderedServicePath.getName()));
 
         // Verify that State was NOT removed
@@ -882,9 +879,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
                     LogicalDatastoreType.CONFIGURATION));
         }
 
-        // wait for sff and sf listeners to trigger
-        Thread.sleep(1000);
-
         // add sf types
         sfMap.values().forEach(sf -> assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(sf)));
 
@@ -905,8 +899,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
 
-        Thread.sleep(200); // Wait SFC is really crated
-
         ServiceFunctionChain readServiceFunctionChain;
         readServiceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(new SfcName(sfcName));
 
@@ -920,8 +912,6 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
-
-        Thread.sleep(200); // Wait they are really created
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;

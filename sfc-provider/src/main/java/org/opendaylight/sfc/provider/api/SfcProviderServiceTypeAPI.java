@@ -12,7 +12,6 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.List;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
@@ -155,8 +154,10 @@ public final class SfcProviderServiceTypeAPI {
             LOG.error("Failed to delete Service Function Type: {}, for Service Function: {}", serviceFunction.getType(),
                     serviceFunction.getName());
         }
-        List<SftServiceFunctionName> sftServiceFunctionNameList = readServiceFunctionType(serviceFunction.getType())
-                .getSftServiceFunctionName();
+        ServiceFunctionType serviceFunctionType = readServiceFunctionType(serviceFunction.getType());
+        List<SftServiceFunctionName> sftServiceFunctionNameList = serviceFunctionType == null
+                ? null
+                : serviceFunctionType.getSftServiceFunctionName();
         if (sftServiceFunctionNameList != null) {
             LOG.debug("List size for service type {} is: {}", serviceFunction.getType(),
                     sftServiceFunctionNameList.size());

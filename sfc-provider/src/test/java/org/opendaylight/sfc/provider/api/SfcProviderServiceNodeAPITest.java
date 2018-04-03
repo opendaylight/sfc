@@ -13,9 +13,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.ExecutionException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
+import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.ServiceNodes;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sn.rev140701.service.nodes.ServiceNode;
@@ -29,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
  */
-public class SfcProviderServiceNodeAPITest extends AbstractConcurrentDataBrokerTest {
+public class SfcProviderServiceNodeAPITest extends AbstractDataStoreManager {
 
     private static final String SERVICE_NODE_NAME = "ServiceNode1";
     private static final String SERVICE_NODE_IP_MANAGEMENT_ADDRESS = "196.168.55.101";
@@ -38,12 +40,18 @@ public class SfcProviderServiceNodeAPITest extends AbstractConcurrentDataBrokerT
 
     @Before
     public void before() {
-        SfcDataStoreAPI.setDataProviderAux(getDataBroker());
+        //SfcDataStoreAPI.setDataProviderAux(getDataBroker());
+        setupSfc();
         ServiceNodeBuilder serviceNodeBuilder = new ServiceNodeBuilder();
         serviceNodeBuilder.setKey(new ServiceNodeKey(new SnName(SERVICE_NODE_NAME)))
                 .setName(new SnName(SERVICE_NODE_NAME))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(SERVICE_NODE_IP_MANAGEMENT_ADDRESS)));
         this.serviceNode = serviceNodeBuilder.build();
+    }
+
+    @After
+    public void after() throws ExecutionException, InterruptedException {
+        close();
     }
 
     @Test

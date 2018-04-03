@@ -91,12 +91,10 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
     public void before() throws Exception {
         setupSfc();
         serviceFunctionListener = new ServiceFunctionListener(getDataBroker());
-        serviceFunctionListener.register();
     }
 
     @After
     public void after() throws Exception {
-        serviceFunctionListener.close();
         close();
     }
 
@@ -631,8 +629,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertTrue(SfcDataStoreAPI.writePutTransactionAPI(SfcInstanceIdentifiers.SF_IID, sfsBuilder.build(),
                 LogicalDatastoreType.CONFIGURATION));
 
-        Thread.sleep(200); // Wait they are really created
-
         // Create ServiceFunctionTypeEntry for all ServiceFunctions
         for (ServiceFunction serviceFunction : sfList) {
             assertTrue(SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction));
@@ -700,7 +696,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
                 .setSymmetric(true);
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));
-        Thread.sleep(200); // Wait SFC is really created
 
         ServiceFunctionChain readServiceFunctionChain = SfcProviderServiceChainAPI
                 .readServiceFunctionChain(new SfcName(SFC_NAME));
@@ -716,8 +711,6 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
         assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
-
-        Thread.sleep(200); // Wait they are really created
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
         RenderedServicePath renderedServicePath = null;

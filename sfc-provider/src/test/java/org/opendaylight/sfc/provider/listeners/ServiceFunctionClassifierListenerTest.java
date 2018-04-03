@@ -48,12 +48,10 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
     public void before() {
         setupSfc();
         serviceFunctionClassifierListener = new ServiceFunctionClassifierListener(getDataBroker());
-        serviceFunctionClassifierListener.register();
     }
 
     @After
     public void after() throws Exception {
-        serviceFunctionClassifierListener.close();
         close();
     }
 
@@ -69,8 +67,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         // We trigger the adding of <ACL, Classifier> entry into ACL
         serviceFunctionClassifierListener
                 .add(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
-
-        Thread.sleep(500);
 
         // We verify the adding of <ACL, Classifier> entry into ACL
         AccessListState acl = SfcProviderAclAPI.readAccessListState(serviceFunctionClassifier.getAcl().getName(),
@@ -106,8 +102,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
 
         serviceFunctionClassifierListener
                 .remove(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
-
-        Thread.sleep(500);
 
         // We verify the removal of <ACL, Classifier> entry from ACL by checking
         // no ServiceFunctionClassifier is assigned to the ACL
@@ -153,8 +147,6 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         serviceFunctionClassifierListener
                 .update(InstanceIdentifier.create(ServiceFunctionClassifier.class), originalServiceFunctionClassifier,
                         updatedServiceFunctionClassifier);
-
-        Thread.sleep(500);
 
         // We verify the removal of the Original <ACL, Classifier> entry from
         // ACL by checking

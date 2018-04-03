@@ -14,18 +14,17 @@ import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
+import org.opendaylight.sfc.ovs.AbstractDataStoreManager;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPITest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -87,7 +86,7 @@ import org.slf4j.LoggerFactory;
  * @since 2015-04-23
  */
 
-public class SfcOvsUtilTest extends AbstractDataBrokerTest {
+public class SfcOvsUtilTest extends AbstractDataStoreManager {
 
     private static final String OVSDB_BRIDGE_PREFIX = "/bridge/"; // copy of private String from
                                                                   // SfcOvsUtil.class
@@ -108,9 +107,8 @@ public class SfcOvsUtilTest extends AbstractDataBrokerTest {
 
     @Before
     public void init() {
-        DataBroker dataBroker = getDataBroker();
-        SfcDataStoreAPI.setDataProviderAux(dataBroker);
-        executorService = Executors.newFixedThreadPool(5);
+        setupSfc();
+        executorService = MoreExecutors.newDirectExecutorService();
 
         // before starting test, node is created
         nodeIID = createNodeIID();

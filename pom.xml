@@ -36,7 +36,6 @@
   <modules>
     <module>sfc-model</module>
     <module>sfc-provider</module>
-    <module>sfc-ui</module>
     <module>sfc-sb-rest</module>
     <module>sfclisp</module>
     <module>sfc-util</module>
@@ -79,7 +78,6 @@
     <branding.version>1.7.0-SNAPSHOT</branding.version>
     <pax.logging.service.version>1.8.2</pax.logging.service.version>
     <pax.logging.api.version>1.8.2</pax.logging.api.version>
-    <dlux.version>0.8.0-SNAPSHOT</dlux.version>
 
     <!-- Test Libraries -->
     <junitparams.version>1.0.3</junitparams.version>

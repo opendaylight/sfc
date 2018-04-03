@@ -1,9 +1,0 @@
-<a style="cursor: pointer; margin-right: 20px" ng-click="showPopUp()">
-    {{(symmetric ? 'SFC_CLASSIFIER_SYMMETRIC_SHORT' : 'SFC_CLASSIFIER_SHORT') | translate}}
-    {{sfp[classifierLeaf] ? ": " + sfp[classifierLeaf] : ''}}
-</a>
-
-<div ng-if="popUpVisible">
-    <service-path-classifier-pop-up close-pop-up="closePopUp()" sfp="sfp" classifier-leaf="{{classifierLeaf}}"
-                                     id-suffix="{{idSuffix}}"></service-path-classifier-pop-up>
-</div>

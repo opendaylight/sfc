@@ -45,7 +45,6 @@
         <module>odl-sfc-sb-rest</module>
         <module>odl-sfc-pot</module>
         <module>odl-sfc-pot-netconf-renderer</module>
-        <module>odl-sfc-ui</module>
         <module>odl-sfc-vnfm-tacker</module>
         <module>odl-sfc-genius</module>
         <module>odl-sfc-shell</module>

@@ -49,7 +49,7 @@ if [ "${root_dir}" != "." ] ; then
 fi
 
 demo="./ovs/run_demo_ovs.sh"
-features="odl-sfc-ui"
+features=""
 uninstall_features=""
 case "${1}" in
 "ovs")

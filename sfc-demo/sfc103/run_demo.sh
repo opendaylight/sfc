@@ -17,7 +17,7 @@ function clean {
 
 function start_sfc {
     cd $HOME/sfc/karaf/target/assembly/
-    sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-model,odl-sfc-provider,odl-sfc-ui,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs,odl-sfc-netconf/" etc/org.apache.karaf.features.cfg;
+    sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-model,odl-sfc-provider,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs,odl-sfc-netconf/" etc/org.apache.karaf.features.cfg;
     echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg;
     rm -rf journal snapshots data; bin/start
     #wait for sfc ready

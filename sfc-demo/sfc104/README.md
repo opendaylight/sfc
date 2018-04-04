@@ -36,11 +36,11 @@ Setup Demo
 
    1) For ovs or ovs_dpdk
 
-   feature:install odl-sfc-scf-openflow odl-sfc-openflow-renderer odl-sfc-ui
+   feature:install odl-sfc-scf-openflow odl-sfc-openflow-renderer
 
    2) For vpp
 
-   feature:install odl-sfc-vpp-renderer odl-sfc-ui
+   feature:install odl-sfc-vpp-renderer
 
    Notice: please do stop, clean up, then restart ODL SFC when you run this demo in order that demo can run successfully.
 

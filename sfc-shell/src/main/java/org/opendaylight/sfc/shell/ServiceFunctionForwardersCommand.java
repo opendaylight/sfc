@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2017 Ericsson S.A. and others.  All rights reserved.
+/*
+ * Copyright (c) 2017, 2018 Ericsson S.A. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.sfc.shell;
 
 import java.util.List;
@@ -32,8 +33,7 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
 
     private static final String LOGICAL_SFF = "(Logical)";
 
-    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function", required = false,
-            multiValued = false)
+    @Option(name = "-name", aliases = {"--name"}, description = "Name of the Service Function")
     private String name;
 
     private final ShellTable table;
@@ -49,7 +49,7 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
     }
 
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
         LOG.debug("Service Function Forwarder name: {}", name);
 
         if (name != null) {

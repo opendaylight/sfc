@@ -46,12 +46,24 @@
     <module>sfc-vnfm-tacker</module>
     <module>sfc-pot</module>
     <module>features</module>
-    <module>karaf</module>
     <module>sfc-statistics</module>
     <module>sfc-renderers</module>
     <module>sfc-genius</module>
     <module>sfc-shell</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>karaf</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <modules>
+        <module>karaf</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

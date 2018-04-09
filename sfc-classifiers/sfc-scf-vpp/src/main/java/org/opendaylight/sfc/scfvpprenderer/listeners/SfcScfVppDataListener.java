@@ -42,13 +42,15 @@ public class SfcScfVppDataListener extends AbstractSyncDataTreeChangeListener<Se
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Add ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
         this.classifierProcessor.addScf(serviceFunctionClassifier);
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
                        @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
                 && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
@@ -59,7 +61,8 @@ public class SfcScfVppDataListener extends AbstractSyncDataTreeChangeListener<Se
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Deleted ServiceFunctionClassifier name: {}", serviceFunctionClassifier.getName());
         this.classifierProcessor.removeScf(serviceFunctionClassifier);
     }

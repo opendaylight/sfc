@@ -43,18 +43,21 @@ public class SfcPotNetconfRSPListener extends AbstractSyncDataTreeChangeListener
     }
 
     @Override
-    public void add(@Nonnull RenderedServicePath renderedServicePath) {
-        update(renderedServicePath, renderedServicePath);
+    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @Nonnull RenderedServicePath renderedServicePath) {
+        update(instanceIdentifier, renderedServicePath, renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath renderedServicePath) {
         LOG.debug("iOAM:PoT:SB:Deleted RSP: {}", renderedServicePath.getName());
         sfcPotNetconfIoam.deleteRsp(renderedServicePath);
     }
 
     @Override
-    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
+    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath originalRenderedServicePath,
                        @Nonnull RenderedServicePath updatedRenderedServicePath) {
         // As of now, it is not expected that PoT configurations will be
         // configured as part of the RSP creation itself.

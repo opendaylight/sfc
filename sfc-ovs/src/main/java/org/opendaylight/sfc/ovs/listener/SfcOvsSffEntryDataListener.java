@@ -48,7 +48,8 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.info("Created Service Function Forwarder: {}", serviceFunctionForwarder.toString());
         // add augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(serviceFunctionForwarder);
@@ -56,13 +57,15 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionForwarder deletedServiceFunctionForwarder) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder deletedServiceFunctionForwarder) {
         LOG.info("Deleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
         deleteOvsdbAugmentations(deletedServiceFunctionForwarder);
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
                        @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         // Notice: Adding an SffDpl to an existing SFF will trigger this
         // listener, not a separate SffDplListener
@@ -133,7 +136,7 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
      *
      * @param sff - The SFF to modify
      */
-    static void setSffOvsBridgeAugOpenflowNodeId(ServiceFunctionForwarder sff) {
+    private static void setSffOvsBridgeAugOpenflowNodeId(ServiceFunctionForwarder sff) {
         SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
         if (sffOvsBrAug != null) {
             if (sffOvsBrAug.getOvsBridge() != null && sffOvsBrAug.getOvsBridge().getOpenflowNodeId() != null) {

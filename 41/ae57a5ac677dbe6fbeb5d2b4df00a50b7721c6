@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: David Suárez Fuentes <david.suarez.fuentes@gmail.com>
+Code-Review+2: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-by: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-at: Mon, 09 Apr 2018 12:38:51 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/70600
+Project: sfc
+Branch: refs/heads/stable/nitrogen

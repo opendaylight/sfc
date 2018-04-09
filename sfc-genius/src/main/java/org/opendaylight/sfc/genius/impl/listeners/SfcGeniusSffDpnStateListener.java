@@ -61,7 +61,8 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void add(@Nonnull Dpn newDpn) {
+    public void add(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier,
+                    @Nonnull Dpn newDpn) {
         LOG.debug("Receive SFF state DPN add event {}", newDpn);
         boolean pathsOnDpn = getPathsOnDpn(newDpn).isEmpty();
         if (!pathsOnDpn) {
@@ -71,7 +72,8 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void remove(@Nonnull Dpn removedDpn) {
+    public void remove(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier,
+                       @Nonnull Dpn removedDpn) {
         LOG.debug("Receive SFF state DPN remove event {}", removedDpn);
         boolean pathsOnDpn = getPathsOnDpn(removedDpn).isEmpty();
         if (!pathsOnDpn) {
@@ -81,7 +83,9 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void update(@Nonnull Dpn originalDpn, Dpn updatedDpn) {
+    public void update(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier,
+                       @Nonnull Dpn originalDpn,
+                       @Nonnull Dpn updatedDpn) {
         LOG.debug("Receive SFF state DPN update event {}", originalDpn, updatedDpn);
         BigInteger dpnId = updatedDpn.getDpnId().getValue();
         boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();

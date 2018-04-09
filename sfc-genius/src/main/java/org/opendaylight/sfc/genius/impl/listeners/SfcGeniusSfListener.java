@@ -39,19 +39,23 @@ public class SfcGeniusSfListener extends AbstractAsyncDataTreeChangeListener<Ser
     }
 
     @Override
-    public void add(@Nonnull ServiceFunction newServiceFunction) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                    @Nonnull ServiceFunction newServiceFunction) {
         // noop
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunction removedServiceFunction) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @Nonnull ServiceFunction removedServiceFunction) {
         LOG.debug("Received service function remove event {}", removedServiceFunction);
         List<String> interfaceNames = SfcGeniusDataUtils.getSfLogicalInterfaces(removedServiceFunction);
         interfaceManager.unbindInterfaces(interfaceNames);
     }
 
     @Override
-    public void update(@Nonnull ServiceFunction originalServiceFunction, ServiceFunction updatedServiceFunction) {
+    public void update(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @Nonnull ServiceFunction originalServiceFunction,
+                       @Nonnull ServiceFunction updatedServiceFunction) {
         // noop
     }
 }

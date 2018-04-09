@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,18 +54,21 @@ public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeList
     }
 
     @Override
-    public void add(@Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @Nonnull RenderedServicePath renderedServicePath) {
         // nothing to do when RSPs are added
     }
 
     @Override
-    public void remove(@Nonnull RenderedServicePath removedRenderedServicePath) {
+    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath removedRenderedServicePath) {
         // nothing to do when RSPs are deleted
     }
 
     @Override
-    public void update(@Nonnull RenderedServicePath originalRenderedServicePath,
-                       RenderedServicePath updatedRenderedServicePath) {
+    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @Nonnull RenderedServicePath originalRenderedServicePath,
+                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("update - old rspId: {}; new rspId: {}", originalRenderedServicePath, updatedRenderedServicePath);
         }

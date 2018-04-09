@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfNodeListener.class);
 
     private final SfcPotNetconfNodeManager nodeManager;
-    private List<String> ioamNetconfCapabilities = new ArrayList<>();
+    private List<String> ioamNetconfCapabilities;
 
     @Inject
     public SfcPotNetconfNodeListener(DataBroker dataBroker, SfcPotNetconfNodeManager nodeManager) {
@@ -63,19 +62,22 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     }
 
     @Override
-    public void add(@Nonnull Node node) {
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                    @Nonnull Node node) {
         update(node, node);
     }
 
     @Override
-    public void remove(@Nonnull Node node) {
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node node) {
         if (isIoamCapableNetconfDevice(node)) {
             nodeManager.removeNode(node);
         }
     }
 
     @Override
-    public void update(@Nonnull Node originalNode, @Nonnull Node updatedNode) {
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node originalNode, @Nonnull Node updatedNode) {
         if (isIoamCapableNetconfDevice(updatedNode)) {
             nodeManager.updateNode(updatedNode);
         }

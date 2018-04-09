@@ -50,7 +50,7 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
     }
 
     @Override
-    public void add(@Nonnull Interface newInterface) {
+    public void add(@Nonnull InstanceIdentifier<Interface> instanceIdentifier, @Nonnull Interface newInterface) {
         // VM migration: logical interface state is added once the VM has migrated
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         LOG.debug("Received interface state add event {}", newInterface);
@@ -66,14 +66,16 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
     }
 
     @Override
-    public void remove(@Nonnull Interface removedInterface) {
+    public void remove(@Nonnull InstanceIdentifier<Interface> instanceIdentifier, @Nonnull Interface removedInterface) {
         // VM migration: logical interface state is removed while VM migrates to different node/port
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         // This is a NOP, we wait until until the VM has migrated once it's interface registers again
     }
 
     @Override
-    public void update(@Nonnull Interface originalInterface, Interface updatedInterface) {
+    public void update(@Nonnull InstanceIdentifier<Interface> instanceIdentifier,
+                       @Nonnull Interface originalInterface,
+                       @Nonnull Interface updatedInterface) {
         // NOT VM migration: VM unavailable for any other reason
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#update
         // Do nothing, should be handled by a failover mechanism

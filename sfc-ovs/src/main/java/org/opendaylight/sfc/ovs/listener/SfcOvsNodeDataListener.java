@@ -67,7 +67,8 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void add(@Nonnull Node node) {
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                    @Nonnull Node node) {
         LOG.debug("Created OVS Node: {}", node.toString());
 
         /*
@@ -107,7 +108,8 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void remove(@Nonnull Node node) {
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node node) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled
@@ -116,7 +118,8 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void update(@Nonnull Node originalNode, @Nonnull Node updatedNode) {
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
+                       @Nonnull Node originalNode, @Nonnull Node updatedNode) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled

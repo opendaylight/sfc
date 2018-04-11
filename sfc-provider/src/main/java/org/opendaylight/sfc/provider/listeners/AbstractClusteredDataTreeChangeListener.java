@@ -24,7 +24,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  *
  * @deprecated this class is deprecated, use the
- * {@link org.opendaylight.genius.datastoreutils.listeners.AbstractClusteredSyncDataTreeChangeListener} in Genius.
+ * {@link org.opendaylight.genius.tools.mdsal.listener.AbstractClusteredSyncDataTreeChangeListener} in Genius.
  */
 @Deprecated
 public abstract class AbstractClusteredDataTreeChangeListener<T extends DataObject>

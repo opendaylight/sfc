@@ -23,7 +23,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @param <T> type of the data object the listener is registered to.
  * @author David Suárez (david.suarez.fuentes@ericsson.com)
  * @deprecated this class is deprecated, use the
- * {@link org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener} available in Genius.
+ * {@link org.opendaylight.genius.tools.mdsal.listener.AbstractSyncDataTreeChangeListener} available in Genius.
  */
 @Deprecated
 public abstract class AbstractDataTreeChangeListener<T extends DataObject>

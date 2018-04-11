@@ -30,6 +30,11 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.genius</groupId>
+      <artifactId>tools-api</artifactId>
+      <version>${genius.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.genius</groupId>
       <artifactId>itm-api</artifactId>
       <version>${genius.version}</version>
     </dependency>

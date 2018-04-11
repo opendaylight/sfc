@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractAsyncDataTreeChangeListener;
+import org.opendaylight.genius.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;

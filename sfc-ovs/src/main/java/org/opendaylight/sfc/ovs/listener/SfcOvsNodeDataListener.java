@@ -30,7 +30,7 @@ import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.datastoreutils.listeners.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.genius.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;

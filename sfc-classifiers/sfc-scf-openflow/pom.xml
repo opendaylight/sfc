@@ -36,6 +36,10 @@
             <groupId>org.opendaylight.genius</groupId>
             <artifactId>mdsalutil-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.genius</groupId>
+            <artifactId>tools-api</artifactId>
+        </dependency>
 
         <!-- Testing dependencies -->
         <dependency>

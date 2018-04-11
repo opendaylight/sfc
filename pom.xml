@@ -196,6 +196,11 @@
         <artifactId>mdsalutil-api</artifactId>
         <version>${genius.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.opendaylight.genius</groupId>
+        <artifactId>tools-api</artifactId>
+        <version>${genius.version}</version>
+      </dependency>
 
       <!-- Others -->
       <dependency>

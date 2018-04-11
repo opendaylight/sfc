@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6592e3_eaecd9bc",
+        "filename": "sfc-classifiers/sfc-scf-openflow/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-04-11T15:56:22Z",
+      "side": 1,
+      "message": "If we are migrating, do we still need this then?",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 21
+      },
+      "revId": "5cfd03a69f0a49259c0e5a8bc61143fd7820e8eb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9f0dc6cc_0e368981",
+        "filename": "sfc-genius/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-04-11T15:56:22Z",
+      "side": 1,
+      "message": "Do we still need this?",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 17
+      },
+      "revId": "5cfd03a69f0a49259c0e5a8bc61143fd7820e8eb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "46b5ee3f_5c18d79a",
+        "filename": "sfc-provider/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-04-11T15:56:22Z",
+      "side": 1,
+      "message": "Do we still need this?",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 21
+      },
+      "revId": "5cfd03a69f0a49259c0e5a8bc61143fd7820e8eb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

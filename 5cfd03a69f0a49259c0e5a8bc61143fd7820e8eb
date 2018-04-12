@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "177c7c1e_30682606",
+        "filename": "sfc-classifiers/sfc-scf-openflow/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-04-12T12:26:48Z",
+      "side": 1,
+      "message": "Ok",
+      "parentUuid": "01b8e226_0e6b1802",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 21
+      },
+      "revId": "5cfd03a69f0a49259c0e5a8bc61143fd7820e8eb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9f0dc6cc_0e368981",
         "filename": "sfc-genius/pom.xml",
         "patchSetId": 1

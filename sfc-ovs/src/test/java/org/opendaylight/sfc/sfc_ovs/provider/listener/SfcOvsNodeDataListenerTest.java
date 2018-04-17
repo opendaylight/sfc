@@ -108,7 +108,7 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         Node node = createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
         // This will call sfcOvsSffEntryDataListener.add()
-        sfcOvsNodeDataListener.add(node);
+        sfcOvsNodeDataListener.add(InstanceIdentifier.create(Node.class), node);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);

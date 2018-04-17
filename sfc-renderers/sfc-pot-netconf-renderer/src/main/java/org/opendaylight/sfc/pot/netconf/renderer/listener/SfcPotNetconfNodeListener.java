@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfNodeListener.class);
 
     private final SfcPotNetconfNodeManager nodeManager;
-    private List<String> ioamNetconfCapabilities = new ArrayList<>();
+    private List<String> ioamNetconfCapabilities;
 
     @Inject
     public SfcPotNetconfNodeListener(DataBroker dataBroker, SfcPotNetconfNodeManager nodeManager) {
@@ -58,24 +57,25 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     private List<String> initializeIoamNetconfCapabilities() {
         final String netconf = "urn:ietf:params:netconf:base:1.0";
         final String ioamPot = "(urn:cisco:params:xml:ns:yang:sfc-ioam-sb-pot?revision=2017-01-12)sfc-ioam-sb-pot";
-        String[] capabilityEntries = { netconf, ioamPot };
+        String[] capabilityEntries = {netconf, ioamPot};
         return Arrays.asList(capabilityEntries);
     }
 
     @Override
-    public void add(@Nonnull Node node) {
-        update(node, node);
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+        update(instanceIdentifier, node, node);
     }
 
     @Override
-    public void remove(@Nonnull Node node) {
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
         if (isIoamCapableNetconfDevice(node)) {
             nodeManager.removeNode(node);
         }
     }
 
     @Override
-    public void update(@Nonnull Node originalNode, @Nonnull Node updatedNode) {
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalNode,
+                       @Nonnull Node updatedNode) {
         if (isIoamCapableNetconfDevice(updatedNode)) {
             nodeManager.updateNode(updatedNode);
         }
@@ -90,8 +90,8 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
 
         AvailableCapabilities capabilities = netconfAugmentation.getAvailableCapabilities();
 
-        return capabilities != null
-                && capabilities.getAvailableCapability().stream().map(AvailableCapability::getCapability)
-                        .collect(Collectors.toList()).containsAll(ioamNetconfCapabilities);
+        return capabilities != null && capabilities.getAvailableCapability().stream()
+                .map(AvailableCapability::getCapability).collect(Collectors.toList())
+                .containsAll(ioamNetconfCapabilities);
     }
 }

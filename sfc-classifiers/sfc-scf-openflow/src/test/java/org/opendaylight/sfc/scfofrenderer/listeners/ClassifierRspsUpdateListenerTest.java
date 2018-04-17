@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class ClassifierRspsUpdateListenerTest {
 
@@ -105,14 +106,14 @@ public class ClassifierRspsUpdateListenerTest {
 
     @Test
     public void testRenderRsp() {
-        theUpdateListener.add(newRsp);
+        theUpdateListener.add(InstanceIdentifier.create(RenderedServicePath.class), newRsp);
         Mockito.verifyZeroInteractions(theOpenflowWriter);
         Mockito.verifyZeroInteractions(theClassifierProcessor);
     }
 
     @Test
     public void testUpdateRsp() {
-        theUpdateListener.update(oldRsp, newRsp);
+        theUpdateListener.update(InstanceIdentifier.create(RenderedServicePath.class), oldRsp, newRsp);
 
         Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
         Mockito.verify(theOpenflowWriter).deleteFlowSet();
@@ -121,7 +122,7 @@ public class ClassifierRspsUpdateListenerTest {
 
     @Test
     public void testDeleteRsp() {
-        theUpdateListener.remove(oldRsp);
+        theUpdateListener.remove(InstanceIdentifier.create(RenderedServicePath.class), oldRsp);
 
         /*
          * Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());

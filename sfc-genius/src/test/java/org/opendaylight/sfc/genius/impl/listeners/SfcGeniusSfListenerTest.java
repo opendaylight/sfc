@@ -68,8 +68,7 @@ public class SfcGeniusSfListenerTest {
 
     @Test
     public void remove() throws Exception {
-        sfcGeniusSfListener.remove(serviceFunction);
+        sfcGeniusSfListener.remove(InstanceIdentifier.create(ServiceFunction.class), serviceFunction);
         verify(sfcGeniusServiceManager).unbindInterfaces(Collections.singletonList("IFA"));
     }
-
 }

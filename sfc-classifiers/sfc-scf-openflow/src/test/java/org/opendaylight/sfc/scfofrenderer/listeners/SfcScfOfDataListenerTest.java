@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.AclBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.AclBase;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.Ipv4Acl;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test Suite to test the SfcScfOfDataListener class.
@@ -66,7 +67,7 @@ public class SfcScfOfDataListenerTest {
     public void testOnSfcScfOfDataCreated() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
-        sfcScfOfDataListener.add(serviceFunctionClassifier);
+        sfcScfOfDataListener.add(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -82,7 +83,8 @@ public class SfcScfOfDataListenerTest {
     public void testOnSfcScfOfDataRemoved() throws Exception {
         ServiceFunctionClassifier serviceFunctionClassifier = buildServiceFunctionClassifier();
 
-        sfcScfOfDataListener.remove(serviceFunctionClassifier);
+        sfcScfOfDataListener
+                .remove(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
 
         Thread.sleep(500);
 
@@ -110,7 +112,9 @@ public class SfcScfOfDataListenerTest {
         updatedServiceFunctionClassifierBuilder.setAcl(aclDummy2);
         ServiceFunctionClassifier updatedServiceFunctionClassifier = updatedServiceFunctionClassifierBuilder.build();
 
-        sfcScfOfDataListener.update(originalServiceFunctionClassifier, updatedServiceFunctionClassifier);
+        sfcScfOfDataListener
+                .update(InstanceIdentifier.create(ServiceFunctionClassifier.class), originalServiceFunctionClassifier,
+                        updatedServiceFunctionClassifier);
 
         Thread.sleep(500);
 

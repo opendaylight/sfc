@@ -62,14 +62,14 @@ public class SfcGeniusInterfaceStateListenerTest {
 
     @Test
     public void add() throws Exception {
-        sfcGeniusInterfaceStateListener.add(anInterface);
+        sfcGeniusInterfaceStateListener.add(InstanceIdentifier.create(Interface.class), anInterface);
         verify(handler).interfaceStateUp("IF1", BigInteger.valueOf(123456789));
     }
 
     @Test
     public void addNoLowerLayerIf() throws Exception {
         when(anInterface.getLowerLayerIf()).thenReturn(Collections.emptyList());
-        sfcGeniusInterfaceStateListener.add(anInterface);
+        sfcGeniusInterfaceStateListener.add(InstanceIdentifier.create(Interface.class), anInterface);
         verifyZeroInteractions(handler);
     }
 

@@ -83,50 +83,49 @@ public class SfcGeniusSffDpnStateListenerTest {
     @Test
     public void remove() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
-        sfcGeniusSffDpnStateListener.remove(dpn);
+        sfcGeniusSffDpnStateListener.remove(InstanceIdentifier.create(Dpn.class), dpn);
         verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
     }
 
     @Test
     public void removeNoPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true);
-        sfcGeniusSffDpnStateListener.remove(dpn);
+        sfcGeniusSffDpnStateListener.remove(InstanceIdentifier.create(Dpn.class), dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
     @Test
     public void updateAddPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false).thenReturn(true);
-        sfcGeniusSffDpnStateListener.update(dpn, dpn);
+        sfcGeniusSffDpnStateListener.update(InstanceIdentifier.create(Dpn.class), dpn, dpn);
         verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
     }
 
     @Test
     public void updateAddRemoveSomePaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false).thenReturn(false);
-        sfcGeniusSffDpnStateListener.update(dpn, dpn);
+        sfcGeniusSffDpnStateListener.update(InstanceIdentifier.create(Dpn.class), dpn, dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
 
     @Test
     public void updateRemovePaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true).thenReturn(false);
-        sfcGeniusSffDpnStateListener.update(dpn, dpn);
+        sfcGeniusSffDpnStateListener.update(InstanceIdentifier.create(Dpn.class), dpn, dpn);
         verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
     }
 
     @Test
     public void add() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
-        sfcGeniusSffDpnStateListener.add(dpn);
+        sfcGeniusSffDpnStateListener.add(InstanceIdentifier.create(Dpn.class), dpn);
         verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
     }
 
     @Test
     public void addNoPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true);
-        sfcGeniusSffDpnStateListener.add(dpn);
+        sfcGeniusSffDpnStateListener.add(InstanceIdentifier.create(Dpn.class), dpn);
         verifyZeroInteractions(sfcGeniusServiceManager);
     }
-
 }

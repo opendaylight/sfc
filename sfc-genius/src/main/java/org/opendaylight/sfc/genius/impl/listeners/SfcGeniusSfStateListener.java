@@ -42,7 +42,8 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void add(@Nonnull ServiceFunctionState newServiceFunctionState) {
+    public void add(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                    @Nonnull ServiceFunctionState newServiceFunctionState) {
         // If this SF starts participating in RSPs, we need to bind to its interfaces
         LOG.debug("Received service function state add event {}", newServiceFunctionState);
         int numberOfNewPaths = newServiceFunctionState.getSfServicePath() != null
@@ -55,7 +56,8 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void remove(@Nonnull ServiceFunctionState removedServiceFunctionState) {
+    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @Nonnull ServiceFunctionState removedServiceFunctionState) {
         // If this SF stops participating in RSPs, we need to unbind from its interfaces
         LOG.debug("Received service function state remove event {}", removedServiceFunctionState);
         int numberOfOldPaths = removedServiceFunctionState.getSfServicePath() != null
@@ -68,8 +70,9 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void update(@Nonnull ServiceFunctionState originalServiceFunctionState,
-                       ServiceFunctionState updatedServiceFunctionState) {
+    public void update(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @Nonnull ServiceFunctionState originalServiceFunctionState,
+                       @Nonnull ServiceFunctionState updatedServiceFunctionState) {
         // If this SF stops participating in RSPs, we need to unbind from its interfaces
         LOG.debug("Received service function state update event {} {}",
                 originalServiceFunctionState,

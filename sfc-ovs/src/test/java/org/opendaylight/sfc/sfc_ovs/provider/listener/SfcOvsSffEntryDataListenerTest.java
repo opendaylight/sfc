@@ -89,7 +89,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         final ServiceFunctionForwarder sff = buildServiceFunctionForwarderNoDPL();
         createOvsdbNodeForSff(IP_ADDRESS, PORT_NUMBER);
 
-        sfcOvsSffEntryDataListener.add(sff);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         // The DPL is used to lookup the topology node
@@ -107,7 +107,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        sfcOvsSffEntryDataListener.add(sff);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -130,7 +130,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        sfcOvsSffEntryDataListener.add(sff);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -139,7 +139,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         //
         // Now delete the SFF
         //
-        sfcOvsSffEntryDataListener.remove(sff);
+        sfcOvsSffEntryDataListener.remove(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNull(getSffTerminationPoint(ovsdbBridgeId, sff));
@@ -157,7 +157,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         final ServiceFunctionForwarder originalSff = buildServiceFunctionForwarderNoDPL();
         createOvsdbNodeForSff(IP_ADDRESS, PORT_NUMBER);
 
-        sfcOvsSffEntryDataListener.add(originalSff);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), originalSff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(originalSff);
         assertNull(ovsdbBridgeId);
@@ -173,7 +173,8 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
                 .getLocatorType();
         createOvsdbNodeForSff(ipLocator.getIp(), ipLocator.getPort());
 
-        sfcOvsSffEntryDataListener.update(originalSff, updatedSff);
+        sfcOvsSffEntryDataListener
+                .update(InstanceIdentifier.create(ServiceFunctionForwarder.class), originalSff, updatedSff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(updatedSff);
         assertNotNull(ovsdbBridgeId);

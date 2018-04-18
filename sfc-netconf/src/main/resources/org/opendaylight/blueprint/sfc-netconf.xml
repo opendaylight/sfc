@@ -18,12 +18,4 @@
         class="org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI">
      <argument ref="sfcprovidersfdescriptionmonitorapi"/>
   </bean>
-
-  <bean id="sfcNetconfNodeDataListener"
-        class="org.opendaylight.sfc.netconf.provider.listener.SfcNetconfNodeDataListener"
-            destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="sfcnetconfservicefunctionapi"/>
-  </bean>
-
 </blueprint>

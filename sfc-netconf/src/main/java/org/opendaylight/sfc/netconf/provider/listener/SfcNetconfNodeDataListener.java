@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others. All rights reserved.
+ * Copyright (c) 2015, 2018 Cisco Systems, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,12 +20,13 @@ package org.opendaylight.sfc.netconf.provider.listener;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
-import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
-import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.genius.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceForwarderAPI;
 import org.opendaylight.sfc.netconf.provider.api.SfcNetconfServiceFunctionAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -54,60 +55,39 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<Node> {
+@Singleton
+public class SfcNetconfNodeDataListener extends AbstractSyncDataTreeChangeListener<Node> {
 
     private static final String CONTROLLER_CONFIG = "controller-config";
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcNetconfNodeDataListener.class);
 
-    public static final InstanceIdentifier<Node> NETCONF_TOPO_IID = InstanceIdentifier.create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
-            .child(Node.class);
-
     private final SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI;
 
+    @Inject
     public SfcNetconfNodeDataListener(DataBroker dataBroker,
-            SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI) {
-        super(dataBroker, NETCONF_TOPO_IID, LogicalDatastoreType.OPERATIONAL);
+                                      SfcNetconfServiceFunctionAPI sfcNetconfServiceFunctionAPI) {
+        super(dataBroker, LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(new TopologyId(TopologyNetconf.QNAME.getLocalName())))
+                .child(Node.class));
         this.sfcNetconfServiceFunctionAPI = sfcNetconfServiceFunctionAPI;
     }
 
-    private static boolean isServiceFunction(NetconfNode netconfNode) {
-        boolean ret = false;
-        List<AvailableCapability> capabilities = netconfNode.getAvailableCapabilities().getAvailableCapability();
-        for (AvailableCapability cap : capabilities) {
-            if (cap.getCapability().endsWith("service-function-description-monitor-report")) {
-                ret = true;
-                break;
-            }
-        }
-        return ret;
+    @Override
+    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node newDataObject) {
+        // NOOP
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<Node>> changes) {
-        printTraceStart(LOG);
-        for (DataTreeModification<Node> change: changes) {
-            DataObjectModification<Node> rootNode = change.getRootNode();
-            switch (rootNode.getModificationType()) {
-                case SUBTREE_MODIFIED:
-                case WRITE:
-                    // React to data changes in Netconf nodes present in the Netconf topology
-                    if (rootNode.getDataBefore() == null) {
-                        break;
-                    }
+    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node removedDataObject) {
+        // NOOP
+    }
 
-                    NetconfNode nnode = rootNode.getDataAfter().getAugmentation(NetconfNode.class);
-                    if (nnode != null) {
-                        netconfNodeUpdated(getNodeId(change.getRootPath().getRootIdentifier()), nnode);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        printTraceStop(LOG);
+    @Override
+    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalDataObject,
+                       @Nonnull Node updatedDataObject) {
+        // React to data changes in Netconf nodes present in the Netconf topology
+        netconfNodeUpdated(getNodeId(instanceIdentifier), updatedDataObject.getAugmentation(NetconfNode.class));
     }
 
     private void netconfNodeUpdated(NodeId nodeId, NetconfNode nnode) {
@@ -123,8 +103,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
                     // available from
                     // MountPointService
                     LOG.debug("NETCONF Node: {} is fully connected", nodeId.getValue());
-                    List<AvailableCapability> capabilities = nnode.getAvailableCapabilities()
-                            .getAvailableCapability();
+                    List<AvailableCapability> capabilities = nnode.getAvailableCapabilities().getAvailableCapability();
                     LOG.debug("Capabilities: {}", capabilities);
 
                     /* Identify it is SF or SFF */
@@ -135,15 +114,16 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
                             LOG.error("SF type is empty");
                             break;
                         }
-                        SftTypeName sfType = SfcProviderServiceTypeAPI
-                                .readServiceFunctionType(new SftTypeName(type)).getType();
+                        SftTypeName sfType = SfcProviderServiceTypeAPI.readServiceFunctionType(new SftTypeName(type))
+                                .getType();
                         if (sfType == null) {
                             LOG.error("Invalid SF type {}", type);
                             break;
                         }
                         SfName sfNodeName = new SfName(nodeName);
-                        ServiceFunction sf = SfcNetconfServiceFunctionAPI.buildServiceFunctionFromNetconf(
-                                sfNodeName, descInfo.getDataPlaneIp(), descInfo.getDataPlanePort(), sfType);
+                        ServiceFunction sf = SfcNetconfServiceFunctionAPI
+                                .buildServiceFunctionFromNetconf(sfNodeName, descInfo.getDataPlaneIp(),
+                                                                 descInfo.getDataPlanePort(), sfType);
                         if (SfcProviderServiceFunctionAPI.putServiceFunction(sf)) {
                             LOG.info("Successfully created SF from Netconf node {}", nodeName);
                             sfcNetconfServiceFunctionAPI.putServiceFunctionDescription(descInfo, sfNodeName);
@@ -155,8 +135,7 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
                             LOG.error("Failed to create SF from Netconf node {}", nodeName);
                         }
 
-                        SfDescriptionMonitoringThread monitoringThread = new SfDescriptionMonitoringThread(
-                                nodeName);
+                        SfDescriptionMonitoringThread monitoringThread = new SfDescriptionMonitoringThread(nodeName);
                         Thread thread = new Thread(monitoringThread);
                         thread.start();
                     } else { // SFF
@@ -216,6 +195,18 @@ public class SfcNetconfNodeDataListener extends SfcNetconfAbstractDataListener<N
             }
         }
         return nodeId;
+    }
+
+    private static boolean isServiceFunction(NetconfNode netconfNode) {
+        boolean ret = false;
+        List<AvailableCapability> capabilities = netconfNode.getAvailableCapabilities().getAvailableCapability();
+        for (AvailableCapability cap : capabilities) {
+            if (cap.getCapability().endsWith("service-function-description-monitor-report")) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
     }
 
     class SfDescriptionMonitoringThread implements Runnable {

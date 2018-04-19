@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ed1c66e_dba6256c",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/listeners/ServiceFunctionListenerTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2018-04-19T16:29:43Z",
+      "side": 1,
+      "message": "Why is this not needed anymore?",
+      "range": {
+        "startLine": 94,
+        "startChar": 8,
+        "endLine": 94,
+        "endChar": 45
+      },
+      "revId": "aa8db189159589cc013c908905810621589d1a96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

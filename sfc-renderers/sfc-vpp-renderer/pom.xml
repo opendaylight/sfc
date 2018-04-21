@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-renderers</artifactId>
-        <version>0.5.4-SNAPSHOT</version>
+        <version>0.5.4-Carbon</version>
         <relativePath>../</relativePath>
     </parent>
 

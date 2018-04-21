@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>karaf-parent</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.4-Carbon</version>
   </parent>
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-karaf</artifactId>
-  <version>0.5.4-SNAPSHOT</version>
+  <version>0.5.4-Carbon</version>
   <packaging>pom</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->

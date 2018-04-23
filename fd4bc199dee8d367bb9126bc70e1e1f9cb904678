@@ -22,6 +22,30 @@
       "revId": "fd4bc199dee8d367bb9126bc70e1e1f9cb904678",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bda3f65e_6dd56db4",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/listener/SfcNetconfNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5861
+      },
+      "writtenOn": "2018-04-23T20:34:24Z",
+      "side": 1,
+      "message": "I didn\u0027t change that reference and it worked, or at least passed the SFT test, since the Blueprint is able to load it. Anyway, as you say, better to have a consistent naming.",
+      "parentUuid": "59a256ab_f4e03bb0",
+      "range": {
+        "startLine": 69,
+        "startChar": 67,
+        "endLine": 69,
+        "endChar": 95
+      },
+      "revId": "fd4bc199dee8d367bb9126bc70e1e1f9cb904678",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

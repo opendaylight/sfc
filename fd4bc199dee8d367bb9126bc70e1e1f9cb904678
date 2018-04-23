@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "59a256ab_f4e03bb0",
+        "filename": "sfc-netconf/src/main/java/org/opendaylight/sfc/netconf/provider/listener/SfcNetconfNodeDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-04-23T08:38:24Z",
+      "side": 1,
+      "message": "Have you tested that this injection actually work? This is defined in the blueprint as all lower case and I am not sure right now if the wiring is case sensitive. I would probably prefer to fix that to camel case anyway.",
+      "range": {
+        "startLine": 69,
+        "startChar": 67,
+        "endLine": 69,
+        "endChar": 95
+      },
+      "revId": "fd4bc199dee8d367bb9126bc70e1e1f9cb904678",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

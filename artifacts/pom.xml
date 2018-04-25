@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+ Copyright (c) 2018 Pantheon Technologies, s.r.o. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>org.opendaylight.odlparent</groupId>
+      <artifactId>odlparent-lite</artifactId>
+      <version>3.1.1</version>
+      <relativePath/>
+    </parent>
+
+    <groupId>org.opendaylight.sfc</groupId>
+    <artifactId>sfc-artifacts</artifactId>
+    <version>0.8.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- SFC modules -->
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-provider</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-ovs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-statistics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-openflow-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-vpp-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-vnfm-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-genius</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>sfc-shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Feature repositories -->
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>features4-sfc</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Features -->
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-shell</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency-->
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-genius</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-ios-xe-renderer</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-model</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-netconf</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-openflow-renderer</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-ovs</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-pot</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+			<dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+				<artifactId>odl-sfc-pot-netconf-renderer</artifactId>
+				<version>${project.version}</version>
+				<type>xml</type>
+				<classifier>features</classifier>
+			</dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-provider</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-provider-rest</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-sb-rest</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-scf-openflow</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-scf-vpp</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-vnfm-tacker</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-vpp-renderer</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfclisp</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.sfc</groupId>
+                <artifactId>odl-sfc-statistics</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>features</classifier>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.4-SNAPSHOT</version>
+        <version>1.8.5-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-scf-vpp</artifactId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.5-SNAPSHOT</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -34,21 +34,21 @@
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-connector-all</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <version>1.2.5-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-tcp</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <version>1.2.5-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-topology</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <version>1.2.5-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

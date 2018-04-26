@@ -4,7 +4,7 @@
   <parent>
     <artifactId>sfc-parent</artifactId>
     <groupId>org.opendaylight.sfc</groupId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>sfc-genius</artifactId>

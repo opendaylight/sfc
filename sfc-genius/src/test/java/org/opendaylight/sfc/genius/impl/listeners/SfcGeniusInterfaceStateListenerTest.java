@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -20,13 +18,10 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.InterfacesState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -49,12 +44,6 @@ public class SfcGeniusInterfaceStateListenerTest {
 
     @Before
     public void setup() {
-        when(dataBroker.registerDataChangeListener(
-                        eq(LogicalDatastoreType.OPERATIONAL),
-                        eq(InstanceIdentifier.create(InterfacesState.class).child(Interface.class)),
-                        any(),
-                        any()))
-                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
         when(anInterface.getName()).thenReturn("IF1");
         when(anInterface.getLowerLayerIf()).thenReturn(Collections.singletonList("openflow:123456789:3"));
         sfcGeniusInterfaceStateListener = new SfcGeniusInterfaceStateListener(dataBroker, handler, executorService);

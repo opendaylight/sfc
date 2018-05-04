@@ -8,10 +8,7 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,13 +16,10 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -57,12 +51,6 @@ public class SfcGeniusSfListenerTest {
         sfDataPlaneLocator = new SfDataPlaneLocatorBuilder().setLocatorType(logicalInterface).build();
         List<SfDataPlaneLocator> sfDataPlaneLocatorList = Collections.singletonList(sfDataPlaneLocator);
         serviceFunction = new ServiceFunctionBuilder().setSfDataPlaneLocator(sfDataPlaneLocatorList).build();
-        when(dataBroker.registerDataChangeListener(
-                        eq(LogicalDatastoreType.CONFIGURATION),
-                        eq(InstanceIdentifier.create(ServiceFunctions.class).child(ServiceFunction.class)),
-                        any(),
-                        any()))
-                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
         sfcGeniusSfListener = new SfcGeniusSfListener(dataBroker, sfcGeniusServiceManager, executorService);
     }
 

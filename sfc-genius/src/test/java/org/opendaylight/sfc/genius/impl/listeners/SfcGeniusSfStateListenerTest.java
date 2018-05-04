@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -19,14 +17,11 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.ServiceFunctionState;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -53,12 +48,6 @@ public class SfcGeniusSfStateListenerTest {
 
     @Before
     public void setup() {
-        when(dataBroker.registerDataChangeListener(
-                    eq(LogicalDatastoreType.OPERATIONAL),
-                    eq(InstanceIdentifier.create(ServiceFunctionsState.class).child(ServiceFunctionState.class)),
-                    any(),
-                    any()))
-                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
         sfcGeniusSfStateListener = new SfcGeniusSfStateListener(dataBroker, sfcGeniusServiceManager, executorService);
     }
 

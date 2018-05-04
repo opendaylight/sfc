@@ -8,8 +8,6 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -20,17 +18,11 @@ import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.ServiceFunctionForwardersState;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.ServiceFunctionForwarderState;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
-import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.SffLogicalSffAugmentation;
-import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.DpnRsps;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.Dpn;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.RspsForDpnid;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.Rsps;
@@ -64,16 +56,6 @@ public class SfcGeniusSffDpnStateListenerTest {
         when(dpn.getDpnId()).thenReturn(new DpnIdType(new BigInteger("1")));
         when(dpn.getRspsForDpnid()).thenReturn(rspsForDpnid);
         when(rspsForDpnid.getRsps()).thenReturn(rspsList);
-        when(dataBroker.registerDataChangeListener(
-                eq(LogicalDatastoreType.OPERATIONAL),
-                eq(InstanceIdentifier.create(ServiceFunctionForwardersState.class)
-                        .child(ServiceFunctionForwarderState.class)
-                        .augmentation(SffLogicalSffAugmentation.class)
-                        .child(DpnRsps.class)
-                        .child(Dpn.class)),
-                any(),
-                any()))
-                .thenAnswer(Answers.RETURNS_DEEP_STUBS.get());
         sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(
                 dataBroker,
                 sfcGeniusServiceManager,

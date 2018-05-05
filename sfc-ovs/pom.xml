@@ -24,6 +24,11 @@
       <artifactId>sfc-provider</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.genius</groupId>
+      <artifactId>tools-api</artifactId>
+      <version>${genius.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opendaylight.ovsdb</groupId>
       <artifactId>southbound-impl</artifactId>
       <version>${ovsdb.southbound.version}</version>

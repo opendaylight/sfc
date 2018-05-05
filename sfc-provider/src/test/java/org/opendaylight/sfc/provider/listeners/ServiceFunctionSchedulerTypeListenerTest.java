@@ -26,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataObjectModification.Mod
 import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
 import org.opendaylight.sfc.provider.api.SfcProviderScheduleTypeAPI;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.LoadBalance;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.Random;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
@@ -35,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerType;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.service.function.scheduler.types.ServiceFunctionSchedulerTypeKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test Suite to test the ServiceFunctionSchedulerTypeListener class.
@@ -97,8 +99,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.WRITE);
         when(dataObjectModification.getDataBefore()).thenReturn(null);
         when(dataObjectModification.getDataAfter()).thenReturn(serviceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+
+        serviceFunctionSchedulerTypeListener.add(InstanceIdentifier.create(ServiceFunctionSchedulerType.class),
+                serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -134,8 +137,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
         when(dataObjectModification.getDataBefore()).thenReturn(serviceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+
+        serviceFunctionSchedulerTypeListener.remove(InstanceIdentifier.create(ServiceFunctionSchedulerType.class),
+                serviceFunctionSchedulerType);
 
         Thread.sleep(500);
 
@@ -181,8 +185,9 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
         when(dataObjectModification.getDataBefore()).thenReturn(originalServiceFunctionSchedulerType);
         when(dataObjectModification.getDataAfter()).thenReturn(updatedServiceFunctionSchedulerType);
-        collection.add(dataTreeModification);
-        serviceFunctionSchedulerTypeListener.onDataTreeChanged(collection);
+
+        serviceFunctionSchedulerTypeListener.update(InstanceIdentifier.create(ServiceFunctionSchedulerType.class),
+                originalServiceFunctionSchedulerType, updatedServiceFunctionSchedulerType);
 
         Thread.sleep(500);
 

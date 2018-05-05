@@ -123,8 +123,7 @@ public class SfcOvsNodeDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataAfter()).thenReturn(node);
 
         // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsNodeDataListener.onDataTreeChanged(collection);
+        sfcOvsNodeDataListener.add(InstanceIdentifier.create(Node.class), node);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);

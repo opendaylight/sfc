@@ -105,9 +105,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataBefore()).thenReturn(null);
         when(dataObjectModification.getDataAfter()).thenReturn(sff);
 
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         // The DPL is used to lookup the topology node
@@ -130,9 +128,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataBefore()).thenReturn(null);
         when(dataObjectModification.getDataAfter()).thenReturn(sff);
 
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -160,9 +156,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataBefore()).thenReturn(null);
         when(dataObjectModification.getDataAfter()).thenReturn(sff);
 
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNotNull(ovsdbBridgeId);
@@ -176,9 +170,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getModificationType()).thenReturn(ModificationType.DELETE);
         when(dataObjectModification.getDataBefore()).thenReturn(sff);
 
-        // This will call sfcOvsSffEntryDataListener.remove()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.remove(InstanceIdentifier.create(ServiceFunctionForwarder.class), sff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(sff);
         assertNull(getSffTerminationPoint(ovsdbBridgeId, sff));
@@ -201,9 +193,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataBefore()).thenReturn(null);
         when(dataObjectModification.getDataAfter()).thenReturn(originalSff);
 
-        // This will call sfcOvsSffEntryDataListener.add()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.add(InstanceIdentifier.create(ServiceFunctionForwarder.class), originalSff);
 
         NodeId ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(originalSff);
         assertNull(ovsdbBridgeId);
@@ -224,9 +214,8 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         when(dataObjectModification.getDataBefore()).thenReturn(originalSff);
         when(dataObjectModification.getDataAfter()).thenReturn(updatedSff);
 
-        // This will call sfcOvsSffEntryDataListener.update()
-        collection.add(dataTreeModification);
-        sfcOvsSffEntryDataListener.onDataTreeChanged(collection);
+        sfcOvsSffEntryDataListener.update(InstanceIdentifier.create(ServiceFunctionForwarder.class),
+                originalSff, updatedSff);
 
         ovsdbBridgeId = SfcOvsUtil.getOvsdbAugmentationNodeIdBySff(updatedSff);
         assertNotNull(ovsdbBridgeId);

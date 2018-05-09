@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "abb1aa08_26e7a098",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-09T15:52:28Z",
+      "side": 1,
+      "message": "Also worth considering in this section:\n\n- sfc-encapsulation-type of the SFP might have to be set to \u0027transport\u0027\n- the transport type of the specific data plane locators might also need to be set to a specific value?",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 81
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c7d699ee_2440ec1c",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-09T15:52:28Z",
+      "side": 1,
+      "message": "I think we discussed previously that there might be no need for this flag. When integrated with genius, SFC is not up to this point creating tunnel ports (it reuses whatever netvirt sets up). But if it did, the transport type of the SFP should be enough to determine the type of tunnel, shouldn\u0027t it?",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 121
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8905a12e_722eeb20",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-09T15:52:28Z",
+      "side": 1,
+      "message": "I think it is better to rely on the fact that a logical SFF is traversed. We might have at some point vxlan support with no genius.",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 118
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "75372665_0011e69f",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-09T15:52:28Z",
+      "side": 1,
+      "message": "Take note that there are several classifier implementations. The Netvirt classifier is using tables 100,101,221,222,223. The internal SFC classifier uses table 83. These implementations are independent and incompatible with each other.",
+      "range": {
+        "startLine": 261,
+        "startChar": 0,
+        "endLine": 262,
+        "endChar": 123
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

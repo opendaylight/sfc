@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "96d21540_f7b65908",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 2532
+      },
+      "writtenOn": "2018-05-11T06:25:19Z",
+      "side": 1,
+      "message": "1) Yes, setting \u0027sfc-encapsulation-type\u0027 type to \u0027transport\u0027 would make it clearer.\n\n2) How do we handle violations? E.g. SFP encap type is set to just \"VxLAN\" but locator of an SFF is set to \"VxLAN-GPE\". Do we throw error or ignore the SFF encap type and SFP encap type ir more global?",
+      "parentUuid": "abb1aa08_26e7a098",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 81
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7d699ee_2440ec1c",
         "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
         "patchSetId": 7

@@ -2,6 +2,167 @@
   "comments": [
     {
       "key": {
+        "uuid": "75269e9e_231c9c72",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Update this to point to Oxygen.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 127
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b1b3cd31_7e03164a",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "The only way SFC is integrated with Netvirt is by using Genius. Update this section accordingly. Also, the SFC pipeline is the same independently of being integrated with Netvirt/Genius. That is, both stand-alone and Netvirt/Genius integrated SFC has the same SFC pipeline.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 86
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b01d16dc_118fc304",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Update this to point to Oxygen.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 117
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "89881b55_94271beb",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "VXLAN tunnels should be compatible with VXLAN-GPE tunnels. That is, for a system with VXLAN-GPE tunnels, VXLAN tunnels/packets are supported. Both use the same header. The VXLAN-GPE just uses a reserved header from the existing VXLAN header. Taking this into account, why is this a problem?",
+      "range": {
+        "startLine": 32,
+        "startChar": 3,
+        "endLine": 37,
+        "endChar": 40
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "53577cc5_ee37b614",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Mention using vlan tagging as explained later.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 90
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "078ccbea_0acda260",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "will not be",
+      "range": {
+        "startLine": 47,
+        "startChar": 74,
+        "endLine": 47,
+        "endChar": 84
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1314451b_5e14bee5",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "This is duplicated with the following paragraph.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 57,
+        "endChar": 78
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "abb1aa08_26e7a098",
         "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
         "patchSetId": 7
@@ -49,6 +210,30 @@
     },
     {
       "key": {
+        "uuid": "97986777_e43eaae5",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Actually, the sfc-encapsulation-type MUST be set to transport.",
+      "parentUuid": "96d21540_f7b65908",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 81
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c7d699ee_2440ec1c",
         "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
         "patchSetId": 7
@@ -65,6 +250,53 @@
         "startChar": 0,
         "endLine": 88,
         "endChar": 121
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "15c6fbf6_7eac98d5",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Jaime is correct, there should be no global \"non-NSH\" flags, please remove this.",
+      "parentUuid": "c7d699ee_2440ec1c",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 121
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "14781c8f_1b29eb49",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "and the",
+      "range": {
+        "startLine": 97,
+        "startChar": 51,
+        "endLine": 97,
+        "endChar": 58
       },
       "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -95,6 +327,328 @@
     },
     {
       "key": {
+        "uuid": "22a126ae_bacf94e2",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "will rely on",
+      "range": {
+        "startLine": 101,
+        "startChar": 57,
+        "endLine": 101,
+        "endChar": 71
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "90a713f1_d2ca8936",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "A note should be added to mention: The end-user will need to predict how many service chains and hops per service chain there will be when reserving the VNIs. Otherwise, they risk running out of VNIs.",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 61
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "21881b2d_4543b704",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "it is sufficient",
+      "range": {
+        "startLine": 130,
+        "startChar": 27,
+        "endLine": 130,
+        "endChar": 40
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d8c324be_98151922",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "forward it to an SF connected to the SFF, forward it to the next SFF, or hand it over to the next...",
+      "range": {
+        "startLine": 130,
+        "startChar": 105,
+        "endLine": 131,
+        "endChar": 94
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8baf13b1_39bee63d",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "is on",
+      "range": {
+        "startLine": 147,
+        "startChar": 9,
+        "endLine": 147,
+        "endChar": 16
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "87954630_92a7c482",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "at least",
+      "range": {
+        "startLine": 148,
+        "startChar": 112,
+        "endLine": 148,
+        "endChar": 119
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1b0885e7_311c2e03",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "here, as it reduces",
+      "range": {
+        "startLine": 186,
+        "startChar": 101,
+        "endLine": 186,
+        "endChar": 116
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8c56f6c4_6cdcee5e",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "I dont understand this sentence.",
+      "range": {
+        "startLine": 194,
+        "startChar": 84,
+        "endLine": 195,
+        "endChar": 98
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11c5ab89_5675931f",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "This would cause a packet loop if not handled correctly.",
+      "range": {
+        "startLine": 196,
+        "startChar": 75,
+        "endLine": 196,
+        "endChar": 108
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "181e9241_c0acab29",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "of additional VLAN",
+      "range": {
+        "startLine": 197,
+        "startChar": 92,
+        "endLine": 197,
+        "endChar": 113
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10226ee7_af2646f5",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "of the SF.",
+      "range": {
+        "startLine": 204,
+        "startChar": 59,
+        "endLine": 204,
+        "endChar": 67
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "48e90252_66e34701",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Is this the case where the SFF handling the last hop is not on the same compute node as the next Genius service? If not, then how will that be handled?",
+      "range": {
+        "startLine": 222,
+        "startChar": 0,
+        "endLine": 223,
+        "endChar": 39
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10347947_cbdf19d4",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "change this to use the Oxygen user guide. Also, change the link to point to the SFC OpenFlow pipeline.",
+      "range": {
+        "startLine": 233,
+        "startChar": 65,
+        "endLine": 233,
+        "endChar": 154
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e58090ed_7f0639cb",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "The point of the SFC Transport Ingress table is to only allow the expected transports, and to drop everything else. So, there should be a flow to check for VXLAN, and pass the packets to the next table. What you describe here should be in the SFC Path Mapper table. Currently the Path Mapper isnt needed for NSH, but it can be updated as you explain here.",
+      "range": {
+        "startLine": 251,
+        "startChar": 3,
+        "endLine": 251,
+        "endChar": 35
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "75372665_0011e69f",
         "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
         "patchSetId": 7
@@ -111,6 +665,98 @@
         "startChar": 0,
         "endLine": 262,
         "endChar": 123
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "83275ddb_4830b416",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "and Netvirt-Genius",
+      "range": {
+        "startLine": 280,
+        "startChar": 42,
+        "endLine": 280,
+        "endChar": 60
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a177b4e1_7b538d29",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "How will the VNI and vlan reservations be handled across the cluster?",
+      "range": {
+        "startLine": 282,
+        "startChar": 0,
+        "endLine": 282,
+        "endChar": 25
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "95589a85_48ae3234",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "Perhaps we should mention the scaling problem of having to reserve enough VNIs for all the possible Service Chains and Service Chain Hops.",
+      "range": {
+        "startLine": 294,
+        "startChar": 0,
+        "endLine": 294,
+        "endChar": 28
+      },
+      "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a99e5c65_166230ea",
+        "filename": "docs/specs/non-nsh-dataplane-genius-integration.rst",
+        "patchSetId": 7
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-11T19:48:35Z",
+      "side": 1,
+      "message": "our approach to the last SFF needs to have a \"leg\"",
+      "range": {
+        "startLine": 309,
+        "startChar": 22,
+        "endLine": 309,
+        "endChar": 67
       },
       "revId": "1ad002608adaaf2e5cd47add755925429dff096b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",

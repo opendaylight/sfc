@@ -15,3 +15,4 @@ Contents:
    rsp-stats
    sfc-shell
    directional-dpl
+   sfc-openflow-pipeline

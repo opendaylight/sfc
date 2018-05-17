@@ -24,8 +24,10 @@ import java.util.concurrent.Future;
 import org.opendaylight.sfc.sfclisp.provider.SfcLispUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.eid.container.Eid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.AddMappingOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.OdlMappingserviceService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.RemoveMappingOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,8 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(locators, "Cannot ADD new Mapping to LISP configuration store, Locators is null.");
 
         LOG.trace("ADD mapping with locators: {}", locators);
-        Future<RpcResult<Void>> result = lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators));
+        Future<RpcResult<AddMappingOutput>> result =
+                lfmService.addMapping(SfcLispUtil.buildAddMappingInput(eid, locators));
         try {
             result.get().getResult();
         } catch (InterruptedException | ExecutionException e) {
@@ -107,7 +110,8 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
         Preconditions.checkNotNull(eid, "Cannot REMOVE new Mapping to LISP configuration store, EID is null.");
 
         LOG.trace("REMOVE mapping for EID: {}", eid);
-        Future<RpcResult<Void>> result = lfmService.removeMapping(SfcLispUtil.buildRemoveMappingInput(eid, 0));
+        Future<RpcResult<RemoveMappingOutput>> result =
+                lfmService.removeMapping(SfcLispUtil.buildRemoveMappingInput(eid, 0));
         try {
             result.get().getResult();
             return true;

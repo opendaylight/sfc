@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifierKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionOutput;
@@ -568,11 +569,10 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
     }
 
     private void putServiceFunction(PutServiceFunctionInput putSfInput) throws Exception {
-        Future<RpcResult<Void>> result = sfcProviderRpc.putServiceFunction(putSfInput);
-        assertNotNull("Failed to put service function.",
+        Future<RpcResult<PutServiceFunctionOutput>> result = sfcProviderRpc.putServiceFunction(putSfInput);
+        assertTrue("Failed to put service function.",
                 result != null && result.get() != null && result.get().isSuccessful());
-        assert result != null;
-        assertNull(result.get().getResult());
+        assertNotNull(result.get().getResult());
         assertNotNull(result.get().getErrors());
         assertTrue(result.get().getErrors().isEmpty());
     }
@@ -955,7 +955,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         return createRenderedPathInputBuilder.build();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void createRenderedPathNoNameTest() throws ExecutionException, InterruptedException {
         init();
 
@@ -976,7 +976,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         assertTrue(output.getName().startsWith(SFP_NAME.getValue()));
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void createRenderedPathNoSfpTest() throws ExecutionException, InterruptedException {
         init();
 

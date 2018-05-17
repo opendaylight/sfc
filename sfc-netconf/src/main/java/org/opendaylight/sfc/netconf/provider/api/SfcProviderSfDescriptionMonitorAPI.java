@@ -17,7 +17,9 @@ import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.controller.sal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFDescriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.GetSFMonitoringInfoOutput;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.sf.desc.mon.rpt.rev141105.ServiceFunctionDescriptionMonitorReportService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.network.topology.topology.topology.types.TopologyNetconf;
@@ -51,7 +53,8 @@ public class SfcProviderSfDescriptionMonitorAPI {
         printTraceStart(LOG);
         ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
         if (service != null) {
-            Future<RpcResult<GetSFDescriptionOutput>> result = service.getSFDescription();
+            Future<RpcResult<GetSFDescriptionOutput>> result =
+                    service.getSFDescription(new GetSFDescriptionInputBuilder().build());
             RpcResult<GetSFDescriptionOutput> output;
             try {
                 output = result.get();
@@ -76,7 +79,8 @@ public class SfcProviderSfDescriptionMonitorAPI {
 
         ServiceFunctionDescriptionMonitorReportService service = getSfDescriptionMonitorService(nodeName);
         if (service != null) {
-            Future<RpcResult<GetSFMonitoringInfoOutput>> result = service.getSFMonitoringInfo();
+            Future<RpcResult<GetSFMonitoringInfoOutput>> result =
+                    service.getSFMonitoringInfo(new GetSFMonitoringInfoInputBuilder().build());
             RpcResult<GetSFMonitoringInfoOutput> output;
             try {
                 output = result.get();

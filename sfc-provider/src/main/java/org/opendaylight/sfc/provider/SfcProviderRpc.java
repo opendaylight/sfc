@@ -14,6 +14,7 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
@@ -65,8 +66,13 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.TraceRenderedServicePathOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.DeleteAllServiceFunctionInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.DeleteAllServiceFunctionOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.DeleteServiceFunctionInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.DeleteServiceFunctionOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.PutServiceFunctionOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ReadServiceFunctionOutputBuilder;
@@ -79,6 +85,8 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.InstantiateServiceFunctionChainInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.InstantiateServiceFunctionChainOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsInput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsOutput;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.PutServiceFunctionChainsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainService;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChains;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.ServiceFunctionChainsBuilder;
@@ -115,23 +123,25 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<Void>> deleteAllServiceFunction() {
+    public ListenableFuture<RpcResult<DeleteAllServiceFunctionOutput>> deleteAllServiceFunction(
+            DeleteAllServiceFunctionInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> deleteServiceFunction(DeleteServiceFunctionInput input) {
+    public ListenableFuture<RpcResult<DeleteServiceFunctionOutput>> deleteServiceFunction(
+            DeleteServiceFunctionInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> putServiceFunction(PutServiceFunctionInput input) {
+    public ListenableFuture<RpcResult<PutServiceFunctionOutput>> putServiceFunction(PutServiceFunctionInput input) {
         printTraceStart(LOG);
         LOG.info("\n####### Input: {}", input);
 
         if (dataBroker == null) {
-            return Futures.immediateFuture(
-                    RpcResultBuilder.<Void>failed().withError(ErrorType.APPLICATION, "No data provider.").build());
+            return RpcResultBuilder.<PutServiceFunctionOutput>failed()
+                    .withError(ErrorType.APPLICATION, "No data provider.").buildFuture();
         }
 
         // Data PLane Locator
@@ -148,12 +158,13 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);
         printTraceStop(LOG);
-        return Futures.transform(writeTx.submit(), input1 -> RpcResultBuilder.<Void>success().build(),
-                MoreExecutors.directExecutor());
+        return Futures.transform(writeTx.submit(), unused ->
+            RpcResultBuilder.<PutServiceFunctionOutput>success(new PutServiceFunctionOutputBuilder().build()).build(),
+            MoreExecutors.directExecutor());
     }
 
     @Override
-    public Future<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
+    public ListenableFuture<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
         LOG.info("Input: {}", input);
 
         if (dataBroker != null) {
@@ -187,13 +198,14 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<InstantiateServiceFunctionChainOutput>> instantiateServiceFunctionChain(
+    public ListenableFuture<RpcResult<InstantiateServiceFunctionChainOutput>> instantiateServiceFunctionChain(
             InstantiateServiceFunctionChainInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<Void>> putServiceFunctionChains(PutServiceFunctionChainsInput input) {
+    public ListenableFuture<RpcResult<PutServiceFunctionChainsOutput>> putServiceFunctionChains(
+            PutServiceFunctionChainsInput input) {
         printTraceStart(LOG);
         ServiceFunctionChainsBuilder serviceFunctionChainsBuilder = new ServiceFunctionChainsBuilder();
         serviceFunctionChainsBuilder = serviceFunctionChainsBuilder
@@ -204,7 +216,8 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
                 LogicalDatastoreType.CONFIGURATION)) {
             LOG.error("Failed to create service function chain: {}", input.getServiceFunctionChain().toString());
         }
-        return RpcResultBuilder.<Void>success().buildFuture();
+        return RpcResultBuilder.<PutServiceFunctionChainsOutput>success(
+                new PutServiceFunctionChainsOutputBuilder().build()).buildFuture();
     }
 
     /**
@@ -227,7 +240,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
      */
     @Deprecated
     @Override
-    public Future<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
+    public ListenableFuture<RpcResult<CreateRenderedPathOutput>> createRenderedPath(
             CreateRenderedPathInput createRenderedPathInput) {
         SettableFuture<RpcResult<CreateRenderedPathOutput>> futureResult = SettableFuture.create();
         CreateRenderedPathImpl runnable = new CreateRenderedPathImpl(createRenderedPathInput, futureResult, 100);
@@ -256,7 +269,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
      */
     @Deprecated
     @Override
-    public Future<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(
+    public ListenableFuture<RpcResult<DeleteRenderedPathOutput>> deleteRenderedPath(
             DeleteRenderedPathInput deleteRenderedPathInput) {
         SettableFuture<RpcResult<DeleteRenderedPathOutput>> futureResult = SettableFuture.create();
         DeleteRenderedPathImpl runnable = new DeleteRenderedPathImpl(deleteRenderedPathInput, futureResult, 100);
@@ -493,7 +506,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
      * @return RPC output including a renderedServicePathFirstHop.
      */
     @Override
-    public Future<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(
+    public ListenableFuture<RpcResult<ReadRenderedServicePathFirstHopOutput>> readRenderedServicePathFirstHop(
             ReadRenderedServicePathFirstHopInput input) {
 
         RenderedServicePathFirstHop renderedServicePathFirstHop;
@@ -529,7 +542,7 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
      * @return RPC output including a renderedServicePathFirstHop.
      */
     @Override
-    public Future<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(
+    public ListenableFuture<RpcResult<ReadRspFirstHopBySftListOutput>> readRspFirstHopBySftList(
             ReadRspFirstHopBySftListInput input) {
         RenderedServicePathFirstHop renderedServicePathFirstHop;
         renderedServicePathFirstHop = SfcProviderRenderedPathAPI.readRspFirstHopBySftList(input.getSfst(),
@@ -548,33 +561,34 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
     }
 
     @Override
-    public Future<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(
+    public ListenableFuture<RpcResult<TraceRenderedServicePathOutput>> traceRenderedServicePath(
             TraceRenderedServicePathInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(ReservePathIdRangeInput input) {
+    public ListenableFuture<RpcResult<ReservePathIdRangeOutput>> reservePathIdRange(ReservePathIdRangeInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<ReadPathIdOutput>> readPathId(ReadPathIdInput input) {
+    public ListenableFuture<RpcResult<ReadPathIdOutput>> readPathId(ReadPathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<AllocatePathIdOutput>> allocatePathId(AllocatePathIdInput input) {
+    public ListenableFuture<RpcResult<AllocatePathIdOutput>> allocatePathId(AllocatePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<DeletePathIdOutput>> deletePathId(DeletePathIdInput input) {
+    public ListenableFuture<RpcResult<DeletePathIdOutput>> deletePathId(DeletePathIdInput input) {
         return null;
     }
 
     @Override
-    public Future<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(SetGenerationAlgorithmInput input) {
+    public ListenableFuture<RpcResult<SetGenerationAlgorithmOutput>> setGenerationAlgorithm(
+            SetGenerationAlgorithmInput input) {
 
         boolean result = SfcServicePathId.setGenerationAlgorithm(input.getGenerationAlgorithm());
 
@@ -584,6 +598,6 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         RpcResultBuilder<SetGenerationAlgorithmOutput> rpcResultBuilder = RpcResultBuilder
                 .success(setGenerationAlgorithmOutputBuilder.build());
 
-        return Futures.immediateFuture(rpcResultBuilder.build());
+        return rpcResultBuilder.buildFuture();
     }
 }

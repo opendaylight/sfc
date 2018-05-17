@@ -17,6 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -35,8 +36,10 @@ import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -50,7 +53,10 @@ public class SfcGeniusTsaWriterTest {
     Executor executor;
 
     @Mock
-    RpcResult<Void> rpcResult;
+    RpcResult<CreateTerminatingServiceActionsOutput> createActionsRpcResult;
+
+    @Mock
+    RpcResult<RemoveTerminatingServiceActionsOutput> removeActionsRpcResult;
 
     @Mock
     RpcError rpcError;
@@ -70,8 +76,8 @@ public class SfcGeniusTsaWriterTest {
         BigInteger dpnid = BigInteger.valueOf(8);
 
         when(itmRpcService.createTerminatingServiceActions(any()))
-                .thenReturn(CompletableFuture.completedFuture(rpcResult));
-        when(rpcResult.isSuccessful()).thenReturn(true);
+                .thenReturn(Futures.immediateFuture(createActionsRpcResult));
+        when(createActionsRpcResult.isSuccessful()).thenReturn(true);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
         CompletableFuture<Void> completableFuture = writer.createTerminatingServiceAction(dpnid);
@@ -101,9 +107,9 @@ public class SfcGeniusTsaWriterTest {
         Throwable throwable = new Throwable();
 
         when(itmRpcService.createTerminatingServiceActions(any()))
-                .thenReturn(CompletableFuture.completedFuture(rpcResult));
-        when(rpcResult.isSuccessful()).thenReturn(false);
-        when(rpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
+                .thenReturn(Futures.immediateFuture(createActionsRpcResult));
+        when(createActionsRpcResult.isSuccessful()).thenReturn(false);
+        when(createActionsRpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
         when(rpcError.getCause()).thenReturn(throwable);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
@@ -126,10 +132,9 @@ public class SfcGeniusTsaWriterTest {
     public void createTerminatingServiceActionException() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
         Throwable throwable = new Throwable();
-        CompletableFuture<RpcResult<Void>> future = new CompletableFuture<>();
-        future.completeExceptionally(throwable);
 
-        when(itmRpcService.createTerminatingServiceActions(any())).thenReturn(future);
+        when(itmRpcService.createTerminatingServiceActions(any())).thenReturn(
+                Futures.immediateFailedFuture(throwable));
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
         CompletableFuture<Void> completableFuture = writer.createTerminatingServiceAction(dpnid);
@@ -154,8 +159,8 @@ public class SfcGeniusTsaWriterTest {
         BigInteger dpnid = BigInteger.valueOf(37);
 
         when(itmRpcService.removeTerminatingServiceActions(any()))
-                .thenReturn(CompletableFuture.completedFuture(rpcResult));
-        when(rpcResult.isSuccessful()).thenReturn(true);
+                .thenReturn(Futures.immediateFuture(removeActionsRpcResult));
+        when(removeActionsRpcResult.isSuccessful()).thenReturn(true);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
         CompletableFuture<Void> completableFuture = writer.removeTerminatingServiceAction(dpnid);
@@ -181,9 +186,9 @@ public class SfcGeniusTsaWriterTest {
         Throwable throwable = new Throwable();
 
         when(itmRpcService.removeTerminatingServiceActions(any()))
-                .thenReturn(CompletableFuture.completedFuture(rpcResult));
-        when(rpcResult.isSuccessful()).thenReturn(false);
-        when(rpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
+                .thenReturn(Futures.immediateFuture(removeActionsRpcResult));
+        when(removeActionsRpcResult.isSuccessful()).thenReturn(false);
+        when(removeActionsRpcResult.getErrors()).thenReturn(Collections.singletonList(rpcError));
         when(rpcError.getCause()).thenReturn(throwable);
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
@@ -206,11 +211,9 @@ public class SfcGeniusTsaWriterTest {
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionException() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;
-        CompletableFuture<RpcResult<Void>> future = new CompletableFuture<>();
         Throwable throwable = new Throwable();
-        future.completeExceptionally(throwable);
 
-        when(itmRpcService.removeTerminatingServiceActions(any())).thenReturn(future);
+        when(itmRpcService.removeTerminatingServiceActions(any())).thenReturn(Futures.immediateFailedFuture(throwable));
 
         SfcGeniusTsaWriter writer = new SfcGeniusTsaWriter(itmRpcService, executor);
         CompletableFuture<Void> completableFuture = writer.removeTerminatingServiceAction(dpnid);

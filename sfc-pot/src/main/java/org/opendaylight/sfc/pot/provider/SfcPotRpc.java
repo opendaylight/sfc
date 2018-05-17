@@ -8,8 +8,7 @@
 
 package org.opendaylight.sfc.pot.provider;
 
-import com.google.common.util.concurrent.Futures;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
@@ -53,7 +52,7 @@ public class SfcPotRpc implements SfcIoamNbPotService {
      * @return RPC output including a success or failure code.
      */
     @Override
-    public Future<RpcResult<EnableSfcIoamPotRenderedPathOutput>> enableSfcIoamPotRenderedPath(
+    public ListenableFuture<RpcResult<EnableSfcIoamPotRenderedPathOutput>> enableSfcIoamPotRenderedPath(
             EnableSfcIoamPotRenderedPathInput input) {
         boolean ret;
         RpcResultBuilder<EnableSfcIoamPotRenderedPathOutput> rpcResultBuilder;
@@ -74,7 +73,7 @@ public class SfcPotRpc implements SfcIoamNbPotService {
                     .withError(ErrorType.APPLICATION, message);
         }
 
-        return Futures.immediateFuture(rpcResultBuilder.build());
+        return rpcResultBuilder.buildFuture();
     }
 
     /**
@@ -87,7 +86,7 @@ public class SfcPotRpc implements SfcIoamNbPotService {
      * @return RPC output including a success or failure code.
      */
     @Override
-    public Future<RpcResult<DisableSfcIoamPotRenderedPathOutput>> disableSfcIoamPotRenderedPath(
+    public ListenableFuture<RpcResult<DisableSfcIoamPotRenderedPathOutput>> disableSfcIoamPotRenderedPath(
             DisableSfcIoamPotRenderedPathInput input) {
         boolean ret;
         RpcResultBuilder<DisableSfcIoamPotRenderedPathOutput> rpcResultBuilder;
@@ -107,6 +106,6 @@ public class SfcPotRpc implements SfcIoamNbPotService {
                     .withError(ErrorType.APPLICATION, message);
         }
 
-        return Futures.immediateFuture(rpcResultBuilder.build());
+        return rpcResultBuilder.buildFuture();
     }
 }

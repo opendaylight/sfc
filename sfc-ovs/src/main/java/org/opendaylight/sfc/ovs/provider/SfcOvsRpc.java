@@ -18,10 +18,9 @@
 package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
@@ -54,7 +53,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService, AutoClosea
      * @return RPC output: true if write to OVSDB Config DataStore was successful, otherwise false.
      */
     @Override
-    public Future<RpcResult<CreateOvsBridgeOutput>> createOvsBridge(CreateOvsBridgeInput input) {
+    public ListenableFuture<RpcResult<CreateOvsBridgeOutput>> createOvsBridge(CreateOvsBridgeInput input) {
         Preconditions.checkNotNull(input, "create-ovs-bridge RPC input must be not null!");
         Preconditions.checkNotNull(input.getOvsNode(),
                 "create-ovs-bridge RPC input container ovs-node must be not null!");
@@ -108,7 +107,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService, AutoClosea
                     .withError(RpcError.ErrorType.APPLICATION, message);
         }
 
-        return Futures.immediateFuture(rpcResultBuilder.build());
+        return rpcResultBuilder.buildFuture();
     }
 
     @Override

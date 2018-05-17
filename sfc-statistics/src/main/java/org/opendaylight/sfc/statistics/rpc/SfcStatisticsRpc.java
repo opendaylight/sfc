@@ -9,13 +9,11 @@
 package org.opendaylight.sfc.statistics.rpc;
 
 import com.google.common.util.concurrent.Futures;
-
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Future;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
@@ -51,7 +49,7 @@ public class SfcStatisticsRpc implements SfcStatisticsOperationsService {
     private static final Logger LOG = LoggerFactory.getLogger(SfcStatisticsRpc.class);
 
     @Override
-    public Future<RpcResult<GetRspStatisticsOutput>> getRspStatistics(GetRspStatisticsInput input) {
+    public ListenableFuture<RpcResult<GetRspStatisticsOutput>> getRspStatistics(GetRspStatisticsInput input) {
         List<RenderedServicePath> rspList;
 
         if (input.getName() == null) {
@@ -60,9 +58,8 @@ public class SfcStatisticsRpc implements SfcStatisticsOperationsService {
         } else {
             RenderedServicePath rsp = SfcProviderRenderedPathAPI.readRenderedServicePath(new RspName(input.getName()));
             if (rsp == null) {
-                return Futures.immediateFuture(
-                        RpcResultBuilder.<GetRspStatisticsOutput>failed().withError(
-                                RpcError.ErrorType.APPLICATION, "RSP does not exist.").build());
+                return RpcResultBuilder.<GetRspStatisticsOutput>failed().withError(
+                                RpcError.ErrorType.APPLICATION, "RSP does not exist.").buildFuture();
             }
 
             rspList = Collections.singletonList(rsp);
@@ -108,17 +105,15 @@ public class SfcStatisticsRpc implements SfcStatisticsOperationsService {
     }
 
     @Override
-    public Future<RpcResult<GetSffStatisticsOutput>> getSffStatistics(GetSffStatisticsInput input) {
-        return Futures.immediateFuture(
-                RpcResultBuilder.<GetSffStatisticsOutput>failed().withError(
-                        RpcError.ErrorType.APPLICATION, "SFF statistics is not implemented yet.").build());
+    public ListenableFuture<RpcResult<GetSffStatisticsOutput>> getSffStatistics(GetSffStatisticsInput input) {
+        return RpcResultBuilder.<GetSffStatisticsOutput>failed().withError(
+                        RpcError.ErrorType.APPLICATION, "SFF statistics is not implemented yet.").buildFuture();
     }
 
     @Override
-    public Future<RpcResult<GetSfStatisticsOutput>> getSfStatistics(GetSfStatisticsInput input) {
-        return Futures.immediateFuture(
-                RpcResultBuilder.<GetSfStatisticsOutput>failed().withError(
-                        RpcError.ErrorType.APPLICATION, "SF statistics is not implemented yet.").build());
+    public ListenableFuture<RpcResult<GetSfStatisticsOutput>> getSfStatistics(GetSfStatisticsInput input) {
+        return RpcResultBuilder.<GetSfStatisticsOutput>failed().withError(
+                        RpcError.ErrorType.APPLICATION, "SF statistics is not implemented yet.").buildFuture();
     }
 
     private List<RenderedServicePath> getAllRenderedServicePaths() {

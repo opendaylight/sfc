@@ -19,9 +19,11 @@ import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -64,7 +66,8 @@ public class SfcGeniusTsaWriter {
                 .build();
         return CompletableFuture.supplyAsync(() -> {
             try {
-                RpcResult<Void> result = itmRpcService.createTerminatingServiceActions(input).get();
+                RpcResult<CreateTerminatingServiceActionsOutput> result =
+                        itmRpcService.createTerminatingServiceActions(input).get();
                 if (!result.isSuccessful()) {
                     throw new SfcGeniusRuntimeException(
                             new RuntimeException(
@@ -95,7 +98,8 @@ public class SfcGeniusTsaWriter {
                 .build();
         return CompletableFuture.supplyAsync(() -> {
             try {
-                RpcResult<Void> result = itmRpcService.removeTerminatingServiceActions(input).get();
+                RpcResult<RemoveTerminatingServiceActionsOutput> result =
+                        itmRpcService.removeTerminatingServiceActions(input).get();
                 if (!result.isSuccessful()) {
                     throw new SfcGeniusRuntimeException(
                             new RuntimeException(

@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6ceeaa81_a62ab98d",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:22:08Z",
+      "side": 1,
+      "message": "Here we are missing some flows relative to the logical sff processor (or the yet to be implemented EthNsh processor) were instead of setting a tun destination ip, we set the ethernet addresses of the SF.",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 91
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "009e4188_8b7b624b",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:22:08Z",
+      "side": 1,
+      "message": "Here we are missing some flows relative to the logical sff processor which we need to look at too, specifically the one that handles nsh decapsulation.",
+      "range": {
+        "startLine": 196,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 16
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "86642f11_3df4ce3c",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:22:08Z",
+      "side": 1,
+      "message": "- For cases when packet arrives from a standard port as eth+nsh, we need to match on ethertype\u003d0x894F\n- For cases when packet arrives from a tunnel port as vxlan+eth+nsh, and thus the resulting packet after tunnel decapsulation is eth+nsh, we need to match on ethertype\u003d0x894F\n- For cases when packet arrives from a tunnel port as vxlan+nsh, and thus the resulting packet after tunnel decapsulation is ddirectly nsh, we need to match on packet_type\u003d(1,0x894F).",
+      "range": {
+        "startLine": 253,
+        "startChar": 0,
+        "endLine": 254,
+        "endChar": 66
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "10e7367d_ff72682b",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:22:08Z",
+      "side": 1,
+      "message": "Impacts here:\n\n- NXM_NX_TUN_GPE_NP field was specific to the patched OVS and will not be available. GPE NP is automatically handled internally by OVS.\n- Worth mentioning is that NXM_NX_NSH_MDTYPE is now read-only. Which shouldn\u0027t be relevant as re-setting the fields will no longer be required.",
+      "range": {
+        "startLine": 276,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 7
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

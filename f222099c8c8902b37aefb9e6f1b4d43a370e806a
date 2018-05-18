@@ -71,6 +71,29 @@
     },
     {
       "key": {
+        "uuid": "501b7587_93b7b295",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:28:45Z",
+      "side": 1,
+      "message": "Here, if we are to move nsp and nsi values to registry fields, we need to match on ethertype/packet_type as in the previous table as it is a precondition to any access to nsh fields.",
+      "range": {
+        "startLine": 259,
+        "startChar": 0,
+        "endLine": 263,
+        "endChar": 33
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "10e7367d_ff72682b",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 2
@@ -82,6 +105,29 @@
       "writtenOn": "2018-05-18T13:22:08Z",
       "side": 1,
       "message": "Impacts here:\n\n- NXM_NX_TUN_GPE_NP field was specific to the patched OVS and will not be available. GPE NP is automatically handled internally by OVS.\n- Worth mentioning is that NXM_NX_NSH_MDTYPE is now read-only. Which shouldn\u0027t be relevant as re-setting the fields will no longer be required.",
+      "range": {
+        "startLine": 276,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 7
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1ab67306_eaa761e3",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-05-18T13:28:45Z",
+      "side": 1,
+      "message": "Here, if we are to move nsp and nsi values from registry fields to nsh fields, we need to match on ethertype/packet_type as in the trasnport ingress table, as it is a precondition to any access to nsh fields.",
       "range": {
         "startLine": 276,
         "startChar": 0,

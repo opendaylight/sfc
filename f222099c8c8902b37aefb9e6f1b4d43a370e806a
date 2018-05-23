@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fb1cfba7_a33b33b6",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09e02c5c_930eca59",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 91,
+        "endChar": 25
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "6ceeaa81_a62ab98d",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-05-18T13:22:08Z",
       "side": 1,
       "message": "Here we are missing some flows relative to the logical sff processor (or the yet to be implemented EthNsh processor) were instead of setting a tun destination ip, we set the ethernet addresses of the SF.",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 91
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1d847224_fbdf4a06",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ceeaa81_a62ab98d",
       "range": {
         "startLine": 140,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "b9ba3a1e_c7741947",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "009e4188_8b7b624b",
+      "range": {
+        "startLine": 196,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 16
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "86642f11_3df4ce3c",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 2
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "c0cc4d34_3b6d1c8e",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86642f11_3df4ce3c",
+      "range": {
+        "startLine": 253,
+        "startChar": 0,
+        "endLine": 254,
+        "endChar": 66
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "501b7587_93b7b295",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 2
@@ -105,6 +201,30 @@
       "writtenOn": "2018-05-18T13:28:45Z",
       "side": 1,
       "message": "Here, if we are to move nsp and nsi values to registry fields, we need to match on ethertype/packet_type as in the previous table as it is a precondition to any access to nsh fields.",
+      "range": {
+        "startLine": 259,
+        "startChar": 0,
+        "endLine": 263,
+        "endChar": 33
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "72d36114_baf9eb83",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "501b7587_93b7b295",
       "range": {
         "startLine": 259,
         "startChar": 0,
@@ -151,6 +271,54 @@
       "writtenOn": "2018-05-18T13:28:45Z",
       "side": 1,
       "message": "Here, if we are to move nsp and nsi values from registry fields to nsh fields, we need to match on ethertype/packet_type as in the trasnport ingress table, as it is a precondition to any access to nsh fields.",
+      "range": {
+        "startLine": 276,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 7
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d130581d_58d1dfe5",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10e7367d_ff72682b",
+      "range": {
+        "startLine": 276,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 7
+      },
+      "revId": "f222099c8c8902b37aefb9e6f1b4d43a370e806a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e82a06f7_810e9d3d",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-05-23T19:13:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ab67306_eaa761e3",
       "range": {
         "startLine": 276,
         "startChar": 0,

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe1d040f_2d8b1d6c",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2018-05-28T23:01:43Z",
+      "side": 1,
+      "message": "I think filing a JIRA issue and referencing that in topic name is better due to namespace pollution, but we do not have guidelines for that...",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 74
+      },
+      "revId": "c7bd022bdb1f4dac71cb665f2ddf2ef11d1328df",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

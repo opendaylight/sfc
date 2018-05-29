@@ -149,6 +149,10 @@ module service-function-chain {
   rpc instantiate-service-function-chain {
     description
       "Instantiates a single service function";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
+
     input {
       leaf name {
         type string;
@@ -171,6 +175,10 @@ module service-function-chain {
   rpc put-service-function-chains {
     description
       "Creates Service-Functions";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
+
     input {
       uses service-function-chain-grouping;
     }

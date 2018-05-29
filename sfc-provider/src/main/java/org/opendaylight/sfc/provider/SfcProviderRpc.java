@@ -122,18 +122,27 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         this.dataBroker = dataBroker;
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf DELETE.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<DeleteAllServiceFunctionOutput>> deleteAllServiceFunction(
             DeleteAllServiceFunctionInput input) {
         return null;
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf DELETE.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<DeleteServiceFunctionOutput>> deleteServiceFunction(
             DeleteServiceFunctionInput input) {
         return null;
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf PUT.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<PutServiceFunctionOutput>> putServiceFunction(PutServiceFunctionInput input) {
         printTraceStart(LOG);
@@ -163,6 +172,9 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
             MoreExecutors.directExecutor());
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf GET.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<ReadServiceFunctionOutput>> readServiceFunction(ReadServiceFunctionInput input) {
         LOG.info("Input: {}", input);
@@ -197,12 +209,18 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
         }
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf PUT.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<InstantiateServiceFunctionChainOutput>> instantiateServiceFunctionChain(
             InstantiateServiceFunctionChainInput input) {
         return null;
     }
 
+    // This RPC call is Deprecated Fluorine, and will be removed in Neon.
+    // This same operation can be performed with a simple RESTconf PUT.
+    @Deprecated
     @Override
     public ListenableFuture<RpcResult<PutServiceFunctionChainsOutput>> putServiceFunctionChains(
             PutServiceFunctionChainsInput input) {

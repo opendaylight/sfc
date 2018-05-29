@@ -539,7 +539,11 @@ public abstract class SfcOfBaseProviderUtils {
         }
 
         // it its not an sff-ovs, then just return the ServiceNode
-        return sff.getServiceNode().getValue();
+        if (sff.getServiceNode() != null) {
+            return sff.getServiceNode().getValue();
+        }
+
+        return null;
     }
 
     public SffDataPlaneLocator getSffSfDictSffDpl(SfName sfName, SffName sffName, long rspId) {

@@ -1,0 +1,87 @@
+[all]
+ignore = .tox/**,
+    .git/**,
+    .gitignore,
+    .gitreview,
+    .gitmodules,
+    node_modules/**,
+    **.sw?,
+    **.orig
+
+[all.Spacing]
+bears = SpaceConsistencyBear
+files = **
+use_spaces = True
+enforce_newline_at_EOF = False
+default_actions = SpaceConsistencyBear: ApplyPatchAction
+enabled = False
+
+[all.LineLength]
+bears = LineLengthBear
+files = **
+max_line_length = 100
+enabled = False
+
+[all.GitCommit]
+bears = GitCommitBear
+ignore_length_regex = Signed-off-by,
+    Also-by,
+    Co-authored-by,
+    http://,
+    https://
+
+[all.Dockerfile]
+bears = DockerfileLintBear
+files = **Dockerfile
+enabled = False
+
+[all.MarkDown]
+bears = MarkdownBear,SpaceConsistencyBear,WriteGoodLintBear
+files = **.md, **.markdown
+use_spaces = True
+enabled = False
+
+[all.reStructuredText]
+bears = SpaceConsistencyBear,WriteGoodLintBear
+files = **.rst
+use_spaces = True
+ignore = .git/**,
+    .tox/**,
+    docs/jjb/lf-ci-jobs.rst,
+    docs/jjb/lf-macros.rst,
+    docs/jjb/lf-maven-jobs.rst
+enabled = False
+
+[all.python]
+bears = PEP8Bear,
+    PyUnusedCodeBear,
+    PyImportSortBear
+files = **.py
+default_actions = PyUnusedCodeBear: ApplyPatchAction,
+    PyImportSortBear: ApplyPatchAction
+enabled = False
+
+[all.ShellCheck]
+bears = ShellCheckBear,SpaceConsistencyBear
+files = **.sh
+shell = bash
+indent_size = 4
+use_spaces = True
+enabled = False
+
+[all.XML]
+bears = XMLBear
+files = **.xml
+enabled = False
+
+[all.YAML]
+bears = YAMLLintBear
+files = **.yaml, **.yml
+document_start = True
+yamllint_config = yamllint.conf
+
+[all.JSON
+bears = JSONFormatBear
+files = **.json
+default_actions = JSONFormatBear: ApplyPatchAction
+enabled = False

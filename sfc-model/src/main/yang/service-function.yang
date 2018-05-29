@@ -167,11 +167,18 @@ module service-function {
   rpc delete-all-service-function {
   description
     "Deletes all service functions";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
   }
 
   rpc put-service-function {
     description
       "Creates a service function";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
+
     input {
       uses service-function-entry;
     }
@@ -179,6 +186,10 @@ module service-function {
   rpc read-service-function {
     description
       "Reads a service function";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
+
     input {
       leaf name {
         type string;
@@ -193,6 +204,10 @@ module service-function {
   rpc delete-service-function {
     description
       "Deletes a service function";
+
+    // Deprecated in Fluorine, to be removed in Neon
+    status deprecated;
+
     input {
       leaf name {
         type string;

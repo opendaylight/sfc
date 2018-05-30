@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "02f28eb7_98616910",
+        "filename": ".coafile",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1723
+      },
+      "writtenOn": "2018-05-30T00:02:16Z",
+      "side": 1,
+      "message": "Capitalize for consistency",
+      "range": {
+        "startLine": 55,
+        "startChar": 5,
+        "endLine": 55,
+        "endChar": 6
+      },
+      "revId": "0dd14cdca0d718d7797a21e02e1344ff6178ae74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

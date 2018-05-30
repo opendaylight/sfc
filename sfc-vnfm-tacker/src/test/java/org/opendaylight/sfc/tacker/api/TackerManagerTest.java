@@ -10,13 +10,6 @@ package org.opendaylight.sfc.tacker.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.ClassNamesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.test.framework.AppDescriptor;
-import com.sun.jersey.test.framework.JerseyTest;
-import com.sun.jersey.test.framework.WebAppDescriptor;
-import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,9 +24,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -79,26 +76,13 @@ public class TackerManagerTest extends JerseyTest {
     private static Token token;
 
     private static HttpServer startServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(TackerServer.class);
-        HttpServer httpServer = null;
-        try {
-            httpServer = GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + BASE_PORT), resourceConfig);
-        } catch (IOException e) {
-            LOG.debug(e.getMessage());
-        }
-        return httpServer;
+        final ResourceConfig resourceConfig = new ResourceConfig(TackerServer.class);
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + ":" + BASE_PORT), resourceConfig);
     }
 
     private static HttpServer startKeystoneServer() {
-        final ResourceConfig resourceConfig = new ClassNamesResourceConfig(KeystoneServer.class);
-        HttpServer httpServer = null;
-        try {
-            httpServer =
-                    GrizzlyServerFactory.createHttpServer(URI.create(BASE_URI + ":" + KEYSTONE_PORT), resourceConfig);
-        } catch (IOException e) {
-            LOG.debug(e.getMessage());
-        }
-        return httpServer;
+        final ResourceConfig resourceConfig = new ResourceConfig(KeystoneServer.class);
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + ":" + KEYSTONE_PORT), resourceConfig);
     }
 
     @BeforeClass
@@ -157,6 +141,11 @@ public class TackerManagerTest extends JerseyTest {
         if (keystoneServer != null && keystoneServer.isStarted()) {
             keystoneServer.shutdownNow();
         }
+    }
+
+    @Override
+    protected Application configure() {
+        return new ResourceConfig();
     }
 
     @Test
@@ -232,10 +221,10 @@ public class TackerManagerTest extends JerseyTest {
         Assert.assertFalse(tackerManager.deleteSf(sf));
     }
 
-    @Override
-    protected AppDescriptor configure() {
-        return new WebAppDescriptor.Builder().build();
-    }
+//    @Override
+//    protected Application configure() {
+//        return new WebAppDescriptor.Builder().build();
+//    }
 
     @Path("/v1.0/vnfs")
     @Produces(MediaType.APPLICATION_JSON)
@@ -249,7 +238,7 @@ public class TackerManagerTest extends JerseyTest {
                 return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError))
                     .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
-            if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
+            if (!authToken.equals(token.getId()) || !authProject.equals(token.getTenant().getName())) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
             }
 
@@ -274,7 +263,7 @@ public class TackerManagerTest extends JerseyTest {
                 return Response.status(Response.Status.BAD_REQUEST).entity(GSON.toJson(badRequestError))
                     .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
-            if ((!authToken.equals(token.getId())) || (!authProject.equals(token.getTenant().getName()))) {
+            if (!authToken.equals(token.getId()) || !authProject.equals(token.getTenant().getName())) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Authentication required").build();
             }
 

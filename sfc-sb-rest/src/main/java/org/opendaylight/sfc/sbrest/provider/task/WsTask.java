@@ -7,22 +7,20 @@
  */
 package org.opendaylight.sfc.sbrest.provider.task;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import java.net.ConnectException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WsTask implements Runnable {
 
-    protected static final String APPLICATION_JSON = "application/json";
     protected static final String HTTP_ERROR_MSG = "Failed, HTTP error code : ";
-    protected static final int HTTP_OK = 200;
     private static final Logger LOG = LoggerFactory.getLogger(WsTask.class);
 
     String url;
@@ -37,85 +35,34 @@ public class WsTask implements Runnable {
 
     @Override
     public void run() {
-        ClientConfig clientConfig = new DefaultClientConfig();
-        Client client = Client.create(clientConfig);
-        ClientResponse clientRemoteResponse = null;
+        Client client = ClientBuilder.newClient();
 
-        WebResource.Builder wrb = null;
-        wrb = client.resource(url).type(APPLICATION_JSON);
+        final Entity<String> entity = Entity.entity(json, MediaType.APPLICATION_JSON);
+        Builder wrb = client.target(url).request(MediaType.APPLICATION_JSON);
 
-        if (wrb != null) {
+        try {
+            Response response;
             switch (restOperation) {
                 case PUT:
-                    try {
-                        clientRemoteResponse = wrb.put(ClientResponse.class, json);
-                    } catch (UniformInterfaceException e) {
-                        // http://stackoverflow.com/questions/12502233/jersey-uniforminterfaceexception-trying-to-proxy-to-rest-post-service
-                        LOG.error("REST Server error. Message: {}", e.getMessage());
-                    } catch (ClientHandlerException e) {
-                        if (e.getCause() instanceof ConnectException) {
-                            LOG.error("Failed to communicate with REST Server: {} ", this.url);
-                        } else {
-                            LOG.error("ClientHandlerException on {}: {}", Thread.currentThread().getStackTrace()[1],
-                                    e.getMessage());
-                        }
-                    } finally {
-                        if (clientRemoteResponse != null) {
-                            if (clientRemoteResponse.getStatus() != HTTP_OK) {
-                                throw new UniformInterfaceException(HTTP_ERROR_MSG + clientRemoteResponse.getStatus(),
-                                        clientRemoteResponse);
-                            }
-                            clientRemoteResponse.close();
-                        }
-                    }
+                    response = wrb.put(entity);
                     break;
                 case POST:
-                    try {
-                        clientRemoteResponse = wrb.post(ClientResponse.class, json);
-                    } catch (UniformInterfaceException e) {
-                        LOG.error("REST Server error. Message: {}", e.getMessage());
-                    } catch (ClientHandlerException e) {
-                        if (e.getCause() instanceof ConnectException) {
-                            LOG.error("Failed to communicate with REST Server: {} ", this.url);
-                        } else {
-                            LOG.error("ClientHandlerException on {}: {}", Thread.currentThread().getStackTrace()[1],
-                                    e.getMessage());
-                        }
-                    } finally {
-                        if (clientRemoteResponse != null) {
-                            if (clientRemoteResponse.getStatus() != HTTP_OK) {
-                                throw new UniformInterfaceException(HTTP_ERROR_MSG + clientRemoteResponse.getStatus(),
-                                        clientRemoteResponse);
-                            }
-                            clientRemoteResponse.close();
-                        }
-                    }
+                    response = wrb.post(entity);
                     break;
                 case DELETE:
-                    try {
-                        clientRemoteResponse = wrb.delete(ClientResponse.class);
-                    } catch (UniformInterfaceException e) {
-                        LOG.error("REST Server error. Message: {}", e.getMessage());
-                    } catch (ClientHandlerException e) {
-                        if (e.getCause() instanceof ConnectException) {
-                            LOG.error("Failed to communicate with REST Server: {} ", this.url);
-                        } else {
-                            LOG.error("ClientHandlerException on {}: {}", Thread.currentThread().getStackTrace()[1],
-                                    e.getMessage());
-                        }
-                    } finally {
-                        if (clientRemoteResponse != null) {
-                            if (clientRemoteResponse.getStatus() != HTTP_OK) {
-                                throw new UniformInterfaceException(HTTP_ERROR_MSG + clientRemoteResponse.getStatus(),
-                                        clientRemoteResponse);
-                            }
-                            clientRemoteResponse.close();
-                        }
-                    }
+                    response = wrb.delete();
                     break;
                 default:
-                    break;
+                    LOG.warn("{} operation not implemented", restOperation);
+                    return;
             }
+
+            if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+                LOG.error("{} operation to {} failed with HTTP status code {}", restOperation, url,
+                        response.getStatus());
+            }
+        } catch (WebApplicationException | ProcessingException e) {
+            LOG.error("{} operation to {} failed", restOperation, url, e);
         }
     }
 }

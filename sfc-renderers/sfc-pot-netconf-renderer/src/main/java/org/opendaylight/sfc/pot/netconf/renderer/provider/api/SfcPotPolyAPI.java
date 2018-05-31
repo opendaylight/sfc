@@ -204,7 +204,7 @@ public final class SfcPotPolyAPI {
             shares = polyClassList.get((int) j).getShares();
             secret = polyClassList.get((int) j).getSecret();
 
-            polySecretBuilder.setSecretShare(shares.get(posIndex)).setPindex(j).setKey(new PolySecretKey(j));
+            polySecretBuilder.setSecretShare(shares.get(posIndex)).setPindex(j).withKey(new PolySecretKey(j));
             if (posIndex == shares.size() - 1) {
                 polySecretBuilder.setSecret(secret);
             }
@@ -239,7 +239,7 @@ public final class SfcPotPolyAPI {
 
             PolyParameterBuilder polyParameterBuilder = new PolyParameterBuilder();
             polyParameterBuilder.setPrime(prime).setCoeffs(coeffs).setLpcs(lpcs).setPindex(j)
-                    .setKey(new PolyParameterKey(j));
+                    .withKey(new PolyParameterKey(j));
 
             polyParameterList.add(polyParameterBuilder.build());
         }

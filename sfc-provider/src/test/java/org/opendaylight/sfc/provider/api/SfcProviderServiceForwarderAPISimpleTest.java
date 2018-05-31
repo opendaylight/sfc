@@ -72,7 +72,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
     private SffName sffName;
     private final RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
     private final RenderedServicePathHop renderedServicePathHop = renderedServicePathHopBuilder
-            .setKey(new RenderedServicePathHopKey((short) 3)).setServiceFunctionForwarder(sffName).build();
+            .withKey(new RenderedServicePathHopKey((short) 3)).setServiceFunctionForwarder(sffName).build();
 
     @Before
     public void before() {
@@ -86,7 +86,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
 
         assertNotEquals("Must be not equal", pathId, -1);
 
-        renderedServicePathBuilder.setName(rspName).setKey(new RenderedServicePathKey(rspName)).setPathId(pathId);
+        renderedServicePathBuilder.setName(rspName).withKey(new RenderedServicePathKey(rspName)).setPathId(pathId);
 
         List<RenderedServicePathHop> renderedServicePathHopList = new ArrayList<>();
         renderedServicePathHopList.add(renderedServicePathHop);
@@ -100,7 +100,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
                 LogicalDatastoreType.OPERATIONAL);
 
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
+        sffBuilder.setName(sffName).withKey(new ServiceFunctionForwarderKey(sffName));
         ServiceFunctionForwarder sff = sffBuilder.build();
 
         ServiceFunctionForwarderKey serviceFunctionForwarderKey = new ServiceFunctionForwarderKey(sffName);
@@ -122,7 +122,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
 
         SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
-        locatorBuilder.setName(sffDplName).setKey(new SffDataPlaneLocatorKey(sffDplName))
+        locatorBuilder.setName(sffDplName).withKey(new SffDataPlaneLocatorKey(sffDplName))
                 .setDataPlaneLocator(sffLocatorBuilder.build());
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
@@ -131,7 +131,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
 
         SfDataPlaneLocatorName sfDplName = new SfDataPlaneLocatorName("untitest-fw-1");
-        sfDataPlaneLocatorBuilder.setName(sfDplName).setKey(new SfDataPlaneLocatorKey(sfDplName));
+        sfDataPlaneLocatorBuilder.setName(sfDplName).withKey(new SfDataPlaneLocatorKey(sfDplName));
 
         SfDataPlaneLocator sfDataPlaneLocator = sfDataPlaneLocatorBuilder.build();
         List<ServiceFunction> sfList = new ArrayList<>();
@@ -150,7 +150,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
             }
         };
         IpAddress[] ipMgmtAddress = new IpAddress[sfNames.size()];
-        sfBuilder.setName(new SfName(sfNames.get(0))).setKey(new ServiceFunctionKey(new SfName("unittest-fw-1")))
+        sfBuilder.setName(new SfName(sfNames.get(0))).withKey(new ServiceFunctionKey(new SfName("unittest-fw-1")))
                 .setType(new SftTypeName("firewall")).setIpMgmtAddress(ipMgmtAddress[0])
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         sfList.add(sfBuilder.build());
@@ -160,7 +160,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         sffSfDataPlaneLocatorBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName());
         SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
-        dictionaryEntryBuilder.setName(sf.getName()).setKey(new ServiceFunctionDictionaryKey(sf.getName()))
+        dictionaryEntryBuilder.setName(sf.getName()).withKey(new ServiceFunctionDictionaryKey(sf.getName()))
                 .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
 
         ServiceFunctionDictionary dictionaryEntry = dictionaryEntryBuilder.build();
@@ -170,7 +170,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
 
         SffName name = new SffName("SFF1");
-        ServiceFunctionForwarder sff = sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
+        ServiceFunctionForwarder sff = sffBuilder.setName(name).withKey(new ServiceFunctionForwarderKey(name))
                 .setSffDataPlaneLocator(locatorList)
                 .setServiceFunctionDictionary(dictionary).setServiceNode(null)
                 .build();
@@ -197,7 +197,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
 
         // create service function forwarder and write it into data store
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(sff).setKey(new ServiceFunctionForwarderKey(sff));
+        serviceFunctionForwarderBuilder.setName(sff).withKey(new ServiceFunctionForwarderKey(sff));
 
         boolean transactionSuccessful = SfcProviderServiceForwarderAPI
                 .putServiceFunctionForwarder(serviceFunctionForwarderBuilder.build());
@@ -268,7 +268,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
     @Test
     public void testPutServiceFunctionForwarderExecutor() {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName));
+        sffBuilder.setName(sffName).withKey(new ServiceFunctionForwarderKey(sffName));
         ServiceFunctionForwarder sff = sffBuilder.build();
         assertTrue(SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff));
     }
@@ -282,7 +282,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
 
         // create rendered service path and write to data store
         List<RenderedServicePathHop> renderedServicePathHops = new ArrayList<>();
-        renderedServicePathHopBuilder.setKey(new RenderedServicePathHopKey(pathKey))
+        renderedServicePathHopBuilder.withKey(new RenderedServicePathHopKey(pathKey))
                 .setServiceFunctionForwarder(sffName1);
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
@@ -292,7 +292,7 @@ public class SfcProviderServiceForwarderAPISimpleTest extends AbstractDataStoreM
 
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(rspName)
-                .setKey(new RenderedServicePathKey(rspName))
+                .withKey(new RenderedServicePathKey(rspName))
                 .setRenderedServicePathHop(renderedServicePathHops)
                 .setPathId(pathId)
                 .setReversePath(false);

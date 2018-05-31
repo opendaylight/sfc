@@ -155,11 +155,11 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         LOG.debug("writeFlow storing flow to Node {}, table {}", sffNodeName, flow.getTableId());
 
         // Add the flow to the set of flows to be added in a single transaction
-        setOfFlowsToAdd.add(new FlowDetails(sffNodeName, flow.getKey(), new TableKey(flow.getTableId()),
+        setOfFlowsToAdd.add(new FlowDetails(sffNodeName, flow.key(), new TableKey(flow.getTableId()),
                 flowBuilder.build(), rspId));
 
         // This will store the flow info and rspId for removal later
-        storeFlowDetails(rspId, sffNodeName, flow.getKey(), flow.getTableId());
+        storeFlowDetails(rspId, sffNodeName, flow.key(), flow.getTableId());
     }
 
     @Override

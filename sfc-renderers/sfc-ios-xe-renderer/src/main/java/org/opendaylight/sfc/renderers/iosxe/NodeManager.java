@@ -63,7 +63,7 @@ public class NodeManager implements BindingAwareProvider {
     }
 
     public void updateNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         // Check connection status
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
@@ -84,7 +84,7 @@ public class NodeManager implements BindingAwareProvider {
     }
 
     public void removeNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
         NodeId netconfNodeId = node.getNodeId();
@@ -100,7 +100,7 @@ public class NodeManager implements BindingAwareProvider {
     }
 
     public boolean isCapableNetconfDevice(Node node) {
-        NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfAugmentation = node.augmentation(NetconfNode.class);
         if (netconfAugmentation == null) {
             LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
             return false;
@@ -157,7 +157,7 @@ public class NodeManager implements BindingAwareProvider {
     }
 
     public IpAddress getNetconfNodeIp(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         return netconfNode.getHost().getIpAddress();
     }

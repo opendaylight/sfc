@@ -205,7 +205,7 @@ public final class SfcOvsUtil {
             return null;
         }
 
-        return node.getAugmentation(OvsdbNodeAugmentation.class);
+        return node.augmentation(OvsdbNodeAugmentation.class);
     }
 
     /**
@@ -471,7 +471,7 @@ public final class SfcOvsUtil {
             OvsBridgeBuilder ovsBrBuilder;
 
             // if augmentation exists, create builders based on existing data
-            SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+            SffOvsBridgeAugmentation sffOvsBrAug = sff.augmentation(SffOvsBridgeAugmentation.class);
             if (sffOvsBrAug != null) {
                 sffOvsBrAugBuilder = new SffOvsBridgeAugmentationBuilder(sffOvsBrAug);
 
@@ -583,7 +583,7 @@ public final class SfcOvsUtil {
         }
 
         SffOvsBridgeAugmentation sffOvsBridgeAugmentation = serviceFunctionForwarder
-                .getAugmentation(SffOvsBridgeAugmentation.class);
+                .augmentation(SffOvsBridgeAugmentation.class);
         if (sffOvsBridgeAugmentation == null) {
             LOG.warn("No SffOvsBridgeAugmentation for Service Function Forwarder {}", serviceFunctionForwarder);
             return null;
@@ -666,7 +666,7 @@ public final class SfcOvsUtil {
             Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
 
             if (ovsdbNode != null) {
-                return ovsdbNode.getAugmentation(OvsdbNodeAugmentation.class);
+                return ovsdbNode.augmentation(OvsdbNodeAugmentation.class);
             } else {
                 LOG.warn("Could not find ovsdb-node for connection for {}", nodeRef);
             }
@@ -698,7 +698,7 @@ public final class SfcOvsUtil {
         }
 
         for (Node node : nodes) {
-            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.augmentation(OvsdbBridgeAugmentation.class);
             List<TerminationPoint> tpList = node.getTerminationPoint();
 
             if (ovsdbBridgeAugmentation == null || tpList == null) {
@@ -708,7 +708,7 @@ public final class SfcOvsUtil {
             String ofNodeId = getOpenflowNodeIdFromDpid(ovsdbBridgeAugmentation.getDatapathId().getValue());
             if (nodeName.equals(ofNodeId)) {
                 for (TerminationPoint tp : tpList) {
-                    OvsdbTerminationPointAugmentation otp = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+                    OvsdbTerminationPointAugmentation otp = tp.augmentation(OvsdbTerminationPointAugmentation.class);
                     if (comp.compare(otp)) {
                         return otp.getOfport();
                     }
@@ -837,7 +837,7 @@ public final class SfcOvsUtil {
         }
 
         for (Node node : nodes) {
-            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+            OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.augmentation(OvsdbBridgeAugmentation.class);
             if (ovsdbBridgeAugmentation == null) {
                 continue;
             }
@@ -852,7 +852,7 @@ public final class SfcOvsUtil {
                 for (TerminationPoint tp : tpList) {
                     if (tp.getTpId().getValue().equals(localDpdkPortName)) {
                         OvsdbTerminationPointAugmentation otp = tp
-                                .getAugmentation(OvsdbTerminationPointAugmentation.class);
+                                .augmentation(OvsdbTerminationPointAugmentation.class);
                         if (otp != null && otp.getInterfaceType().equals(InterfaceTypeDpdk.class)) {
                             dpdkOfPort = otp.getOfport();
                         }

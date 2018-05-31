@@ -284,7 +284,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         assertNotNull(rsp);
 
         RspIoamPotAugmentation potAugmentation = null;
-        potAugmentation = rsp.getAugmentation(RspIoamPotAugmentation.class);
+        potAugmentation = rsp.augmentation(RspIoamPotAugmentation.class);
         assertNotNull(potAugmentation);
 
         assertTrue(potAugmentation.isIoamPotEnable());
@@ -297,7 +297,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         /* Re-read RSP */
         rsp = SfcDataStoreAPI.readTransactionAPI(rspIID, LogicalDatastoreType.OPERATIONAL);
         assertNotNull(rsp);
-        potAugmentation = rsp.getAugmentation(RspIoamPotAugmentation.class);
+        potAugmentation = rsp.augmentation(RspIoamPotAugmentation.class);
         assertNotNull(potAugmentation);
         assertFalse(potAugmentation.isIoamPotEnable());
 
@@ -363,7 +363,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(SF_NAMES_B.get(i)).setKey(key[i]).setType(SF_TYPES.get(i))
+            sfBuilder.setName(SF_NAMES_B.get(i)).withKey(key[i]).setType(SF_TYPES.get(i))
                     .setIpMgmtAddress(ipMgmtAddress[i]).setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
@@ -400,7 +400,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .withKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
                     .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
@@ -411,12 +411,12 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+                    .withKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-            sffBuilder.setName(SFF_NAMES_B.get(i)).setKey(new ServiceFunctionForwarderKey(SFF_NAMES_B.get(i)))
+            sffBuilder.setName(SFF_NAMES_B.get(i)).withKey(new ServiceFunctionForwarderKey(SFF_NAMES_B.get(i)))
                     .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
                     .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
@@ -433,11 +433,11 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                    .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(SF_TYPES.get(i)).build();
+                    .withKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(SF_TYPES.get(i)).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
+        sfcBuilder.setName(SFC_NAME).withKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
 
         InstanceIdentifier<ServiceFunctionChain> sfcIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
                 .child(ServiceFunctionChain.class, sfcKey).build();

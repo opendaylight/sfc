@@ -82,7 +82,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         }
         PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
         PortBandwidth portBandwidth = new PortBandwidthBuilder().setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
-                .setKey(portBandwidthKey).setMacaddress(new MacAddress("00:1e:67:a2:5f:f4")).setPortId(data[0])
+                .withKey(portBandwidthKey).setMacaddress(new MacAddress("00:1e:67:a2:5f:f4")).setPortId(data[0])
                 .setSupportedBandwidth(data[1]).build();
         portBandwidthList.add(portBandwidth);
 
@@ -101,7 +101,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setDescriptionInfo(descInfo).build();
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().withKey(serviceFunctionStateKey)
                 .addAugmentation(ServiceFunctionState1.class, sfState1).build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
 
@@ -125,7 +125,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
         ZeroBasedCounter64 defaultZero = new ZeroBasedCounter64(BigInteger.ZERO);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-                .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey).setRxBytes(defaultZero)
+                .setBandwidthUtilization(data[2]).withKey(portBandwidthUtilKey).setRxBytes(defaultZero)
                 .setRxPacket(defaultZero).setTxBytes(defaultZero).setTxPacket(defaultZero).setPortId(data[0]).build();
         portBandwidthUtilList.add(portBandwidthUtil);
 
@@ -145,7 +145,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
-        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().withKey(serviceFunctionStateKey)
                 .addAugmentation(ServiceFunctionState1.class, sfState1).build();
         SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         SfcSfDescMon readSfcSfDescMon = SfcProviderServiceFunctionAPI
@@ -171,7 +171,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         }
         PortBandwidthKey portBandwidthKey = new PortBandwidthKey(data[0]);
         PortBandwidth portBandwidth = new PortBandwidthBuilder().setIpaddress(new Ipv4Address(IP_MGMT_ADDRESS))
-                .setKey(portBandwidthKey).setMacaddress(new MacAddress("00:1e:67:a2:5f:f4")).setPortId(data[0])
+                .withKey(portBandwidthKey).setMacaddress(new MacAddress("00:1e:67:a2:5f:f4")).setPortId(data[0])
                 .setSupportedBandwidth(data[1]).build();
         portBandwidthList.add(portBandwidth);
 
@@ -191,7 +191,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         List<PortBandwidthUtilization> portBandwidthUtilList = new ArrayList<>();
         PortBandwidthUtilizationKey portBandwidthUtilKey = new PortBandwidthUtilizationKey(data[0]);
         PortBandwidthUtilization portBandwidthUtil = new PortBandwidthUtilizationBuilder()
-                .setBandwidthUtilization(data[2]).setKey(portBandwidthUtilKey).setPortId(data[0]).build();
+                .setBandwidthUtilization(data[2]).withKey(portBandwidthUtilKey).setPortId(data[0]).build();
         portBandwidthUtilList.add(portBandwidthUtil);
 
         SFPortsBandwidthUtilization sfPortsBandwidthUtil = new SFPortsBandwidthUtilizationBuilder()
@@ -231,7 +231,7 @@ public class SfcNetconfServiceFunctionAPITest extends AbstractDataBrokerTest {
         serviceFunctionState1Builder.setSfcSfDescMon(sfcSfDescMonBuilder.build());
 
         ServiceFunctionStateBuilder serviceFunctionStateBuilder = new ServiceFunctionStateBuilder();
-        serviceFunctionStateBuilder.setName(SF_STATE_NAME).setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+        serviceFunctionStateBuilder.setName(SF_STATE_NAME).withKey(new ServiceFunctionStateKey(SF_STATE_NAME))
                 .addAugmentation(ServiceFunctionState1.class, serviceFunctionState1Builder.build());
 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)

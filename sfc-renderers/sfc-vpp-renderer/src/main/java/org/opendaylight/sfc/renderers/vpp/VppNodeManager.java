@@ -81,7 +81,7 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     public void updateNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         // Check connection status
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
@@ -103,7 +103,7 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     public void removeNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode, "Netconf is null");
         NodeId netconfNodeId = node.getNodeId();
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
@@ -129,7 +129,7 @@ public class VppNodeManager implements BindingAwareProvider {
             .setCredentials(credentials).build();
 
         final NodeId nodeId = new NodeId(deviceId);
-        final Node node = new NodeBuilder().setKey(new NodeKey(nodeId)).setNodeId(nodeId).addAugmentation(
+        final Node node = new NodeBuilder().withKey(new NodeKey(nodeId)).setNodeId(nodeId).addAugmentation(
             NetconfNode.class, netconfNode).build();
         InstanceIdentifier<Node> netconfNodeIid = NETCONF_TOPOLOGY_IID.child(Node.class, new NodeKey(
             new NodeId(nodeId)));
@@ -146,7 +146,7 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     public boolean isCapableNetconfDevice(Node node) {
-        NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfAugmentation = node.augmentation(NetconfNode.class);
         if (netconfAugmentation == null) {
             LOG.debug("Node {} is not a netconf device", node.getNodeId().getValue());
             return false;
@@ -202,7 +202,7 @@ public class VppNodeManager implements BindingAwareProvider {
     }
 
     IpAddress getNetconfNodeIp(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         Preconditions.checkNotNull(netconfNode);
         return netconfNode.getHost().getIpAddress();
     }

@@ -65,7 +65,7 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
 
     /* Add Node information to local datastore, after checks. */
     public void updateNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
 
         /* Check connection status */
         ConnectionStatus connectionStatus = netconfNode.getConnectionStatus();
@@ -89,7 +89,7 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
 
     /* Removes node from local datastore. */
     public void removeNode(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         if (netconfNode == null) {
             LOG.warn("iOAM:PoT:SB: Netconf node is invalid.");
             return;
@@ -136,7 +136,7 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
     }
 
     public IpAddress getNetconfNodeIp(Node node) {
-        NetconfNode netconfNode = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfNode = node.augmentation(NetconfNode.class);
         if (netconfNode == null) {
             LOG.warn("iOAM:PoT:SB: Netconf node is invalid.");
             return null;

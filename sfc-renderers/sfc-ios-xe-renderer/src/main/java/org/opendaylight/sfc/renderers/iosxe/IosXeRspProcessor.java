@@ -235,14 +235,14 @@ public class IosXeRspProcessor {
         pathModeBuilder.setServiceIndex(serviceIndexBuilder.build());
         // Service Path
         ServicePathBuilder servicePathBuilder = new ServicePathBuilder();
-        servicePathBuilder.setKey(new ServicePathKey(pathId)).setServicePathId(pathId)
+        servicePathBuilder.withKey(new ServicePathKey(pathId)).setServicePathId(pathId)
                 .setConfigServiceChainPathMode(pathModeBuilder.build());
         return servicePathBuilder.build();
     }
 
     private Services createServicesEntry(short index, ServiceTypeChoice choice) {
         ServicesBuilder servicesBuilder = new ServicesBuilder();
-        servicesBuilder.setKey(new ServicesKey(index)).setServiceIndexId(index).setServiceTypeChoice(choice);
+        servicesBuilder.withKey(new ServicesKey(index)).setServiceIndexId(index).setServiceTypeChoice(choice);
         return servicesBuilder.build();
     }
 

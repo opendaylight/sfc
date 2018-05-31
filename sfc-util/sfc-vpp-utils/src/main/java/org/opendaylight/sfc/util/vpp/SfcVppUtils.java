@@ -246,7 +246,7 @@ public final class SfcVppUtils {
             return null;
         }
 
-        SfLocatorProxyAugmentation sfDplProxyAug = sfDataPlaneLocator.getAugmentation(SfLocatorProxyAugmentation.class);
+        SfLocatorProxyAugmentation sfDplProxyAug = sfDataPlaneLocator.augmentation(SfLocatorProxyAugmentation.class);
         if (sfDplProxyAug != null) {
             return SfcVppUtils.getSfProxyDplIp(sfDplProxyAug);
         }
@@ -454,7 +454,7 @@ public final class SfcVppUtils {
         nshEntryBuilder.setNsp(nsp);
         nshEntryBuilder.setNsi(nsi);
         nshEntryBuilder.setName(buildNshEntryKey(nsp, nsi));
-        nshEntryBuilder.setKey(new NshEntryKey(nshEntryBuilder.getName()));
+        nshEntryBuilder.withKey(new NshEntryKey(nshEntryBuilder.getName()));
         nshEntryBuilder.setMdType(MdType1.class);
         nshEntryBuilder.setNextProtocol(Ethernet.class);
         NshMdType1AugmentBuilder nshMdType1AugmentBuilder = new NshMdType1AugmentBuilder();
@@ -488,7 +488,7 @@ public final class SfcVppUtils {
         nshEntryBuilder.setNsp(nsp);
         nshEntryBuilder.setNsi(nsi);
         nshEntryBuilder.setName(buildNshEntryKey(nsp, nsi));
-        nshEntryBuilder.setKey(new NshEntryKey(nshEntryBuilder.getName()));
+        nshEntryBuilder.withKey(new NshEntryKey(nshEntryBuilder.getName()));
         nshEntryBuilder.setMdType(MdType1.class);
         nshEntryBuilder.setNextProtocol(Ethernet.class);
         NshMdType1AugmentBuilder nshMdType1AugmentBuilder = new NshMdType1AugmentBuilder();
@@ -506,7 +506,7 @@ public final class SfcVppUtils {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final InstanceIdentifier<NshEntry> nshEntryIid = InstanceIdentifier.create(VppNsh.class).child(NshEntries.class)
-                .child(NshEntry.class, nshEntry.getKey());
+                .child(NshEntry.class, nshEntry.key());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshEntryIid, nshEntry);
         addFuturesCallback(wTx, nshEntryIid, nshEntry);
     }
@@ -534,7 +534,7 @@ public final class SfcVppUtils {
         nshMapBuilder.setMappedNsp(mappedNsp);
         nshMapBuilder.setMappedNsi(mappedNsi);
         nshMapBuilder.setName(buildNshMapKey(nsp, nsi, mappedNsp, mappedNsi));
-        nshMapBuilder.setKey(new NshMapKey(nshMapBuilder.getName()));
+        nshMapBuilder.withKey(new NshMapKey(nshMapBuilder.getName()));
         if (encapIfName != null) {
             nshMapBuilder.setEncapType(VxlanGpe.class);
             nshMapBuilder.setEncapIfName(encapIfName);
@@ -548,7 +548,7 @@ public final class SfcVppUtils {
         final DataBroker vppDataBroker = dataBroker;
         final WriteTransaction wTx = vppDataBroker.newWriteOnlyTransaction();
         final InstanceIdentifier<NshMap> nshMapIid = InstanceIdentifier.create(VppNsh.class).child(NshMaps.class)
-                .child(NshMap.class, nshMap.getKey());
+                .child(NshMap.class, nshMap.key());
         wTx.put(LogicalDatastoreType.CONFIGURATION, nshMapIid, nshMap);
         addFuturesCallback(wTx, nshMapIid, nshMap);
     }
@@ -673,7 +673,7 @@ public final class SfcVppUtils {
             addFuturesCallback(wTx, vppClassifierIid, vppClassifier);
         } else {
             final InstanceIdentifier<ClassifyTable> classifyTableIid = InstanceIdentifier.create(VppClassifier.class)
-                    .child(ClassifyTable.class, classifyTable.getKey());
+                    .child(ClassifyTable.class, classifyTable.key());
             wTx.put(LogicalDatastoreType.CONFIGURATION, classifyTableIid, classifyTable);
             LOG.info("addClassifyTable: {}", classifyTable);
             addFuturesCallback(wTx, classifyTableIid, classifyTable);

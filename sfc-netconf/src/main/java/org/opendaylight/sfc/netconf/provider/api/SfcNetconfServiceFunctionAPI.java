@@ -88,7 +88,7 @@ public class SfcNetconfServiceFunctionAPI {
 
         ServiceFunctionKey key = new ServiceFunctionKey(nodeName);
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(nodeName).setKey(key).setType(type).setIpMgmtAddress(ipAddress)
+        serviceFunctionBuilder.setName(nodeName).withKey(key).setType(type).setIpMgmtAddress(ipAddress)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         return serviceFunctionBuilder.build();
     }
@@ -145,7 +145,7 @@ public class SfcNetconfServiceFunctionAPI {
 
         // build the service function capability and utilization
         if (dataSfcStateObject != null) {
-            ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+            ServiceFunctionState1 sf1Temp = dataSfcStateObject.augmentation(ServiceFunctionState1.class);
             if (sf1Temp != null) {
                 SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                 sfDescMonBuilder.setMonitoringInfo(sfDescMonTemp.getMonitoringInfo());
@@ -156,7 +156,7 @@ public class SfcNetconfServiceFunctionAPI {
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                .withKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
         if (dataSfcStateObject != null) {
             ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);
@@ -219,7 +219,7 @@ public class SfcNetconfServiceFunctionAPI {
 
         // build the service function capability and utilization
         if (dataSfcStateObject != null) {
-            ServiceFunctionState1 sf1Temp = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class);
+            ServiceFunctionState1 sf1Temp = dataSfcStateObject.augmentation(ServiceFunctionState1.class);
             if (sf1Temp != null) {
                 SfcSfDescMon sfDescMonTemp = sf1Temp.getSfcSfDescMon();
                 sfDescMonBuilder.setDescriptionInfo(sfDescMonTemp.getDescriptionInfo());
@@ -230,7 +230,7 @@ public class SfcNetconfServiceFunctionAPI {
 
         ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
         ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                .withKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
         if (dataSfcStateObject != null) {
             ret = SfcProviderServiceFunctionAPI.mergeServiceFunctionState(serviceFunctionState);

@@ -77,7 +77,7 @@ public class IosXeServiceFunctionMapper {
                                 serviceFunction = createNetconfServiceFunction(function);
                         if (serviceFunction != null) {
                             IosXeDataStoreAPI writeServiceFunction =
-                                    new IosXeDataStoreAPI(mountPoint, serviceFunction.getKey(),
+                                    new IosXeDataStoreAPI(mountPoint, serviceFunction.key(),
                                                           IosXeDataStoreAPI.Transaction.DELETE_FUNCTION,
                                                                                            LogicalDatastoreType
                                                                                                    .CONFIGURATION);
@@ -117,7 +117,7 @@ public class IosXeServiceFunctionMapper {
                 ConfigServiceChainSfModeBuilder sfModeBuilder = new ConfigServiceChainSfModeBuilder();
                 sfModeBuilder.setIp(ipBuilder.build());
                 ServiceFunctionBuilder netconfServiceFunction = new ServiceFunctionBuilder();
-                netconfServiceFunction.setName(sfName.getValue()).setKey(new ServiceFunctionKey(sfName.getValue()))
+                netconfServiceFunction.setName(sfName.getValue()).withKey(new ServiceFunctionKey(sfName.getValue()))
                         .setConfigServiceChainSfMode(sfModeBuilder.build());
                 return netconfServiceFunction.build();
             }

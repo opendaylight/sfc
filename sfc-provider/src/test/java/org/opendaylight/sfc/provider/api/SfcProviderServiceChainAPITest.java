@@ -65,12 +65,12 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
             // still String
             SfcServiceFunction sfcServiceFunction = sfcServiceFunctionBuilder
                     .setName(serviceFunction.getName().getValue())
-                    .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
+                    .withKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
                     .setType(serviceFunction.getType()).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(name).setKey(key).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false);
+        sfcBuilder.setName(name).withKey(key).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false);
 
         SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build());
         ServiceFunctionChain sfc2 = SfcProviderServiceChainAPI.readServiceFunctionChain(name);
@@ -89,7 +89,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcServiceFunctionBuilder
                     .setName(serviceFunction.getName().getValue())
-                    .setKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
+                    .withKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
                     .setType(serviceFunction.getType()).build();
             sfcAllServiceFunctionList.add(sfcServiceFunction);
         }
@@ -114,7 +114,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
                 index2++;
             }
             ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-            sfcArray[index] = sfcBuilder.setName(name).setKey(new ServiceFunctionChainKey(name))
+            sfcArray[index] = sfcBuilder.setName(name).withKey(new ServiceFunctionChainKey(name))
                     .setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(false).build();
             sfcList.add(sfcArray[index]);
             index++;
@@ -147,14 +147,14 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         List<SfcServiceFunction> serviceFunctionList = new ArrayList<>();
 
         // build service function and add to list
-        serviceFunctionBuilder.setName(sfName.getValue()).setKey(new SfcServiceFunctionKey(sfName.getValue()));
+        serviceFunctionBuilder.setName(sfName.getValue()).withKey(new SfcServiceFunctionKey(sfName.getValue()));
 
         SfcServiceFunction sfcServiceFunction = serviceFunctionBuilder.build();
         serviceFunctionList.add(sfcServiceFunction);
 
         // build service function chain
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
-        serviceFunctionChainBuilder.setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+        serviceFunctionChainBuilder.setName(sfcName).withKey(new ServiceFunctionChainKey(sfcName))
                 .setSfcServiceFunction(serviceFunctionList);
 
         // add chain to service function chains
@@ -198,7 +198,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
         // build service function path and add to list
         SfcServicePathBuilder sfcServicePathBuilder = new SfcServicePathBuilder();
-        sfcServicePathBuilder.setName(sfpName).setKey(new SfcServicePathKey(sfpName));
+        sfcServicePathBuilder.setName(sfpName).withKey(new SfcServicePathKey(sfpName));
 
         List<SfcServicePath> sfcServicePathList = new ArrayList<>();
         sfcServicePathList.add(sfcServicePathBuilder.build());
@@ -206,7 +206,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         // create service function chain state with sfc path and add to list
         ServiceFunctionChainStateBuilder serviceFunctionChainStateBuilder = new ServiceFunctionChainStateBuilder();
         List<ServiceFunctionChainState> serviceFunctionChainStateList = new ArrayList<>();
-        serviceFunctionChainStateBuilder.setName(sfcName).setKey(new ServiceFunctionChainStateKey(sfcName))
+        serviceFunctionChainStateBuilder.setName(sfcName).withKey(new ServiceFunctionChainStateKey(sfcName))
                 .setSfcServicePath(sfcServicePathList);
         serviceFunctionChainStateList.add(serviceFunctionChainStateBuilder.build());
 

@@ -87,7 +87,7 @@ public class SfcNetconfNodeDataListener extends AbstractSyncDataTreeChangeListen
     public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalDataObject,
                        @Nonnull Node updatedDataObject) {
         // React to data changes in Netconf nodes present in the Netconf topology
-        netconfNodeUpdated(getNodeId(instanceIdentifier), updatedDataObject.getAugmentation(NetconfNode.class));
+        netconfNodeUpdated(getNodeId(instanceIdentifier), updatedDataObject.augmentation(NetconfNode.class));
     }
 
     private void netconfNodeUpdated(NodeId nodeId, NetconfNode nnode) {

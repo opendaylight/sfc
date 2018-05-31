@@ -214,7 +214,7 @@ public final class SfcOpenflowUtils {
             final String flowName, MatchBuilder match, InstructionsBuilder isb) {
         FlowBuilder flow = new FlowBuilder();
         flow.setId(new FlowId(flowName));
-        flow.setKey(new FlowKey(new FlowId(flowName)));
+        flow.withKey(new FlowKey(new FlowId(flowName)));
         flow.setTableId(table);
         flow.setFlowName(flowName);
         flow.setCookie(new FlowCookie(cookieValue));
@@ -535,7 +535,7 @@ public final class SfcOpenflowUtils {
     private static void addExtension(MatchBuilder match, Class<? extends ExtensionKey> extensionKey,
             NxAugMatchNodesNodeTableFlow am) {
         GeneralAugMatchNodesNodeTableFlow existingAugmentations = match
-                .getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
+                .augmentation(GeneralAugMatchNodesNodeTableFlow.class);
         List<ExtensionList> extensions = null;
         if (existingAugmentations != null) {
             extensions = existingAugmentations.getExtensionList();
@@ -597,7 +597,7 @@ public final class SfcOpenflowUtils {
     private static ActionBuilder createActionBuilder(int order) {
         ActionBuilder ab = new ActionBuilder();
         ab.setOrder(order);
-        ab.setKey(new ActionKey(order));
+        ab.withKey(new ActionKey(order));
 
         return ab;
     }
@@ -1367,7 +1367,7 @@ public final class SfcOpenflowUtils {
         }
         aab.setAction(alist);
         actionsIb.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        actionsIb.setKey(new InstructionKey(0));
+        actionsIb.withKey(new InstructionKey(0));
         actionsIb.setOrder(0);
         return actionsIb;
     }
@@ -1385,12 +1385,12 @@ public final class SfcOpenflowUtils {
         // Create the NodeBuilder
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(nodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+        nodeBuilder.withKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path, which will include the Node, Table, and Flow
         InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.getKey()).build();
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key()).build();
 
         return SfcDataStoreAPI.writePutTransactionAPI(flowInstanceId, flow.build(), LogicalDatastoreType.CONFIGURATION);
     }
@@ -1409,11 +1409,11 @@ public final class SfcOpenflowUtils {
     public static boolean removeFlowFromDataStore(final String nodeName, TableKey tableKey, FlowKey flowKey) {
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setId(new NodeId(nodeName));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getId()));
+        nodeBuilder.withKey(new NodeKey(nodeBuilder.getId()));
 
         // Create the flow path
         InstanceIdentifier<Flow> flowInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, nodeBuilder.getKey()).augmentation(FlowCapableNode.class)
+                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
                 .child(Table.class, tableKey).child(Flow.class, flowKey).build();
 
         return SfcDataStoreAPI.deleteTransactionAPI(flowInstanceId, LogicalDatastoreType.CONFIGURATION);
@@ -1508,7 +1508,7 @@ public final class SfcOpenflowUtils {
         InstructionBuilder ib = new InstructionBuilder();
         ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
         ib.setOrder(0);
-        ib.setKey(new InstructionKey(0));
+        ib.withKey(new InstructionKey(0));
 
         // Put our Instruction in a list of Instructions
         List<Instruction> instructions = new ArrayList<>();
@@ -1578,7 +1578,7 @@ public final class SfcOpenflowUtils {
     public static Instruction createGotoTableInstruction(short nextTableId, int order) {
         GoToTableBuilder gotoIngress = SfcOpenflowUtils.createActionGotoTable(nextTableId);
 
-        return new InstructionBuilder().setKey(new InstructionKey(order)).setOrder(order)
+        return new InstructionBuilder().withKey(new InstructionKey(order)).setOrder(order)
                 .setInstruction(new GoToTableCaseBuilder().setGoToTable(gotoIngress.build()).build()).build();
     }
 
@@ -1618,7 +1618,7 @@ public final class SfcOpenflowUtils {
     public static Instruction createAddMetadataInstruction(BigInteger theMetadata, BigInteger metadataMask, int order) {
         return new InstructionBuilder()
                 .setInstruction(SfcOpenflowUtils.createInstructionMetadata(order, theMetadata, metadataMask))
-                .setKey(new InstructionKey(order)).setOrder(order).build();
+                .withKey(new InstructionKey(order)).setOrder(order).build();
     }
 
     /*

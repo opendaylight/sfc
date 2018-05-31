@@ -116,7 +116,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
          * Currently the switch port the SF is connected to is stored by Tacker.
          * Here we take this name and convert it to the port number.
          */
-        SfDplOvsAugmentation sfDplOvs = sfDpl.getAugmentation(SfDplOvsAugmentation.class);
+        SfDplOvsAugmentation sfDplOvs = sfDpl.augmentation(SfDplOvsAugmentation.class);
         if (sfDplOvs == null) {
             LOG.info("SfcRspProcessorNsh::configureSfTransportIngressFlow NO sfDplOvs augmentation present");
             return;
@@ -229,7 +229,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
         String dstIp = new String(locator.getIp().getValue());
         String nshProxyIp = null;
-        SfLocatorProxyAugmentation augment = dstSfDpl.getAugmentation(SfLocatorProxyAugmentation.class);
+        SfLocatorProxyAugmentation augment = dstSfDpl.augmentation(SfLocatorProxyAugmentation.class);
         if (augment != null) {
             ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
             if (proxyDpl == null) {
@@ -290,7 +290,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
         String dstIp = new String(locator.getIp().getValue());
         String nshProxyIp = null;
-        SfLocatorProxyAugmentation augment = dstSfDpl.getAugmentation(SfLocatorProxyAugmentation.class);
+        SfLocatorProxyAugmentation augment = dstSfDpl.augmentation(SfLocatorProxyAugmentation.class);
         if (augment != null) {
             ProxyDataPlaneLocator proxyDpl = augment.getProxyDataPlaneLocator();
             if (proxyDpl == null) {

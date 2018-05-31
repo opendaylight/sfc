@@ -194,7 +194,7 @@ class AclExporter extends AbstractExporter implements Exporter {
             }
         }
 
-        Matches1 matches1 = matches.getAugmentation(Matches1.class);
+        Matches1 matches1 = matches.augmentation(Matches1.class);
         if (matches1 != null) {
             List<String> appIds = matches1.getApplicationId();
 
@@ -310,7 +310,7 @@ class AclExporter extends AbstractExporter implements Exporter {
             }
         }
 
-        Actions1 actions1 = actions.getAugmentation(Actions1.class);
+        Actions1 actions1 = actions.augmentation(Actions1.class);
         if (actions1 != null) {
             SfcAction sfcAction = actions1.getSfcAction();
 

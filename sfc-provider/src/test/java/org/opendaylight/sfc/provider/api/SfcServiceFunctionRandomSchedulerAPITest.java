@@ -163,21 +163,21 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
+        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).withKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
                 .setType(new SftTypeName("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
+        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).withKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
                 .setType(new SftTypeName("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME3.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME3.getValue()))
+        sfcServiceFunctionBuilder.setName(SF_NAME3.getValue()).withKey(new SfcServiceFunctionKey(SF_NAME3.getValue()))
                 .setType(new SftTypeName("qos"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         ServiceFunctionChainBuilder serviceFunctionChainBuilder =
                 new ServiceFunctionChainBuilder();
-        serviceFunctionChainBuilder.setName(SFC_NAME).setKey(new ServiceFunctionChainKey(SFC_NAME)).setSymmetric(true)
+        serviceFunctionChainBuilder.setName(SFC_NAME).withKey(new ServiceFunctionChainKey(SFC_NAME)).setSymmetric(true)
                 .setSfcServiceFunction(sfcServiceFunctionList);
 
         return serviceFunctionChainBuilder.build();
@@ -191,7 +191,7 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         SfName sfName = new SfName(SF_NAME_BASE + serviceFunctionType);
 
-        sftServiceFunctionNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
+        sftServiceFunctionNameBuilder.setName(sfName).withKey(new SftServiceFunctionNameKey(sfName));
         sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
 
         return sftServiceFunctionNames;
@@ -205,13 +205,13 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
 
         for (int i = 0; i < 3; i++) {
             ServicePathHopBuilder servicePathHopBuilder = new ServicePathHopBuilder();
-            servicePathHopBuilder.setHopNumber((short) i).setKey(new ServicePathHopKey((short) i))
+            servicePathHopBuilder.setHopNumber((short) i).withKey(new ServicePathHopKey((short) i))
                     .setServiceFunctionForwarder(SFF_NAME).setServiceFunctionGroupName(SFG_NAME)
                     .setServiceIndex((short) (i + 1)).setServiceFunctionName(new SfName(SF_NAME_BASE + (i + 1)));
             servicePathHopList.add(servicePathHopBuilder.build());
         }
 
-        serviceFunctionPathBuilder.setName(SFP_NAME).setKey(new ServiceFunctionPathKey(SFP_NAME))
+        serviceFunctionPathBuilder.setName(SFP_NAME).withKey(new ServiceFunctionPathKey(SFP_NAME))
                 .setServicePathHop(servicePathHopList);
 
         return serviceFunctionPathBuilder.build();
@@ -255,7 +255,8 @@ public class SfcServiceFunctionRandomSchedulerAPITest extends AbstractDataStoreM
     private boolean writeServiceFunction(String sfType, boolean write) {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(new SfName(SF_NAME_BASE + sfType))
-                .setKey(new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType))).setType(new SftTypeName("firewall"));
+                .withKey(new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType)))
+                .setType(new SftTypeName("firewall"));
         InstanceIdentifier<ServiceFunction> sfIID = InstanceIdentifier.builder(ServiceFunctions.class)
                 .child(ServiceFunction.class, new ServiceFunctionKey(new SfName(SF_NAME_BASE + sfType))).build();
 

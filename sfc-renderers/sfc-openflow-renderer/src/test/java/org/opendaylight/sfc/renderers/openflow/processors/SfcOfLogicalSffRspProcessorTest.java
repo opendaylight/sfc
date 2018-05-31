@@ -724,10 +724,10 @@ public class SfcOfLogicalSffRspProcessorTest {
             return Collections.emptyList();
         }
 
-        return Optional.ofNullable(theFlow.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class))
+        return Optional.ofNullable(theFlow.getMatch().augmentation(GeneralAugMatchNodesNodeTableFlow.class))
                 .map(GeneralAugMatchNodesNodeTableFlow::getExtensionList).orElse(Collections.emptyList()).stream()
                 .map(ExtensionList::getExtension)
-                .map(extension -> extension.getAugmentation(NxAugMatchNodesNodeTableFlow.class))
+                .map(extension -> extension.augmentation(NxAugMatchNodesNodeTableFlow.class))
                 .collect(Collectors.toList());
     }
 

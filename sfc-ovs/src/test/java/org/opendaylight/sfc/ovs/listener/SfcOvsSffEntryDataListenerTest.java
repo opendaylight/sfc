@@ -194,12 +194,12 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
 
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.setNodeId(new NodeId("testNode"));
-        nodeBuilder.setKey(new NodeKey(nodeBuilder.getNodeId()));
+        nodeBuilder.withKey(new NodeKey(nodeBuilder.getNodeId()));
         nodeBuilder.addAugmentation(OvsdbNodeAugmentation.class, ovsdbNodeAugBuilder.build());
 
         InstanceIdentifier<Node> ovsdbTopologyIID = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
-                .child(Node.class, nodeBuilder.getKey());
+                .child(Node.class, nodeBuilder.key());
         SfcDataStoreAPI.writePutTransactionAPI(ovsdbTopologyIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
     }
 
@@ -231,7 +231,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
 
         SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
         locatorBuilder.setName(new SffDataPlaneLocatorName("locator-1"))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName("locator-1")))
+                .withKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName("locator-1")))
                 .setDataPlaneLocator(sffLocatorBuilder.build())
                 .addAugmentation(SffOvsLocatorOptionsAugmentation.class, sffOvsLocatorOptionsBuilder.build());
 
@@ -260,7 +260,7 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
         SffName name = new SffName("SFF1");
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
         sffBuilder.setName(name);
-        sffBuilder.setKey(new ServiceFunctionForwarderKey(name));
+        sffBuilder.withKey(new ServiceFunctionForwarderKey(name));
         sffBuilder.setServiceNode(null);
         sffBuilder.addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugBuilder.build());
 
@@ -282,6 +282,6 @@ public class SfcOvsSffEntryDataListenerTest extends AbstractDataStoreManager {
             return null;
         }
 
-        return termPoint.getAugmentation(OvsdbTerminationPointAugmentation.class);
+        return termPoint.augmentation(OvsdbTerminationPointAugmentation.class);
     }
 }

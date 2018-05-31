@@ -99,10 +99,10 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
                 LOG.debug("updateSffStateWithDpnIds: rsp list already existing for dpnid {}",
                         graphEntry.getDstDpnId().getValue());
             }
-            values.add(new RspsBuilder().setKey(new RspsKey(new SfpName(rsp.getName().getValue()))).build());
+            values.add(new RspsBuilder().withKey(new RspsKey(new SfpName(rsp.getName().getValue()))).build());
             builder.setRsps(values);
             RspsForDpnid dpnRsps = builder.build();
-            Dpn dpnidInfo = new DpnBuilder().setKey(new DpnKey(graphEntry.getDstDpnId())).setRspsForDpnid(dpnRsps)
+            Dpn dpnidInfo = new DpnBuilder().withKey(new DpnKey(graphEntry.getDstDpnId())).setRspsForDpnid(dpnRsps)
                     .build();
             ServiceFunctionForwarderStateKey sffKey = new ServiceFunctionForwarderStateKey(graphEntry.getDstSff());
             InstanceIdentifier<Dpn> dpnidIif = InstanceIdentifier.builder(ServiceFunctionForwardersState.class)
@@ -134,7 +134,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
         while (hops.hasNext()) {
             rspHop = hops.next();
             SffName sffName = rspHop.getServiceFunctionForwarder();
-            RspLogicalSffAugmentation lsffAugmentation = rspHop.getAugmentation(RspLogicalSffAugmentation.class);
+            RspLogicalSffAugmentation lsffAugmentation = rspHop.augmentation(RspLogicalSffAugmentation.class);
             if (lsffAugmentation == null) {
                 continue;
             }

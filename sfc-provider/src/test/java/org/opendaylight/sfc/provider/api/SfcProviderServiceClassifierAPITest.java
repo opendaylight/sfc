@@ -45,13 +45,13 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
     private static ServiceFunctionClassifier createClassifier(String clsfName, String accessList, String sffName) {
         SclServiceFunctionForwarderBuilder sffBuilder = new SclServiceFunctionForwarderBuilder();
         sffBuilder.setName(sffName);
-        sffBuilder.setKey(new SclServiceFunctionForwarderKey(sffName));
+        sffBuilder.withKey(new SclServiceFunctionForwarderKey(sffName));
         List<SclServiceFunctionForwarder> sfForwarders = new ArrayList<SclServiceFunctionForwarder>();
         sfForwarders.add(sffBuilder.build());
 
         ServiceFunctionClassifierBuilder clsfBuilder = new ServiceFunctionClassifierBuilder();
         clsfBuilder.setName(clsfName);
-        clsfBuilder.setKey(new ServiceFunctionClassifierKey(clsfName));
+        clsfBuilder.withKey(new ServiceFunctionClassifierKey(clsfName));
         clsfBuilder.setAccessList(accessList);
         clsfBuilder.setSclServiceFunctionForwarder(sfForwarders);
         return clsfBuilder.build();
@@ -66,7 +66,7 @@ public class SfcProviderServiceClassifierAPITest extends AbstractDataStoreManage
         ServiceFunctionClassifier clsf = SfcProviderServiceClassifierAPI.readServiceClassifier(expectedClsf.getName());
         assertNotNull("Classifier not found.", clsf);
         assertEquals(expectedClsf.getName(), clsf.getName());
-        assertEquals(expectedClsf.getKey().getName(), clsf.getKey().getName());
+        assertEquals(expectedClsf.key().getName(), clsf.key().getName());
         assertEquals(expectedClsf.getAccessList(), clsf.getAccessList());
         assertEquals(expectedClsf.getSclServiceFunctionForwarder(), clsf.getSclServiceFunctionForwarder());
     }

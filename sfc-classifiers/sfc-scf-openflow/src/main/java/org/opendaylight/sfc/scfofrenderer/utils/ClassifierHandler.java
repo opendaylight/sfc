@@ -81,7 +81,7 @@ public class ClassifierHandler {
      * @return the {@link FlowDetails} object that identifies the desired flow
      */
     public FlowDetails addRspRelatedFlowIntoNode(String nodeName, FlowBuilder flow, long rspId) {
-        return new FlowDetails(nodeName, flow.getKey(), new TableKey(flow.getTableId()), flow.build(), rspId);
+        return new FlowDetails(nodeName, flow.key(), new TableKey(flow.getTableId()), flow.build(), rspId);
     }
 
     /**

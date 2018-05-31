@@ -158,11 +158,11 @@ public class SfcProviderRpc implements ServiceFunctionService, ServiceFunctionCh
 
         ServiceFunctionBuilder sfbuilder = new ServiceFunctionBuilder();
         ServiceFunctionKey sfkey = new ServiceFunctionKey(input.getName());
-        ServiceFunction sf = sfbuilder.setName(input.getName()).setType(input.getType()).setKey(sfkey)
+        ServiceFunction sf = sfbuilder.setName(input.getName()).setType(input.getType()).withKey(sfkey)
                 .setIpMgmtAddress(input.getIpMgmtAddress()).setSfDataPlaneLocator(sfDataPlaneLocatorList).build();
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, sf.getKey()).build();
+                .child(ServiceFunction.class, sf.key()).build();
 
         WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
         writeTx.merge(LogicalDatastoreType.CONFIGURATION, sfEntryIID, sf, true);

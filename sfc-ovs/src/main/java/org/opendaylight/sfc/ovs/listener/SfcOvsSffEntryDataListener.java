@@ -120,7 +120,7 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
             // Only delete the port if this SFF is OVS augmented and the
             // transport is VxGpe
             SffOvsLocatorOptionsAugmentation sffOvsOptions = sffDpl
-                    .getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+                    .augmentation(SffOvsLocatorOptionsAugmentation.class);
             if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
                 // delete OvsdbTerminationPoint
                 SfcOvsUtil.deleteOvsdbTerminationPoint(
@@ -137,7 +137,7 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
      * @param sff - The SFF to modify
      */
     static void setSffOvsBridgeAugOpenflowNodeId(ServiceFunctionForwarder sff) {
-        SffOvsBridgeAugmentation sffOvsBrAug = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        SffOvsBridgeAugmentation sffOvsBrAug = sff.augmentation(SffOvsBridgeAugmentation.class);
         if (sffOvsBrAug != null) {
             if (sffOvsBrAug.getOvsBridge() != null && sffOvsBrAug.getOvsBridge().getOpenflowNodeId() != null) {
                 // The OpenFlow NodeId is already set on the SFF, nothing needs to be done here
@@ -153,28 +153,28 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
             return;
         }
 
-        if (augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class) == null) {
+        if (augmentedSff.augmentation(SffOvsBridgeAugmentation.class) == null) {
             LOG.debug("SFF [{}] does not have SffOvsBridge Augmentation", sff.getName().getValue());
             return;
         }
 
-        if (augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge() == null) {
+        if (augmentedSff.augmentation(SffOvsBridgeAugmentation.class).getOvsBridge() == null) {
             LOG.debug("Augmented SFF [{}] does not have an OVS bridge", sff.getName().getValue());
             return;
         }
 
         // There is no sense in writing the augmented SFF if the ofNodeId is null
-        if (augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId() != null) {
+        if (augmentedSff.augmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId() != null) {
             LOG.info("SfcOvsSffEntryDataListener::setSffOvsBridgeAugOpenflowNodeId SFF [{}] OpenFlow ID: [{}]",
                     augmentedSff.getName().getValue(),
-                    augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId());
+                    augmentedSff.augmentation(SffOvsBridgeAugmentation.class).getOvsBridge().getOpenflowNodeId());
 
             InstanceIdentifier<SffOvsBridgeAugmentation> sffOvsBridgeAugIid = InstanceIdentifier
                     .builder(ServiceFunctionForwarders.class)
-                    .child(ServiceFunctionForwarder.class, sff.getKey())
+                    .child(ServiceFunctionForwarder.class, sff.key())
                     .augmentation(SffOvsBridgeAugmentation.class).build();
             SfcDataStoreAPI.writePutTransactionAPI(sffOvsBridgeAugIid,
-                    augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class),
+                    augmentedSff.augmentation(SffOvsBridgeAugmentation.class),
                     LogicalDatastoreType.CONFIGURATION);
         }
     }

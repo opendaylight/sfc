@@ -412,7 +412,7 @@ public class VppClassifierProcessor {
         List<Ace> aceList = theAcl.get().getAccessListEntries().getAce();
         for (Ace ace : aceList) {
             Optional<RspName> rspName = Optional.ofNullable(ace.getActions())
-                .map(theActions -> theActions.getAugmentation(Actions1.class))
+                .map(theActions -> theActions.augmentation(Actions1.class))
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                 .map(aclRsp -> new RspName(aclRsp.getRenderedServicePath()));
             if (!rspName.isPresent()) {
@@ -527,7 +527,7 @@ public class VppClassifierProcessor {
         List<Ace> aceList = theAcl.get().getAccessListEntries().getAce();
         for (Ace ace : aceList) {
             Optional<RspName> rspName = Optional.ofNullable(ace.getActions())
-                .map(theActions -> theActions.getAugmentation(Actions1.class))
+                .map(theActions -> theActions.augmentation(Actions1.class))
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                 .map(aclRsp -> new RspName(aclRsp.getRenderedServicePath()));
             if (!rspName.isPresent()) {

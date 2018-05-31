@@ -76,7 +76,7 @@ public final class SfcProviderServiceForwarderAPI {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
-                .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, sff.getKey()).build();
+                .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, sff.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sffEntryIID, sff, LogicalDatastoreType.CONFIGURATION);
 
@@ -201,7 +201,7 @@ public final class SfcProviderServiceForwarderAPI {
         SffServicePathKey sffServicePathKey =
                 new SffServicePathKey(new SfpName(renderedServicePath.getName().getValue()));
         SffServicePathBuilder sffServicePathBuilder = new SffServicePathBuilder();
-        sffServicePathBuilder.setKey(sffServicePathKey);
+        sffServicePathBuilder.withKey(sffServicePathKey);
         sffServicePathBuilder.setName(new SfpName(renderedServicePath.getName().getValue()));
 
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();

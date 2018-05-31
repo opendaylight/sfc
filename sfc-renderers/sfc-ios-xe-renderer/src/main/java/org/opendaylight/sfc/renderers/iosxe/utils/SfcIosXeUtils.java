@@ -105,7 +105,7 @@ public final class SfcIosXeUtils {
                 new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address(
                         sffIp.getValue()));
         ServiceFfNameBuilder ffNameBuilder = new ServiceFfNameBuilder();
-        ffNameBuilder.setKey(new ServiceFfNameKey(sffName.getValue())).setName(sffName.getValue())
+        ffNameBuilder.withKey(new ServiceFfNameKey(sffName.getValue())).setName(sffName.getValue())
                 .setIp(ipBuilder.build()).setDescription(REMOTE + sffName.getValue());
         return ffNameBuilder.build();
     }

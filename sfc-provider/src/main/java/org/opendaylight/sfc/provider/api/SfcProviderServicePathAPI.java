@@ -84,7 +84,7 @@ public final class SfcProviderServicePathAPI {
 
         SfpRenderedServicePathKey sfpRenderedServicePathKey = new SfpRenderedServicePathKey(renderedPathName);
         SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
-        sfpRenderedServicePathBuilder.setKey(sfpRenderedServicePathKey).setName(renderedPathName);
+        sfpRenderedServicePathBuilder.withKey(sfpRenderedServicePathKey).setName(renderedPathName);
 
         InstanceIdentifier<SfpRenderedServicePath> rspIID =
                 InstanceIdentifier.builder(ServiceFunctionPathsState.class)
@@ -149,7 +149,7 @@ public final class SfcProviderServicePathAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                .child(ServiceFunctionPath.class, sfp.getKey()).build();
+                .child(ServiceFunctionPath.class, sfp.key()).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sfpEntryIID, sfp, LogicalDatastoreType.CONFIGURATION)) {
             LOG.debug("Created Service Function Path: {}", sfp.getName());
@@ -174,7 +174,7 @@ public final class SfcProviderServicePathAPI {
 
     public static boolean deleteServiceFunctionPath(ServiceFunctionPath sfp) {
         InstanceIdentifier<ServiceFunctionPath> sfpEntryIID = InstanceIdentifier.builder(ServiceFunctionPaths.class)
-                .child(ServiceFunctionPath.class, sfp.getKey()).build();
+                .child(ServiceFunctionPath.class, sfp.key()).build();
 
         if (SfcDataStoreAPI.deleteTransactionAPI(sfpEntryIID, LogicalDatastoreType.CONFIGURATION)) {
             LOG.info("Deleted Service Function Path: {}", sfp.getName());

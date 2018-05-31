@@ -61,12 +61,12 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // create rendered service path list with one entry
         List<SfpRenderedServicePath> renderedServicePaths = new ArrayList<>();
         SfpRenderedServicePathBuilder sfpRenderedServicePathBuilder = new SfpRenderedServicePathBuilder();
-        sfpRenderedServicePathBuilder.setKey(new SfpRenderedServicePathKey(rspKey));
+        sfpRenderedServicePathBuilder.withKey(new SfpRenderedServicePathKey(rspKey));
         renderedServicePaths.add(sfpRenderedServicePathBuilder.build());
 
         // create service path state
         ServiceFunctionPathStateBuilder serviceFunctionPathStateBuilder = new ServiceFunctionPathStateBuilder();
-        serviceFunctionPathStateBuilder.setKey(new ServiceFunctionPathStateKey(sfpKey))
+        serviceFunctionPathStateBuilder.withKey(new ServiceFunctionPathStateKey(sfpKey))
                 .setSfpRenderedServicePath(renderedServicePaths);
 
         InstanceIdentifier<ServiceFunctionPathState> sfpIID = InstanceIdentifier
@@ -101,7 +101,7 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
 
         // create service path state
         ServiceFunctionPathStateBuilder serviceFunctionPathStateBuilder = new ServiceFunctionPathStateBuilder();
-        serviceFunctionPathStateBuilder.setName(sfpKey).setKey(new ServiceFunctionPathStateKey(sfpKey));
+        serviceFunctionPathStateBuilder.setName(sfpKey).withKey(new ServiceFunctionPathStateKey(sfpKey));
 
         boolean transactionSuccessful = SfcProviderServicePathAPI
                 .addRenderedPathToServicePathState(serviceFunctionPathStateBuilder.build().getName(), rspKey);
@@ -121,13 +121,13 @@ public class SfcProviderServicePathAPITest extends AbstractDataStoreManager {
         // create service function paths
         List<ServiceFunctionPath> serviceFunctionPaths = new ArrayList<>();
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setName(sfpName1).setKey(new ServiceFunctionPathKey(sfpName1)).setSymmetric(false)
+        serviceFunctionPathBuilder.setName(sfpName1).withKey(new ServiceFunctionPathKey(sfpName1)).setSymmetric(false)
                 .setTransportType(VxlanGpe.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 
         serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         SfpName sfpName2 = new SfpName("SFP2");
-        serviceFunctionPathBuilder.setName(sfpName2).setKey(new ServiceFunctionPathKey(sfpName2)).setSymmetric(false)
+        serviceFunctionPathBuilder.setName(sfpName2).withKey(new ServiceFunctionPathKey(sfpName2)).setSymmetric(false)
                 .setTransportType(Gre.class);
         serviceFunctionPaths.add(serviceFunctionPathBuilder.build());
 

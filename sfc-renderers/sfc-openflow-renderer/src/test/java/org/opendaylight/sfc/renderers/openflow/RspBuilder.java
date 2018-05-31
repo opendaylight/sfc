@@ -185,7 +185,7 @@ public class RspBuilder {
         for (SftTypeName sfType : sfTypes) {
             String name = sfType.getValue() + "Abstract";
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
-            sfcSfBuilder.setKey(new SfcServiceFunctionKey(name));
+            sfcSfBuilder.withKey(new SfcServiceFunctionKey(name));
             sfcSfBuilder.setName(name);
             sfcSfBuilder.setOrder(order++);
             sfcSfBuilder.setType(sfType);
@@ -195,7 +195,7 @@ public class RspBuilder {
         SfcName sfcName = new SfcName(SFC_NAME_PREFIX + String.valueOf(sfcNameIndex++));
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
         sfcBuilder.setName(sfcName);
-        sfcBuilder.setKey(new ServiceFunctionChainKey(sfcName));
+        sfcBuilder.withKey(new ServiceFunctionChainKey(sfcName));
         sfcBuilder.setSymmetric(true);
         sfcBuilder.setSfcServiceFunction(sfcSfs);
 
@@ -207,7 +207,7 @@ public class RspBuilder {
 
         SfpName sfpName = new SfpName(SFP_NAME_PREFIX + String.valueOf(sfpNameIndex++));
         ServiceFunctionPathBuilder sfpBuilder = new ServiceFunctionPathBuilder();
-        sfpBuilder.setKey(new ServiceFunctionPathKey(sfpName));
+        sfpBuilder.withKey(new ServiceFunctionPathKey(sfpName));
         sfpBuilder.setName(sfpName);
         sfpBuilder.setServiceChainName(sfc.getName());
         sfpBuilder.setSymmetric(true);
@@ -221,7 +221,7 @@ public class RspBuilder {
             List<ServiceFunctionForwarder> sffList) {
         RspName rspName = new RspName(RSP_NAME_PREFIX + String.valueOf(rspNameIndex++));
         RenderedServicePathBuilder rspBuilder = new RenderedServicePathBuilder();
-        rspBuilder.setKey(new RenderedServicePathKey(rspName));
+        rspBuilder.withKey(new RenderedServicePathKey(rspName));
         rspBuilder.setStartingIndex(STARTING_INDEX);
         rspBuilder.setName(rspName);
         rspBuilder.setParentServiceFunctionPath(sfp.getName());
@@ -236,7 +236,7 @@ public class RspBuilder {
         for (ServiceFunction sf : sfList) {
             ServiceFunctionForwarder sff = sffList.get(usesLogicalSff ? 0 : index);
             RenderedServicePathHopBuilder rspHopBuilder = new RenderedServicePathHopBuilder();
-            rspHopBuilder.setKey(new RenderedServicePathHopKey(index));
+            rspHopBuilder.withKey(new RenderedServicePathHopKey(index));
             rspHopBuilder.setServiceFunctionForwarder(sff.getName());
             rspHopBuilder.setServiceFunctionName(sf.getName());
             // if we're using a logical SFF, there won't be any dataplane
@@ -315,7 +315,7 @@ public class RspBuilder {
         SffDataPlaneLocatorName name =
                 new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
         SffDataPlaneLocatorBuilder sffDplBuilder = new SffDataPlaneLocatorBuilder();
-        sffDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
+        sffDplBuilder.withKey(new SffDataPlaneLocatorKey(name));
         sffDplBuilder.setName(name);
         DataPlaneLocatorBuilder dplBuilder = new DataPlaneLocatorBuilder();
         dplBuilder.setLocatorType(buildLocatorTypeIp(getNextIpAddress(), VXLAN_UDP_PORT));
@@ -328,7 +328,7 @@ public class RspBuilder {
         // Now create the SFF-SF DPL, which will be Eth+NSH
         name = new SffDataPlaneLocatorName(SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
         SffDataPlaneLocatorBuilder sffSfDplBuilder = new SffDataPlaneLocatorBuilder();
-        sffSfDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
+        sffSfDplBuilder.withKey(new SffDataPlaneLocatorKey(name));
         sffSfDplBuilder.setName(name);
         DataPlaneLocatorBuilder dplBuilder2 = new DataPlaneLocatorBuilder();
         dplBuilder2.setLocatorType(buildLocatorTypeMac(getNextMacAddress(), -1)); // no vlan
@@ -358,7 +358,7 @@ public class RspBuilder {
             SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(
                     SFF_DPL_NAME_PREFIX + String.valueOf(sffDplNameIndex++));
             SffDataPlaneLocatorBuilder sffDplBuilder = new SffDataPlaneLocatorBuilder();
-            sffDplBuilder.setKey(new SffDataPlaneLocatorKey(name));
+            sffDplBuilder.withKey(new SffDataPlaneLocatorKey(name));
             sffDplBuilder.setName(name);
             DataPlaneLocatorBuilder dplBuilder = new DataPlaneLocatorBuilder();
             // check the transport type to see what type of locator to build
@@ -405,7 +405,7 @@ public class RspBuilder {
         ServiceFunctionDictionaryBuilder sfDictBuilder = new ServiceFunctionDictionaryBuilder();
         sfDictBuilder.setName(sf.getName());
         sfDictBuilder.setSffSfDataPlaneLocator(sffSfDplBuilder.build());
-        sfDictBuilder.setKey(new ServiceFunctionDictionaryKey(sf.getName()));
+        sfDictBuilder.withKey(new ServiceFunctionDictionaryKey(sf.getName()));
 
         List<ServiceFunctionDictionary> sfDictList = new ArrayList<>();
         sfDictList.add(sfDictBuilder.build());
@@ -520,7 +520,7 @@ public class RspBuilder {
             SffName serviceFunctionForwarder, Class<? extends SlTransportType> transport) {
 
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
-        locatorBuilder.setName(name).setKey(new SfDataPlaneLocatorKey(name)).setLocatorType(locatorType)
+        locatorBuilder.setName(name).withKey(new SfDataPlaneLocatorKey(name)).setLocatorType(locatorType)
                 .setServiceFunctionForwarder(serviceFunctionForwarder).setTransport(transport);
 
         return locatorBuilder.build();
@@ -539,7 +539,7 @@ public class RspBuilder {
             List<SfDataPlaneLocator> dsfDataPlaneLocatorList) {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(name).setKey(new ServiceFunctionKey(name)).setType(type).setIpMgmtAddress(ipMgmtAddress)
+        sfBuilder.setName(name).withKey(new ServiceFunctionKey(name)).setType(type).setIpMgmtAddress(ipMgmtAddress)
                 .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
 
         return sfBuilder.build();
@@ -548,7 +548,7 @@ public class RspBuilder {
     private ServiceFunctionForwarder buildServiceFunctionForwarder(SffName name,
             List<SffDataPlaneLocator> sffDataplaneLocatorList, List<ServiceFunctionDictionary> dictionaryList) {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
-        sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
+        sffBuilder.setName(name).withKey(new ServiceFunctionForwarderKey(name))
                 .setServiceNode(new SnName(name.getValue())).setSffDataPlaneLocator(sffDataplaneLocatorList)
                 .setServiceFunctionDictionary(dictionaryList);
 

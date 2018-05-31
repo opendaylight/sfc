@@ -33,7 +33,7 @@ public class VppSffManager {
 
     public void disposeSff(ServiceFunctionForwarder sff, boolean disconnect) {
         boolean connected;
-        SffNetconfAugmentation sffNetconfAugmentation = sff.getAugmentation(SffNetconfAugmentation.class);
+        SffNetconfAugmentation sffNetconfAugmentation = sff.augmentation(SffNetconfAugmentation.class);
         if (sffNetconfAugmentation == null) {
             return;
         }

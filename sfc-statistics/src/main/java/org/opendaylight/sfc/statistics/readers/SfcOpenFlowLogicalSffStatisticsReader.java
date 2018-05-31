@@ -37,7 +37,7 @@ public class SfcOpenFlowLogicalSffStatisticsReader extends SfcOpenFlowStatistics
                 continue;
             }
 
-            RspLogicalSffAugmentation logicalSffAugmentation = rspHop.getAugmentation(RspLogicalSffAugmentation.class);
+            RspLogicalSffAugmentation logicalSffAugmentation = rspHop.augmentation(RspLogicalSffAugmentation.class);
             if (logicalSffAugmentation != null) {
                 if (logicalSffAugmentation.getDpnId() != null) {
                     return Optional.of(new NodeId("openflow:" + logicalSffAugmentation.getDpnId().getValue()));

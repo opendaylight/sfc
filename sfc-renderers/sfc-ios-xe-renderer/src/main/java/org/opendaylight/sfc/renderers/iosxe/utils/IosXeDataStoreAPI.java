@@ -65,7 +65,7 @@ public class IosXeDataStoreAPI implements Callable {
                     Preconditions.checkNotNull(data);
                     ServiceFunction serviceFunction = (ServiceFunction) data;
                     InstanceIdentifier<ServiceFunction> serviceFunctionIid = SfcIosXeUtils
-                            .createSfIid(serviceFunction.getKey());
+                            .createSfIid(serviceFunction.key());
                     return writeMergeTransaction(serviceFunctionIid, serviceFunction);
                 } catch (ClassCastException e) {
                     LOG.error("Argument data {} is not an instance of ServiceFunction", data, e);
@@ -153,7 +153,7 @@ public class IosXeDataStoreAPI implements Callable {
                     Preconditions.checkNotNull(data);
                     ServicePath path = (ServicePath) data;
                     InstanceIdentifier<ServicePath> pathIid = SfcIosXeUtils.createServicePathIid(path
-                            .getKey());
+                            .key());
                     return writeMergeTransaction(pathIid, path);
                 } catch (ClassCastException e) {
                     LOG.error("Argument data {} is not an instance of ServicePath", data, e);

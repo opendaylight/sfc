@@ -32,7 +32,7 @@ public class SfcProviderServiceFunctionGroupAlgAPITest extends AbstractDataStore
     public void readServiceFunctionGroupAlgTest() {
         ServiceFunctionGroupAlgorithmBuilder serviceFunctionGroupAlgorithmBuilder =
                 new ServiceFunctionGroupAlgorithmBuilder();
-        serviceFunctionGroupAlgorithmBuilder.setName("SFG1").setKey(new ServiceFunctionGroupAlgorithmKey("SFG1"));
+        serviceFunctionGroupAlgorithmBuilder.setName("SFG1").withKey(new ServiceFunctionGroupAlgorithmKey("SFG1"));
         ServiceFunctionGroupAlgorithm serviceFunctionGroupAlgorithm = serviceFunctionGroupAlgorithmBuilder.build();
         ServiceFunctionGroupAlgorithmKey serviceFunctionGroupAlgorithmKey = new ServiceFunctionGroupAlgorithmKey(
                 "SFG1");

@@ -109,7 +109,7 @@ public class LogicallyAttachedClassifier implements ClassifierInterface {
 
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey)).setTableId(this.getClassifierTable())
-                .setKey(new FlowKey(new FlowId(flowKey))).setPriority(SfcScfOfUtils.FLOW_PRIORITY_CLASSIFIER)
+                .withKey(new FlowKey(new FlowId(flowKey))).setPriority(SfcScfOfUtils.FLOW_PRIORITY_CLASSIFIER)
                 .setMatch(match).setInstructions(isb.build());
         return classifierHandler.addRspRelatedFlowIntoNode(nodeId, flowb, sfcRspInfo.getNshNsp());
     }

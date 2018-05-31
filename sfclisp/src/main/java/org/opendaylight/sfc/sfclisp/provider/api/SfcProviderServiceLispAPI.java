@@ -38,7 +38,7 @@ public class SfcProviderServiceLispAPI {
         ServiceFunction updatedSf = lispUpdater.updateLispData(sf);
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, updatedSf.getKey()).build();
+                .child(ServiceFunction.class, updatedSf.key()).build();
 
         WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, sfEntryIID, updatedSf, true);
@@ -57,7 +57,7 @@ public class SfcProviderServiceLispAPI {
         ServiceFunctionForwarder updatedSff = lispUpdater.updateLispData(sff);
 
         InstanceIdentifier<ServiceFunctionForwarder> sffEntryIID = InstanceIdentifier
-                .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, updatedSff.getKey())
+                .builder(ServiceFunctionForwarders.class).child(ServiceFunctionForwarder.class, updatedSff.key())
                 .build();
 
         WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();

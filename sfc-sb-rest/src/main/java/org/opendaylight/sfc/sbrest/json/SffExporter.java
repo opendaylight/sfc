@@ -137,12 +137,12 @@ class SffExporter extends AbstractExporter implements Exporter {
 
     private ObjectNode getSffDataPlaneLocatorOvsBridgeObjectNode(SffDataPlaneLocator sffDataPlaneLocator) {
         if (sffDataPlaneLocator == null
-                || sffDataPlaneLocator.getAugmentation(SffOvsLocatorBridgeAugmentation.class) == null) {
+                || sffDataPlaneLocator.augmentation(SffOvsLocatorBridgeAugmentation.class) == null) {
             return null;
         }
 
         SffOvsLocatorBridgeAugmentation sffDataPlaneLocator1 = sffDataPlaneLocator
-                .getAugmentation(SffOvsLocatorBridgeAugmentation.class);
+                .augmentation(SffOvsLocatorBridgeAugmentation.class);
 
         if (sffDataPlaneLocator1 != null) {
             return this.getOvsBridgeObjectNode(sffDataPlaneLocator1.getOvsBridge());

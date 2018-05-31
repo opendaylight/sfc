@@ -199,7 +199,7 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
         }
 
         for (Node node : topology.getNode()) {
-            OvsdbNodeAugmentation ovsdbNodeAug = node.getAugmentation(OvsdbNodeAugmentation.class);
+            OvsdbNodeAugmentation ovsdbNodeAug = node.augmentation(OvsdbNodeAugmentation.class);
             if (ovsdbNodeAug != null && ovsdbNodeAug.getConnectionInfo() != null) {
                 IpAddress connectionIp = ovsdbNodeAug.getConnectionInfo().getRemoteIp();
                 if (connectionIp == null) {

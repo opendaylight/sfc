@@ -414,13 +414,13 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         // create sff with all parameters
         serviceFunctionForwarderBuilder.setSffDataPlaneLocator(createSffDataPlaneLocatorList(null, ipBuilder.build()))
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(new SffName(TEST_IP_ADDRESS)));
+            .withKey(new ServiceFunctionForwarderKey(new SffName(TEST_IP_ADDRESS)));
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_IP_ADDRESS);
-        assertEquals("Must be equal", serviceFunctionForwarder.getSffDataPlaneLocator().get(0).getKey().getName(),
+        assertEquals("Must be equal", serviceFunctionForwarder.key().getName().getValue(), TEST_IP_ADDRESS);
+        assertEquals("Must be equal", serviceFunctionForwarder.getSffDataPlaneLocator().get(0).key().getName(),
                 DPL_NAME);
         assertEquals("Must be equal", serviceFunctionForwarder.getSffDataPlaneLocator()
             .get(0)
@@ -445,7 +445,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
                 new ConnectionInfoBuilder().setRemoteIp(ipAddress).build());
 
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setKey(new NodeKey(new NodeId("nodeId"))).addAugmentation(OvsdbNodeAugmentation.class,
+        nodeBuilder.withKey(new NodeKey(new NodeId("nodeId"))).addAugmentation(OvsdbNodeAugmentation.class,
                 ovsdbNodeAugmentationBuilder.build());
 
         InstanceIdentifier<Node> ovsdbNodeIID = InstanceIdentifier.create(NetworkTopology.class)
@@ -459,13 +459,13 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         // create service function forwarder
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder =
                 new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
+        serviceFunctionForwarderBuilder.withKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 
         ServiceFunctionForwarder serviceFunctionForwarder = serviceFunctionForwarderBuilder.build();
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_STRING);
+        assertEquals("Must be equal", serviceFunctionForwarder.key().getName().getValue(), TEST_STRING);
         assertEquals("Must be equal", serviceFunctionForwarder.getIpMgmtAddress().getIpv4Address().getValue(),
                 TEST_IP_ADDRESS);
 
@@ -493,7 +493,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
         SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("sffLocator");
         sffDataPlaneLocatorBuilder.setName(sffDplName)
-            .setKey(new SffDataPlaneLocatorKey(sffDplName))
+            .withKey(new SffDataPlaneLocatorKey(sffDplName))
             .setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         sffDataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
@@ -506,16 +506,16 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder
             .addAugmentation(SffOvsBridgeAugmentation.class, sffOvsBridgeAugmentationBuilder.build())
-            .setKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
+            .withKey(new ServiceFunctionForwarderKey(new SffName(TEST_STRING)))
             .setSffDataPlaneLocator(sffDataPlaneLocators);
 
         serviceFunctionForwarder = SfcOvsUtil.augmentSffWithOpenFlowNodeId(serviceFunctionForwarderBuilder.build());
 
         assertNotNull("Must not be null", serviceFunctionForwarder);
-        assertEquals("Must be equal", serviceFunctionForwarder.getAugmentation(SffOvsBridgeAugmentation.class)
+        assertEquals("Must be equal", serviceFunctionForwarder.augmentation(SffOvsBridgeAugmentation.class)
             .getOvsBridge()
             .getOpenflowNodeId(), ofNodeId);
-        assertEquals("Must be equal", serviceFunctionForwarder.getKey().getName().getValue(), TEST_STRING);
+        assertEquals("Must be equal", serviceFunctionForwarder.key().getName().getValue(), TEST_STRING);
     }
 
     @Test
@@ -572,7 +572,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv4Address(TEST_IP_ADDRESS)));
 
         assertNotNull("Must be not null", node);
-        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), TEST_IP_ADDRESS);
+        assertEquals("Must be equal", node.key().getNodeId().getValue(), TEST_IP_ADDRESS);
     }
 
     @Test
@@ -603,7 +603,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         Node node = SfcOvsUtil.getManagerNodeByIp(new IpAddress(new Ipv6Address(IPV6_ADDRESS)));
 
         assertNotNull("Must be not null", node);
-        assertEquals("Must be equal", node.getKey().getNodeId().getValue(), IPV6_ADDRESS);
+        assertEquals("Must be equal", node.key().getNodeId().getValue(), IPV6_ADDRESS);
     }
 
     @Test
@@ -735,7 +735,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
                 .addAugmentation(OvsdbNodeAugmentation.class,
                         SfcOvsDataStoreAPITest.createOvsdbNodeAugmentation(TEST_IP_ADDRESS))
                 .addAugmentation(OvsdbBridgeAugmentation.class, createOvsdbBridgeAugmentation())
-                .setKey(new NodeKey(new NodeId(TEST_IP_ADDRESS)));
+                .withKey(new NodeKey(new NodeId(TEST_IP_ADDRESS)));
         isCreated =
                 SfcDataStoreAPI.writePutTransactionAPI(nodeIID, nodeBuilder.build(), LogicalDatastoreType.OPERATIONAL);
         if (isCreated) {

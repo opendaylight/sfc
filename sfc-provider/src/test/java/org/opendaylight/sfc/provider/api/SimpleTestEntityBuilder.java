@@ -58,7 +58,7 @@ public final class SimpleTestEntityBuilder {
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         sfBuilder.setName(name)
-            .setKey(new ServiceFunctionKey(name))
+            .withKey(new ServiceFunctionKey(name))
             .setType(type)
             .setIpMgmtAddress(ipMgmtAddress)
             .setSfDataPlaneLocator(dsfDataPlaneLocatorList);
@@ -79,7 +79,7 @@ public final class SimpleTestEntityBuilder {
 
         SfDataPlaneLocatorBuilder locatorBuilder = new SfDataPlaneLocatorBuilder();
         locatorBuilder.setName(name)
-            .setKey(new SfDataPlaneLocatorKey(name))
+            .withKey(new SfDataPlaneLocatorKey(name))
             .setLocatorType(locatorType)
             .setServiceFunctionForwarder(serviceFunctionForwarder)
             .setTransport(transport);
@@ -92,7 +92,7 @@ public final class SimpleTestEntityBuilder {
             String classifier) {
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
         sffBuilder.setName(name)
-            .setKey(new ServiceFunctionForwarderKey(name))
+            .withKey(new ServiceFunctionForwarderKey(name))
             .setSffDataPlaneLocator(sffDataplaneLocatorList)
             .setServiceFunctionDictionary(dictionaryList)
             .setServiceNode(null);
@@ -102,14 +102,14 @@ public final class SimpleTestEntityBuilder {
 
     static ServiceFunctionGroupAlgorithm buildServiceFunctionGroupAlgorithm(String name) {
         ServiceFunctionGroupAlgorithmBuilder sfgAlgBuilder = new ServiceFunctionGroupAlgorithmBuilder();
-        sfgAlgBuilder.setName(name).setKey(new ServiceFunctionGroupAlgorithmKey(name));
+        sfgAlgBuilder.setName(name).withKey(new ServiceFunctionGroupAlgorithmKey(name));
 
         return sfgAlgBuilder.build();
     }
 
     static ServiceFunctionGroup buildServiceFunctionGroup(String name, String algorithmName) {
         ServiceFunctionGroupBuilder sfgBuilder = new ServiceFunctionGroupBuilder();
-        sfgBuilder.setName(name).setKey(new ServiceFunctionGroupKey(name)).setAlgorithm(algorithmName);
+        sfgBuilder.setName(name).withKey(new ServiceFunctionGroupKey(name)).setAlgorithm(algorithmName);
 
         return sfgBuilder.build();
     }

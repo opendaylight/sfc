@@ -91,7 +91,7 @@ public final class SfcProviderServiceTypeAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionType> sftEntryIID = InstanceIdentifier.builder(ServiceFunctionTypes.class)
-                .child(ServiceFunctionType.class, sft.getKey()).build();
+                .child(ServiceFunctionType.class, sft.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sftEntryIID, sft, LogicalDatastoreType.CONFIGURATION);
 

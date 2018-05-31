@@ -235,13 +235,13 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         ServiceFunctionGroupBuilder serviceFunctionGroupBuilder = new ServiceFunctionGroupBuilder();
 
         // ip v4 group
-        serviceFunctionGroupBuilder.setName(SFG_NAME + 1).setKey(new ServiceFunctionGroupKey(SFG_NAME + 1))
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 1).withKey(new ServiceFunctionGroupKey(SFG_NAME + 1))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_V4_ADDRESS))).setAlgorithm(ALGORITHM + 1)
                 .setGroupId(100L).setType(new SftTypeName("firewall"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
 
         // ipv6 group
-        serviceFunctionGroupBuilder.setName(SFG_NAME + 2).setKey(new ServiceFunctionGroupKey(SFG_NAME + 2))
+        serviceFunctionGroupBuilder.setName(SFG_NAME + 2).withKey(new ServiceFunctionGroupKey(SFG_NAME + 2))
                 .setIpMgmtAddress(new IpAddress(new Ipv6Address(IP_V6_ADDRESS))).setAlgorithm(ALGORITHM + 2)
                 .setGroupId(101L).setType(new SftTypeName("dpi"));
         serviceFunctionGroupList.add(serviceFunctionGroupBuilder.build());
@@ -260,13 +260,13 @@ public class SfcProviderServiceFunctionGroupAPITest extends AbstractDataStoreMan
         // Function, so
         // not sure exactly what this is testing.
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
+        sfcServiceFunctionBuilder.setName(SF_NAME1.getValue()).withKey(new SfcServiceFunctionKey(SF_NAME1.getValue()))
                 .setType(new SftTypeName("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         // second entry
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).setKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
+        sfcServiceFunctionBuilder.setName(SF_NAME2.getValue()).withKey(new SfcServiceFunctionKey(SF_NAME2.getValue()))
                 .setType(new SftTypeName("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 

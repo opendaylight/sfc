@@ -94,7 +94,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
 
         SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
         locatorBuilder.setName(sffDplName)
-            .setKey(new SffDataPlaneLocatorKey(sffDplName))
+            .withKey(new SffDataPlaneLocatorKey(sffDplName))
             .setDataPlaneLocator(sffLocatorBuilder.build());
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
         locatorList.add(locatorBuilder.build());
@@ -107,7 +107,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         SffSfDataPlaneLocator sffSfDataPlaneLocator0 = sffSfDataPlaneLocatorBuilder0.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder0 = new ServiceFunctionDictionaryBuilder();
         dictionaryEntryBuilder0.setName(sf0.getName())
-            .setKey(new ServiceFunctionDictionaryKey(sf0.getName()))
+            .withKey(new ServiceFunctionDictionaryKey(sf0.getName()))
             .setSffSfDataPlaneLocator(sffSfDataPlaneLocator0)
             .setFailmode(Open.class)
             .setSffInterfaces(null);
@@ -119,7 +119,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         SffName name = new SffName(sffNames.get(0));
 
         ServiceFunctionForwarder sff = sffBuilder.setName(name)
-            .setKey(new ServiceFunctionForwarderKey(name))
+            .withKey(new ServiceFunctionForwarderKey(name))
             .setSffDataPlaneLocator(locatorList)
             .setServiceFunctionDictionary(dictionary)
             .setServiceNode(null) // for consistency only; we are going to get rid of ServiceNodes
@@ -138,7 +138,7 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
         SffSfDataPlaneLocator sffSfDataPlaneLocator1 = sffSfDataPlaneLocatorBuilder1.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder1 = new ServiceFunctionDictionaryBuilder();
         dictionaryEntryBuilder1.setName(sf1.getName())
-            .setKey(new ServiceFunctionDictionaryKey(sf1.getName()))
+            .withKey(new ServiceFunctionDictionaryKey(sf1.getName()))
             .setSffSfDataPlaneLocator(sffSfDataPlaneLocator1)
             .setFailmode(Open.class)
             .setSffInterfaces(null);

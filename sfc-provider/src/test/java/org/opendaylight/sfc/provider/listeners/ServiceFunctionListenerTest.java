@@ -480,7 +480,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         dataPlaneLocatorList.add(sfDataPlaneLocator);
 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
-        sfBuilder.setName(new SfName(SF_NAME)).setKey(key).setType(type).setIpMgmtAddress(ipMgmtAddress)
+        sfBuilder.setName(new SfName(SF_NAME)).withKey(key).setType(type).setIpMgmtAddress(ipMgmtAddress)
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
 
         return sfBuilder.build();
@@ -618,7 +618,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(sfNames.get(i))).setKey(key[i]).setType(sfTypes.get(i))
+            sfBuilder.setName(new SfName(sfNames.get(i))).withKey(key[i]).setType(sfTypes.get(i))
                     .setIpMgmtAddress(ipMgmtAddress[i]).setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
@@ -653,7 +653,7 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .withKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
                     .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
@@ -664,13 +664,13 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SffDataPlaneLocatorName(sffLocatorIPs.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
+                    .withKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffLocatorIPs.get(i))))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             sffBuilder.setName(new SffName(sffNames.get(i)))
-                    .setKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
+                    .withKey(new ServiceFunctionForwarderKey(new SffName(sffNames.get(i))))
                     .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
                     .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
@@ -687,12 +687,12 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         for (int i = 0; i < serviceFunctionAbstractNames.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(serviceFunctionAbstractNames.get(i))
-                    .setKey(new SfcServiceFunctionKey(serviceFunctionAbstractNames.get(i))).setType(sfTypes.get(i))
+                    .withKey(new SfcServiceFunctionKey(serviceFunctionAbstractNames.get(i))).setType(sfTypes.get(i))
                     .build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(new SfcName(SFC_NAME)).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList)
+        sfcBuilder.setName(new SfcName(SFC_NAME)).withKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList)
                 .setSymmetric(true);
 
         assertTrue(SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build()));

@@ -55,7 +55,7 @@ public final class SfcProviderScheduleTypeAPI {
 
         InstanceIdentifier<ServiceFunctionSchedulerType> sfstEntryIID = InstanceIdentifier
                 .builder(ServiceFunctionSchedulerTypes.class)
-                .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.getKey()).build();
+                .child(ServiceFunctionSchedulerType.class, serviceFunctionSchedulerType.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfstEntryIID, serviceFunctionSchedulerType,
                 LogicalDatastoreType.CONFIGURATION);

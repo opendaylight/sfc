@@ -77,7 +77,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
          * might put SFF into config DS before topology in operational DS gets
          * populated.
          */
-        OvsdbNodeAugmentation ovsdbNodeAugmentation = node.getAugmentation(OvsdbNodeAugmentation.class);
+        OvsdbNodeAugmentation ovsdbNodeAugmentation = node.augmentation(OvsdbNodeAugmentation.class);
         if (ovsdbNodeAugmentation != null) {
             ConnectionInfo connectionInfo = ovsdbNodeAugmentation.getConnectionInfo();
             if (connectionInfo != null) {
@@ -95,7 +95,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
          * handled here. Only do this if the newly created ovs-bridge has the
          * DPID, it may need to be obtained in the ovs-bridge update.
          */
-        OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.getAugmentation(OvsdbBridgeAugmentation.class);
+        OvsdbBridgeAugmentation ovsdbBridgeAugmentation = node.augmentation(OvsdbBridgeAugmentation.class);
         if (ovsdbBridgeAugmentation != null) {
             if (ovsdbBridgeAugmentation.getBridgeName() != null && ovsdbBridgeAugmentation.getDatapathId() != null) {
                 LOG.info("SfcOvsNodeDataListener::add() bridge name [{}] DPID [{}]",
@@ -126,7 +126,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
 
         /* When a new bridge is modified, and the DPID is set, add it to the corresponding SFF, if there is one */
         LOG.debug("SfcOvsNodeDataListener::update()");
-        OvsdbBridgeAugmentation ovsdbBridgeAugmentation = updatedNode.getAugmentation(OvsdbBridgeAugmentation.class);
+        OvsdbBridgeAugmentation ovsdbBridgeAugmentation = updatedNode.augmentation(OvsdbBridgeAugmentation.class);
         if (ovsdbBridgeAugmentation != null) {
             if (ovsdbBridgeAugmentation.getBridgeName() != null && ovsdbBridgeAugmentation.getDatapathId() != null) {
                 LOG.debug("SfcOvsNodeDataListener::update() bridge name [{}] DPID [{}]",
@@ -190,7 +190,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
                     return;
                 }
 
-                SffOvsBridgeAugmentation sffOvsBridge = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+                SffOvsBridgeAugmentation sffOvsBridge = sff.augmentation(SffOvsBridgeAugmentation.class);
                 if (sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null) {
                     LOG.debug("SFF [{}] does not have sffOvsBridgeAugmentation", sff.getName().getValue());
                     return;
@@ -218,11 +218,11 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
                         sff, SfcOvsUtil.getOpenflowNodeIdFromDpid(dpid.getValue()));
                 InstanceIdentifier<SffOvsBridgeAugmentation> sffOvsBridgeAugIid = InstanceIdentifier
                         .builder(ServiceFunctionForwarders.class)
-                        .child(ServiceFunctionForwarder.class, sff.getKey())
+                        .child(ServiceFunctionForwarder.class, sff.key())
                         .augmentation(SffOvsBridgeAugmentation.class).build();
 
                 SfcDataStoreAPI.writePutTransactionAPI(sffOvsBridgeAugIid,
-                        augmentedSff.getAugmentation(SffOvsBridgeAugmentation.class),
+                        augmentedSff.augmentation(SffOvsBridgeAugmentation.class),
                         LogicalDatastoreType.CONFIGURATION);
             }
 

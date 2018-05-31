@@ -75,18 +75,18 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
 
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("firewall")
-                .setKey(new SfcServiceFunctionKey("firewall")).setType(new SftTypeName("firewall")).build());
+                .withKey(new SfcServiceFunctionKey("firewall")).setType(new SftTypeName("firewall")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("dpi")
-                .setKey(new SfcServiceFunctionKey("dpi")).setType(new SftTypeName("dpi")).build());
+                .withKey(new SfcServiceFunctionKey("dpi")).setType(new SftTypeName("dpi")).build());
         sfcServiceFunctionList.add(new SfcServiceFunctionBuilder().setName("nat")
-                .setKey(new SfcServiceFunctionKey("nat")).setType(new SftTypeName("napt44")).build());
+                .withKey(new SfcServiceFunctionKey("nat")).setType(new SftTypeName("napt44")).build());
 
         SfcName sfcName = new SfcName("loadbalance-unittest-chain-1");
-        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).setKey(new ServiceFunctionChainKey(sfcName))
+        sfChain = new ServiceFunctionChainBuilder().setName(sfcName).withKey(new ServiceFunctionChainKey(sfcName))
                 .setSfcServiceFunction(sfcServiceFunctionList).build();
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
-        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
+        serviceFunctionPathBuilder.withKey(new ServiceFunctionPathKey(new SfpName("key")));
         serviceFunctionPathBuilder.setPathId(1L);
         serviceFunctionPathBuilder.setServiceChainName(sfcName);
         List<ServicePathHop> sphs = new ArrayList<>();
@@ -172,7 +172,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .withKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
@@ -187,7 +187,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .withKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
 
@@ -202,7 +202,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfcSfDescMon sfDescMon = new SfcSfDescMonBuilder().setMonitoringInfo(monInfo).build();
             ServiceFunctionState1 sfState1 = new ServiceFunctionState1Builder().setSfcSfDescMon(sfDescMon).build();
             ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder()
-                    .setKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
+                    .withKey(serviceFunctionStateKey).addAugmentation(ServiceFunctionState1.class, sfState1).build();
             SfcProviderServiceFunctionAPI.putServiceFunctionState(serviceFunctionState);
         }
     }
@@ -279,7 +279,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         Long pathId = 1L;
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
-        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
+        serviceFunctionPathBuilder.withKey(new ServiceFunctionPathKey(new SfpName("key")));
         serviceFunctionPathBuilder.setPathId(pathId);
         serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
 
@@ -298,7 +298,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
         Long pathId = 1L;
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
 
-        serviceFunctionPathBuilder.setKey(new ServiceFunctionPathKey(new SfpName("key")));
+        serviceFunctionPathBuilder.withKey(new ServiceFunctionPathKey(new SfpName("key")));
         serviceFunctionPathBuilder.setPathId(pathId);
         serviceFunctionPathBuilder.setServiceChainName(sfChain.getName());
 

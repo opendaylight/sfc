@@ -77,7 +77,7 @@ public final class SfcProviderServiceFunctionGroupAlgAPI {
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionGroupAlgorithm> sfgAlgEntryIID = InstanceIdentifier
                 .builder(ServiceFunctionGroupAlgorithms.class)
-                .child(ServiceFunctionGroupAlgorithm.class, sfgAlg.getKey()).build();
+                .child(ServiceFunctionGroupAlgorithm.class, sfgAlg.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfgAlgEntryIID, sfgAlg, LogicalDatastoreType.CONFIGURATION);
 

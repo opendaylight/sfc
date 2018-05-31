@@ -240,7 +240,7 @@ public final class SfcServicePathId {
         ServicePathIdBuilder servicePathIdBuilder = new ServicePathIdBuilder();
 
         servicePathIdBuilder.setPathIdBitarray(pathIdBitArray | 1L << Long.SIZE - bitEntry);
-        servicePathIdBuilder.setKey(servicePathIdKey);
+        servicePathIdBuilder.withKey(servicePathIdKey);
 
         return SfcDataStoreAPI.writeMergeTransactionAPI(spIID, servicePathIdBuilder.build(),
                 LogicalDatastoreType.OPERATIONAL);
@@ -270,7 +270,7 @@ public final class SfcServicePathId {
                         LogicalDatastoreType.OPERATIONAL);
 
                 ServicePathIdBuilder servicePathIdBuilder = new ServicePathIdBuilder(servicePathId);
-                servicePathIdBuilder.setKey(servicePathIdKey);
+                servicePathIdBuilder.withKey(servicePathIdKey);
                 servicePathIdBuilder
                         .setPathIdBitarray(servicePathId.getPathIdBitarray() & ~(1L << Long.SIZE - bitEntry));
 

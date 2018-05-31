@@ -83,7 +83,7 @@ public class SfcGeniusBoundServiceWriterTest {
         assertThat(boundServices.getServicePriority(), is(NwConstants.SFC_SERVICE_INDEX));
         assertThat(boundServices.getServiceType(), is(equalTo(ServiceTypeFlowBased.class)));
 
-        StypeOpenflow stypeOpenflow = boundServices.getAugmentation(StypeOpenflow.class);
+        StypeOpenflow stypeOpenflow = boundServices.augmentation(StypeOpenflow.class);
         assertThat(stypeOpenflow.getFlowCookie(), is(SfcGeniusConstants.COOKIE_SFC_INGRESS_TABLE));
         assertThat(stypeOpenflow.getFlowPriority(), is(SfcGeniusConstants.SFC_SERVICE_PRIORITY));
         assertThat(stypeOpenflow.getInstruction().size(), is(1));

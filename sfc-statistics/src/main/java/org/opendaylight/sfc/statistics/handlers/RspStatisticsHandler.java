@@ -90,7 +90,7 @@ public class RspStatisticsHandler extends SfcStatisticsHandlerBase {
 
         StatisticByTimestampBuilder statsBuilder = new StatisticByTimestampBuilder();
         statsBuilder.setTimestamp(getTimestampKey().getTimestamp());
-        statsBuilder.setKey(getTimestampKey());
+        statsBuilder.withKey(getTimestampKey());
         statsBuilder.setServiceStatistic(srvStatsBuilder.build());
 
         LOG.debug("RspStatisticsHandler::writeStatistics completed with statistics");

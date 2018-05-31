@@ -137,7 +137,7 @@ public final class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(match).setInstructions(isb.build());
         return flowb;
     }
@@ -202,7 +202,7 @@ public final class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
 
         FlowBuilder flowb = new FlowBuilder();
-        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(mb.build()).setInstructions(isb.build());
 
         return flowb;
@@ -236,7 +236,7 @@ public final class SfcScfOfUtils {
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);
         FlowBuilder flowb = new FlowBuilder();
         MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
-        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).setKey(new FlowKey(new FlowId(flowKey)))
+        flowb.setId(new FlowId(flowKey)).setTableId(TABLE_INDEX_CLASSIFIER).withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(FLOW_PRIORITY_CLASSIFIER).setMatch(mb.build()).setInstructions(isb.build());
         return flowb;
     }
@@ -267,7 +267,7 @@ public final class SfcScfOfUtils {
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
                 .setTableId(TABLE_INDEX_CLASSIFIER)
-                .setKey(new FlowKey(new FlowId(flowKey)))
+                .withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
                 .setMatch(match)
                 .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
@@ -305,7 +305,7 @@ public final class SfcScfOfUtils {
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
                 .setTableId(TABLE_INDEX_CLASSIFIER)
-                .setKey(new FlowKey(new FlowId(flowKey)))
+                .withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER))
                 .setMatch(mb.build())
                 .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils
@@ -345,7 +345,7 @@ public final class SfcScfOfUtils {
         FlowBuilder flowb = new FlowBuilder();
         flowb.setId(new FlowId(flowKey))
                 .setTableId(TABLE_INDEX_CLASSIFIER)
-                .setKey(new FlowKey(new FlowId(flowKey)))
+                .withKey(new FlowKey(new FlowId(flowKey)))
                 .setPriority(Integer.valueOf(FLOW_PRIORITY_CLASSIFIER + 1))
                 .setMatch(mb.build())
                 .setInstructions(SfcOpenflowUtils.createInstructionsBuilder(SfcOpenflowUtils

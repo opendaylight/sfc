@@ -79,7 +79,7 @@ public final class SfcSffToOvsMappingAPI {
         OvsdbBridgeAugmentationBuilder ovsdbBridgeBuilder = new OvsdbBridgeAugmentationBuilder();
 
         SffOvsBridgeAugmentation serviceForwarderOvsBridgeAugmentation =
-                serviceFunctionForwarder.getAugmentation(SffOvsBridgeAugmentation.class);
+                serviceFunctionForwarder.augmentation(SffOvsBridgeAugmentation.class);
         if (serviceForwarderOvsBridgeAugmentation != null) {
             OvsBridge serviceForwarderOvsBridge = serviceForwarderOvsBridgeAugmentation.getOvsBridge();
 
@@ -99,7 +99,7 @@ public final class SfcSffToOvsMappingAPI {
         }
 
         SffOvsNodeAugmentation serviceForwarderOvsNodeAugmentation =
-                serviceFunctionForwarder.getAugmentation(SffOvsNodeAugmentation.class);
+                serviceFunctionForwarder.augmentation(SffOvsNodeAugmentation.class);
         if (serviceForwarderOvsNodeAugmentation != null) {
             OvsNode serviceForwarderOvsNode = serviceForwarderOvsNodeAugmentation.getOvsNode();
 
@@ -202,7 +202,7 @@ public final class SfcSffToOvsMappingAPI {
         List<Options> options = new ArrayList<>();
 
         SffOvsLocatorOptionsAugmentation sffDataPlaneLocatorOvsOptions =
-                sffDataPlaneLocator.getAugmentation(SffOvsLocatorOptionsAugmentation.class);
+                sffDataPlaneLocator.augmentation(SffOvsLocatorOptionsAugmentation.class);
         if (sffDataPlaneLocatorOvsOptions != null) {
 
             OvsOptions ovsOptions = sffDataPlaneLocatorOvsOptions.getOvsOptions();

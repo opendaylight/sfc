@@ -90,7 +90,7 @@ public class SfcGeniusDataUtilsTest {
                 .thenReturn(Optional.of(logicalIfName));
 
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(anyString()))
-                .thenReturn(Optional.of(new InterfaceBuilder().setKey(new InterfaceKey(logicalIfName))
+                .thenReturn(Optional.of(new InterfaceBuilder().withKey(new InterfaceKey(logicalIfName))
                         .setPhysAddress(new PhysAddress("11:22:33:44:55:66")).setLowerLayerIf(new ArrayList<String>() {
                             {
                                 add("openflow:79268612506848:1");
@@ -109,7 +109,7 @@ public class SfcGeniusDataUtilsTest {
         ovsdbTpAug.setInterfaceExternalIds(theInterfaces);
 
         TerminationPoint theTerminationPoint = new TerminationPointBuilder()
-                .setKey(new TerminationPointKey(new TerminationPointKey(new TpId(logicalIfName))))
+                .withKey(new TerminationPointKey(new TerminationPointKey(new TpId(logicalIfName))))
                 .addAugmentation(OvsdbTerminationPointAugmentation.class, ovsdbTpAug.build()).build();
 
         String ovsdbNodeId = "ovsdb://uuid/e94d439a-57cf-4b8f-9247-56cdd692fa33/bridge/br-int";
@@ -126,10 +126,10 @@ public class SfcGeniusDataUtilsTest {
                 .child(Topology.class, new TopologyKey(SfcGeniusConstants.OVSDB_TOPOLOGY_ID))
                 .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network
                         .topology.rev131021.network.topology.topology.Node.class,
-                        theOvsNode.getKey())
+                        theOvsNode.key())
                 .augmentation(OvsdbBridgeAugmentation.class);
 
-        BridgeRefEntry theBridge = new BridgeRefEntryBuilder().setKey(new BridgeRefEntryKey(theDpnId))
+        BridgeRefEntry theBridge = new BridgeRefEntryBuilder().withKey(new BridgeRefEntryKey(theDpnId))
                 .setBridgeReference(new OvsdbBridgeRef(bridgeIID)).build();
 
         PowerMockito.when(SfcGeniusUtilsDataGetter.readOvsNodeInterfaces(anyString(), anyString()))
@@ -175,7 +175,7 @@ public class SfcGeniusDataUtilsTest {
     @Test(expected = RuntimeException.class)
     public void readRemoteMacAddressPhysicalAddressDoesNotExists() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
-                .thenReturn(Optional.of(new InterfaceBuilder().setKey(new InterfaceKey(logicalIfName))
+                .thenReturn(Optional.of(new InterfaceBuilder().withKey(new InterfaceKey(logicalIfName))
                         .setPhysAddress(null).setLowerLayerIf(new ArrayList<String>() {
                             {
                                 add("openflow:79268612506848:1");
@@ -216,7 +216,7 @@ public class SfcGeniusDataUtilsTest {
     @Test(expected = RuntimeException.class)
     public void readMacAddressNotOvsBridge() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDpnId))
-                .thenReturn(Optional.of(new BridgeRefEntryBuilder().setKey(new BridgeRefEntryKey(theDpnId)).build()));
+                .thenReturn(Optional.of(new BridgeRefEntryBuilder().withKey(new BridgeRefEntryKey(theDpnId)).build()));
         SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
     }
 
@@ -229,7 +229,7 @@ public class SfcGeniusDataUtilsTest {
     @Test(expected = org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException.class)
     public void readMacAddressInvalidDpnId() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
-                .thenReturn(Optional.of(new InterfaceBuilder().setKey(new InterfaceKey(logicalIfName))
+                .thenReturn(Optional.of(new InterfaceBuilder().withKey(new InterfaceKey(logicalIfName))
                         .setPhysAddress(new PhysAddress("52:c1:91:54:fc:7a")).setLowerLayerIf(new ArrayList<String>() {
                             {
                                 add("qua-qua");
@@ -283,12 +283,12 @@ public class SfcGeniusDataUtilsTest {
         List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
-                        .setKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
+                        .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
                         .setServiceFunctionForwarder(new SffName("sfflogical1")).build());
             }
         };
 
-        ServiceFunction dpiNode = new ServiceFunctionBuilder().setKey(dpiKey)
+        ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
                 .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
@@ -308,14 +308,14 @@ public class SfcGeniusDataUtilsTest {
         List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
-                        .setKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
+                        .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
                         .setServiceFunctionForwarder(new SffName("sfflogical1")).setLocatorType(new IpBuilder()
                                 .setIp(new IpAddress(dpiIpAddress.toCharArray())).setPort(new PortNumber(8181)).build())
                         .build());
             }
         };
 
-        ServiceFunction dpiNode = new ServiceFunctionBuilder().setKey(dpiKey)
+        ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
                 .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
@@ -336,13 +336,13 @@ public class SfcGeniusDataUtilsTest {
         List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
-                        .setKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
+                        .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
                         .setServiceFunctionForwarder(new SffName("sfflogical1"))
                         .setLocatorType(new LogicalInterfaceBuilder()
                                 .setInterfaceName("40c552e0-3695-472d-bace-7618786aba27").build())
                         .build());
                 add(new SfDataPlaneLocatorBuilder()
-                        .setKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-2-dpl")))
+                        .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-2-dpl")))
                         .setServiceFunctionForwarder(new SffName("sfflogical1"))
                         .setLocatorType(new LogicalInterfaceBuilder()
                                 .setInterfaceName("12345678-3695-472d-bace-7618786aba27").build())
@@ -350,7 +350,7 @@ public class SfcGeniusDataUtilsTest {
             }
         };
 
-        ServiceFunction dpiNode = new ServiceFunctionBuilder().setKey(dpiKey)
+        ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
                 .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();

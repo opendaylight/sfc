@@ -707,7 +707,7 @@ public final class SfcProviderRenderedPathAPI {
         RspName revPathName = generateReversedPathName(renderedServicePath.getName());
         revRenderedServicePathBuilder.setName(revPathName);
         RenderedServicePathKey revRenderedServicePathKey = new RenderedServicePathKey(revPathName);
-        revRenderedServicePathBuilder.setKey(revRenderedServicePathKey);
+        revRenderedServicePathBuilder.withKey(revRenderedServicePathKey);
 
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         // Populate new array with elements from existing service path.
@@ -726,7 +726,7 @@ public final class SfcProviderRenderedPathAPI {
                     renderedServicePathHop);
             revRenderedServicePathHopBuilder.setHopNumber(revServiceHop);
             revRenderedServicePathHopBuilder.setServiceIndex((short) (MAX_STARTING_INDEX - revServiceHop));
-            revRenderedServicePathHopBuilder.setKey(revRenderedServicePathHopKey);
+            revRenderedServicePathHopBuilder.withKey(revRenderedServicePathHopKey);
             revRenderedServicePathHopArrayList.set(revServiceHop, revRenderedServicePathHopBuilder.build());
             revServiceHop++;
         }

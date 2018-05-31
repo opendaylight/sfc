@@ -43,7 +43,7 @@ public class SfcProviderServiceNodeAPITest extends AbstractDataStoreManager {
         //SfcDataStoreAPI.setDataProviderAux(getDataBroker());
         setupSfc();
         ServiceNodeBuilder serviceNodeBuilder = new ServiceNodeBuilder();
-        serviceNodeBuilder.setKey(new ServiceNodeKey(new SnName(SERVICE_NODE_NAME)))
+        serviceNodeBuilder.withKey(new ServiceNodeKey(new SnName(SERVICE_NODE_NAME)))
                 .setName(new SnName(SERVICE_NODE_NAME))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(SERVICE_NODE_IP_MANAGEMENT_ADDRESS)));
         this.serviceNode = serviceNodeBuilder.build();

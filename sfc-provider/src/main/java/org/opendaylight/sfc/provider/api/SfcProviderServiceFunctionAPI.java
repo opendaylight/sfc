@@ -142,7 +142,7 @@ public final class SfcProviderServiceFunctionAPI {
         dataSfcStateObject = SfcDataStoreAPI.readTransactionAPI(sfStateIID, LogicalDatastoreType.OPERATIONAL);
         // Read the list of Service Function Path anchored by this SFF
         if (dataSfcStateObject != null) {
-            ret = dataSfcStateObject.getAugmentation(ServiceFunctionState1.class).getSfcSfDescMon();
+            ret = dataSfcStateObject.augmentation(ServiceFunctionState1.class).getSfcSfDescMon();
         } else {
             LOG.warn("readServiceFunctionDescriptionMonitor() Service Function {} has no operational state",
                     serviceFunctionName);
@@ -194,7 +194,7 @@ public final class SfcProviderServiceFunctionAPI {
         SfpName sfpName = new SfpName(renderedServicePath.getParentServiceFunctionPath().getValue());
         SfServicePathKey sfServicePathKey = new SfServicePathKey(sfpName);
         SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
-        sfServicePathBuilder.setKey(sfServicePathKey);
+        sfServicePathBuilder.withKey(sfServicePathKey);
         sfServicePathBuilder.setName(sfpName);
         List<RenderedServicePathHop> renderedServicePathHopList = renderedServicePath.getRenderedServicePathHop();
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePathHopList) {
@@ -243,7 +243,7 @@ public final class SfcProviderServiceFunctionAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunction> sfEntryIID = InstanceIdentifier.builder(ServiceFunctions.class)
-                .child(ServiceFunction.class, sf.getKey()).build();
+                .child(ServiceFunction.class, sf.key()).build();
 
         ret = SfcDataStoreAPI.writeMergeTransactionAPI(sfEntryIID, sf, LogicalDatastoreType.CONFIGURATION);
 
@@ -265,7 +265,7 @@ public final class SfcProviderServiceFunctionAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
-                .child(ServiceFunctionState.class, sfState.getKey()).build();
+                .child(ServiceFunctionState.class, sfState.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfStateIID, sfState, LogicalDatastoreType.OPERATIONAL);
 
@@ -277,7 +277,7 @@ public final class SfcProviderServiceFunctionAPI {
         boolean ret;
         printTraceStart(LOG);
 
-        ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfState.getKey());
+        ServiceFunctionStateKey serviceFunctionStateKey = new ServiceFunctionStateKey(sfState.key());
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
                 .child(ServiceFunctionState.class, serviceFunctionStateKey).build();
 

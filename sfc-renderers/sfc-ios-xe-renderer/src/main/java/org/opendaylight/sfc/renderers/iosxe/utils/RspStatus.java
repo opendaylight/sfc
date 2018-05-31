@@ -41,14 +41,14 @@ public class RspStatus {
 
     public void writeStatus(ConfiguredRenderedPath.PathStatus status) {
         final ConfiguredRenderedPathBuilder configuredRenderedPathBuilder = new ConfiguredRenderedPathBuilder();
-        configuredRenderedPathBuilder.setKey(new ConfiguredRenderedPathKey(rspName)).setRspName(rspName);
+        configuredRenderedPathBuilder.withKey(new ConfiguredRenderedPathKey(rspName)).setRspName(rspName);
         configuredRenderedPathBuilder.setPathStatus(status);
         final ConfiguredRenderedPath configuredRenderedPath = configuredRenderedPathBuilder.build();
         final InstanceIdentifier<ConfiguredRenderedPath> statusIid = InstanceIdentifier
                 .builder(RendererPathStates.class)
                 .child(RendererPathState.class, new RendererPathStateKey(new RendererName("ios-xe-renderer")))
                 .child(ConfiguredRenderedPaths.class)
-                .child(ConfiguredRenderedPath.class, configuredRenderedPath.getKey()).build();
+                .child(ConfiguredRenderedPath.class, configuredRenderedPath.key()).build();
         // Write new status
         final ReadWriteTransaction wtx = dataBroker.newReadWriteTransaction();
         wtx.merge(LogicalDatastoreType.OPERATIONAL, statusIid, configuredRenderedPath, true);

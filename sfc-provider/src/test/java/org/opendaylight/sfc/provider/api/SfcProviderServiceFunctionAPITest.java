@@ -108,7 +108,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
         ServiceFunctionKey key = new ServiceFunctionKey(name);
         sfBuilder.setName(name)
-            .setKey(key)
+            .withKey(key)
             .setType(type)
             .setIpMgmtAddress(ipMgmtAddress)
             .setSfDataPlaneLocator(dataPlaneLocatorList);
@@ -164,7 +164,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
             sfBuilder.setName(new SfName(sfName.get(i)))
-                .setKey(key[i])
+                .withKey(key[i])
                 .setType(sfType)
                 .setIpMgmtAddress(ipMgmtAddress[i])
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
@@ -320,7 +320,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
     private boolean writeRemoveServiceFunction(String ipAddress, boolean write) {
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SF_NAME)
-            .setKey(new ServiceFunctionKey(SF_NAME))
+            .withKey(new ServiceFunctionKey(SF_NAME))
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
             .setType(new SftTypeName("dpi"));
 
@@ -344,7 +344,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
 
         serviceFunctionBuilder.setName(SF_NAME)
             .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
-            .setKey(new ServiceFunctionKey(SF_NAME))
+            .withKey(new ServiceFunctionKey(SF_NAME))
             .setType(type);
         serviceFunctions.add(serviceFunctionBuilder.build());
         serviceFunctionsBuilder.setServiceFunction(serviceFunctions);
@@ -365,7 +365,7 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         List<SfServicePath> sfServicePathList = new ArrayList<>();
 
         serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-            .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+            .withKey(new ServiceFunctionStateKey(SF_STATE_NAME))
             .setSfServicePath(sfServicePathList);
 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
@@ -382,11 +382,11 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         List<SfServicePath> sfServicePathList = new ArrayList<>();
 
         SfServicePathBuilder sfServicePathBuilder = new SfServicePathBuilder();
-        sfServicePathBuilder.setName(SF_SERVICE_PATH).setKey(new SfServicePathKey(SF_SERVICE_PATH));
+        sfServicePathBuilder.setName(SF_SERVICE_PATH).withKey(new SfServicePathKey(SF_SERVICE_PATH));
         sfServicePathList.add(sfServicePathBuilder.build());
 
         serviceFunctionStateBuilder.setName(SF_STATE_NAME)
-            .setKey(new ServiceFunctionStateKey(SF_STATE_NAME))
+            .withKey(new ServiceFunctionStateKey(SF_STATE_NAME))
             .setSfServicePath(sfServicePathList);
 
         InstanceIdentifier<ServiceFunctionState> sfStateIID = InstanceIdentifier.builder(ServiceFunctionsState.class)
@@ -407,12 +407,12 @@ public class SfcProviderServiceFunctionAPITest extends AbstractDataStoreManager 
         RenderedServicePathHopBuilder renderedServicePathHopBuilder = new RenderedServicePathHopBuilder();
 
         renderedServicePathHopBuilder.setServiceFunctionName(sfName)
-            .setKey(new RenderedServicePathHopKey(Short.valueOf("1")));
+            .withKey(new RenderedServicePathHopKey(Short.valueOf("1")));
         renderedServicePathHops.add(renderedServicePathHopBuilder.build());
 
         renderedServicePathBuilder.setName(pathName)
             .setParentServiceFunctionPath(new SfpName("SFP"))
-            .setKey(new RenderedServicePathKey(pathName))
+            .withKey(new RenderedServicePathKey(pathName))
             .setRenderedServicePathHop(renderedServicePathHops)
             .setPathId(0L)
             .setReversePath(false);

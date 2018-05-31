@@ -188,7 +188,7 @@ public class SfstateExporterTest {
         StatisticByTimestamp pathStat = new StatisticByTimestampBuilder().setTimestamp(BigInteger.valueOf(123456789L))
                 .setServiceStatistic(pathserviceStatistics).build();
 
-        SfServicePath sfServicePath = new SfServicePathBuilder().setKey(servicePathKey)
+        SfServicePath sfServicePath = new SfServicePathBuilder().withKey(servicePathKey)
                 .setName(new SfpName(SfstateTestValues.PATH_NAME.getValue()))
                 .setStatisticByTimestamp(Collections.singletonList(pathStat)).build();
         sfServicePaths.add(sfServicePath);
@@ -198,7 +198,7 @@ public class SfstateExporterTest {
 
         StatisticByTimestamp sfStateStat = new StatisticByTimestampBuilder()
                 .setTimestamp(BigInteger.valueOf(123456789L)).setServiceStatistic(serviceStatistics).build();
-        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().setKey(serviceFunctionStateKey)
+        ServiceFunctionState serviceFunctionState = new ServiceFunctionStateBuilder().withKey(serviceFunctionStateKey)
                 .setStatisticByTimestamp(Collections.singletonList(sfStateStat)).setSfServicePath(sfServicePaths)
                 .addAugmentation(ServiceFunctionState1.class, sfState1).build();
 
@@ -212,13 +212,13 @@ public class SfstateExporterTest {
         PortBandwidthKey portBandwidthKey2 = new PortBandwidthKey(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()));
 
         PortBandwidth portBandwidth1 = new PortBandwidthBuilder()
-                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS1.getValue())).setKey(portBandwidthKey1)
+                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS1.getValue())).withKey(portBandwidthKey1)
                 .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS1.getValue()))
                 .setPortId(Long.valueOf(SfstateTestValues.PORT_ID1.getValue()))
                 .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH1.getValue())).build();
 
         PortBandwidth portBandwidth2 = new PortBandwidthBuilder()
-                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS2.getValue())).setKey(portBandwidthKey2)
+                .setIpaddress(new Ipv4Address(SfstateTestValues.IPADDRESS2.getValue())).withKey(portBandwidthKey2)
                 .setMacaddress(new MacAddress(SfstateTestValues.MACADDRESS2.getValue()))
                 .setPortId(Long.valueOf(SfstateTestValues.PORT_ID2.getValue()))
                 .setSupportedBandwidth(Long.valueOf(SfstateTestValues.SUPPORTED_BANDWIDTH2.getValue())).build();
@@ -253,7 +253,7 @@ public class SfstateExporterTest {
 
         PortBandwidthUtilization portBandwidthUtil1 = new PortBandwidthUtilizationBuilder()
                 .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL1.getValue()))
-                .setKey(portBandwidthUtilKey1)
+                .withKey(portBandwidthUtilKey1)
                 .setRxBytes(
                         new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_BYTES1.getValue()))))
                 .setRxPacket(
@@ -270,7 +270,7 @@ public class SfstateExporterTest {
 
         PortBandwidthUtilization portBandwidthUtil2 = new PortBandwidthUtilizationBuilder()
                 .setBandwidthUtilization(Long.valueOf(SfstateTestValues.PORT_BANDWIDTH_UTIL2.getValue()))
-                .setKey(portBandwidthUtilKey2)
+                .withKey(portBandwidthUtilKey2)
                 .setRxBytes(
                         new ZeroBasedCounter64(new Counter64(new BigInteger(SfstateTestValues.RX_BYTES2.getValue()))))
                 .setRxPacket(

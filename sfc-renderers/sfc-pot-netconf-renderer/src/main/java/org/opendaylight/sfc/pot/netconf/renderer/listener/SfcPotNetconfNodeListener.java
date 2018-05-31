@@ -82,7 +82,7 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     }
 
     private boolean isIoamCapableNetconfDevice(Node node) {
-        NetconfNode netconfAugmentation = node.getAugmentation(NetconfNode.class);
+        NetconfNode netconfAugmentation = node.augmentation(NetconfNode.class);
         if (netconfAugmentation == null) {
             LOG.debug("iOAM:PoT:SB:Node {} is not a netconf device", node.getNodeId().getValue());
             return false;

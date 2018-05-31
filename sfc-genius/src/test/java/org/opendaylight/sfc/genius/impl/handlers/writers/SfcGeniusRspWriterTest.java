@@ -40,13 +40,13 @@ public class SfcGeniusRspWriterTest {
     @Before
     public void setup() {
         sfcGeniusRspWriter = new SfcGeniusRspWriter(writeTransaction);
-        when(renderedServicePath.getKey()).thenReturn(new RenderedServicePathKey(new RspName("RSP1")));
+        when(renderedServicePath.key()).thenReturn(new RenderedServicePathKey(new RspName("RSP1")));
     }
 
     @Test
     public void deleteRsp() throws Exception {
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePath.getKey())
+                .child(RenderedServicePath.class, renderedServicePath.key())
                 .build();
         RenderedServicePath renderedServicePath1 = sfcGeniusRspWriter.deleteRsp(renderedServicePath).get();
         assertThat(renderedServicePath1, sameInstance(renderedServicePath));
@@ -56,7 +56,7 @@ public class SfcGeniusRspWriterTest {
     @Test
     public void createRsp() throws Exception {
         InstanceIdentifier<RenderedServicePath> rspIID = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePath.getKey())
+                .child(RenderedServicePath.class, renderedServicePath.key())
                 .build();
         sfcGeniusRspWriter.createRsp(renderedServicePath).get();
         verify(writeTransaction).put(LogicalDatastoreType.OPERATIONAL, rspIID, renderedServicePath);

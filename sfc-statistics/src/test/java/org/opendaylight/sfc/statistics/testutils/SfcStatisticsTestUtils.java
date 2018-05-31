@@ -352,14 +352,14 @@ public class SfcStatisticsTestUtils {
             for (int j = 0; j < numHops; j++) {
                 SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
                 SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(j))
-                        .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(j)))
+                        .withKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(j)))
                         .setType(SERVICE_FUNCTION_TYPES.get(j))
                         .build();
                 sfcServiceFunctionList.add(sfcServiceFunction);
             }
             ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
             sfcBuilder.setName(SFC_NAMES.get(i))
-                    .setKey(new ServiceFunctionChainKey(SFC_NAMES.get(i)))
+                    .withKey(new ServiceFunctionChainKey(SFC_NAMES.get(i)))
                     .setSfcServiceFunction(sfcServiceFunctionList);
 
             ServiceFunctionChain sfc = sfcBuilder.build();
@@ -473,7 +473,7 @@ public class SfcStatisticsTestUtils {
 
                 ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
                 dictionaryEntryBuilder.setName(serviceFunction.getName())
-                        .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                        .withKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
                         .setSffSfDataPlaneLocator(sffSfDataPlaneLocatorBuilder.build())
                         .setFailmode(Open.class)
                         .setSffInterfaces(null);
@@ -488,12 +488,12 @@ public class SfcStatisticsTestUtils {
                     .setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             locatorBuilder.setName(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i)))
-                    .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
+                    .withKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i))))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
 
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             sffBuilder.setName(new SffName(SFF_NAMES.get(i)))
-                    .setKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
+                    .withKey(new ServiceFunctionForwarderKey(new SffName(SFF_NAMES.get(i))))
                     .setSffDataPlaneLocator(Collections.singletonList(locatorBuilder.build()))
                     .setServiceNode(null);
             if (!dictionaryEntryList.isEmpty()) {
@@ -535,7 +535,7 @@ public class SfcStatisticsTestUtils {
             SfName sfName = SERVICE_FUNCTION_NAMES.get(i);
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             sfBuilder.setName(sfName)
-                    .setKey(new ServiceFunctionKey(sfName))
+                    .withKey(new ServiceFunctionKey(sfName))
                     .setType(SERVICE_FUNCTION_TYPES.get(i))
                     .setIpMgmtAddress(new IpAddress(new Ipv4Address(IP_MGMT_ADDRESS.get(0))))
                     .setSfDataPlaneLocator(dataPlaneLocatorList);
@@ -587,7 +587,7 @@ public class SfcStatisticsTestUtils {
 
         SfcOfTablesByBaseTableBuilder sfcOfTablesByBaseTableBuilder = new SfcOfTablesByBaseTableBuilder();
         sfcOfTablesByBaseTableBuilder.setSffName(sffName);
-        sfcOfTablesByBaseTableBuilder.setKey(new SfcOfTablesByBaseTableKey(sffName));
+        sfcOfTablesByBaseTableBuilder.withKey(new SfcOfTablesByBaseTableKey(sffName));
         sfcOfTablesByBaseTableBuilder.setBaseTable(tableBaseValue);
         sfcOfTablesByBaseTableBuilder.setTransportIngressTable(tableBaseValue + 1);
         sfcOfTablesByBaseTableBuilder.setPathMapperTable(tableBaseValue + 2);
@@ -668,7 +668,7 @@ public class SfcStatisticsTestUtils {
 
             FlowBuilder flowBuilder = new FlowBuilder();
             flowBuilder.setFlowName(flowName.toString());
-            flowBuilder.setKey(flowKey);
+            flowBuilder.withKey(flowKey);
 
             FlowStatisticsBuilder flowStatsBuilder = new FlowStatisticsBuilder();
             flowStatsBuilder.setByteCount(new Counter64(new BigInteger(STATS_COUNTER_BYTES_STR)));

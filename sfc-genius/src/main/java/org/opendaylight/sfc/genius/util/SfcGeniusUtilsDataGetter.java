@@ -72,7 +72,7 @@ final class SfcGeniusUtilsDataGetter {
      * @return the LogicalInterface name
      */
     public static Optional<String> getServiceFunctionAttachedInterfaceName(String ifName) {
-        return getServiceFunctionAttachedInterface(ifName).map(theIf -> theIf.getAugmentation(ParentRefs.class))
+        return getServiceFunctionAttachedInterface(ifName).map(theIf -> theIf.augmentation(ParentRefs.class))
                 .map(ParentRefs::getParentInterface);
     }
 
@@ -122,7 +122,7 @@ final class SfcGeniusUtilsDataGetter {
                 .child(Node.class, new NodeKey(new NodeId(ovsdbNodeId)))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(portName)));
         return Optional.ofNullable(SfcDataStoreAPI.readTransactionAPI(tpIid, LogicalDatastoreType.OPERATIONAL))
-                .map(theTp -> theTp.getAugmentation(OvsdbTerminationPointAugmentation.class))
+                .map(theTp -> theTp.augmentation(OvsdbTerminationPointAugmentation.class))
                 .map(OvsdbTerminationPointAugmentation::getInterfaceExternalIds).orElse(Collections.emptyList());
     }
 }

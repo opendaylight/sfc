@@ -430,7 +430,7 @@ public class SfcPotNetconfIoam {
             return;
         }
 
-        RspIoamPotAugmentation potAugmentation = rsp.getAugmentation(RspIoamPotAugmentation.class);
+        RspIoamPotAugmentation potAugmentation = rsp.augmentation(RspIoamPotAugmentation.class);
         if (potAugmentation == null) {
             LOG.warn("iOAM:PoT:SB:RSP {}:iOAM not supported.", rsp.getName());
             return;

@@ -218,7 +218,7 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
         String portStr;
 
-        SfDplOvsAugmentation sfDplOvs = dstSfDpl.getAugmentation(SfDplOvsAugmentation.class);
+        SfDplOvsAugmentation sfDplOvs = dstSfDpl.augmentation(SfDplOvsAugmentation.class);
         if (sfDplOvs == null) {
             LOG.info("SfcRspProcessorEthNsh::configureSfTransportEgressFlow NO sfDplOvs augmentation present");
             portStr = sfcProviderUtils.getDplPortInfoPort(srcSffDpl);

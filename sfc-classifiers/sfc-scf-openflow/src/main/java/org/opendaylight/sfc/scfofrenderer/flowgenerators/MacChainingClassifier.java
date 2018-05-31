@@ -70,7 +70,7 @@ public class MacChainingClassifier implements ClassifierInterface {
             return null;
         }
 
-        SffDataPlaneLocator1 ofsDpl = outputDpl.getAugmentation(SffDataPlaneLocator1.class);
+        SffDataPlaneLocator1 ofsDpl = outputDpl.augmentation(SffDataPlaneLocator1.class);
         if (ofsDpl == null) {
             LOG.error("There is no augmentation with port details available for locator {}", outputDpl);
             return null;
@@ -91,7 +91,7 @@ public class MacChainingClassifier implements ClassifierInterface {
 
         TerminationPoint terminationPoint = null;
         for (SffDataPlaneLocator dpl : sffDataPlaneLocatorList) {
-            SffDplChainTerminationAugment terminationDpl = dpl.getAugmentation(SffDplChainTerminationAugment.class);
+            SffDplChainTerminationAugment terminationDpl = dpl.augmentation(SffDplChainTerminationAugment.class);
             if (terminationDpl != null) {
                 terminationPoint = terminationDpl.getTerminationPoint();
                 break;
@@ -130,7 +130,7 @@ public class MacChainingClassifier implements ClassifierInterface {
             return null;
         }
 
-        SffDataPlaneLocator1 ofsDpl = returnSffDpl.getAugmentation(SffDataPlaneLocator1.class);
+        SffDataPlaneLocator1 ofsDpl = returnSffDpl.augmentation(SffDataPlaneLocator1.class);
         if (ofsDpl == null) {
             LOG.error("There is no augmentation with port details available for locator {}", returnSffDpl);
             return null;

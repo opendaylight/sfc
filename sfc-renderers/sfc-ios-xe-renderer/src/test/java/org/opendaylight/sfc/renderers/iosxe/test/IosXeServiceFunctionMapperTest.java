@@ -73,17 +73,17 @@ public class IosXeServiceFunctionMapperTest {
         final List<ServiceFunction> serviceFunctions = new ArrayList<>();
         // SF without management IP
         ServiceFunctionBuilder emptySfBuilder = new ServiceFunctionBuilder();
-        emptySfBuilder.setName(new SfName(sfName1)).setKey(new ServiceFunctionKey(new SfName(sfName1)));
+        emptySfBuilder.setName(new SfName(sfName1)).withKey(new ServiceFunctionKey(new SfName(sfName1)));
         // SF without data plane locator
         ServiceFunctionBuilder noDplSfBuilder = new ServiceFunctionBuilder();
-        noDplSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        noDplSfBuilder.setName(new SfName(sfName2)).withKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)));
         // SF without ip data plane locator
         ServiceFunctionBuilder noIpDplSfBuilder = new ServiceFunctionBuilder();
         dataPlaneLocatorList = new ArrayList<>();
         SfDataPlaneLocator macDpl = macLocatorType.build();
         dataPlaneLocatorList.add(macDpl);
-        noIpDplSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        noIpDplSfBuilder.setName(new SfName(sfName2)).withKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         // Test SF
@@ -91,7 +91,7 @@ public class IosXeServiceFunctionMapperTest {
         dataPlaneLocatorList = new ArrayList<>();
         SfDataPlaneLocator ipDpl = ipLocatorType.build();
         dataPlaneLocatorList.add(ipDpl);
-        testSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        testSfBuilder.setName(new SfName(sfName2)).withKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         serviceFunctions.add(emptySfBuilder.build());
@@ -142,7 +142,7 @@ public class IosXeServiceFunctionMapperTest {
         ServiceFunctionBuilder testSfBuilder = new ServiceFunctionBuilder();
         dataPlaneLocatorList = new ArrayList<>();
         dataPlaneLocatorList.add(ipDpl);
-        testSfBuilder.setName(new SfName(sfName2)).setKey(new ServiceFunctionKey(new SfName(sfName2)))
+        testSfBuilder.setName(new SfName(sfName2)).withKey(new ServiceFunctionKey(new SfName(sfName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress)))
                 .setSfDataPlaneLocator(dataPlaneLocatorList);
         serviceFunctions.add(testSfBuilder.build());

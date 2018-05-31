@@ -47,7 +47,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         // build service function metadata
         ContextMetadataBuilder contextMetadataBuilder = new ContextMetadataBuilder();
 
-        contextMetadataBuilder.setName("CMD").setKey(new ContextMetadataKey("CMD")).setContextHeader1(1L)
+        contextMetadataBuilder.setName("CMD").withKey(new ContextMetadataKey("CMD")).setContextHeader1(1L)
                 .setContextHeader2(2L).setContextHeader3(3L).setContextHeader4(4L);
 
         // write service function metadata
@@ -81,7 +81,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
 
         tlvList.add(tlvMetadataBuilder.build());
 
-        variableMetadataBuilder.setName("VMD").setKey(new VariableMetadataKey("VMD")).setTlvMetadata(tlvList);
+        variableMetadataBuilder.setName("VMD").withKey(new VariableMetadataKey("VMD")).setTlvMetadata(tlvList);
 
         // write service function metadata
         boolean transactionSuccessful = SfcProviderServiceFunctionMetadataAPI

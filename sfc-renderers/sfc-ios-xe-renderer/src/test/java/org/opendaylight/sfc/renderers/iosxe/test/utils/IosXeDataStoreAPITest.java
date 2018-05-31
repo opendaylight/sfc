@@ -223,7 +223,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
         sfModeBuilder.setIp(new IpBuilder().setAddress(new Ipv4Address("10.0.0.1")).build())
                 .setEncapsulation(new EncapsulationBuilder().setNone(true).build());
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(SERVICE_NAME).setKey(new ServiceFunctionKey(SERVICE_NAME))
+        serviceFunctionBuilder.setName(SERVICE_NAME).withKey(new ServiceFunctionKey(SERVICE_NAME))
                 .setConfigServiceChainSfMode(sfModeBuilder.build());
         return serviceFunctionBuilder.build();
     }
@@ -238,7 +238,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
     private ServiceFfName buildRemoteServiceForwarder() {
         ServiceFfNameBuilder serviceFfNameBuilder = new ServiceFfNameBuilder();
-        serviceFfNameBuilder.setName(REMOTE_FORWARDER).setKey(new ServiceFfNameKey(REMOTE_FORWARDER))
+        serviceFfNameBuilder.setName(REMOTE_FORWARDER).withKey(new ServiceFfNameKey(REMOTE_FORWARDER))
                 .setIp(new org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.config
                         .service.chain.grouping.IpBuilder().setAddress(new Ipv4Address("200.0.0.1")).build());
         return serviceFfNameBuilder.build();
@@ -248,7 +248,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
         ConfigServiceChainPathModeBuilder configServiceChainPathModeBuilder = new ConfigServiceChainPathModeBuilder();
         configServiceChainPathModeBuilder.setServiceIndex(new ServiceIndexBuilder().build());
         ServicePathBuilder servicePathBuilder = new ServicePathBuilder();
-        servicePathBuilder.setKey(new ServicePathKey(1L)).setServicePathId(1L)
+        servicePathBuilder.withKey(new ServicePathKey(1L)).setServicePathId(1L)
                 .setConfigServiceChainPathMode(configServiceChainPathModeBuilder.build());
         return servicePathBuilder.build();
     }

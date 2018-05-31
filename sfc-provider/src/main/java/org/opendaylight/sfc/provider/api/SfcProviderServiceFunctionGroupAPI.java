@@ -132,7 +132,7 @@ public final class SfcProviderServiceFunctionGroupAPI {
         boolean ret;
         printTraceStart(LOG);
         InstanceIdentifier<ServiceFunctionGroup> sfgEntryIID = InstanceIdentifier.builder(ServiceFunctionGroups.class)
-                .child(ServiceFunctionGroup.class, sfg.getKey()).build();
+                .child(ServiceFunctionGroup.class, sfg.key()).build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(sfgEntryIID, sfg, LogicalDatastoreType.CONFIGURATION);
 

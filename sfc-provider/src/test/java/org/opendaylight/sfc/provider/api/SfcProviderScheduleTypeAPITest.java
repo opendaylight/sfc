@@ -42,9 +42,9 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionSchedulerTypeKey key2 = new ServiceFunctionSchedulerTypeKey(type2);
 
         ServiceFunctionSchedulerTypeBuilder sfstBuilder1 = new ServiceFunctionSchedulerTypeBuilder();
-        sfstBuilder1.setName(name1).setType(type1).setKey(key1).setEnabled(true);
+        sfstBuilder1.setName(name1).setType(type1).withKey(key1).setEnabled(true);
         ServiceFunctionSchedulerTypeBuilder sfstBuilder2 = new ServiceFunctionSchedulerTypeBuilder();
-        sfstBuilder2.setName(name2).setType(type2).setKey(key2).setEnabled(false);
+        sfstBuilder2.setName(name2).setType(type2).withKey(key2).setEnabled(false);
 
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder1.build());
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder2.build());
@@ -65,9 +65,9 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionSchedulerTypeKey key2 = new ServiceFunctionSchedulerTypeKey(type2);
 
         ServiceFunctionSchedulerTypeBuilder sfstBuilder1 = new ServiceFunctionSchedulerTypeBuilder();
-        sfstBuilder1.setName(name1).setType(type1).setKey(key1).setEnabled(true);
+        sfstBuilder1.setName(name1).setType(type1).withKey(key1).setEnabled(true);
         ServiceFunctionSchedulerTypeBuilder sfstBuilder2 = new ServiceFunctionSchedulerTypeBuilder();
-        sfstBuilder2.setName(name2).setType(type2).setKey(key2).setEnabled(false);
+        sfstBuilder2.setName(name2).setType(type2).withKey(key2).setEnabled(false);
 
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder1.build());
         SfcProviderScheduleTypeAPI.putServiceFunctionScheduleType(sfstBuilder2.build());
@@ -84,7 +84,7 @@ public class SfcProviderScheduleTypeAPITest extends AbstractDataStoreManager {
         ServiceFunctionSchedulerTypeBuilder
             serviceFunctionSchedulerTypeBuilder = new ServiceFunctionSchedulerTypeBuilder();
         serviceFunctionSchedulerTypeBuilder.setName("SFST")
-                .setKey(new ServiceFunctionSchedulerTypeKey(RoundRobin.class))
+                .withKey(new ServiceFunctionSchedulerTypeKey(RoundRobin.class))
                 .setEnabled(true)
                 .setType(RoundRobin.class);
 

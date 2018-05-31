@@ -39,7 +39,7 @@ public class ClassifierRspUpdateDataGetter {
                 .map(AccessLists::getAcl).orElse(Collections.emptyList()).stream()
                 .filter(acl -> acl.getAccessListEntries() != null)
                 .filter(acl -> acl.getAccessListEntries().getAce().stream().map(Ace::getActions)
-                        .map(actions -> actions.getAugmentation(Actions1.class)).map(
+                        .map(actions -> actions.augmentation(Actions1.class)).map(
                             actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                         .anyMatch(sfcAction -> sfcAction.getRenderedServicePath().equals(theRspName.getValue())))
                 .collect(Collectors.toList());

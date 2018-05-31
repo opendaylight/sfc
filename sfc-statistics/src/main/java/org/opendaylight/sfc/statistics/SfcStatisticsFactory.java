@@ -75,7 +75,7 @@ public final class SfcStatisticsFactory {
     private static SfcStatisticsReaderBase getStatsReader(RenderedServicePath rsp, ServiceFunctionForwarder sff) {
         try {
             SffOvsBridgeAugmentation sffOvsBridgeAugmentation =
-                    sff.getAugmentation(SffOvsBridgeAugmentation.class);
+                    sff.augmentation(SffOvsBridgeAugmentation.class);
             if (sffOvsBridgeAugmentation != null) {
                 // OVS-based SFF
                 return new SfcOpenFlowStatisticsReader(sff);
@@ -87,7 +87,7 @@ public final class SfcStatisticsFactory {
                 return new SfcOpenFlowLogicalSffStatisticsReader(sff, rsp);
             }
 
-            SffNetconfAugmentation sffNetconfAugmentation = sff.getAugmentation(SffNetconfAugmentation.class);
+            SffNetconfAugmentation sffNetconfAugmentation = sff.augmentation(SffNetconfAugmentation.class);
             if (sffNetconfAugmentation != null) {
                 // VPP-based SFF
                 return new SfcVppStatisticsReader(sff);
@@ -108,7 +108,7 @@ public final class SfcStatisticsFactory {
         }
 
         for (RenderedServicePathHop rspHop : rspHops) {
-            if (rspHop.getAugmentation(RspLogicalSffAugmentation.class) != null) {
+            if (rspHop.augmentation(RspLogicalSffAugmentation.class) != null) {
                 if (rspHop.getServiceFunctionForwarder().getValue().equals(sff.getName().getValue())) {
                     return true;
                 }

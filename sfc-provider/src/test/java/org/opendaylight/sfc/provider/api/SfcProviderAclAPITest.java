@@ -101,7 +101,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         // create Access List with entries and IID, then write transaction to
         // data store
         AclBuilder aclBuilder = new AclBuilder();
-        aclBuilder.setAclName(ACL_NAME).setKey(new AclKey(ACL_NAME, ACL_TYPE))
+        aclBuilder.setAclName(ACL_NAME).withKey(new AclKey(ACL_NAME, ACL_TYPE))
                 .setAccessListEntries(createAccessListEntries());
 
         InstanceIdentifier<Acl> aclIID = InstanceIdentifier.builder(AccessLists.class)
@@ -119,7 +119,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         assertNotNull("Must not be null", accessList.getAccessListEntries());
         assertNotNull("Must not be null", accessList.getAccessListEntries().getAce());
         assertEquals("Must be equal", accessList.getAclName(), ACL_NAME);
-        assertEquals("Must be equal", accessList.getKey().getAclName(), ACL_NAME);
+        assertEquals("Must be equal", accessList.key().getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.getAccessListEntries().getAce().size(), 4);
         assertTrue("Must be equal",
                 accessList.getAccessListEntries().getAce().get(0).equals(createAccessListEntries().getAce().get(0)));
@@ -144,7 +144,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         // store
         final String ACL_STATE_NAME = "aclStateName";
         AccessListStateBuilder accessListStateBuilder = new AccessListStateBuilder();
-        accessListStateBuilder.setAclName(ACL_STATE_NAME).setKey(new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE))
+        accessListStateBuilder.setAclName(ACL_STATE_NAME).withKey(new AccessListStateKey(ACL_STATE_NAME, ACL_TYPE))
                 .setAclServiceFunctionClassifier(createAclServiceFunctionClassifier());
 
         InstanceIdentifier<AccessListState> aclStateIID = InstanceIdentifier.builder(AccessListsState.class)
@@ -160,7 +160,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
         assertNotNull("Must not be null", accessListState);
         assertEquals("Must be equal", accessListState.getAclName(), ACL_STATE_NAME);
-        assertEquals("Must be equal", accessListState.getKey().getAclName(), ACL_STATE_NAME);
+        assertEquals("Must be equal", accessListState.key().getAclName(), ACL_STATE_NAME);
         assertEquals("Must be equal", accessListState.getAclServiceFunctionClassifier().get(0).getName(),
                 CLASSIFIER_NAME);
 

@@ -27,7 +27,7 @@ public final class SfcProviderServiceNodeAPI {
 
     public static boolean putServiceNode(ServiceNode serviceNode) {
         InstanceIdentifier<ServiceNode> serviceNodeInstanceIdentifier = InstanceIdentifier.builder(ServiceNodes.class)
-                .child(ServiceNode.class, serviceNode.getKey()).build();
+                .child(ServiceNode.class, serviceNode.key()).build();
         return SfcDataStoreAPI.writeMergeTransactionAPI(serviceNodeInstanceIdentifier, serviceNode,
                                                         LogicalDatastoreType.CONFIGURATION);
     }

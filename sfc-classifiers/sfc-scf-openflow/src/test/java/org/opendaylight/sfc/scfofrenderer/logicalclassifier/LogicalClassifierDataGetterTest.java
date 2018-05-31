@@ -73,7 +73,7 @@ public class LogicalClassifierDataGetterTest {
 
         when(theHops.get(any(Integer.class))).thenReturn(hop);
 
-        when(hop.getAugmentation(eq(RspLogicalSffAugmentation.class))).thenReturn(logicalSffAugmentation);
+        when(hop.augmentation(eq(RspLogicalSffAugmentation.class))).thenReturn(logicalSffAugmentation);
 
         when(logicalSffAugmentation.getDpnId()).thenReturn(DATAPLANE_ID);
 
@@ -106,7 +106,7 @@ public class LogicalClassifierDataGetterTest {
 
     @Test
     public void testFetchingFirstHopDataplaneIdInvalidAugmentation() {
-        when(hop.getAugmentation(any())).thenReturn(null);
+        when(hop.augmentation(any())).thenReturn(null);
         Assert.assertFalse(dataGetter.getFirstHopDataplaneId(rsp).isPresent());
     }
 

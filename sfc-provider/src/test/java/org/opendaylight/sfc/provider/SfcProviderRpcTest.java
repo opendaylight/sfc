@@ -391,7 +391,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
                 new PutServiceFunctionChainsInputBuilder();
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
         serviceFunctionChainBuilder.setName(new SfcName("SFC1"))
-                .setKey(new ServiceFunctionChainKey(new SfcName("SFC1")));
+                .withKey(new ServiceFunctionChainKey(new SfcName("SFC1")));
         ServiceFunctionChain serviceFunctionChain = serviceFunctionChainBuilder.build();
         List<ServiceFunctionChain> serviceFunctionChainList = new ArrayList<>();
         serviceFunctionChainList.add(serviceFunctionChain);
@@ -554,7 +554,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         // prepare data plane locators
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
         SfDataPlaneLocatorKey sfDataPlaneLocatorKey = new SfDataPlaneLocatorKey(dpLocatorKey);
-        sfDataPlaneLocatorBuilder.setKey(sfDataPlaneLocatorKey);
+        sfDataPlaneLocatorBuilder.withKey(sfDataPlaneLocatorKey);
         sfDataPlaneLocatorBuilder.setLocatorType(ipBuilder.build());
         sfDataPlaneLocatorBuilder.setTransport(SlTransportType.class);
         List<SfDataPlaneLocator> sfDataPlaneLocators = new ArrayList<>();
@@ -814,12 +814,12 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
         for (SfName sfName : theSfNames) {
             sftServiceFunctionNameBuilder = new SftServiceFunctionNameBuilder();
-            sftServiceFunctionNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
+            sftServiceFunctionNameBuilder.setName(sfName).withKey(new SftServiceFunctionNameKey(sfName));
             sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
         }
 
         ServiceFunctionTypeBuilder serviceFunctionTypeBuilder = new ServiceFunctionTypeBuilder();
-        serviceFunctionTypeBuilder.setKey(new ServiceFunctionTypeKey(serviceType))
+        serviceFunctionTypeBuilder.withKey(new ServiceFunctionTypeKey(serviceType))
                 .setSftServiceFunctionName(sftServiceFunctionNames);
         return SfcProviderServiceTypeAPI.putServiceFunctionType(serviceFunctionTypeBuilder.build());
     }
@@ -833,11 +833,11 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         SffDataPlaneLocatorBuilder sffDataPlaneLocatorBuilder;
 
         sffDataPlaneLocatorBuilder = new SffDataPlaneLocatorBuilder();
-        sffDataPlaneLocatorBuilder.setName(locatorName).setKey(new SffDataPlaneLocatorKey(locatorName));
+        sffDataPlaneLocatorBuilder.setName(locatorName).withKey(new SffDataPlaneLocatorKey(locatorName));
         sffDataPlaneLocator.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
-        serviceFunctionForwarderBuilder.setName(forwarderName).setKey(new ServiceFunctionForwarderKey(forwarderName))
+        serviceFunctionForwarderBuilder.setName(forwarderName).withKey(new ServiceFunctionForwarderKey(forwarderName))
                 .setSffDataPlaneLocator(sffDataPlaneLocator);
         return SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceFunctionForwarderBuilder.build());
     }
@@ -851,12 +851,12 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         List<SfDataPlaneLocator> sfDataPlaneLocator = new ArrayList<>();
         SfDataPlaneLocatorBuilder sfDataPlaneLocatorBuilder = new SfDataPlaneLocatorBuilder();
 
-        sfDataPlaneLocatorBuilder.setName(locatorName).setKey(new SfDataPlaneLocatorKey(locatorName))
+        sfDataPlaneLocatorBuilder.setName(locatorName).withKey(new SfDataPlaneLocatorKey(locatorName))
                 .setServiceFunctionForwarder(forwarderName);
         sfDataPlaneLocator.add(sfDataPlaneLocatorBuilder.build());
 
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
-        serviceFunctionBuilder.setName(functionName).setKey(new ServiceFunctionKey(functionName))
+        serviceFunctionBuilder.setName(functionName).withKey(new ServiceFunctionKey(functionName))
                 .setSfDataPlaneLocator(sfDataPlaneLocator).setType(functionType);
 
         return SfcProviderServiceFunctionAPI.putServiceFunction(serviceFunctionBuilder.build());
@@ -885,12 +885,12 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
         for (SfName sfName : theSfNames) {
             sfcServiceFunctionBuilder.setName(sfName)
-                    .setKey(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang
+                    .withKey(new org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang
                             .sfc.sfg.rev150214.service.function.group.entry.SfcServiceFunctionKey(sfName));
             sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         }
 
-        serviceFunctionGroupBuilder.setName(groupName).setKey(new ServiceFunctionGroupKey(groupName))
+        serviceFunctionGroupBuilder.setName(groupName).withKey(new ServiceFunctionGroupKey(groupName))
                 .setSfcServiceFunction(sfcServiceFunctionList).setType(groupType);
 
         return SfcProviderServiceFunctionGroupAPI.putServiceFunctionGroup(serviceFunctionGroupBuilder.build());
@@ -915,13 +915,13 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         SfcServiceFunctionBuilder sfcSfgServiceFunctionBuilder = new SfcServiceFunctionBuilder();
 
         for (SfName sfName : theSfNames) {
-            sfcSfgServiceFunctionBuilder.setName(sfName.getValue()).setKey(new SfcServiceFunctionKey(sfName.getValue()))
+            sfcSfgServiceFunctionBuilder.setName(sfName.getValue()).withKey(new SfcServiceFunctionKey(sfName.getValue()))
                     .setType(SfcProviderServiceFunctionAPI.readServiceFunction(sfName).getType());
 
             sfcSfgServiceFunctionList.add(sfcSfgServiceFunctionBuilder.build());
         }
 
-        serviceFunctionChainBuilder.setName(chainName).setKey(new ServiceFunctionChainKey(chainName))
+        serviceFunctionChainBuilder.setName(chainName).withKey(new ServiceFunctionChainKey(chainName))
                 .setSfcServiceFunction(sfcSfgServiceFunctionList);
 
         return SfcProviderServiceChainAPI.putServiceFunctionChain(serviceFunctionChainBuilder.build());
@@ -935,7 +935,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
 
         ServiceFunctionPathBuilder serviceFunctionPathBuilder = new ServiceFunctionPathBuilder();
         serviceFunctionPathBuilder.setName(pathName)
-                // .setKey(new ServiceFunctionPathKey(pathName))
+                // .withKey(new ServiceFunctionPathKey(pathName))
                 .setServiceChainName(chainName);
         if (symmetric != null) {
             serviceFunctionPathBuilder.setSymmetric(symmetric);

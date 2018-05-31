@@ -123,7 +123,7 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
                 DataPlaneLocator dpl = new DataPlaneLocatorBuilder().setLocatorType(locatorType).build();
                 SffDataPlaneLocatorName name = new SffDataPlaneLocatorName(lispLocation.getEid().toString());
                 SffDataPlaneLocatorKey key = new SffDataPlaneLocatorKey(name);
-                SffDataPlaneLocator loc = new SffDataPlaneLocatorBuilder().setDataPlaneLocator(dpl).setKey(key)
+                SffDataPlaneLocator loc = new SffDataPlaneLocatorBuilder().setDataPlaneLocator(dpl).withKey(key)
                         .setName(name).build();
                 ServiceFunctionForwarderBuilder fb = new ServiceFunctionForwarderBuilder(serviceFunctionForwarder);
                 fb.getSffDataPlaneLocator().add(loc);
@@ -149,7 +149,7 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
                 Ip locatorType = SfcLispUtil.createLocator(applicationData);
                 SfDataPlaneLocatorName name = new SfDataPlaneLocatorName(lispLocation.getEid().toString());
                 SfDataPlaneLocatorKey key = new SfDataPlaneLocatorKey(name);
-                SfDataPlaneLocator loc = new SfDataPlaneLocatorBuilder().setLocatorType(locatorType).setKey(key)
+                SfDataPlaneLocator loc = new SfDataPlaneLocatorBuilder().setLocatorType(locatorType).withKey(key)
                         .setName(name).build();
                 ServiceFunctionBuilder fb = new ServiceFunctionBuilder(serviceFunction);
                 fb.getSfDataPlaneLocator().add(loc);

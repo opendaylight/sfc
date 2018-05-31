@@ -1692,12 +1692,12 @@ public class SfcOfFlowProgrammerTest {
 
     private void checkMatchNsh(Flow flow, long nsp, short nsi) {
         GeneralAugMatchNodesNodeTableFlow genAug =
-                flow.getMatch().getAugmentation(GeneralAugMatchNodesNodeTableFlow.class);
+                flow.getMatch().augmentation(GeneralAugMatchNodesNodeTableFlow.class);
 
         List<ExtensionList> extensions = genAug.getExtensionList();
         for (ExtensionList extensionList : extensions) {
             Extension extension = extensionList.getExtension();
-            NxAugMatchNodesNodeTableFlow nxAugMatch = extension.getAugmentation(NxAugMatchNodesNodeTableFlow.class);
+            NxAugMatchNodesNodeTableFlow nxAugMatch = extension.augmentation(NxAugMatchNodesNodeTableFlow.class);
 
             if (nxAugMatch.getNxmNxNsp() != null) {
                 assertEquals(nxAugMatch.getNxmNxNsp().getValue().longValue(), NSP);

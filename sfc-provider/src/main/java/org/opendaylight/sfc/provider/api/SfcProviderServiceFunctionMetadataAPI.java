@@ -45,7 +45,7 @@ public final class SfcProviderServiceFunctionMetadataAPI {
         InstanceIdentifier<ContextMetadata> mdIID;
 
         printTraceStart(LOG);
-        mdIID = InstanceIdentifier.builder(ServiceFunctionMetadata.class).child(ContextMetadata.class, md.getKey())
+        mdIID = InstanceIdentifier.builder(ServiceFunctionMetadata.class).child(ContextMetadata.class, md.key())
                 .build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(mdIID, md, LogicalDatastoreType.CONFIGURATION);
@@ -90,7 +90,7 @@ public final class SfcProviderServiceFunctionMetadataAPI {
         InstanceIdentifier<VariableMetadata> mdIID;
 
         printTraceStart(LOG);
-        mdIID = InstanceIdentifier.builder(ServiceFunctionMetadata.class).child(VariableMetadata.class, md.getKey())
+        mdIID = InstanceIdentifier.builder(ServiceFunctionMetadata.class).child(VariableMetadata.class, md.key())
                 .build();
 
         ret = SfcDataStoreAPI.writePutTransactionAPI(mdIID, md, LogicalDatastoreType.CONFIGURATION);

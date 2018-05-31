@@ -99,7 +99,7 @@ public class LogicalClassifierDataGetter {
      * @return the data-plane ID of the given RenderedServicePathHop
      */
     public Optional<DpnIdType> getHopDataplaneId(RenderedServicePathHop hopData) {
-        return Optional.ofNullable(hopData.getAugmentation(RspLogicalSffAugmentation.class))
+        return Optional.ofNullable(hopData.augmentation(RspLogicalSffAugmentation.class))
                 .map(RspLogicalSffAugmentation::getDpnId);
     }
 

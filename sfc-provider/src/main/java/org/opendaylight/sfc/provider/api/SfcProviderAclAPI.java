@@ -113,7 +113,7 @@ public final class SfcProviderAclAPI {
         AclServiceFunctionClassifierBuilder aclServiceClassifierBuilder = new AclServiceFunctionClassifierBuilder();
         AclServiceFunctionClassifierKey aclServiceClassifierKey = new AclServiceFunctionClassifierKey(
                 serviceClassifierName);
-        aclServiceClassifierBuilder.setKey(aclServiceClassifierKey).setName(serviceClassifierName);
+        aclServiceClassifierBuilder.withKey(aclServiceClassifierKey).setName(serviceClassifierName);
 
         AccessListStateKey accessListStateKey = new AccessListStateKey(aclName, aclType);
 

@@ -171,7 +171,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         ServiceFunctionSchedulerTypeKey key = new ServiceFunctionSchedulerTypeKey(SFST_TYPE);
 
         ServiceFunctionSchedulerTypeBuilder sfstBuilder = new ServiceFunctionSchedulerTypeBuilder();
-        sfstBuilder.setName(SFST_NAME).setKey(key).setType(SFST_TYPE).setEnabled(enabled);
+        sfstBuilder.setName(SFST_NAME).withKey(key).setType(SFST_TYPE).setEnabled(enabled);
 
         return sfstBuilder.build();
     }
@@ -186,7 +186,7 @@ public class ServiceFunctionSchedulerTypeListenerTest extends AbstractDataStoreM
         for (int i = 0; i < SFST_NAMES.size(); i++) {
             ServiceFunctionSchedulerTypeKey key = new ServiceFunctionSchedulerTypeKey(SFST_TYPES[i]);
             ServiceFunctionSchedulerTypeBuilder sfstBuilder = new ServiceFunctionSchedulerTypeBuilder();
-            sfstBuilder.setName(SFST_NAMES.get(i)).setKey(key).setType(SFST_TYPES[i]).setEnabled(enabledStatus);
+            sfstBuilder.setName(SFST_NAMES.get(i)).withKey(key).setType(SFST_TYPES[i]).setEnabled(enabledStatus);
             enabledStatus = false;
             ServiceFunctionSchedulerType serviceFunctionSchedulerType;
             serviceFunctionSchedulerType = sfstBuilder.build();

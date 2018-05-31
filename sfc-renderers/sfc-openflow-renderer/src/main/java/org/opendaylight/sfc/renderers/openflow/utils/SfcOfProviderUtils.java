@@ -176,7 +176,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     public Long getPortNumberFromName(final String sffName, final String portName, long rspId) {
 
         ServiceFunctionForwarder sff = getServiceFunctionForwarder(new SffName(sffName), rspId);
-        SffOvsBridgeAugmentation sffOvsBridge = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        SffOvsBridgeAugmentation sffOvsBridge = sff.augmentation(SffOvsBridgeAugmentation.class);
         if (sffOvsBridge == null || sffOvsBridge.getOvsBridge() == null
                 || sffOvsBridge.getOvsBridge().getBridgeName() == null) {
             throw new RuntimeException("getPortNumberFromName: SFF [" + sffName
@@ -185,14 +185,14 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         // we shouldn't use the getter getOpendaylightSfcObj, but nobody uses
         // getPortNumberFromName
         Node node = SfcOvsUtil.lookupTopologyNode(sff);
-        if (node == null || node.getAugmentation(OvsdbNodeAugmentation.class) == null) {
+        if (node == null || node.augmentation(OvsdbNodeAugmentation.class) == null) {
             throw new IllegalStateException("OVSDB node does not exist for SFF " + sffName);
         }
 
         Long ofPort = 0L;
         TerminationPoint tp = readTerminationPoint(node, sffOvsBridge.getOvsBridge().getBridgeName(), portName);
         if (tp != null) {
-            OvsdbTerminationPointAugmentation port = tp.getAugmentation(OvsdbTerminationPointAugmentation.class);
+            OvsdbTerminationPointAugmentation port = tp.augmentation(OvsdbTerminationPointAugmentation.class);
             if (port != null) {
                 ofPort = getOFPort(port);
             }
@@ -216,7 +216,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         if (terminationPoints != null && !terminationPoints.isEmpty()) {
             for (TerminationPoint tp : terminationPoints) {
                 OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation = tp
-                        .getAugmentation(OvsdbTerminationPointAugmentation.class);
+                        .augmentation(OvsdbTerminationPointAugmentation.class);
                 if (ovsdbTerminationPointAugmentation != null) {
                     tpAugmentations.add(ovsdbTerminationPointAugmentation);
                 }
@@ -230,7 +230,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
         InstanceIdentifier<TerminationPoint> tpIid = InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(new TopologyId(new Uri("ovsdb:1"))))
                 .child(Node.class,
-                        new NodeKey(new NodeId(ovsdbNode.getKey().getNodeId().getValue() + "/bridge/" + bridgeName)))
+                        new NodeKey(new NodeId(ovsdbNode.key().getNodeId().getValue() + "/bridge/" + bridgeName)))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(portName)));
 
         return SfcDataStoreAPI.readTransactionAPI(tpIid, LogicalDatastoreType.OPERATIONAL);
@@ -250,7 +250,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
 
         SfcOfTablesByBaseTableBuilder sfcOfTablesByBaseTableBuilder = new SfcOfTablesByBaseTableBuilder();
         sfcOfTablesByBaseTableBuilder.setSffName(sffName);
-        sfcOfTablesByBaseTableBuilder.setKey(new SfcOfTablesByBaseTableKey(sffName));
+        sfcOfTablesByBaseTableBuilder.withKey(new SfcOfTablesByBaseTableKey(sffName));
         sfcOfTablesByBaseTableBuilder.setBaseTable(tableBaseValue);
         sfcOfTablesByBaseTableBuilder.setTransportIngressTable(tableBaseValue + 1);
         sfcOfTablesByBaseTableBuilder.setPathMapperTable(tableBaseValue + 2);

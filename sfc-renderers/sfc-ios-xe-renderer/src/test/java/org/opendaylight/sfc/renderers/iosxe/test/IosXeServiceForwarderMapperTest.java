@@ -62,7 +62,7 @@ public class IosXeServiceForwarderMapperTest {
         // SFF without management ip
         ServiceFunctionForwarderBuilder noMgmtIpForwarder = new ServiceFunctionForwarderBuilder();
         String sffName1 = "forwarder1";
-        noMgmtIpForwarder.setName(new SffName(sffName1)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName1)));
+        noMgmtIpForwarder.setName(new SffName(sffName1)).withKey(new ServiceFunctionForwarderKey(new SffName(sffName1)));
         // Test SFF
         List<SffDataPlaneLocator> dataPlaneLocators = new ArrayList<>();
         DataPlaneLocatorBuilder dataPlaneLocatorBuilder = new DataPlaneLocatorBuilder();
@@ -73,7 +73,7 @@ public class IosXeServiceForwarderMapperTest {
         dataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder testSff = new ServiceFunctionForwarderBuilder();
-        testSff.setName(new SffName(sffName2)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
+        testSff.setName(new SffName(sffName2)).withKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress))).setSffDataPlaneLocator(dataPlaneLocators);
         forwarders.add(noMgmtIpForwarder.build());
         forwarders.add(testSff.build());
@@ -81,7 +81,7 @@ public class IosXeServiceForwarderMapperTest {
         Map<NodeId, Node> nodeMap = new HashMap<>();
         Map<NodeId, DataBroker> nodeDbMap = new HashMap<>();
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(nodeId)).setKey(new NodeKey(new NodeId(nodeId)));
+        nodeBuilder.setNodeId(new NodeId(nodeId)).withKey(new NodeKey(new NodeId(nodeId)));
         Node node = nodeBuilder.build();
         nodeMap.put(node.getNodeId(), node);
         nodeDbMap.put(node.getNodeId(), dataBroker);
@@ -114,14 +114,14 @@ public class IosXeServiceForwarderMapperTest {
         dataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
 
         ServiceFunctionForwarderBuilder testSff = new ServiceFunctionForwarderBuilder();
-        testSff.setName(new SffName(sffName2)).setKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
+        testSff.setName(new SffName(sffName2)).withKey(new ServiceFunctionForwarderKey(new SffName(sffName2)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(ipAddress))).setSffDataPlaneLocator(dataPlaneLocators);
         forwarders.add(testSff.build());
         // Node
         Map<NodeId, Node> nodeMap = new HashMap<>();
         Map<NodeId, DataBroker> nodeDbMap = new HashMap<>();
         NodeBuilder nodeBuilder = new NodeBuilder();
-        nodeBuilder.setNodeId(new NodeId(nodeId)).setKey(new NodeKey(new NodeId(nodeId)));
+        nodeBuilder.setNodeId(new NodeId(nodeId)).withKey(new NodeKey(new NodeId(nodeId)));
         Node node = nodeBuilder.build();
         nodeMap.put(node.getNodeId(), node);
         nodeDbMap.put(node.getNodeId(), dataBroker);

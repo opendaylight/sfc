@@ -2109,7 +2109,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         int order = 0;
         BucketId bucketId = new BucketId((long) bucketInfo.getIndex());
         bb.setBucketId(bucketId);
-        bb.setKey(new BucketKey(bucketId));
+        bb.withKey(new BucketKey(bucketId));
         String sfMac = bucketInfo.getSfMac();
         String sfIp = bucketInfo.getSfIp();
         List<Action> actionList = new ArrayList<>();
@@ -2168,7 +2168,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setAction(groupActionCaseBuilder.build());
         actionBuilder.setOrder(0);
-        actionBuilder.setKey(new ActionKey(0));
+        actionBuilder.withKey(new ActionKey(0));
         Action groupAction = actionBuilder.build();
 
         // Create the Actions

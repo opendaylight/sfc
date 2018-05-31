@@ -80,7 +80,7 @@ public final class SfcProviderServiceChainAPI {
         printTraceStart(LOG);
 
         InstanceIdentifier<ServiceFunctionChain> sfcEntryIID = InstanceIdentifier.builder(ServiceFunctionChains.class)
-                .child(ServiceFunctionChain.class, serviceFunctionChain.getKey()).build();
+                .child(ServiceFunctionChain.class, serviceFunctionChain.key()).build();
 
         if (SfcDataStoreAPI.writeMergeTransactionAPI(sfcEntryIID, serviceFunctionChain,
                 LogicalDatastoreType.CONFIGURATION)) {

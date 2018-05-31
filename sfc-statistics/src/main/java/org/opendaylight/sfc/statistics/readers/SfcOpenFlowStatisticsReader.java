@@ -74,7 +74,7 @@ public class SfcOpenFlowStatisticsReader extends SfcStatisticsReaderBase {
             return Optional.empty();
         }
 
-        FlowStatisticsData flowStatsData = flow.getAugmentation(FlowStatisticsData.class);
+        FlowStatisticsData flowStatsData = flow.augmentation(FlowStatisticsData.class);
         if (flowStatsData == null) {
             LOG.warn("getSffNextHopStats flowStatsData null for nsp [{}] nsi [{}]",
                     nsp, nsi);
@@ -115,7 +115,7 @@ public class SfcOpenFlowStatisticsReader extends SfcStatisticsReaderBase {
 
     protected Optional<NodeId> getSffNodeId(ServiceFunctionForwarder sff, long nsp, short nsi) {
 
-        SffOvsBridgeAugmentation sffOvsBridgeAugmentation = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        SffOvsBridgeAugmentation sffOvsBridgeAugmentation = sff.augmentation(SffOvsBridgeAugmentation.class);
         if (sffOvsBridgeAugmentation == null) {
             LOG.warn("SfcStatisticsOpenFlowUtils::getSffNodeId sff [{}] does not have OvsBridgeAugmentation",
                     sff.getName());

@@ -106,7 +106,7 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
         hops.add(thirdHop.build());
         RenderedServicePathBuilder renderedServicePathBuilder = new RenderedServicePathBuilder();
         renderedServicePathBuilder.setName(new RspName("testRsp"))
-                .setKey(new RenderedServicePathKey(new RspName("testRsp"))).setPathId(10L).setStartingIndex((short) 255)
+                .withKey(new RenderedServicePathKey(new RspName("testRsp"))).setPathId(10L).setStartingIndex((short) 255)
                 .setRenderedServicePathHop(hops);
         return renderedServicePathBuilder.build();
     }
@@ -120,23 +120,23 @@ public class IosXeRspProcessorTest extends AbstractDataBrokerTest {
         dataPlaneLocatorBuilder.setLocatorType(new IpBuilder().setIp(new IpAddress(new Ipv4Address(dplIp))).build());
         String sffDpl = "sffDpl";
         sffDataPlaneLocatorBuilder.setName(new SffDataPlaneLocatorName(sffDpl))
-                .setKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffDpl)))
+                .withKey(new SffDataPlaneLocatorKey(new SffDataPlaneLocatorName(sffDpl)))
                 .setDataPlaneLocator(dataPlaneLocatorBuilder.build());
         sffDataPlaneLocators.add(sffDataPlaneLocatorBuilder.build());
         ServiceFunctionForwarderBuilder serviceForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceForwarderBuilder.setName(new SffName(forwarderName))
-                .setKey(new ServiceFunctionForwarderKey(new SffName(forwarderName)))
+                .withKey(new ServiceFunctionForwarderKey(new SffName(forwarderName)))
                 .setIpMgmtAddress(new IpAddress(new Ipv4Address(mgmtIp))).setSffDataPlaneLocator(sffDataPlaneLocators);
 
         // First SF
         ServiceFunctionBuilder firstServiceFunctionBuilder = new ServiceFunctionBuilder();
-        firstServiceFunctionBuilder.setName(firstFunctionName).setKey(new ServiceFunctionKey(firstFunctionName));
+        firstServiceFunctionBuilder.setName(firstFunctionName).withKey(new ServiceFunctionKey(firstFunctionName));
         // Second SF
         ServiceFunctionBuilder secondServiceFunctionBuilder = new ServiceFunctionBuilder();
-        secondServiceFunctionBuilder.setName(secondFunctionName).setKey(new ServiceFunctionKey(secondFunctionName));
+        secondServiceFunctionBuilder.setName(secondFunctionName).withKey(new ServiceFunctionKey(secondFunctionName));
         // Third SF
         ServiceFunctionBuilder thirdServiceFunctionBuilder = new ServiceFunctionBuilder();
-        thirdServiceFunctionBuilder.setName(thirdFunctionName).setKey(new ServiceFunctionKey(thirdFunctionName));
+        thirdServiceFunctionBuilder.setName(thirdFunctionName).withKey(new ServiceFunctionKey(thirdFunctionName));
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(serviceForwarderBuilder.build());
         SfcProviderServiceFunctionAPI.putServiceFunction(firstServiceFunctionBuilder.build());

@@ -211,7 +211,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
             ServiceFunctionBuilder sfBuilder = new ServiceFunctionBuilder();
             List<SfDataPlaneLocator> dataPlaneLocatorList = new ArrayList<>();
             dataPlaneLocatorList.add(sfDataPlaneLocator[i]);
-            sfBuilder.setName(new SfName(SF_NAMES.get(i))).setKey(key[i]).setType(SF_TYPES.get(i))
+            sfBuilder.setName(new SfName(SF_NAMES.get(i))).withKey(key[i]).setType(SF_TYPES.get(i))
                     .setIpMgmtAddress(ipMgmtAddress[i]).setSfDataPlaneLocator(dataPlaneLocatorList);
             sfList.add(sfBuilder.build());
         }
@@ -246,7 +246,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
             SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
             ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
             dictionaryEntryBuilder.setName(serviceFunction.getName())
-                    .setKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
+                    .withKey(new ServiceFunctionDictionaryKey(serviceFunction.getName()))
                     .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
             ServiceFunctionDictionary sfDictEntry = dictionaryEntryBuilder.build();
             sfDictionaryList.add(sfDictEntry);
@@ -257,14 +257,14 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
             sffLocatorBuilder.setLocatorType(ipBuilder.build()).setTransport(VxlanGpe.class);
             SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
             SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName(SFF_LOCATOR_IP.get(i));
-            locatorBuilder.setName(sffDplName).setKey(new SffDataPlaneLocatorKey(sffDplName))
+            locatorBuilder.setName(sffDplName).withKey(new SffDataPlaneLocatorKey(sffDplName))
                     .setDataPlaneLocator(sffLocatorBuilder.build());
 
             List<SffDataPlaneLocator> locatorList = new ArrayList<>();
             locatorList.add(locatorBuilder.build());
             ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
             SffName sffName = new SffName(SFF_NAMES.get(i));
-            sffBuilder.setName(sffName).setKey(new ServiceFunctionForwarderKey(sffName))
+            sffBuilder.setName(sffName).withKey(new ServiceFunctionForwarderKey(sffName))
                     .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(sfDictionaryList)
                     .setConnectedSffDictionary(sffDictionaryList).setServiceNode(null);
             ServiceFunctionForwarder sff = sffBuilder.build();
@@ -278,11 +278,11 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
         for (int i = 0; i < SF_ABSTRACT_NAMES.size(); i++) {
             SfcServiceFunctionBuilder sfcSfBuilder = new SfcServiceFunctionBuilder();
             SfcServiceFunction sfcServiceFunction = sfcSfBuilder.setName(SF_ABSTRACT_NAMES.get(i))
-                    .setKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(SF_TYPES.get(i)).build();
+                    .withKey(new SfcServiceFunctionKey(SF_ABSTRACT_NAMES.get(i))).setType(SF_TYPES.get(i)).build();
             sfcServiceFunctionList.add(sfcServiceFunction);
         }
         ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-        sfcBuilder.setName(SFC_NAME).setKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
+        sfcBuilder.setName(SFC_NAME).withKey(sfcKey).setSfcServiceFunction(sfcServiceFunctionList).setSymmetric(true);
 
         SfcProviderServiceChainAPI.putServiceFunctionChain(sfcBuilder.build());
 
@@ -311,7 +311,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
 
         SffDataPlaneLocatorBuilder locatorBuilder = new SffDataPlaneLocatorBuilder();
         SffDataPlaneLocatorName sffDplName = new SffDataPlaneLocatorName("locator-1");
-        locatorBuilder.setName(sffDplName).setKey(new SffDataPlaneLocatorKey(sffDplName))
+        locatorBuilder.setName(sffDplName).withKey(new SffDataPlaneLocatorKey(sffDplName))
                 .setDataPlaneLocator(sffLocatorBuilder.build());
 
         List<SffDataPlaneLocator> locatorList = new ArrayList<>();
@@ -323,7 +323,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
         sffSfDataPlaneLocatorBuilder.setSfDplName(sf.getSfDataPlaneLocator().get(0).getName());
         SffSfDataPlaneLocator sffSfDataPlaneLocator = sffSfDataPlaneLocatorBuilder.build();
         ServiceFunctionDictionaryBuilder dictionaryEntryBuilder = new ServiceFunctionDictionaryBuilder();
-        dictionaryEntryBuilder.setName(sf.getName()).setKey(new ServiceFunctionDictionaryKey(sf.getName()))
+        dictionaryEntryBuilder.setName(sf.getName()).withKey(new ServiceFunctionDictionaryKey(sf.getName()))
                 .setSffSfDataPlaneLocator(sffSfDataPlaneLocator).setFailmode(Open.class).setSffInterfaces(null);
 
         List<ServiceFunctionDictionary> dictionary = new ArrayList<>();
@@ -333,7 +333,7 @@ public class SfcProviderServiceForwarderAPISimpleIPv6Test extends AbstractDataSt
         ServiceFunctionForwarderBuilder sffBuilder = new ServiceFunctionForwarderBuilder();
 
         SffName name = new SffName(SFF_NAME.get(0));
-        ServiceFunctionForwarder sff = sffBuilder.setName(name).setKey(new ServiceFunctionForwarderKey(name))
+        ServiceFunctionForwarder sff = sffBuilder.setName(name).withKey(new ServiceFunctionForwarderKey(name))
                 .setSffDataPlaneLocator(locatorList).setServiceFunctionDictionary(dictionary).setServiceNode(null)
                 .build();
 

@@ -393,7 +393,7 @@ public abstract class SfcOfBaseProviderUtils {
             return null;
         }
 
-        SffDataPlaneLocator1 ofsDpl = sffDpl.getAugmentation(SffDataPlaneLocator1.class);
+        SffDataPlaneLocator1 ofsDpl = sffDpl.augmentation(SffDataPlaneLocator1.class);
         if (ofsDpl == null) {
             LOG.debug("No OFS DPL available for dpl [{}]", sffDpl.getName().getValue());
             return null;
@@ -533,7 +533,7 @@ public abstract class SfcOfBaseProviderUtils {
 
         // Check if its an service-function-forwarder-ovs augmentation
         // if it is, then get the open flow node id there
-        SffOvsBridgeAugmentation ovsSff = sff.getAugmentation(SffOvsBridgeAugmentation.class);
+        SffOvsBridgeAugmentation ovsSff = sff.augmentation(SffOvsBridgeAugmentation.class);
         if (ovsSff != null && ovsSff.getOvsBridge() != null) {
             return ovsSff.getOvsBridge().getOpenflowNodeId();
         }

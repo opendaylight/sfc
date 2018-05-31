@@ -138,20 +138,20 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataSt
         SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
         List<SfcServiceFunction> sfcServiceFunctionList = new ArrayList<>();
 
-        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 1).setKey(new SfcServiceFunctionKey(SF_NAME_BASE + 1))
+        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 1).withKey(new SfcServiceFunctionKey(SF_NAME_BASE + 1))
                 .setType(new SftTypeName("firewall"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 2).setKey(new SfcServiceFunctionKey(SF_NAME_BASE + 2))
+        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 2).withKey(new SfcServiceFunctionKey(SF_NAME_BASE + 2))
                 .setType(new SftTypeName("dpi"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
         sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 3).setKey(new SfcServiceFunctionKey(SF_NAME_BASE + 3))
+        sfcServiceFunctionBuilder.setName(SF_NAME_BASE + 3).withKey(new SfcServiceFunctionKey(SF_NAME_BASE + 3))
                 .setType(new SftTypeName("qos"));
         sfcServiceFunctionList.add(sfcServiceFunctionBuilder.build());
 
         ServiceFunctionChainBuilder serviceFunctionChainBuilder = new ServiceFunctionChainBuilder();
-        serviceFunctionChainBuilder.setName(SFC_NAME).setKey(new ServiceFunctionChainKey(SFC_NAME)).setSymmetric(true)
+        serviceFunctionChainBuilder.setName(SFC_NAME).withKey(new ServiceFunctionChainKey(SFC_NAME)).setSymmetric(true)
                 .setSfcServiceFunction(sfcServiceFunctionList);
 
         return serviceFunctionChainBuilder.build();
@@ -165,7 +165,7 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataSt
 
         SfName sfName = new SfName(SF_NAME_BASE + serviceFunctionType);
 
-        sftServiceFunctionNameBuilder.setName(sfName).setKey(new SftServiceFunctionNameKey(sfName));
+        sftServiceFunctionNameBuilder.setName(sfName).withKey(new SftServiceFunctionNameKey(sfName));
         sftServiceFunctionNames.add(sftServiceFunctionNameBuilder.build());
 
         return sftServiceFunctionNames;
@@ -179,13 +179,13 @@ public class SfcServiceFunctionRoundRobinSchedulerAPITest extends AbstractDataSt
 
         for (int i = 0; i < 3; i++) {
             ServicePathHopBuilder servicePathHopBuilder = new ServicePathHopBuilder();
-            servicePathHopBuilder.setHopNumber((short) i).setKey(new ServicePathHopKey((short) i))
+            servicePathHopBuilder.setHopNumber((short) i).withKey(new ServicePathHopKey((short) i))
                     .setServiceFunctionForwarder(SFF_NAME).setServiceFunctionGroupName(SFG_NAME)
                     .setServiceIndex((short) (i + 1)).setServiceFunctionName(new SfName(SF_NAME_BASE + (i + 1)));
             servicePathHopList.add(servicePathHopBuilder.build());
         }
 
-        serviceFunctionPathBuilder.setName(SFP_NAME).setKey(new ServiceFunctionPathKey(SFP_NAME))
+        serviceFunctionPathBuilder.setName(SFP_NAME).withKey(new ServiceFunctionPathKey(SFP_NAME))
                 .setServicePathHop(servicePathHopList);
 
         return serviceFunctionPathBuilder.build();

@@ -171,7 +171,7 @@ public class OpenflowClassifierProcessor {
         }
 
         Optional<RspName> rspName = Optional.ofNullable(theAce.getActions())
-                .map(theActions -> theActions.getAugmentation(Actions1.class))
+                .map(theActions -> theActions.augmentation(Actions1.class))
                 .map(actions1 -> (AclRenderedServicePath) actions1.getSfcAction())
                 .map(aclRsp -> new RspName(aclRsp.getRenderedServicePath()));
 

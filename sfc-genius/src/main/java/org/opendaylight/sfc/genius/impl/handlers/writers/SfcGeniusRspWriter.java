@@ -43,7 +43,7 @@ public class SfcGeniusRspWriter {
      */
     public CompletableFuture<RenderedServicePath> deleteRsp(RenderedServicePath renderedServicePath) {
         InstanceIdentifier<RenderedServicePath> rspId = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePath.getKey())
+                .child(RenderedServicePath.class, renderedServicePath.key())
                 .build();
         transaction.delete(LogicalDatastoreType.OPERATIONAL, rspId);
         return CompletableFuture.completedFuture(renderedServicePath);
@@ -59,7 +59,7 @@ public class SfcGeniusRspWriter {
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public CompletableFuture<Void> createRsp(RenderedServicePath renderedServicePath) {
         InstanceIdentifier<RenderedServicePath> rspId = InstanceIdentifier.builder(RenderedServicePaths.class)
-                .child(RenderedServicePath.class, renderedServicePath.getKey())
+                .child(RenderedServicePath.class, renderedServicePath.key())
                 .build();
         transaction.put(LogicalDatastoreType.OPERATIONAL, rspId, renderedServicePath);
         return CompletableFuture.completedFuture(null);

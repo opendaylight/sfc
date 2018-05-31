@@ -106,7 +106,7 @@ public class ClassifierRspUpdateDataGetterTest {
 
         when(ace.getActions()).thenReturn(actions);
 
-        when(actions.getAugmentation(eq(Actions1.class))).thenReturn(findAbetterNameForThis);
+        when(actions.augmentation(eq(Actions1.class))).thenReturn(findAbetterNameForThis);
 
         when(findAbetterNameForThis.getSfcAction()).thenReturn(aclRsp);
 

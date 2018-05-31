@@ -152,10 +152,10 @@ class SfstateExporter extends AbstractExporter implements Exporter {
     }
 
     private ObjectNode getSfDescriptionMonitorObjectNode(ServiceFunctionState sfstate) {
-        if (sfstate == null || sfstate.getAugmentation(ServiceFunctionState1.class) == null) {
+        if (sfstate == null || sfstate.augmentation(ServiceFunctionState1.class) == null) {
             return null;
         }
-        ServiceFunctionState1 serviceFunctionState1 = sfstate.getAugmentation(ServiceFunctionState1.class);
+        ServiceFunctionState1 serviceFunctionState1 = sfstate.augmentation(ServiceFunctionState1.class);
 
         if (serviceFunctionState1 != null) {
             return this.getDescriptionMonitorObjectNode(serviceFunctionState1.getSfcSfDescMon());

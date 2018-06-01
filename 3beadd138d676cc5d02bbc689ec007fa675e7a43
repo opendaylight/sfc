@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "79b14a25_fda48dd1",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 918,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-06-01T14:53:35Z",
+      "side": 1,
+      "message": "This line is too long and is failing verification:\n14:26:08 [ERROR] /w/workspace/sfc-maven-verify-fluorine-mvn33-openjdk8/sfc-provider/src/test/java/org/opendaylight/sfc/provider/SfcProviderRpcTest.java:918: Line is longer than 120 characters (found 121). [LineLength]",
+      "range": {
+        "startLine": 918,
+        "startChar": 0,
+        "endLine": 918,
+        "endChar": 121
+      },
+      "revId": "3beadd138d676cc5d02bbc689ec007fa675e7a43",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3cdabc6f_763e7572",
+        "filename": "sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionRandomSchedulerAPITest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-06-01T14:53:35Z",
+      "side": 1,
+      "message": "This line is too long, and is failing verification:\n14:26:08 [ERROR] /w/workspace/sfc-maven-verify-fluorine-mvn33-openjdk8/sfc-provider/src/test/java/org/opendaylight/sfc/provider/api/SfcServiceFunctionRandomSchedulerAPITest.java:258: Line is longer than 120 characters (found 121). [LineLength]",
+      "range": {
+        "startLine": 258,
+        "startChar": 17,
+        "endLine": 258,
+        "endChar": 24
+      },
+      "revId": "3beadd138d676cc5d02bbc689ec007fa675e7a43",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

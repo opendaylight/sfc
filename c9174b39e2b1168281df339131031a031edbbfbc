@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ee97cfbf_cd6d9fa4",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 581,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-06-01T16:00:01Z",
+      "side": 1,
+      "message": "We could take this one step further.\n\n- Let\u0027s say that path id and index go to a register as we are proposing.\n- Let\u0027s say that the next hop destination address goes to another register (an SFF ip, an SF mac...). On last hop, for nsh, this could come from nshc1.\n- Let\u0027s say that we store on another register a code for the transport type plus associated data (example, vxlan + tun id). On last hop, for nsh, this could come from nshc2.\n\nThen we probably could have a transport egress table that is just based on transport and not on path+index.",
+      "range": {
+        "startLine": 553,
+        "startChar": 0,
+        "endLine": 581,
+        "endChar": 59
+      },
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

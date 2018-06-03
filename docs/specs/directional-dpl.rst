@@ -145,7 +145,8 @@ Yang changes
 The following data model is the updated service-function-dictionary
 within the service function forwarder.
 
-.. code-block:: service-function-forwarder.yang
+.. code-block:: none
+   :caption: service-function-forwarder.yang
 
         list service-function-dictionary {
             key "name";
@@ -208,7 +209,8 @@ within the service function forwarder.
 Logical interface locator support is also added to the service function
 forwarder data plane locator.
 
-.. code-block:: service-function-forwarder-logical.yang
+.. code-block:: none
+   :caption: service-function-forwarder-logical.yang
 
         augment "/sfc-sff:service-function-forwarders/"
               + "sfc-sff:service-function-forwarder/"
@@ -225,7 +227,8 @@ forwarder data plane locator.
 A new leaf is added to the rendered service path model to flag reverse
 paths.
 
-.. code-block:: rendered-service-path.yang
+.. code-block:: none
+   :caption: rendered-service-path.yang
 
         leaf reverse-path {
           type boolean;

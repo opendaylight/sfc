@@ -68,7 +68,7 @@ Although this feature only covers RSP statistics, the following
 YANG model also includes operations for Service Function (SF)
 and Service Function Forwarder (SFF) statistics collection.
 
-.. code-block:: yang
+.. code-block:: none
 
     module sfc-statistics-operations {
 

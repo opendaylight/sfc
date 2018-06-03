@@ -56,7 +56,8 @@ comments highlighting the changed nodes. The changed nodes will
 only have the "config false" attribute modified to reflect which
 nodes will only be written in the Operational data store.
 
-.. code-block:: rendered-service-path.yang
+.. code-block:: none
+   :caption: rendered-service-path.yang
 
     module rendered-service-path {
        container rendered-service-paths {

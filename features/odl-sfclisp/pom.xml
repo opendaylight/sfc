@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfclisp</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.2</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -28,14 +28,14 @@
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>odl-lispflowmapping-mappingservice</artifactId>
-            <version>1.7.2-SNAPSHOT</version>
+            <version>1.7.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.lispflowmapping</groupId>
             <artifactId>odl-lispflowmapping-southbound</artifactId>
-            <version>1.7.2-SNAPSHOT</version>
+            <version>1.7.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

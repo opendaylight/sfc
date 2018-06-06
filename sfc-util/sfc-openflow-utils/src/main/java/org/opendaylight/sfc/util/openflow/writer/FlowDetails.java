@@ -8,6 +8,7 @@
 
 package org.opendaylight.sfc.util.openflow.writer;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
@@ -81,5 +82,32 @@ public class FlowDetails {
 
     public final long getRspId() {
         return rspId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sffNodeName, flowKey, tableKey, flow, rspId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        FlowDetails other = (FlowDetails) obj;
+        return Objects.equals(rspId, other.rspId)
+                && Objects.equals(tableKey, other.tableKey)
+                && Objects.equals(sffNodeName, other.sffNodeName)
+                && Objects.equals(flowKey, other.flowKey)
+                && Objects.equals(flow, other.flow);
     }
 }

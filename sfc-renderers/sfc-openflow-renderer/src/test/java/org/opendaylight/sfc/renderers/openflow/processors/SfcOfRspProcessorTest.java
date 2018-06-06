@@ -257,11 +257,11 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureNshVxgpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(),
-                anyShort());
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_1"), anyLong(),
-                anyShort());
+        // Verify calls to setup transport ingress flows
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq("SFF_0"));
+        verify(this.flowProgrammerTestMoc, times(1)).configureEthNshTransportIngressFlow(eq("SFF_0"));
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq("SFF_1"));
+        verify(this.flowProgrammerTestMoc, times(1)).configureEthNshTransportIngressFlow(eq("SFF_1"));
 
         // Verify calls to configureNshVxgpeNextHopFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(eq("SFF_0"), anyString(),
@@ -311,9 +311,9 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureNshVxgpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq("SFF_0"), anyLong(),
-                anyShort());
+        // Verify calls to setup transport ingress flows
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq("SFF_0"));
+        verify(this.flowProgrammerTestMoc, times(1)).configureEthNshTransportIngressFlow(eq("SFF_0"));
 
         // Verify calls to configureNshVxgpeNextHopFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow("SFF_0", "192.168.0.1", null, 0,
@@ -363,9 +363,9 @@ public class SfcOfRspProcessorTest {
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
 
-        // Verify calls to configureNshVxgpeTransportIngressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeTransportIngressFlow(eq(sffName), anyLong(),
-               eq((short) 255));
+        // Verify calls to setup transport ingress flows
+        verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq(sffName));
+        verify(this.flowProgrammerTestMoc, times(1)).configureEthNshTransportIngressFlow(eq(sffName));
 
         // Verify calls to configureNextHopFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureNshEthNextHopFlow(eq(sffName), anyString(),

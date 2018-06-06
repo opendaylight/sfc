@@ -18,7 +18,6 @@ import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.renderers.openflow.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.sfc.renderers.openflow.utils.operdsupdate.OperDsUpdateHandlerInterface;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;
-import org.opendaylight.sfc.util.openflow.SfcOpenflowUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -101,9 +100,12 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
-        this.sfcFlowProgrammer.configureNshVxgpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(), entry.getDstDpnId()),
-                entry.getPathId(), entry.getServiceIndex());
+        final String nodeName = sfcProviderUtils.getSffOpenFlowNodeName(
+                entry.getDstSff(),
+                entry.getPathId(),
+                entry.getDstDpnId());
+        this.sfcFlowProgrammer.configureEthNshTransportIngressFlow(nodeName);
+        this.sfcFlowProgrammer.configureNshTransportIngressFlow(nodeName);
     }
 
     //
@@ -303,10 +305,6 @@ public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
                             + " egress actions for logical interface [" + targetInterfaceName.get() + "] (src dpnid:"
                             + srcDpnId + "; dst dpnid:" + dstDpnId + ")");
                 }
-
-                LOG.debug("configureSffTransportEgressFlow: adding NSH as NP to GPE encap");
-                actionList.get().add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH,
-                        actionList.get().size()));
 
                 StringJoiner flowName = new StringJoiner(OpenflowConstants.OF_NAME_DELIMITER);
                 flowName.add(OpenflowConstants.OF_NAME_TRANSPORT_EGRESS)

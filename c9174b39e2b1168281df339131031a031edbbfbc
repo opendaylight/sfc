@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "b4fbd099_95b18f4c",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-06-06T23:38:46Z",
+      "side": 1,
+      "message": "Can you guys update the netvirt/genius pipeline diagram according to this? currently SFC is not listed down here :\n\nhttps://docs.opendaylight.org/en/stable-oxygen/submodules/genius/docs/pipeline.html",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "273000c1_bbbdb61e",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-06-06T23:38:46Z",
+      "side": 1,
+      "message": "we usually load egress lport tag to register6 before resubmitting to 220. in some cases i don\u0027t see a uniform way of using Genius Table 220 here.",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ee97cfbf_cd6d9fa4",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 15
@@ -19,6 +53,23 @@
         "endLine": 581,
         "endChar": 59
       },
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "66f633df_2d473b64",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 784,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-06-06T23:38:46Z",
+      "side": 1,
+      "message": "any FRM yang changes for openflow nsh support?",
       "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

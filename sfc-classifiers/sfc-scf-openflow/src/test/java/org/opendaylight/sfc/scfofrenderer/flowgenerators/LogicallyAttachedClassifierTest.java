@@ -158,10 +158,7 @@ public class LogicallyAttachedClassifierTest {
 
         // push NSH...
         // TODO: check this better...
-        Assert.assertEquals(10, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
-                .getApplyActions().getAction().size());
-
-        Assert.assertEquals(10, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
+        Assert.assertEquals(8, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
                 .getApplyActions().getAction().size());
 
         Assert.assertEquals(new Short("83"),
@@ -185,9 +182,9 @@ public class LogicallyAttachedClassifierTest {
 
         // push NSH...
         // TODO: check this better...
-        // it is 10 because we're mocking the genius RPC, making it return an
+        // it is 8 because we're mocking the genius RPC, making it return an
         // empty Action List
-        Assert.assertEquals(10, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
+        Assert.assertEquals(8, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
                 .getApplyActions().getAction().size());
     }
 }

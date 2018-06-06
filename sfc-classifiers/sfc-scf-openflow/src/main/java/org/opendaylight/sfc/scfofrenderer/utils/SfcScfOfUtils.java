@@ -33,8 +33,6 @@ public final class SfcScfOfUtils {
 
     public static final int FLOW_PRIORITY_CLASSIFIER = 1000;
     public static final int FLOW_PRIORITY_MATCH_ANY = 5;
-    public static final short NSH_MDTYPE_ONE = 0x1;
-    public static final short NSH_NP_ETH = 0x3;
 
     private SfcScfOfUtils() {
     }
@@ -153,25 +151,22 @@ public final class SfcScfOfUtils {
      */
     public static List<Action> buildNshActions(SfcRspInfo sfcRspInfo) {
         List<Action> theActions = new ArrayList<>();
-        theActions.add(SfcOpenflowUtils.createActionNxPushNsh(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshMdtype(SfcScfOfUtils.NSH_MDTYPE_ONE, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxLoadNshNp(SfcScfOfUtils.NSH_NP_ETH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionEncap(OpenflowConstants.PACKET_TYPE_NSH, theActions.size()));
+        theActions.add(SfcOpenflowUtils.createActionEncap(OpenflowConstants.PACKET_TYPE_ETH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
         if (sfcRspInfo.getNshMetaC1() != null) {
             theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC1(), theActions.size()));
         }
         if (sfcRspInfo.getNshMetaC2() != null) {
-            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC2(), theActions.size()));
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc2(sfcRspInfo.getNshMetaC2(), theActions.size()));
         }
         if (sfcRspInfo.getNshMetaC3() != null) {
-            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC3(), theActions.size()));
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc3(sfcRspInfo.getNshMetaC3(), theActions.size()));
         }
         if (sfcRspInfo.getNshMetaC4() != null) {
-            theActions.add(SfcOpenflowUtils.createActionNxSetNshc1(sfcRspInfo.getNshMetaC4(), theActions.size()));
+            theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(sfcRspInfo.getNshMetaC4(), theActions.size()));
         }
-        theActions.add(
-                SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         return theActions;
     }
 
@@ -191,10 +186,13 @@ public final class SfcScfOfUtils {
         Preconditions.checkNotNull(sfcRspInfo, "sfcRspInfo is required");
         Preconditions.checkNotNull(sfcRspInfo.getVxlanIpDst(), "VxlanIpDst is required");
 
-        MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
+        final MatchBuilder mb = SfcOpenflowUtils.getNshMatches(sfcRspInfo.getNshNsp(), sfcRspInfo.getNshEndNsi());
 
         List<Action> theActions = new ArrayList<>();
-        theActions.add(SfcOpenflowUtils.createActionNxPopNsh(theActions.size()));
+        // Remove outer ETH header
+        theActions.add(SfcOpenflowUtils.createActionDecap(theActions.size()));
+        // Remove NSH header
+        theActions.add(SfcOpenflowUtils.createActionDecap(theActions.size()));
         theActions.add(outPort == null
                 ? SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size())
                 : SfcOpenflowUtils.createActionOutPort(outPort.intValue(), theActions.size()));
@@ -224,13 +222,7 @@ public final class SfcScfOfUtils {
 
         String dstIp = sfcRspInfo.getVxlanIpDst().getValue();
         List<Action> theActions = new ArrayList<>();
-        theActions
-                .add(SfcOpenflowUtils.createActionNxLoadTunGpeNp(OpenflowConstants.TUN_GPE_NP_NSH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetTunIpv4Dst(dstIp, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxMoveNsp(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxMoveNsi(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxMoveNsc1(theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionNxMoveNsc2(theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionOutPort(OutputPortValues.INPORT.toString(), theActions.size()));
 
         InstructionsBuilder isb = SfcOpenflowUtils.wrapActionsIntoApplyActionsInstruction(theActions);

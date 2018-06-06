@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.renderers.openflow.processors;
 
 import java.util.Iterator;
-
 import org.opendaylight.sfc.renderers.openflow.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -67,11 +66,12 @@ public class SfcRspProcessorNshEth extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSffTransportIngressFlow(SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
-        // Even though this calls configureNshVxgpeTransportIngressFlow,
-        // it only matches on NSH NSP, nothing Vxgpe.
-        this.sfcFlowProgrammer.configureNshVxgpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()), entry.getPathId(),
-                entry.getServiceIndex());
+        final String nodeName = sfcProviderUtils.getSffOpenFlowNodeName(
+                entry.getDstSff(),
+                entry.getPathId(),
+                entry.getDstDpnId());
+        this.sfcFlowProgrammer.configureEthNshTransportIngressFlow(nodeName);
+        this.sfcFlowProgrammer.configureNshTransportIngressFlow(nodeName);
     }
 
     //

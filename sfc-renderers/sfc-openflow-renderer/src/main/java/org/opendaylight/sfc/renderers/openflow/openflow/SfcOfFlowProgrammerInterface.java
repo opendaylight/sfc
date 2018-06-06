@@ -81,7 +81,9 @@ public interface SfcOfFlowProgrammerInterface {
 
     void configureNshVxgpeSfReturnLoopbackIngressFlow(String sffNodeName, short vxlanUdpPort, long sffPort);
 
-    void configureNshVxgpeTransportIngressFlow(String sffNodeName, long nshNsp, short nshNsi);
+    void configureEthNshTransportIngressFlow(String sffNodeName);
+
+    void configureNshTransportIngressFlow(String sffNodeName);
 
     void configureMplsTransportIngressFlow(String sffNodeName);
 

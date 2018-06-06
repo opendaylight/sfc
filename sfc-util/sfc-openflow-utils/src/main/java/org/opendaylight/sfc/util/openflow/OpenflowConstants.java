@@ -14,13 +14,13 @@ public final class OpenflowConstants {
     // to a particular NSP / RSP path ID
     public static final long SFC_FLOWS = 0xdeadbeef;
 
-    // Constant for marking next protocol=NSH in GPE
-    public static final short TUN_GPE_NP_NSH = 0x4;
-
     // Ethernet NextProtocol/EtherType for NSH
     public static final long ETHERTYPE_NSH = 0x894F;
 
-    public static final short NSH_NP_ETH = 0x3;
+    // Packet Type constants
+    public static final int PACKET_TYPE_ETH = 0;
+    public static final int PACKET_TYPE_NSH = 0x1894f;
+
 
     // OpenFlow table names and related:
     //   used by both OpenflowRenderer and SFC statistics
@@ -31,6 +31,8 @@ public final class OpenflowConstants {
     public static final String OF_NAME_CLASS_DPDK_OUT = "classifierDpdkOutput";
     public static final String OF_NAME_CLASS_DPDK_IN = "classifierDpdkInput";
     public static final String OF_NAME_TRANSPORT_INGRESS = "transportIngress";
+    public static final String OF_NAME_TRANSPORT_INGRESS_NSH = "transportIngressNsh";
+    public static final String OF_NAME_TRANSPORT_INGRESS_ETH_NSH = "transportIngressEthNsh";
     public static final String OF_NAME_TRANSPORT_INGRESS_ARP = "transportIngressArp";
     public static final String OF_NAME_TRANSPORT_INGRESS_MAC = "transportIngressMac";
     public static final String OF_NAME_TRANSPORT_INGRESS_MPLS = "transportIngressMpls";

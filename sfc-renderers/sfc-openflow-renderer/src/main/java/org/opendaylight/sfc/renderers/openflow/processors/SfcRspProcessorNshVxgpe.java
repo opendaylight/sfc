@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.renderers.openflow.processors;
 
 import java.util.Iterator;
-
 import org.opendaylight.sfc.renderers.openflow.processors.SffGraph.SffGraphEntry;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -164,10 +163,12 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
      */
     @Override
     public void configureSffTransportIngressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator dstSffDpl) {
-        // TODO later use the dstSffDpl to get the tap port number
-        this.sfcFlowProgrammer.configureNshVxgpeTransportIngressFlow(
-                sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId()), entry.getPathId(),
-                entry.getServiceIndex());
+        final String nodeName = sfcProviderUtils.getSffOpenFlowNodeName(
+                entry.getDstSff(),
+                entry.getPathId(),
+                entry.getDstDpnId());
+        this.sfcFlowProgrammer.configureEthNshTransportIngressFlow(nodeName);
+        this.sfcFlowProgrammer.configureNshTransportIngressFlow(nodeName);
     }
 
     //

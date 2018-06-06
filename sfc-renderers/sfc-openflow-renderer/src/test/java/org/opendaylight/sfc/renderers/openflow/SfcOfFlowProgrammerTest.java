@@ -18,9 +18,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import com.google.common.net.InetAddresses;
-
 import java.util.List;
-
 import org.junit.Test;
 import org.opendaylight.genius.mdsalutil.NwConstants;
 import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerImpl;
@@ -50,18 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpShaCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxArpThaCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxEncapEthDstCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxEncapEthSrcCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshMdtypeCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshNpCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc1Case;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc2Case;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc3Case;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshc4Case;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNsiCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNspCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunGpeNpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIpv4DstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstOfArpSpaCase;
@@ -187,14 +174,38 @@ public class SfcOfFlowProgrammerTest {
      *
      */
     @Test
-    public void configureNshVxgpeTransportIngressFlow() {
-        sfcOfFlowProgrammer.configureNshVxgpeTransportIngressFlow(SFF_NAME, NSP, NSI);
+    public void configureEthNshTransportIngressFlow() {
+        sfcOfFlowProgrammer.configureEthNshTransportIngressFlow(SFF_NAME);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
 
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
 
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
+        assertEquals(OpenflowConstants.ETHERTYPE_NSH,
+                flowBuilder.getMatch().getEthernetMatch().getEthernetType().getType().getValue().longValue());
+
+        Instructions isb = flowBuilder.getInstructions();
+        Instruction curInstruction = isb.getInstruction().get(0).getInstruction();
+
+        checkGoToTable(curInstruction, SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
+        LOG.info("configureNshVxgpeTransportIngressFlow() Action NextTableId: [{}]",
+                SfcOfFlowProgrammerImpl.TABLE_INDEX_NEXT_HOP);
+    }
+
+    /**
+     * Unit test to check match and action fields from flows.
+     *
+     */
+    @Test
+    public void configureNshTransportIngressFlow() {
+        sfcOfFlowProgrammer.configureNshTransportIngressFlow(SFF_NAME);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+
+        assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_INGRESS);
+        assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_INGRESS);
+
+        assertEquals(OpenflowConstants.PACKET_TYPE_NSH,
+                flowBuilder.getMatch().getPacketTypeMatch().getPacketType().longValue());
 
         Instructions isb = flowBuilder.getInstructions();
         Instruction curInstruction = isb.getInstruction().get(0).getInstruction();
@@ -646,20 +657,13 @@ public class SfcOfFlowProgrammerTest {
 
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+                SetFieldCase setFieldCase = (SetFieldCase) action.getApplyActions().getAction().get(0).getAction();
+                assertEquals(MAC_SRC,
+                        setFieldCase.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue());
 
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad0 =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
-                                .getAction();
-                DstNxEncapEthSrcCase encapEthSrc =
-                        (DstNxEncapEthSrcCase) regLoad0.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(encapEthSrc.isNxEncapEthSrc());
-
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad1 =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
-                                .getAction();
-                DstNxEncapEthDstCase encapEthDst =
-                        (DstNxEncapEthDstCase) regLoad1.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(encapEthDst.isNxEncapEthDst());
+                setFieldCase = (SetFieldCase) action.getApplyActions().getAction().get(1).getAction();
+                assertEquals(MAC_DST,
+                        setFieldCase.getSetField().getEthernetMatch().getEthernetDestination().getAddress().getValue());
 
                 LOG.info("configureNshVxgpeNextHopFlow() Action: [{}]", action);
             }
@@ -861,7 +865,6 @@ public class SfcOfFlowProgrammerTest {
         assertEquals(flowBuilder.getTableId().shortValue(), SfcOfFlowProgrammerImpl.TABLE_INDEX_TRANSPORT_EGRESS);
         assertEquals(flowBuilder.getPriority().intValue(), SfcOfFlowProgrammerImpl.OF_PRIORITY_TRANSPORT_EGRESS);
         checkMatchNsh(flowBuilder.build(), NSP, NSI);
-        checkMatchNsh(flowBuilder.build(), NSP, NSI);
 
         Instructions isb = flowBuilder.getInstructions();
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -871,44 +874,7 @@ public class SfcOfFlowProgrammerTest {
 
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove0 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
-                                .getAction();
-                DstNxNshc1Case nshC1dst = (DstNxNshc1Case) regMove0.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshC1dst.isNxNshc1Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
-                                .getAction();
-                DstNxNshc2Case nshC2dst = (DstNxNshc2Case) regMove1.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshC2dst.isNxNshc2Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2)
-                                .getAction();
-                DstNxNsiCase nsiDst = (DstNxNsiCase) regMove2.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nsiDst.isNxNsiDst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3)
-                                .getAction();
-                DstNxNspCase nspDst = (DstNxNspCase) regMove3.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nspDst.isNxNspDst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
-                                .getAction();
-                DstNxNshMdtypeCase mdType = (DstNxNshMdtypeCase) regMove4.getNxRegMove().getDst().getDstChoice();
-                assertTrue(mdType.isNxNshMdtype());
-
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
-                                .getAction();
-                DstNxNshNpCase nshNp = (DstNxNshNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(nshNp.isNxNshNp());
-
-                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(6).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(0).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
                 LOG.info("configureNshEthTransportEgressFlow() Action OutputPort: [{}]",
                         output.getOutputAction().getOutputNodeConnector());
@@ -939,55 +905,14 @@ public class SfcOfFlowProgrammerTest {
 
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove0 =
+
+                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
-                                .getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2)
-                                .getAction();
-
-                DstNxNshMdtypeCase mdType = (DstNxNshMdtypeCase) regMove0.getNxRegMove().getDst().getDstChoice();
-                DstNxNshNpCase nshNp = (DstNxNshNpCase) regMove1.getNxRegMove().getDst().getDstChoice();
-                DstNxNshc1Case nshC1dst = (DstNxNshc1Case) regMove2.getNxRegMove().getDst().getDstChoice();
-
-                assertTrue(mdType.isNxNshMdtype());
-                assertTrue(nshNp.isNxNshNp());
-                assertTrue(nshC1dst.isNxNshc1Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3)
-                                .getAction();
-                DstNxNshc2Case nshC2dst = (DstNxNshc2Case) regMove3.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshC2dst.isNxNshc2Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
-                                .getAction();
-                DstNxNshc3Case nshC3dst = (DstNxNshc3Case) regMove4.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshC3dst.isNxNshc3Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
-                                .getAction();
-                DstNxNshc4Case nshC4dst = (DstNxNshc4Case) regMove5.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshC4dst.isNxNshc4Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove6 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6)
-                                .getAction();
-                DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove6.getNxRegMove().getDst().getDstChoice();
+                DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove.getNxRegMove().getDst().getDstChoice();
                 assertTrue(tunIdDst.isNxTunId());
 
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(7)
-                                .getAction();
-                DstNxTunGpeNpCase gpeNp = (DstNxTunGpeNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(gpeNp.isNxTunGpeNp());
-
-                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(8).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(1).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
                 LOG.info("configureNshVxgpeTransportEgressFlow() Action OutputPort: [{}]",
                         output.getOutputAction().getOutputNodeConnector());
@@ -1014,49 +939,20 @@ public class SfcOfFlowProgrammerTest {
             Instruction curInstruction = instruction.getInstruction();
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
+
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove0 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
+                DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove0.getNxRegMove().getDst().getDstChoice();
+                assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
+
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
                                 .getAction();
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(2)
-                                .getAction();
-
-                DstNxNshMdtypeCase mdType = (DstNxNshMdtypeCase) regMove0.getNxRegMove().getDst().getDstChoice();
-                DstNxNshNpCase nshNp = (DstNxNshNpCase) regMove1.getNxRegMove().getDst().getDstChoice();
-                DstNxNsiCase nshNsi = (DstNxNsiCase) regMove2.getNxRegMove().getDst().getDstChoice();
-
-                assertTrue(mdType.isNxNshMdtype());
-                assertTrue(nshNp.isNxNshNp());
-                assertTrue(nshNsi.isNxNsiDst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3)
-                                .getAction();
-                DstNxNspCase nshNsp = (DstNxNspCase) regMove3.getNxRegMove().getDst().getDstChoice();
-                assertTrue(nshNsp.isNxNspDst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove4 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
-                                .getAction();
-                DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove4.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
-
-                NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 =
-                        (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
-                                .getAction();
-                DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove5.getNxRegMove().getDst().getDstChoice();
+                DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove1.getNxRegMove().getDst().getDstChoice();
                 assertTrue(tunIdDst.isNxTunId());
 
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase regLoad =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6)
-                                .getAction();
-                DstNxTunGpeNpCase gpeNp = (DstNxTunGpeNpCase) regLoad.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(gpeNp.isNxTunGpeNp());
-
-                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(7).getAction();
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(2).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
                 LOG.info("configureNshVxgpeTransportEgressFlow() Action OutputPort: [{}]",
                         output.getOutputAction().getOutputNodeConnector().getValue());
@@ -1103,7 +999,14 @@ public class SfcOfFlowProgrammerTest {
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
                 LOG.info("Action SrcMac: [{}], PushMplsEthertype: [{}], LabelId: [{}], OutputPort: [{}]",
                         setField.getSetField().getEthernetMatch().getEthernetSource().getAddress().getValue(),
-                        pushMpls.getPushMplsAction().getEthernetType().toString(),
+                        pushMpls.getPushMplsAction().getEthernetType().toString(),/*
+    public static void addMatchTunGpeNp(MatchBuilder match, short tunGpeNp) {
+        NxAugMatchNodesNodeTableFlow am = new NxAugMatchNodesNodeTableFlowBuilder()
+                .setNxmNxTunGpeNp(new NxmNxTunGpeNpBuilder().setValue(Short.valueOf(tunGpeNp)).build()).build();
+        addExtension(match, NxmNxTunGpeNpKey.class, am);
+    }
+*/
+
                         mplsLabel.getSetField().getProtocolMatchFields().getMplsLabel(),
                         output.getOutputAction().getOutputNodeConnector().getValue());
             }
@@ -1131,13 +1034,8 @@ public class SfcOfFlowProgrammerTest {
             Instruction curInstruction = instruction.getInstruction();
             if (curInstruction instanceof ApplyActionsCase) {
                 ApplyActionsCase action = (ApplyActionsCase) curInstruction;
-                assertEquals(2, action.getApplyActions().getAction().size());
-                NxActionRegLoadNodesNodeTableFlowApplyActionsCase loadNextProtocol =
-                        (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
-                                .getAction();
-                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(1).getAction();
-                assertEquals(Short.toString(OpenflowConstants.TUN_GPE_NP_NSH),
-                        loadNextProtocol.getNxRegLoad().getValue().toString());
+                assertEquals(1, action.getApplyActions().getAction().size());
+                OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(0).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), PORT);
                 LOG.info("configureNshNscTransportEgressFlow() Action OutputPort is: [{}]",
                         output.getOutputAction().getOutputNodeConnector().getValue());
@@ -1304,11 +1202,15 @@ public class SfcOfFlowProgrammerTest {
         // AppCoexistence
         // Example: tableBase=20, TABLE_INDEX_PATH_MAPPER=2, should return 20
 
-        // Check that configureNshVxgpeTransportIngressFlow() is written to the
+        // Check that transport ingress flows are written to the
         // correct table
         // Notice: TransportIngress doesn't use the offset, as it will always be
         // table 0
-        sfcOfFlowProgrammer.configureNshVxgpeTransportIngressFlow(SFF_NAME, NSP, NSI);
+        sfcOfFlowProgrammer.configureEthNshTransportIngressFlow(SFF_NAME);
+        flowBuilder = sfcOfFlowWriter.getFlowBuilder();
+        assertEquals(flowBuilder.getTableId().shortValue(), 0);
+
+        sfcOfFlowProgrammer.configureNshTransportIngressFlow(SFF_NAME);
         flowBuilder = sfcOfFlowWriter.getFlowBuilder();
         assertEquals(flowBuilder.getTableId().shortValue(), 0);
 
@@ -1691,6 +1593,10 @@ public class SfcOfFlowProgrammerTest {
     }
 
     private void checkMatchNsh(Flow flow, long nsp, short nsi) {
+
+        assertEquals(OpenflowConstants.ETHERTYPE_NSH,
+                flow.getMatch().getEthernetMatch().getEthernetType().getType().getValue().longValue());
+
         GeneralAugMatchNodesNodeTableFlow genAug =
                 flow.getMatch().augmentation(GeneralAugMatchNodesNodeTableFlow.class);
 
@@ -1700,10 +1606,10 @@ public class SfcOfFlowProgrammerTest {
             NxAugMatchNodesNodeTableFlow nxAugMatch = extension.augmentation(NxAugMatchNodesNodeTableFlow.class);
 
             if (nxAugMatch.getNxmNxNsp() != null) {
-                assertEquals(nxAugMatch.getNxmNxNsp().getValue().longValue(), NSP);
+                assertEquals(nxAugMatch.getNxmNxNsp().getValue().longValue(), nsp);
             }
             if (nxAugMatch.getNxmNxNsi() != null) {
-                assertEquals(nxAugMatch.getNxmNxNsi().getNsi().shortValue(), NSI);
+                assertEquals(nxAugMatch.getNxmNxNsi().getNsi().shortValue(), nsi);
             }
         }
     }

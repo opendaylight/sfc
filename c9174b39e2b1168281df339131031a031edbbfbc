@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "751903ef_df7073ad",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-06-07T10:05:47Z",
+      "side": 1,
+      "message": "Will do.",
+      "parentUuid": "b4fbd099_95b18f4c",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "273000c1_bbbdb61e",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 15
@@ -30,6 +48,24 @@
       "writtenOn": "2018-06-06T23:38:46Z",
       "side": 1,
       "message": "we usually load egress lport tag to register6 before resubmitting to 220. in some cases i don\u0027t see a uniform way of using Genius Table 220 here.",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d8ebab9c_5c13c93b",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-06-07T10:05:47Z",
+      "side": 1,
+      "message": "Could you explain a bit more the concern?\n\nIn table 222 below we move reg6-\u003enshc4, and in this table 100 flow we just restore reg6 from nshc4.",
+      "parentUuid": "273000c1_bbbdb61e",
       "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -70,6 +106,24 @@
       "writtenOn": "2018-06-06T23:38:46Z",
       "side": 1,
       "message": "any FRM yang changes for openflow nsh support?",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "64d5daf3_62e06928",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 784,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-06-07T10:05:47Z",
+      "side": 1,
+      "message": "FRM? \n\nWe just became aware of some changes on the genius IFM service binding model due to the fact that it replicates the openflow nicira extension actions. But that would be more related to the openflowplugin weather item TSC-114 rather than this spec that focuses on pipeline changes. Is that what you mean?",
+      "parentUuid": "66f633df_2d473b64",
       "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

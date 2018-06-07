@@ -131,6 +131,23 @@
     },
     {
       "key": {
+        "uuid": "22256a24_b24d067d",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 776,
+      "author": {
+        "id": 817
+      },
+      "writtenOn": "2018-06-07T16:24:20Z",
+      "side": 1,
+      "message": "okaay..this looks like a violation to the genius egress service binding, but yes, i remember Vinayak explaining this to me, once, that there is no easy solution for this currently. Okay from me, then!",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "66f633df_2d473b64",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 15

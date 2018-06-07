@@ -10,21 +10,13 @@ package org.opendaylight.sfc.pot.netconf.renderer.provider;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
-
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
-
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -32,9 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,21 +36,19 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  */
 @Singleton
-public class SfcPotNetconfNodeManager implements BindingAwareProvider {
+public class SfcPotNetconfNodeManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcPotNetconfNodeManager.class);
 
-    private MountPointService mountService;
+    private final MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
 
     private final Map<NodeId, Node> connectedNodes = new HashMap<>();
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
     @Inject
-    public SfcPotNetconfNodeManager(BindingAwareBroker bindingAwareBroker) {
-        /* Register provider */
-        ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
-        onSessionInitiated(providerContext);
+    public SfcPotNetconfNodeManager(MountPointService mountService) {
+        this.mountService = mountService;
     }
 
     /* Add Node information to local datastore, after checks. */
@@ -142,13 +130,5 @@ public class SfcPotNetconfNodeManager implements BindingAwareProvider {
             return null;
         }
         return netconfNode.getHost().getIpAddress();
-    }
-
-    @Override
-    public void onSessionInitiated(ProviderContext session) {
-        mountService = session.getSALService(MountPointService.class);
-        if (mountService == null) {
-            LOG.warn("iOAM:PoT:SB: mount service is invalid.");
-        }
     }
 }

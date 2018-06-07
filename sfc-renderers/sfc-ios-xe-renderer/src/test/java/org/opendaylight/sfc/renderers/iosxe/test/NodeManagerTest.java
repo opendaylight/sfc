@@ -21,8 +21,6 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.sfc.renderers.iosxe.NodeManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeBuilder;
@@ -41,8 +39,6 @@ public class NodeManagerTest {
     private NodeManager manager;
     private MountPoint mountPoint;
     private DataBroker dataBroker;
-    private BindingAwareBroker bindingAwareBroker;
-    private BindingAwareBroker.ProviderContext providerContext;
     private MountPointService mountPointService;
     // Optionals
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -55,8 +51,6 @@ public class NodeManagerTest {
     public void init() {
         mountPoint = mock(MountPoint.class);
         dataBroker = mock(DataBroker.class);
-        bindingAwareBroker = mock(BindingAwareBroker.class);
-        providerContext = mock(BindingAwareBroker.ProviderContext.class);
         mountPointService = mock(MountPointService.class);
         // Optionals
         optionalMountPointObject = mock(Optional.class);
@@ -75,11 +69,9 @@ public class NodeManagerTest {
         nodeBuilder.setNodeId(new NodeId(nodeId));
         nodeBuilder.addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
 
-        when(bindingAwareBroker.registerProvider(any(BindingAwareProvider.class))).thenReturn(providerContext);
-        when(providerContext.getSALService(any())).thenReturn(mountPointService);
         when(mountPointService.getMountPoint(any(InstanceIdentifier.class))).thenReturn(optionalMountPointObject);
 
-        manager = new NodeManager(dataBroker, bindingAwareBroker);
+        manager = new NodeManager(dataBroker, mountPointService);
         manager.updateNode(nodeBuilder.build());
 
         assertTrue(manager.getActiveMountPoints().isEmpty());
@@ -98,8 +90,6 @@ public class NodeManagerTest {
         nodeBuilder.setNodeId(new NodeId(nodeId));
         nodeBuilder.addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
 
-        when(bindingAwareBroker.registerProvider(any(BindingAwareProvider.class))).thenReturn(providerContext);
-        when(providerContext.getSALService(any())).thenReturn(mountPointService);
         when(mountPointService.getMountPoint(any(InstanceIdentifier.class))).thenReturn(optionalMountPointObject);
         when(mountPoint.getService(eq(DataBroker.class))).thenReturn(optionalDataBrokerObject);
 
@@ -111,7 +101,7 @@ public class NodeManagerTest {
         //noinspection OptionalGetWithoutIsPresent
         when(optionalDataBrokerObject.get()).thenReturn(dataBroker);
 
-        manager = new NodeManager(dataBroker, bindingAwareBroker);
+        manager = new NodeManager(dataBroker, mountPointService);
         manager.updateNode(nodeBuilder.build());
 
         assertFalse(manager.getActiveMountPoints().isEmpty());
@@ -131,8 +121,6 @@ public class NodeManagerTest {
         nodeBuilder.addAugmentation(NetconfNode.class, netconfNodeBuilder.build());
 
 
-        when(bindingAwareBroker.registerProvider(any(BindingAwareProvider.class))).thenReturn(providerContext);
-        when(providerContext.getSALService(any())).thenReturn(mountPointService);
         when(mountPointService.getMountPoint(any(InstanceIdentifier.class))).thenReturn(optionalMountPointObject);
         when(mountPoint.getService(eq(DataBroker.class))).thenReturn(optionalDataBrokerObject);
 
@@ -144,7 +132,7 @@ public class NodeManagerTest {
         //noinspection OptionalGetWithoutIsPresent
         when(optionalDataBrokerObject.get()).thenReturn(dataBroker);
 
-        manager = new NodeManager(dataBroker, bindingAwareBroker);
+        manager = new NodeManager(dataBroker, mountPointService);
         Node testNode = nodeBuilder.build();
         manager.updateNode(testNode);
 

@@ -21,9 +21,6 @@ import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.netconf.node.topology.rev150114.NetconfNodeConnectionStatus.ConnectionStatus;
@@ -41,11 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class NodeManager implements BindingAwareProvider {
+public class NodeManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeManager.class);
 
-    private MountPointService mountService;
+    private final MountPointService mountService;
     private final TopologyId topologyId = new TopologyId("topology-netconf");
     private List<String> requiredCapabilities = new ArrayList<>();
 
@@ -54,10 +51,8 @@ public class NodeManager implements BindingAwareProvider {
     private final Map<NodeId, DataBroker> activeMountPoints = new HashMap<>();
 
     @Inject
-    public NodeManager(DataBroker dataBroker, BindingAwareBroker bindingAwareBroker) {
-        // Register provider
-        ProviderContext providerContext = bindingAwareBroker.registerProvider(this);
-        onSessionInitiated(providerContext);
+    public NodeManager(DataBroker dataBroker, MountPointService mountService) {
+        this.mountService = mountService;
         // Capabilities
         requiredCapabilities = initializeRequiredCapabilities();
     }
@@ -168,11 +163,5 @@ public class NodeManager implements BindingAwareProvider {
 
     public Map<NodeId, DataBroker> getActiveMountPoints() {
         return activeMountPoints;
-    }
-
-    @Override
-    public void onSessionInitiated(ProviderContext session) {
-        mountService = session.getSALService(MountPointService.class);
-        Preconditions.checkNotNull(mountService);
     }
 }

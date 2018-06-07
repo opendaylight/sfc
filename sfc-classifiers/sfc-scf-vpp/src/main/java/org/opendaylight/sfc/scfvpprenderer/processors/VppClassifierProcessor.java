@@ -7,7 +7,6 @@
  */
 package org.opendaylight.sfc.scfvpprenderer.processors;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.MountPointService;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderRenderedPathAPI;
 import org.opendaylight.sfc.util.vpp.SfcVppUtils;
@@ -58,7 +59,7 @@ public class VppClassifierProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(VppClassifierProcessor.class);
 
-    private final VppNodeManager nodeManager;
+    private final MountPointService mountService;
     private static final String SFC_BD_NAME = "SFCVPP";
     private static final String DUMMY_BD_NAME = "SFCDUMMY";
     private final Map<String, String> bridgeDomainCreated = new HashMap<>();
@@ -98,8 +99,8 @@ public class VppClassifierProcessor {
     }
 
     @Inject
-    public VppClassifierProcessor(VppNodeManager nodeManager) {
-        this.nodeManager = Preconditions.checkNotNull(nodeManager);
+    public VppClassifierProcessor(MountPointService mountService) {
+        this.mountService = Objects.requireNonNull(mountService);
     }
 
     private Optional<Acl> extractAcl(ServiceFunctionClassifier scf) {
@@ -398,7 +399,7 @@ public class VppClassifierProcessor {
         Short serviceIndex = firstRspHop.getServiceIndex();
         SffName sffName = firstRspHop.getServiceFunctionForwarder();
         IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
-        DataBroker mountPoint = SfcVppUtils.getSffMountpoint(this.nodeManager.getMountPointService(), sffName);
+        DataBroker mountPoint = SfcVppUtils.getSffMountpoint(mountService, sffName);
         return new SffInfo(mountPoint, sffName, sffIp, pathId, serviceIndex);
     }
 
@@ -441,7 +442,7 @@ public class VppClassifierProcessor {
             }
 
             IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
-            DataBroker mountPoint = SfcVppUtils.getSffMountpoint(this.nodeManager.getMountPointService(), sffName);
+            DataBroker mountPoint = SfcVppUtils.getSffMountpoint(mountService, sffName);
             if (!bridgeDomainCreated.containsKey(sffName.getValue())) {
                 SfcVppUtils.addDummyBridgeDomain(mountPoint, DUMMY_BD_NAME, sffName.getValue());
                 SfcVppUtils.addDummyNshEntry(mountPoint, 0L, (short)1, sffName.getValue());
@@ -556,7 +557,7 @@ public class VppClassifierProcessor {
             }
 
             IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
-            DataBroker mountPoint = SfcVppUtils.getSffMountpoint(this.nodeManager.getMountPointService(), sffName);
+            DataBroker mountPoint = SfcVppUtils.getSffMountpoint(mountService, sffName);
             for (Entry<RspName, List<Pair<HexString>>> entry : rspPairList.entrySet()) {
                 RspName rsp = entry.getKey();
                 final SffInfo sffInfo = getFirstSffInfoInRsp(rsp);

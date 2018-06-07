@@ -90,6 +90,24 @@
     },
     {
       "key": {
+        "uuid": "720aaba2_d3955ca8",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-06-07T16:05:46Z",
+      "side": 1,
+      "message": "OK, so that\u0027s only when the first SF is on the same node of the client for which a packet has been classified, so we have to reach the SFC ingress service from the classifier egress service (in any other case, there is output to a tunnel port). Table 83 is the first table of the SFC ingress service pipeline. We don\u0027t have an option to do that through the dispatcher tables. \n\nDo you have any suggestion to do that some other way? One way would be for genius to provide dispatching on node-wide services in addition to interface based ones.",
+      "parentUuid": "b6f8c4d0_596d2dac",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ee97cfbf_cd6d9fa4",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 15

@@ -36,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.TenantId;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -703,24 +702,23 @@ public class ServiceFunctionListenerTest extends AbstractDataStoreManager {
         assertNotNull(readServiceFunctionChain);
 
         // assertNotNull("Must be not null", sfc2);
-        assertEquals("Must be equal", readServiceFunctionChain.getSfcServiceFunction(), sfcServiceFunctionList);
+        assertEquals(readServiceFunctionChain.getSfcServiceFunction(), sfcServiceFunctionList);
 
         /* Create ServiceFunctionPath */
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(new SfpName(SFP_NAME)).setServiceChainName(new SfcName(SFC_NAME)).setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
-        assertNotNull("Must be not null", serviceFunctionPath);
+        assertNotNull(serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
 
         /* Create RenderedServicePath and reverse RenderedServicePath */
-        RenderedServicePath renderedServicePath = null;
+        RenderedServicePath configRenderedServicePath = SfcProviderRenderedPathAPI
+                .createRenderedServicePathInConfig(serviceFunctionPath, RSP_NAME);
 
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME);
-        createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
-        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
-                createRenderedPathInputBuilder.build());
-        assertNotNull("Must be not null", renderedServicePath);
+        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI
+                .createRenderedServicePathAndState(serviceFunctionPath, configRenderedServicePath);
+        assertNotNull(renderedServicePath);
+
         return renderedServicePath;
     }
 }

@@ -24,13 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfcName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.create.rendered.path.input.ContextHeaderAllocationType1;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.create.rendered.path.input.context.header.allocation.type._1.VxlanClassifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.path.first.hop.info.RenderedServicePathFirstHopBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
@@ -42,14 +36,10 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.state.service.function.state.SfServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChain;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.ServiceFunctionChainBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunction;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chain.grouping.service.function.chain.SfcServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarder.base.SffDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfg.rev150214.service.function.groups.ServiceFunctionGroup;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Nsh;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.Transport;
@@ -61,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.RoundRobin;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ServiceFunctionSchedulerTypeIdentity;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sfst.rev150312.ShortestPath;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,84 +256,6 @@ public final class SfcProviderRenderedPathAPI {
     }
 
     /**
-     * Creates a RSP and all the associated operational state based on the given
-     * service function path. This version is called from the create-RSP RPC.
-     * Deprecated in Oxygen. RSPs should be created via config data store instead of RPC.
-     *
-     * <p>
-     *
-     * @param createdServiceFunctionPath
-     *            Service Function Path
-     * @param createRenderedPathInput
-     *            CreateRenderedPathInput object
-     * @param possibleScheduler
-     *            SfcServiceFunctionSchedulerAPI object
-     * @return RenderedServicePath Created RSP or null
-     */
-    @Deprecated
-    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput,
-            @Nullable SfcServiceFunctionSchedulerAPI possibleScheduler) {
-
-        // Provisional code to test new RPC parameters
-        ContextHeaderAllocationType1 contextHeaderAllocationType1 = createRenderedPathInput
-                .getContextHeaderAllocationType1();
-        if (contextHeaderAllocationType1 != null) {
-            Class<? extends DataContainer> contextHeaderAllocationType1ImplementedInterface =
-                    contextHeaderAllocationType1.getImplementedInterface();
-            if (contextHeaderAllocationType1ImplementedInterface.equals(VxlanClassifier.class)) {
-                LOG.debug("ok");
-            }
-        }
-
-        // Fall back to defaultScheduler
-        SfcServiceFunctionSchedulerAPI scheduler = possibleScheduler;
-        if (scheduler == null) {
-            scheduler = DEFAULT_SCHEDULER_SUPPLIER.get();
-        }
-
-        // Create the RSP
-        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathEntry(
-                createdServiceFunctionPath, createRenderedPathInput.getName(), scheduler);
-
-        if (renderedServicePath == null) {
-            LOG.error("Could not create RSP in operational for RPC, SFP {}",
-                    createdServiceFunctionPath.getName());
-            return null;
-        }
-
-        if (!writeRenderedServicePath(renderedServicePath, LogicalDatastoreType.OPERATIONAL)) {
-            return null;
-        }
-
-        if (!createRenderedServicePathState(createdServiceFunctionPath, renderedServicePath)) {
-            // If createRenderedServicePathState() returns false, the RSP was deleted therein
-            return null;
-        }
-
-        return renderedServicePath;
-    }
-
-    /**
-     * Creates a RSP and all the associated operational state based on the given
-     * service function path. This version may be called from the create-RSP RPC.
-     * Deprecated in Oxygen. RSPs should be created via config data store instead of RPC.
-     *
-     * <p>
-     *
-     * @param createdServiceFunctionPath
-     *            Service Function Path
-     * @param createRenderedPathInput
-     *            CreateRenderedPathInput object
-     * @return RenderedServicePath Created RSP or null
-     */
-    @Deprecated
-    public static RenderedServicePath createRenderedServicePathAndState(ServiceFunctionPath createdServiceFunctionPath,
-            CreateRenderedPathInput createRenderedPathInput) {
-        return createRenderedServicePathAndState(createdServiceFunctionPath, createRenderedPathInput, null);
-    }
-
-    /**
      * Creates a symmetric RSP in the configuration data store. This
      * will be called when an SFP has been created.
      *
@@ -379,70 +290,6 @@ public final class SfcProviderRenderedPathAPI {
      *            RSP Object
      * @return Nothing.
      */
-    public static RenderedServicePath createSymmetricRenderedServicePathAndState(
-            RenderedServicePath renderedServicePath) {
-
-        // Reverse Path
-        boolean revRspSuccessful = false;
-        final RenderedServicePath revRenderedServicePath = SfcProviderRenderedPathAPI
-                .createReverseRenderedServicePathEntry(renderedServicePath);
-        if (revRenderedServicePath != null) {
-            revRspSuccessful = true;
-            writeRenderedServicePath(revRenderedServicePath, LogicalDatastoreType.OPERATIONAL);
-        } else {
-            LOG.error("Could not create Reverse RSP {}", renderedServicePath.getName());
-        }
-
-        // Add Path name to SFF operational state
-        boolean addRevPathToSffStateSuccessful = false;
-        if (revRspSuccessful) {
-            if (SfcProviderServiceForwarderAPI.addPathToServiceForwarderState(revRenderedServicePath)) {
-                addRevPathToSffStateSuccessful = true;
-            } else {
-                deleteRenderedServicePath(revRenderedServicePath.getName());
-            }
-        }
-
-        // Add Path to SF operational state
-        boolean addRevPathToSfStateSuccessful = false;
-        if (addRevPathToSffStateSuccessful) {
-            if (SfcProviderServiceFunctionAPI.addPathToServiceFunctionState(revRenderedServicePath)) {
-                addRevPathToSfStateSuccessful = true;
-            } else {
-                SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(revRenderedServicePath.getName());
-                deleteRenderedServicePath(revRenderedServicePath.getName());
-            }
-        }
-
-        // Add RSP to SFP operational state
-        if (!(addRevPathToSfStateSuccessful && SfcProviderServicePathAPI.addRenderedPathToServicePathState(
-                renderedServicePath.getParentServiceFunctionPath(), revRenderedServicePath.getName()))) {
-            // TODO Bug 4495 - RPCs hiding heuristics using Strings - alagalah
-            /*
-             * XXX TODO this exemplifies the issue. There is no method called
-             * SfcProviderServiceFunctionAPI.
-             * deleteServicePathFromServiceFunctionState() with signature
-             * (RspName): ie SfcProviderServiceFunctionAPI.
-             * deleteServicePathFromServiceFunctionState(
-             * revRenderedServicePath.getName()); There is one with signature
-             * (RspName, SfName).... and there's one with signature (SfpName)
-             * ... so what should this method be? Which one should I really be
-             * using? If you use rspName and sfpName interchangeably because
-             * they were strings, then you get this sort of confusion going on.
-             * I suspect that SfpName is correct, so I'll make the change here,
-             * and test.
-             */
-
-            if (revRenderedServicePath != null) {
-                SfcProviderServiceFunctionAPI.deleteServicePathFromServiceFunctionState(
-                        new SfpName(revRenderedServicePath.getName().getValue()));
-                SfcProviderServiceForwarderAPI.deletePathFromServiceForwarderState(revRenderedServicePath.getName());
-                deleteRenderedServicePath(revRenderedServicePath.getName());
-            }
-
-        }
-        return revRenderedServicePath;
-    }
 
     /**
      * Given a list of Service Functions, create a RenderedServicePath Hop List.
@@ -579,11 +426,6 @@ public final class SfcProviderRenderedPathAPI {
 
         long pathId;
 
-        RenderedServicePath ret = null;
-
-        // String simplectxName =
-        // contextHeaderAllocationType1ImplementedInterface.getSimpleName();
-        // simplectxName is VxlanClassifier
         ServiceFunctionChain serviceFunctionChain;
         SfcName serviceFunctionChainName = serviceFunctionPath.getServiceChainName();
         serviceFunctionChain = serviceFunctionChainName != null
@@ -978,121 +820,6 @@ public final class SfcProviderRenderedPathAPI {
         }
 
         return renderedServicePathFirstHop;
-    }
-
-    /**
-     * This method gets all necessary information for a system to construct a
-     * NSH header and associated overlay packet to target the first service hop
-     * of a Rendered Service Path by ServiceFunctionTypeIdentity list.
-     *
-     * <p>
-     *
-     * @param serviceFunctionSchedulerType
-     *            schedulertype for the Service Function
-     * @param serviceFunctionTypeList
-     *            ServiceFunctionTypeIdentity list
-     * @return RenderedServicePathFirstHop first hop of the rendered path
-     */
-    public static RenderedServicePathFirstHop readRspFirstHopBySftList(
-            Class<? extends ServiceFunctionSchedulerTypeIdentity> serviceFunctionSchedulerType,
-            List<SftTypeName> serviceFunctionTypeList) {
-        int index;
-        String serviceTypeName;
-        ServiceFunctionType serviceFunctionType;
-        List<SfcServiceFunction> sfcServiceFunctionArrayList = new ArrayList<>();
-        // TODO Not sure why we need references to GBP in here. The way the
-        // integration was done, we
-        // can add our own strings. This maybe an artifact of
-        // driving everything through RSPs which was a bad idea, and I don't
-        // believe these are
-        // necessary moving forward. Suggest someone cleans this up but in
-        // this patch I am simply introducing typedefs so we can move forward to
-        // some data model
-        // work
-        SfcName sfcName = new SfcName("chain-sfc-gbp");
-        SfpName pathName = new SfpName("path-sfc-gbp");
-
-        boolean ret;
-
-        printTraceStart(LOG);
-        final SfcServiceFunctionSchedulerAPI scheduler = getServiceFunctionScheduler(serviceFunctionSchedulerType);
-
-        /* Build sfcName, pathName and ServiceFunction list */
-        for (index = 0; index < serviceFunctionTypeList.size(); index++) {
-            serviceFunctionType = SfcProviderServiceTypeAPI.readServiceFunctionType(serviceFunctionTypeList.get(index));
-            serviceTypeName = serviceFunctionType.getType().getValue();
-            if (serviceTypeName == null) {
-                LOG.error("Unknown ServiceFunctionType: {}", serviceFunctionType.getType());
-                return null;
-            }
-            sfcName = new SfcName(sfcName.getValue() + "-" + serviceTypeName);
-            pathName = new SfpName(pathName.getValue() + "-" + serviceTypeName);
-            SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
-            sfcServiceFunctionArrayList.add(sfcServiceFunctionBuilder.setName(serviceTypeName + "-gbp-sfc")
-                    .setType(serviceFunctionType.getType()).build());
-        }
-
-        /* Read service chain sfcName if it exists */
-        ServiceFunctionChain serviceFunctionChain = SfcProviderServiceChainAPI.readServiceFunctionChain(sfcName);
-
-        /* Create service chain sfcName if it doesn't exist */
-        if (serviceFunctionChain == null) {
-            // Create ServiceFunctionChain
-            ServiceFunctionChainBuilder sfcBuilder = new ServiceFunctionChainBuilder();
-            sfcBuilder.setName(sfcName).setSfcServiceFunction(sfcServiceFunctionArrayList);
-            serviceFunctionChain = sfcBuilder.build();
-            ret = SfcProviderServiceChainAPI.putServiceFunctionChain(serviceFunctionChain);
-            if (!ret) {
-                LOG.error("Failed to create ServiceFunctionChain: {}", sfcName);
-                return null;
-            }
-        }
-
-        /* Read ServiceFunctionPath pathName if it exists */
-        ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(pathName);
-
-        /* Create ServiceFunctionPath pathName if it doesn't exist */
-        if (serviceFunctionPath == null) {
-            /* Create ServiceFunctionPath pathName if it doesn't exist */
-            ServiceFunctionPathBuilder sfpBuilder = new ServiceFunctionPathBuilder();
-            sfpBuilder.setName(pathName).setServiceChainName(sfcName);
-            serviceFunctionPath = sfpBuilder.build();
-            ret = SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath);
-            if (!ret) {
-                LOG.error("Failed to create ServiceFunctionPath: {}", pathName);
-                return null;
-            }
-        }
-
-        /*
-         * We need to provide the same information as we would through the RPC
-         */
-
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-
-        RenderedServicePath renderedServicePath = createRenderedServicePathAndState(serviceFunctionPath,
-                createRenderedPathInputBuilder.build(), scheduler);
-        if (renderedServicePath == null) {
-            LOG.error("Failed to create RenderedServicePath for ServiceFunctionPath: {}", pathName);
-            return null;
-        }
-
-        if (isChainSymmetric(serviceFunctionPath, renderedServicePath)) {
-            final RenderedServicePath revRenderedServicePath = SfcProviderRenderedPathAPI
-                    .createSymmetricRenderedServicePathAndState(renderedServicePath);
-            if (revRenderedServicePath == null) {
-                LOG.error("Failed to create symmetric RenderedServicePath for ServiceFunctionPath: {}", pathName);
-            } else {
-                // Set the symmetric path ID on the original RSP
-                setSymmetricPathId(renderedServicePath, revRenderedServicePath.getPathId(),
-                        LogicalDatastoreType.OPERATIONAL);
-            }
-        }
-
-        RenderedServicePathFirstHop firstHop = SfcProviderRenderedPathAPI
-                .readRenderedServicePathFirstHop(renderedServicePath.getName());
-        printTraceStop(LOG);
-        return firstHop;
     }
 
     /**

@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -35,13 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ioam.nb.pot.rev161122.RspIoamPotAugmentation;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathOutput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathInput;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.DeleteRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePathKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.ServiceFunctionClassifiers;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.ServiceFunctionClassifier;
@@ -85,7 +80,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,10 +296,7 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         assertFalse(potAugmentation.isIoamPotEnable());
 
         /* Now delete the RSP as our tests are done */
-        DeleteRenderedPathInputBuilder inputBuilder = new DeleteRenderedPathInputBuilder();
-        inputBuilder.setName(RSP_NAME.getValue());
-        DeleteRenderedPathInput input = inputBuilder.build();
-        sfcProviderRpc.deleteRenderedPath(input);
+        SfcProviderRenderedPathAPI.deleteRenderedServicePath(RSP_NAME);
     }
 
     private RenderedServicePath createTestRenderedServicePath() {
@@ -314,12 +305,11 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
         ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(SFP_NAME);
         assertNotNull("Must be not null", serviceFunctionPath);
 
-        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
-        createRenderedPathInputBuilder.setName(RSP_NAME.getValue()).setParentServiceFunctionPath(SFP_NAME.getValue())
-                .setSymmetric(true);
-        CreateRenderedPathInput createRenderedPathInput = createRenderedPathInputBuilder.build();
+        RenderedServicePathBuilder createRenderedPathInputBuilder = new RenderedServicePathBuilder();
+        createRenderedPathInputBuilder.setName(RSP_NAME).setParentServiceFunctionPath(SFP_NAME).setSymmetricPathId(0L);
 
-        SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInput);
+        SfcProviderRenderedPathAPI
+                .createRenderedServicePathAndState(serviceFunctionPath, createRenderedPathInputBuilder.build());
 
         // Note: Intermediate checks skipped
 
@@ -333,9 +323,6 @@ public class SfcPotRspProcessorTest extends AbstractDataBrokerTest {
                 .child(ServiceFunctionClassifier.class, serviceFunctionKey).build();
 
         SfcDataStoreAPI.writePutTransactionAPI(sclIID, serviceFunctionClassifier, LogicalDatastoreType.CONFIGURATION);
-
-        Future<RpcResult<CreateRenderedPathOutput>> result = sfcProviderRpc.createRenderedPath(createRenderedPathInput);
-        assertNotNull(result);
 
         return SfcProviderRenderedPathAPI.readRenderedServicePath(RSP_NAME);
     }

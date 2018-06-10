@@ -709,7 +709,7 @@ public final class SfcOvsUtil {
             if (nodeName.equals(ofNodeId)) {
                 for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.augmentation(OvsdbTerminationPointAugmentation.class);
-                    if (comp.compare(otp)) {
+                    if (comp.compare(otp) && otp.getOfport() != null) {
                         return otp.getOfport();
                     }
                 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.sfc</groupId>
         <artifactId>sfc-classifiers</artifactId>
-        <version>0.7.2-SNAPSHOT</version>
+        <version>0.7.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>sfc-scf-vpp</artifactId>

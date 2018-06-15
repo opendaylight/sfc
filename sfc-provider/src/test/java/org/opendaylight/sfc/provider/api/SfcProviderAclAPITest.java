@@ -121,14 +121,10 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
         assertEquals("Must be equal", accessList.getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.key().getAclName(), ACL_NAME);
         assertEquals("Must be equal", accessList.getAccessListEntries().getAce().size(), 4);
-        assertTrue("Must be equal",
-                accessList.getAccessListEntries().getAce().get(0).equals(createAccessListEntries().getAce().get(0)));
-        assertTrue("Must be equal",
-                accessList.getAccessListEntries().getAce().get(1).equals(createAccessListEntries().getAce().get(1)));
-        assertTrue("Must be equal",
-                accessList.getAccessListEntries().getAce().get(2).equals(createAccessListEntries().getAce().get(2)));
-        assertTrue("Must be equal",
-                accessList.getAccessListEntries().getAce().get(3).equals(createAccessListEntries().getAce().get(3)));
+        assertEquals("Must be equal", accessList.getAccessListEntries().getAce().get(0), createAccessListEntries().getAce().get(0));
+        assertEquals("Must be equal", accessList.getAccessListEntries().getAce().get(1), createAccessListEntries().getAce().get(1));
+        assertEquals("Must be equal", accessList.getAccessListEntries().getAce().get(2), createAccessListEntries().getAce().get(2));
+        assertEquals("Must be equal", accessList.getAccessListEntries().getAce().get(3), createAccessListEntries().getAce().get(3));
 
         // delete transaction
         transactionSuccessful = SfcDataStoreAPI.deleteTransactionAPI(aclIID, LogicalDatastoreType.CONFIGURATION);

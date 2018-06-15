@@ -98,7 +98,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
                 .readAccessListState(serviceFunctionClassifier.getAcl().getName(),
                         serviceFunctionClassifier.getAcl().getType())
                 .getAclServiceFunctionClassifier();
-        assertTrue(sfc.get(0).getName().equals(SFC_NAME));
+        assertEquals(sfc.get(0).getName(), SFC_NAME);
 
         serviceFunctionClassifierListener
                 .remove(InstanceIdentifier.create(ServiceFunctionClassifier.class), serviceFunctionClassifier);
@@ -130,7 +130,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
                 .readAccessListState(originalServiceFunctionClassifier.getAcl().getName(),
                         originalServiceFunctionClassifier.getAcl().getType())
                 .getAclServiceFunctionClassifier();
-        assertTrue(sfc.get(0).getName().equals(SFC_NAME));
+        assertEquals(sfc.get(0).getName(), SFC_NAME);
 
         // Now we prepare the Updated ServiceFunctionClassifier. We change the
         // original ACL name
@@ -166,7 +166,7 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
                 updatedServiceFunctionClassifier.getAcl().getType()).getAclName(), ACL_NAME2);
         sfc = SfcProviderAclAPI.readAccessListState(updatedServiceFunctionClassifier.getAcl().getName(),
                 updatedServiceFunctionClassifier.getAcl().getType()).getAclServiceFunctionClassifier();
-        assertTrue(sfc.get(0).getName().equals(SFC_NAME));
+        assertEquals(sfc.get(0).getName(), SFC_NAME);
 
     }
 

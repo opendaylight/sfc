@@ -220,6 +220,98 @@ module rendered-service-path {
     }
   }
 
+
+  rpc delete-rendered-path {
+    description
+      "Delete a Rendered Service Path";
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered function path.";
+      }
+    }
+    output {
+      leaf result {
+        type boolean;
+        description
+          "True if Rendered Service Path was deleted, otherwise
+           false";
+      }
+    }
+  }
+
+  rpc create-rendered-path {
+    description
+      "Created a Rendered Service Path";
+
+    // Deprecated in Oxygen, to be removed in Fluorine
+    status deprecated;
+
+    input {
+      leaf name {
+        type string;
+        description
+          "The name of this rendered function path.";
+      }
+      leaf parent-service-function-path {
+        type string;
+        description
+          "Service Function Path from which this RSP was
+           instantiated";
+      }
+      leaf symmetric {
+        type boolean;
+        status deprecated;
+        default false;
+        description
+          "If the chain is symmetric we will create two service
+           paths, one ingress and another egress. Packets traverse
+           the egress service path in the reverse order of the
+           ingress path. This field is now deprecated: Use either
+           the SFP symmetric field or the ServiceFunctionType
+           bidirectionality field instead. If at least one SF
+           is of an SF-Type that sets the flag to true, then
+           the RSP will be symmetric.";
+      }
+      choice context-header-allocation-type-1 {
+        description
+          "A RSP can support a single MD-type 1
+           context-allocation-type";
+        case vxlan-classifier {
+          leaf vxlan-classifier-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              VXLAN overlay classifier metadata allocation";
+          }
+        }
+        case mobility {
+          leaf mobility-allocation-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              Mobility Metadata allocation";
+          }
+        }
+        case dc {
+          leaf dc-allocation-enabled {
+            type boolean;
+            default false;
+            description "Client needs service path to implement
+              DC Allocation Metadata allocation";
+          }
+        }
+      }
+    }
+    output {
+      leaf name {
+        type string;
+        description "Name of the created Rendered Service Path";
+      }
+    }
+  }
+
   grouping rendered-service-path-first-hop-info {
     description
       "This groups holds the the container that provides
@@ -280,4 +372,25 @@ module rendered-service-path {
       uses rendered-service-path-first-hop-info;
     }
   }
+
+  rpc read-rsp-first-hop-by-sft-list {
+    description
+      "Read all the necessary information for the first hop of a
+      Rendered Service Path by ServiceFunctionTypeIdentity list";
+    input {
+      leaf sfst {
+        type sfc-sfst:service-function-scheduler-type;
+        description "Service function scheduler type for RSP";
+      }
+      leaf-list sft-list {
+        type sfc-common:sft-type-name;
+        description "List of service function type";
+
+      }
+    }
+    output {
+      uses rendered-service-path-first-hop-info;
+    }
+  }
+
 }

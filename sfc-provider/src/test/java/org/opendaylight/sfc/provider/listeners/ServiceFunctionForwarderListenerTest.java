@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev1
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfpName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SftTypeName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SnName;
+import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.CreateRenderedPathInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocatorBuilder;
@@ -71,6 +72,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.state.service.function.forwarder.state.SffServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPathBuilder;
+
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.VxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.Ip;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
@@ -902,23 +904,24 @@ public class ServiceFunctionForwarderListenerTest extends AbstractDataStoreManag
 
         assertNotNull(readServiceFunctionChain);
 
-        assertEquals(readServiceFunctionChain.getSfcServiceFunction(), sfcServiceFunctionList);
+        assertEquals("Must be equal", readServiceFunctionChain.getSfcServiceFunction(), sfcServiceFunctionList);
 
-        // Create ServiceFunctionPath
+        /* Create ServiceFunctionPath */
         ServiceFunctionPathBuilder pathBuilder = new ServiceFunctionPathBuilder();
         pathBuilder.setName(new SfpName(sfpName)).setServiceChainName(new SfcName(sfcName)).setSymmetric(true);
         ServiceFunctionPath serviceFunctionPath = pathBuilder.build();
-        assertNotNull(serviceFunctionPath);
+        assertNotNull("Must be not null", serviceFunctionPath);
         assertTrue(SfcProviderServicePathAPI.putServiceFunctionPath(serviceFunctionPath));
 
-        // Create RenderedServicePath and reverse RenderedServicePath
-        RenderedServicePath configRenderedServicePath = SfcProviderRenderedPathAPI
-                .createRenderedServicePathInConfig(serviceFunctionPath, rspName);
+        /* Create RenderedServicePath and reverse RenderedServicePath */
+        RenderedServicePath renderedServicePath = null;
 
-        RenderedServicePath renderedServicePath = SfcProviderRenderedPathAPI
-                .createRenderedServicePathAndState(serviceFunctionPath, configRenderedServicePath);
-        assertNotNull(renderedServicePath);
-
+        CreateRenderedPathInputBuilder createRenderedPathInputBuilder = new CreateRenderedPathInputBuilder();
+        createRenderedPathInputBuilder.setName(rspName);
+        createRenderedPathInputBuilder.setSymmetric(serviceFunctionPath.isSymmetric());
+        renderedServicePath = SfcProviderRenderedPathAPI.createRenderedServicePathAndState(serviceFunctionPath,
+                createRenderedPathInputBuilder.build());
+        assertNotNull("Must be not null", renderedServicePath);
         return renderedServicePath;
     }
 }

@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+1: Daniel Farrell <dfarrell@redhat.com>
+Code-Review+2: David Suárez Fuentes <david.suarez.fuentes@gmail.com>
+Submitted-by: David Suárez Fuentes <david.suarez.fuentes@gmail.com>
+Submitted-at: Mon, 18 Jun 2018 12:21:09 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/73046
+Project: sfc
+Branch: refs/heads/stable/oxygen

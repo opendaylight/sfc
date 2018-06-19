@@ -481,6 +481,8 @@ def main():
     parser = argparse.ArgumentParser(description='This is a VxLAN/VxLAN-gpe + NSH dump and forward tool, you can use it to dump and forward VxLAN/VxLAN-gpe + NSH packets, it can also act as an NSH-aware SF for SFC test when you use --forward option, in that case, it will automatically decrease nsi by one.', prog='vxlan_tool.py')
     parser.add_argument('-i', '--interface',
                         help='Specify the interface to listen')
+    parser.add_argument('-o', '--output',
+                        help='Specify the interface to send on')
     parser.add_argument('-d', '--do', choices=['dump', 'forward', 'nsh_proxy', 'send'],
                         help='dump/foward/send VxLAN/VxLAN-gpe + NSH or Eth + NSH packet')
     parser.add_argument('-t', '--type', choices=['eth_nsh', 'vxlan_gpe_nsh'], default='vxlan_gpe_nsh',
@@ -526,19 +528,22 @@ def main():
         s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
         if args.interface is not None:
             s.bind((args.interface, 0))
+        output = args.output if args.output else args.interface
         if ((args.do == "forward") or (args.do == "nsh_proxy") or (args.do == "send")):
-            if args.interface is None:
-                print("Error: you must specify the interface by -i or --interface for forward and send")
+            if output is None:
+                print("Error: you must specify the interface for forward and send")
                 sys.exit(-1)
             send_s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
-            send_s.bind((args.interface, 0))
+            send_s.bind((output, 0))
         if args.interface is not None:
             macstring = getmac(args.interface)
             if (macstring is not None):
                 macaddr = macstring.strip().split(':')
+        if output is not None:
+            output_macstring = getmac(output)
         if (args.do == "send"):
             if (args.inner_source_mac is None):
-                args.inner_source_mac = macstring
+                args.inner_source_mac = output_macstring
             if (args.inner_destination_mac is None):
                 print("Error: you must specify inner destination MAC for packet send")
                 sys.exit(-1)

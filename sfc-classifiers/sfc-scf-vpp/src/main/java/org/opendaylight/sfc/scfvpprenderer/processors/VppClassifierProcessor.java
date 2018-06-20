@@ -329,7 +329,7 @@ public class VppClassifierProcessor {
                 // don't support port range
                 if (srcPort != null) {
                     mask = mask + ":ff:ff";
-                    match += String.format(":%1$02x:%2$02x", srcPort.intValue() & 0xFF00, srcPort.intValue() & 0x00FF);
+                    match += String.format(":%1$02x:%2$02x", srcPort & 0xFF00, srcPort & 0x00FF);
                 } else {
                     mask = mask + ":00:00";
                     match = match + ":00:00";
@@ -338,7 +338,7 @@ public class VppClassifierProcessor {
 
                 if (dstPort != null) {
                     mask = mask + ":ff:ff";
-                    match += String.format(":%1$02x:%2$02x", dstPort.intValue() & 0xFF00, dstPort.intValue() & 0x00FF);
+                    match += String.format(":%1$02x:%2$02x", dstPort & 0xFF00, dstPort & 0x00FF);
                 } else {
                     mask = mask + ":00:00";
                     match = match + ":00:00";

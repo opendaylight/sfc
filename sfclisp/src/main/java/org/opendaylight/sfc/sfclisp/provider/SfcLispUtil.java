@@ -97,17 +97,6 @@ public final class SfcLispUtil {
         return rmib.build();
     }
 
-    public static InstanceIdentifier<Mapping> buildMappingIid(Mapping mapping) {
-        Eid eid = mapping.getMappingRecord().getEid();
-
-        VirtualNetworkIdentifierKey vniKey = new VirtualNetworkIdentifierKey(
-                new VniUri(Long.toString(eid.getVirtualNetworkId().getValue())));
-        MappingKey eidKey = new MappingKey(new EidUri(LispAddressStringifier.getURIString(eid)),
-                MappingOrigin.Northbound);
-        return InstanceIdentifier.create(MappingDatabase.class).child(VirtualNetworkIdentifier.class, vniKey)
-                .child(Mapping.class, eidKey);
-    }
-
     public static Acl getServiceFunctionAcl(SfpName sfPathName) {
         ServiceFunctionPath serviceFunctionPath = SfcProviderServicePathAPI.readServiceFunctionPath(sfPathName);
         String classifierName = serviceFunctionPath.getClassifier();

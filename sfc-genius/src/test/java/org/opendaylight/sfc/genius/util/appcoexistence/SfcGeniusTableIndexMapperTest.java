@@ -53,6 +53,6 @@ public class SfcGeniusTableIndexMapperTest {
                 NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE);
         Assert.assertEquals(tableIndexMapper.getTableIndex(ORIGINAL_TRANSPORT_EGRESS_TABLE_INDEX).get().shortValue(),
                 NwConstants.SFC_TRANSPORT_EGRESS_TABLE);
-        Assert.assertEquals(tableIndexMapper.getTableIndex(UNMAPPED_INDEX).isPresent(), false);
+        Assert.assertFalse(tableIndexMapper.getTableIndex(UNMAPPED_INDEX).isPresent());
     }
 }

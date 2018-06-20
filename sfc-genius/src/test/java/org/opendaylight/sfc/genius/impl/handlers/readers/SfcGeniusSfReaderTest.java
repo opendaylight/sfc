@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,8 +10,8 @@ package org.opendaylight.sfc.genius.impl.handlers.readers;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.HashMap;
@@ -93,7 +93,7 @@ public class SfcGeniusSfReaderTest {
         CompletableFuture<List<SfName>> sfNames = reader.readSfOnInterface("IFA");
 
         assertThat(sfNames.get(), containsInAnyOrder(new SfName("SF1"), new SfName("SF3"), new SfName("SF5")));
-        assertTrue(sfNames.get().size() == 3);
+        assertEquals(3, sfNames.get().size());
     }
 
     @Test

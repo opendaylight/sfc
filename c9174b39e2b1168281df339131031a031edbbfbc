@@ -198,6 +198,23 @@
       "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "12c75cbc_7b96e1bd",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 863,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2018-06-20T21:25:39Z",
+      "side": 1,
+      "message": "should we list openflowplugin changes?",
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

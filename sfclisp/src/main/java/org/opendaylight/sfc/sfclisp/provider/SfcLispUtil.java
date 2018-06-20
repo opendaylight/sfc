@@ -14,7 +14,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import org.opendaylight.lispflowmapping.lisp.util.LispAddressStringifier;
 import org.opendaylight.lispflowmapping.lisp.util.LispAddressUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
@@ -34,19 +33,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.ma
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.lisp.proto.rev151105.rloc.container.Rloc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.AddMappingInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.AddMappingInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.EidUri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.GetMappingInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.MappingDatabase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.MappingOrigin;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.RemoveMappingInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.RemoveMappingInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.VniUri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.db.instance.Mapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.db.instance.MappingKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.VirtualNetworkIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.lfm.mappingservice.rev150906.mapping.database.VirtualNetworkIdentifierKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,17 +85,6 @@ public final class SfcLispUtil {
         RemoveMappingInputBuilder rmib = new RemoveMappingInputBuilder();
         rmib.setEid(eid);
         return rmib.build();
-    }
-
-    public static InstanceIdentifier<Mapping> buildMappingIid(Mapping mapping) {
-        Eid eid = mapping.getMappingRecord().getEid();
-
-        VirtualNetworkIdentifierKey vniKey = new VirtualNetworkIdentifierKey(
-                new VniUri(Long.toString(eid.getVirtualNetworkId().getValue())));
-        MappingKey eidKey = new MappingKey(new EidUri(LispAddressStringifier.getURIString(eid)),
-                MappingOrigin.Northbound);
-        return InstanceIdentifier.create(MappingDatabase.class).child(VirtualNetworkIdentifier.class, vniKey)
-                .child(Mapping.class, eidKey);
     }
 
     public static Acl getServiceFunctionAcl(SfpName sfPathName) {

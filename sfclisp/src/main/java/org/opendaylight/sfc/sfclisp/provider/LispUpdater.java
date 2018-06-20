@@ -70,10 +70,6 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
         this.lfmService = lfmService;
     }
 
-    public OdlMappingserviceService getMappingserviceService() {
-        return lfmService;
-    }
-
     public ServiceFunctionForwarder updateLispData(ServiceFunctionForwarder serviceFunctionForwarder) {
         List<SffDataPlaneLocator> locations = serviceFunctionForwarder.getSffDataPlaneLocator();
 

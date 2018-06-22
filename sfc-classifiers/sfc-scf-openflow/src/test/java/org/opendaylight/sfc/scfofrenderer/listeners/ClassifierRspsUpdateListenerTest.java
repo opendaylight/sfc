@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -19,23 +19,18 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
 import org.opendaylight.sfc.scfofrenderer.processors.ClassifierRspUpdateProcessor;
 import org.opendaylight.sfc.scfofrenderer.rspupdatelistener.ClassifierRspUpdateDataGetter;
 import org.opendaylight.sfc.util.openflow.writer.SfcOfFlowWriterInterface;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.RspName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
-import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.scf.rev140701.service.function.classifiers.service.function.classifier.SclServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.access.control.list.rev160218.access.lists.Acl;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class ClassifierRspsUpdateListenerTest {
-
-    @Mock
-    DataBroker theDataBroker;
 
     @Mock
     ClassifierRspUpdateProcessor theClassifierProcessor;
@@ -60,12 +55,6 @@ public class ClassifierRspsUpdateListenerTest {
 
     @Mock
     Acl theAcl;
-
-    @Mock
-    RenderedServicePathHop oldHop;
-
-    @Mock
-    RenderedServicePathHop newHop;
 
     @InjectMocks
     ClassifierRspsUpdateListener theUpdateListener;

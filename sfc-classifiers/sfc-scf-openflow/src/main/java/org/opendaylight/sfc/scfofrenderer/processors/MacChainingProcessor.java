@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class MacChainingProcessor implements ClassifierProcessorInterface {
 
     // true if we're adding a classifier node, false if we're deleting it
-    private boolean addClassifier = true;
+    private boolean addClassifier;
 
     private final ClassifierInterface classifierInterface;
 

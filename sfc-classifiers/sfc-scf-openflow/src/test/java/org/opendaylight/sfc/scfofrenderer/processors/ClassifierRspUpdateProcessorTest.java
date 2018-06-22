@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2017 Ericsson Inc. and others.  All rights reserved.
+ * Copyright (c) 2016, 2018 Ericsson Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -75,8 +75,6 @@ public class ClassifierRspUpdateProcessorTest {
     @Mock
     private FlowBuilder theFlow;
 
-    private FlowDetails theFlowDetails;
-
     private final ClassifierRspUpdateProcessor theUpdateProcessor;
 
     private static final String FIRST_SF_DPN_ID_STRING = "1234567890";
@@ -90,7 +88,8 @@ public class ClassifierRspUpdateProcessorTest {
 
     @Before
     public void setUp() {
-        theFlowDetails = new ClassifierHandler().addRspRelatedFlowIntoNode(FIRST_SF_NODE_NAME, theFlow, 666L);
+        FlowDetails theFlowDetails = new ClassifierHandler()
+                .addRspRelatedFlowIntoNode(FIRST_SF_NODE_NAME, theFlow, 666L);
 
         Mockito.when(classifierInterface.getNodeName(any(String.class))).thenReturn(Optional.of(FIRST_SF_NODE_NAME));
         Mockito.when(classifierInterface.getInPort(any(String.class), any(String.class))).thenReturn(Optional.of(2L));

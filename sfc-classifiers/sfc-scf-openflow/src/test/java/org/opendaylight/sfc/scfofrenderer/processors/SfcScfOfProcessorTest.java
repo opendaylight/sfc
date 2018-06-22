@@ -51,15 +51,11 @@ public class SfcScfOfProcessorTest {
     private ServiceFunctionClassifier scf;
     private Acl acl;
     private AccessListEntries accessListEntries;
-    private List<Ace> acesList;
-    private List<SclServiceFunctionForwarder> sfflist;
-    private ServiceFunctionForwarder sff;
-    private DataBroker dataBroker;
 
     private void initTest() {
         ReadWriteTransaction readWriteTransaction = mock(ReadWriteTransaction.class);
 
-        dataBroker = mock(DataBroker.class);
+        DataBroker dataBroker = mock(DataBroker.class);
         when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(readWriteTransaction);
 
@@ -76,14 +72,14 @@ public class SfcScfOfProcessorTest {
         acl = mock(Acl.class);
 
         // must mock the ACE object (the ACL *must* figure at least one ACE)
-        acesList = new ArrayList<Ace>() {
+        final List<Ace> acesList = new ArrayList<Ace>() {
             {
                 add(mock(Ace.class));
             }
         };
         accessListEntries = mock(AccessListEntries.class);
 
-        sfflist = new ArrayList<>();
+        List<SclServiceFunctionForwarder> sfflist = new ArrayList<>();
         SclServiceFunctionForwarder sclSff = mock(SclServiceFunctionForwarder.class);
         sfflist.add(sclSff);
 
@@ -99,7 +95,7 @@ public class SfcScfOfProcessorTest {
 
         PowerMockito.stub(PowerMockito.method(SfcProviderAclAPI.class, "readAccessList")).toReturn(acl);
 
-        sff = mock(ServiceFunctionForwarder.class);
+        ServiceFunctionForwarder sff = mock(ServiceFunctionForwarder.class);
 
         PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder"))
                 .toReturn(sff);

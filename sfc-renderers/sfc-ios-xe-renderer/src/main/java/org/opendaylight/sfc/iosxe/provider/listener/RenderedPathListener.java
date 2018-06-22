@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.genius.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
 import org.opendaylight.sfc.iosxe.provider.renderer.IosXeRspProcessor;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.RenderedServicePaths;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;

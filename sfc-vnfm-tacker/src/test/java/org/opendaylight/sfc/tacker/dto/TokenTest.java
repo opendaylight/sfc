@@ -93,15 +93,15 @@ public class TokenTest {
         Assert.assertNotNull(jsonFileToken);
 
         // check Tenant data
-        Assert.assertTrue(jsonFileToken.getTenant().getId().equals(token.getTenant().getId()));
-        Assert.assertTrue(jsonFileToken.getTenant().getDescription() == null);
-        Assert.assertTrue(jsonFileToken.getTenant().getName().equals(token.getTenant().getName()));
-        Assert.assertTrue(jsonFileToken.getTenant().isEnabled() == token.getTenant().isEnabled());
+        Assert.assertEquals(jsonFileToken.getTenant().getId(), token.getTenant().getId());
+        Assert.assertNull(jsonFileToken.getTenant().getDescription());
+        Assert.assertEquals(jsonFileToken.getTenant().getName(), token.getTenant().getName());
+        Assert.assertEquals(jsonFileToken.getTenant().isEnabled(), token.getTenant().isEnabled());
 
         // check Token data
-        Assert.assertTrue(jsonFileToken.getId().equals(token.getId()));
-        Assert.assertTrue(jsonFileToken.getAuditIds()[0].equals(token.getAuditIds()[0]));
-        Assert.assertTrue(jsonFileToken.getExpires().compareTo((token.getExpires())) == 0);
-        Assert.assertTrue(jsonFileToken.getIssuedAt().compareTo((token.getIssuedAt())) == 0);
+        Assert.assertEquals(jsonFileToken.getId(), token.getId());
+        Assert.assertEquals(jsonFileToken.getAuditIds()[0], token.getAuditIds()[0]);
+        Assert.assertEquals(0, jsonFileToken.getExpires().compareTo((token.getExpires())));
+        Assert.assertEquals(0, jsonFileToken.getIssuedAt().compareTo((token.getIssuedAt())));
     }
 }

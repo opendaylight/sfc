@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
 public class NshProcessor implements ClassifierProcessorInterface {
 
     // true if we're adding a classifier node, false if we're deleting it
-    private boolean addClassifier = true;
+    private final boolean addClassifier;
 
-    private ClassifierInterface classifierInterface;
+    private final ClassifierInterface classifierInterface;
 
-    private ClassifierHandler classifierHandler;
+    private final ClassifierHandler classifierHandler;
 
     private static final Logger LOG = LoggerFactory.getLogger(NshProcessor.class);
 

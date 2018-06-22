@@ -53,17 +53,17 @@ public class TackerErrorTest {
         }
         TackerError testError = GSON.fromJson(jsonFileString, TackerError.class);
 
-        Assert.assertTrue(testError.getMessage().equals(ERROR_MESSAGE));
-        Assert.assertTrue(testError.getType().equals(ERROR_TYPE));
-        Assert.assertTrue(testError.getDetail().equals(ERROR_DETAIL));
+        Assert.assertEquals(testError.getMessage(), ERROR_MESSAGE);
+        Assert.assertEquals(testError.getType(), ERROR_TYPE);
+        Assert.assertEquals(testError.getDetail(), ERROR_DETAIL);
 
         String jsonError = GSON.toJson(testError);
 
         testError = GSON.fromJson(jsonError, TackerError.class);
 
         Assert.assertNotNull(testError);
-        Assert.assertTrue(testError.getMessage().equals(error.getMessage()));
-        Assert.assertTrue(testError.getType().equals(error.getType()));
-        Assert.assertTrue(testError.getDetail().equals(error.getDetail()));
+        Assert.assertEquals(testError.getMessage(), error.getMessage());
+        Assert.assertEquals(testError.getType(), error.getType());
+        Assert.assertEquals(testError.getDetail(), error.getDetail());
     }
 }

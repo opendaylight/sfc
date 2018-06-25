@@ -154,8 +154,7 @@ public class VppClassifierProcessor {
         byte[] retval = new byte[16];
 
         //splits address and add ommited zeros for easier parsing
-        List<String> segments = Arrays.asList(address.split(":"))
-                .stream()
+        List<String> segments = Arrays.stream(address.split(":"))
                 .map(segment -> StringUtils.repeat('0', 4 - segment.length()) + segment)
                 .collect(Collectors.toList());
 
@@ -419,11 +418,7 @@ public class VppClassifierProcessor {
             if (!rspName.isPresent()) {
                 LOG.error("Could not retrieve the RSP from the classifier: {}", scf);
             }
-            List<Pair<HexString>> pairList = rspPairList.get(rspName.get());
-            if (pairList == null) {
-                pairList = new ArrayList<>();
-                rspPairList.put(rspName.get(), pairList);
-            }
+            List<Pair<HexString>> pairList = rspPairList.computeIfAbsent(rspName.get(), k -> new ArrayList<>());
             pairList.add(getMaskAndMatch(ace.getMatches()));
         }
 
@@ -534,11 +529,7 @@ public class VppClassifierProcessor {
             if (!rspName.isPresent()) {
                 LOG.error("Could not retrieve the RSP from the classifier: {}", scf);
             }
-            List<Pair<HexString>> pairList = rspPairList.get(rspName.get());
-            if (pairList == null) {
-                pairList = new ArrayList<>();
-                rspPairList.put(rspName.get(), pairList);
-            }
+            List<Pair<HexString>> pairList = rspPairList.computeIfAbsent(rspName.get(), k -> new ArrayList<>());
             pairList.add(getMaskAndMatch(ace.getMatches()));
         }
 

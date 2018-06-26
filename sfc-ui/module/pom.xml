@@ -41,12 +41,6 @@
                         </goals>
                         <phase>generate-resources</phase>
                     </execution>
-                    <execution>
-                        <id>bower</id>
-                        <goals>
-                            <goal>bower</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>

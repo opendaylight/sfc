@@ -11,8 +11,8 @@
         <property name="angularJs" value="app.sfc"/>
         <property name="cssDependencies">
             <list>
-                 <value>src/app/sfc/vendor/select2/select2.css</value>
-                 <value>src/app/sfc/vendor/select2-bootstrap-css/select2-bootstrap.css</value>
+                 <value>src/app/sfc/node_modules/select2/select2.css</value>
+                 <value>src/app/sfc/node_modules/select2-bootstrap-css/select2-bootstrap.css</value>
                  <value>src/app/sfc/assets/css/sfc.css</value>
             </list>
         </property>

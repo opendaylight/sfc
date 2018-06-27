@@ -131,6 +131,30 @@
     },
     {
       "key": {
+        "uuid": "5b611aa1_f3de6827",
+        "filename": "docs/specs/sfc-openflow-pipeline.rst",
+        "patchSetId": 15
+      },
+      "lineNbr": 581,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-06-27T16:24:27Z",
+      "side": 1,
+      "message": "Let\u0027s leave this as an implementation detail.",
+      "parentUuid": "ee97cfbf_cd6d9fa4",
+      "range": {
+        "startLine": 553,
+        "startChar": 0,
+        "endLine": 581,
+        "endChar": 59
+      },
+      "revId": "c9174b39e2b1168281df339131031a031edbbfbc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "22256a24_b24d067d",
         "filename": "docs/specs/sfc-openflow-pipeline.rst",
         "patchSetId": 15

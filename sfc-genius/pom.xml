@@ -29,9 +29,9 @@
       <version>${genius.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.genius</groupId>
+      <groupId>org.opendaylight.serviceutils</groupId>
       <artifactId>tools-api</artifactId>
-      <version>${genius.version}</version>
+      <version>0.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.genius</groupId>

@@ -47,7 +47,7 @@
             <artifactId>mdsalutil-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.genius</groupId>
+            <groupId>org.opendaylight.serviceutils</groupId>
             <artifactId>tools-api</artifactId>
         </dependency>
 

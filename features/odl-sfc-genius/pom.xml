@@ -47,6 +47,13 @@
             <classifier>features</classifier>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.serviceutils</groupId>
+            <artifactId>odl-serviceutils-tools</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.sfc</groupId>
             <artifactId>sfc-genius</artifactId>
             <version>${project.version}</version>

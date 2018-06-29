@@ -446,8 +446,8 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
         }
 
         // TODO fix VNI. The RSP's tenant ID is a string (UUID?) we need a long
-        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId().longValue(),
-                LispAddressUtil.STARTING_SERVICE_INDEX);
+        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId(),
+                                                     LispAddressUtil.STARTING_SERVICE_INDEX);
         registerElpMapping(spEid, hopIpList);
 
         // TODO for each ACE in the RSP's ACL we should insert a SourceDest
@@ -488,8 +488,8 @@ public class LispUpdater implements ILispUpdater, AutoCloseable {
 
     public void deletePath(RenderedServicePath rsp) {
         // remove ServicePath mapping
-        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId().longValue(),
-                LispAddressUtil.STARTING_SERVICE_INDEX);
+        Eid spEid = LispAddressUtil.asServicePathEid(0, rsp.getPathId(),
+                                                     LispAddressUtil.STARTING_SERVICE_INDEX);
         removeMapping(spEid);
     }
 

@@ -37,7 +37,7 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
 
     private final OdlMappingserviceService lfmService;
     private final Method methodToCall;
-    private Object[] methodParameters;
+    private final Object[] methodParameters;
 
     public SfcLispFlowMappingApi(OdlMappingserviceService lfmService, Method methodToCall,
             Object[] newMethodParameters) {
@@ -51,7 +51,7 @@ public class SfcLispFlowMappingApi implements Callable<Object> {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         Object result = null;
 
         switch (methodToCall) {

@@ -139,10 +139,8 @@ public final class SfcOvsUtil {
      * @return InstanceIdentifier&lt;Topology&gt;
      */
     public static InstanceIdentifier<Topology> buildOvsdbTopologyIID() {
-        InstanceIdentifier<Topology> ovsdbTopologyIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID));
-
-        return ovsdbTopologyIID;
     }
 
     /**
@@ -219,11 +217,9 @@ public final class SfcOvsUtil {
      * @see SfcOvsUtil getOvsBridgeNodeId
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(OvsdbBridgeAugmentation ovsdbBridge) {
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(getOvsBridgeNodeId(ovsdbBridge)));
-
-        return nodeIID;
     }
 
     /**
@@ -238,11 +234,9 @@ public final class SfcOvsUtil {
      * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(String serviceFunctionForwarderName) {
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(new NodeId(serviceFunctionForwarderName)));
-
-        return nodeIID;
     }
 
     /**
@@ -255,11 +249,9 @@ public final class SfcOvsUtil {
      * @return InstanceIdentifier&lt;Node&gt;
      */
     public static InstanceIdentifier<Node> buildOvsdbNodeIID(NodeId nodeId) {
-        InstanceIdentifier<Node> nodeIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(nodeId));
-
-        return nodeIID;
     }
 
     /**
@@ -273,12 +265,10 @@ public final class SfcOvsUtil {
      * @see SfcOvsUtil getOvsBridgeNodeId
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(OvsdbBridgeAugmentation ovsdbBridge) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(getOvsBridgeNodeId(ovsdbBridge)))
                 .augmentation(OvsdbBridgeAugmentation.class);
-
-        return bridgeEntryIID;
     }
 
     /**
@@ -290,11 +280,9 @@ public final class SfcOvsUtil {
      * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(NodeId nodeId) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(nodeId)).augmentation(OvsdbBridgeAugmentation.class);
-
-        return bridgeEntryIID;
     }
 
     /**
@@ -307,10 +295,8 @@ public final class SfcOvsUtil {
      * @return InstanceIdentifier&lt;OvsdbBridgeAugmentation&gt;
      */
     public static InstanceIdentifier<OvsdbBridgeAugmentation> buildOvsdbBridgeIID(String serviceFunctionForwarderName) {
-        InstanceIdentifier<OvsdbBridgeAugmentation> bridgeEntryIID = buildOvsdbNodeIID(serviceFunctionForwarderName)
+        return buildOvsdbNodeIID(serviceFunctionForwarderName)
                 .augmentation(OvsdbBridgeAugmentation.class);
-
-        return bridgeEntryIID;
     }
 
     /**
@@ -345,14 +331,12 @@ public final class SfcOvsUtil {
         NodeId nodeId = getOvsBridgeNodeId(ovsdbBridge);
         String terminationPointId = ovsdbTerminationPoint.getName();
 
-        InstanceIdentifier<OvsdbTerminationPointAugmentation> terminationPointIID = InstanceIdentifier
+        return InstanceIdentifier
                 .create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(nodeId))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(terminationPointId)))
                 .augmentation(OvsdbTerminationPointAugmentation.class);
-
-        return terminationPointIID;
     }
 
     /**
@@ -371,12 +355,10 @@ public final class SfcOvsUtil {
      */
     public static InstanceIdentifier<TerminationPoint> buildOvsdbTerminationPointIID(NodeId ovsdbBridgeNodeId,
             String sffDataPlaneLocatorName) {
-        InstanceIdentifier<TerminationPoint> terminationPointIID = InstanceIdentifier.create(NetworkTopology.class)
+        return InstanceIdentifier.create(NetworkTopology.class)
                 .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
                 .child(Node.class, new NodeKey(new NodeId(ovsdbBridgeNodeId)))
                 .child(TerminationPoint.class, new TerminationPointKey(new TpId(sffDataPlaneLocatorName)));
-
-        return terminationPointIID;
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -547,8 +529,7 @@ public final class SfcOvsUtil {
                         .getImplementedInterface();
                 if (locatorType.isAssignableFrom(Ip.class)) {
                     Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
-                    IpAddress ipAddress = new IpAddress(ipPortLocator.getIp().getValue());
-                    ip = ipAddress;
+                    ip = new IpAddress(ipPortLocator.getIp().getValue());
                 }
             }
         }
@@ -625,10 +606,9 @@ public final class SfcOvsUtil {
 
     public static Long getLongFromDpid(String dpid) {
         String[] addressInBytes = dpid.split(":");
-        Long address = Long.decode(HEX + addressInBytes[2]) << 40 | Long.decode(HEX + addressInBytes[3]) << 32
-                | Long.decode(HEX + addressInBytes[4]) << 24 | Long.decode(HEX + addressInBytes[5]) << 16
-                | Long.decode(HEX + addressInBytes[6]) << 8 | Long.decode(HEX + addressInBytes[7]);
-        return address;
+        return (Long.decode(HEX + addressInBytes[2]) << 40 | Long.decode(HEX + addressInBytes[3]) << 32
+                        | Long.decode(HEX + addressInBytes[4]) << 24 | Long.decode(HEX + addressInBytes[5]) << 16
+                        | Long.decode(HEX + addressInBytes[6]) << 8 | Long.decode(HEX + addressInBytes[7]));
     }
 
     public static Node getManagerNodeByIp(IpAddress ip) {

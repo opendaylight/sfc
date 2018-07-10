@@ -16,8 +16,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
@@ -70,13 +70,13 @@ public class SfcOfRspProcessor {
             + TRANSPORT_ENCAP_SEPARATOR_STRING + Nsh.class.getName();
 
     public SfcOfRspProcessor(SfcOfFlowProgrammerInterface sfcOfFlowProgrammer,
-            SfcOfBaseProviderUtils sfcOfProviderUtils, SfcSynchronizer sfcSynchronizer,
-            RpcProviderRegistry rpcProviderRegistry, DataBroker dataBroker) {
+                             SfcOfBaseProviderUtils sfcOfProviderUtils, SfcSynchronizer sfcSynchronizer,
+                             RpcConsumerRegistry rpcRegistry, DataBroker dataBroker) {
         this.sfcOfFlowProgrammer = sfcOfFlowProgrammer;
         this.sfcOfProviderUtils = sfcOfProviderUtils;
         this.sfcSynchronizer = sfcSynchronizer;
         this.sffInitialized = new HashMap<>();
-        this.theGeniusRpcClient = new SfcGeniusRpcClient(rpcProviderRegistry);
+        this.theGeniusRpcClient = new SfcGeniusRpcClient(rpcRegistry);
         this.operDsHandler = new OperDsUpdateHandlerLSFFImpl(dataBroker);
         this.rspTransportProcessors = new HashMap<>();
 

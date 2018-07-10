@@ -8,15 +8,7 @@
     odl:type="default" />
   <reference id="notificationService"
     interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService" />
-  <reference id="rpcProviderRegistry"
-    interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
-
-  <bean id="sfcScfOfRenderer"
-    class="org.opendaylight.sfc.scfofrenderer.renderers.SfcScfOfRenderer"
-    destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="notificationService"/>
-    <argument ref="rpcProviderRegistry"/>
-  </bean>
+  <reference id="rpcRegistry"
+    interface="org.opendaylight.mdsal.binding.api.RpcConsumerRegistry"/>
 
 </blueprint>

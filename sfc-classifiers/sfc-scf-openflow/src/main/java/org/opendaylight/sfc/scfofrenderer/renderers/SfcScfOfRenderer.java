@@ -8,10 +8,12 @@
 
 package org.opendaylight.sfc.scfofrenderer.renderers;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.BareClassifier;
 import org.opendaylight.sfc.scfofrenderer.flowgenerators.LogicallyAttachedClassifier;
@@ -28,15 +30,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // General entry point for the sfc-scf-openflow feature/plugin
-
+@Singleton
 public class SfcScfOfRenderer implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcScfOfRenderer.class);
     private final ClassifierRspsUpdateListener classifierRspsUpdateListener;
     private final SfcScfOfDataListener sfcScfDataListener;
 
+    @Inject
     public SfcScfOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
-            RpcProviderRegistry theRpcProvider) {
+                            RpcConsumerRegistry rpcRegistry) {
         LOG.info("SfcScfOfRenderer starting the SfcScfOfRenderer plugin...");
 
         // this transaction object will be afterwards injected into the
@@ -46,7 +49,7 @@ public class SfcScfOfRenderer implements AutoCloseable {
         SfcOfFlowWriterInterface openflowWriter = new SfcOfFlowWriterImpl(dataBroker);
 
         LogicalClassifierDataGetter dataGetter = new LogicalClassifierDataGetter(
-                new SfcGeniusRpcClient(theRpcProvider));
+                new SfcGeniusRpcClient(rpcRegistry));
 
         LogicallyAttachedClassifier logicalClassifier = new LogicallyAttachedClassifier(dataGetter);
 

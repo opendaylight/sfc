@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusBoundServiceWriter;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusTsaWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
@@ -41,15 +41,15 @@ class SfcGeniusServiceHandler {
      * @param transaction
      *            the transaction used for read & write operations to the data
      *            store.
-     * @param rpcProviderRegistry
+     * @param rpcRegistry
      *            the provider registry to obtain the {@link ItmRpcService}.
      * @param executor
      *            the executor used for callbacks & blocking calls.
      */
-    SfcGeniusServiceHandler(ReadWriteTransaction transaction, RpcProviderRegistry rpcProviderRegistry,
+    SfcGeniusServiceHandler(ReadWriteTransaction transaction, RpcConsumerRegistry rpcRegistry,
             Executor executor) {
         this.transaction = transaction;
-        this.itmRpcService = rpcProviderRegistry.getRpcService(ItmRpcService.class);
+        this.itmRpcService = rpcRegistry.getRpcService(ItmRpcService.class);
         this.executor = executor;
     }
 

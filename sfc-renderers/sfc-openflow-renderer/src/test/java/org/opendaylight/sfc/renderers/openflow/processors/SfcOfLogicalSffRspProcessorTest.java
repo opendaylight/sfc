@@ -41,8 +41,8 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.genius.mdsalutil.NwConstants;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
 import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
@@ -124,11 +124,12 @@ import org.powermock.reflect.Whitebox;
  * @author Miguel Duarte (miguel.duarte.de.mora.barroso@ericsson.com)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SfcGeniusRpcClient.class, SfcGeniusDataUtils.class, OperDsUpdateHandlerLSFFImpl.class,
-        SfcOfRspProcessor.class, SfcRspProcessorLogicalSff.class, SfcOvsUtil.class})
+@PrepareForTest({ SfcGeniusDataUtils.class, OperDsUpdateHandlerLSFFImpl.class, SfcOfRspProcessor.class,
+        SfcOvsUtil.class})
 public class SfcOfLogicalSffRspProcessorTest {
 
-    private final SfcGeniusRpcClient geniusClient;
+    @Mock
+    private SfcGeniusRpcClient geniusClient;
 
     @Mock
     private OdlInterfaceRpcService interfaceManagerRpcService;
@@ -148,7 +149,7 @@ public class SfcOfLogicalSffRspProcessorTest {
     private final OperDsUpdateHandlerLSFFImpl operDsUpdateHandler;
 
     @Mock
-    private RpcProviderRegistry rpcProviderRegistry;
+    private RpcConsumerRegistry rpcRegistry;
 
     private final SfcOfRspProcessor sfcOfRspProcessor;
     private final SfcOfProviderUtilsTestMock sfcUtils;
@@ -179,13 +180,17 @@ public class SfcOfLogicalSffRspProcessorTest {
         operDsUpdateHandler = PowerMockito.spy(new OperDsUpdateHandlerLSFFImpl(dataBroker));
         flowProgrammer.setFlowWriter(ofFlowWriter);
         sfcUtils = new SfcOfProviderUtilsTestMock();
-        geniusClient = PowerMockito.spy(new SfcGeniusRpcClient(rpcProviderRegistry));
+
+        when(rpcRegistry.getRpcService(ItmRpcService.class)).thenReturn(itmRpcService);
+        when(rpcRegistry.getRpcService(OdlInterfaceRpcService.class)).thenReturn(interfaceManagerRpcService);
+        geniusClient = PowerMockito.spy(new SfcGeniusRpcClient(rpcRegistry));
+
         logicalSffProcessor = new SfcRspProcessorLogicalSff(geniusClient, operDsUpdateHandler);
         logicalSffProcessor.setSfcProviderUtils(sfcUtils);
         logicalSffProcessor.setFlowProgrammer(flowProgrammer);
 
         sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(flowProgrammer, sfcUtils, new SfcSynchronizer(),
-                rpcProviderRegistry, dataBroker));
+                rpcRegistry, dataBroker));
         PowerMockito.when(sfcOfRspProcessor, "getOperDsHandler").thenReturn(operDsUpdateHandler);
 
         rspBuilder = new RspBuilder(sfcUtils);
@@ -218,8 +223,6 @@ public class SfcOfLogicalSffRspProcessorTest {
         PowerMockito.when(sfcOfRspProcessor, "getGeniusRpcClient").thenReturn(geniusClient);
         PowerMockito.doReturn(logicalSffProcessor).when(sfcOfRspProcessor, "getReusableTransportProcessor", any(),
                 any());
-        PowerMockito.when(geniusClient, "getInterfaceManagerRpcService").thenReturn(interfaceManagerRpcService);
-        PowerMockito.when(geniusClient, "getItmRpcService").thenReturn(itmRpcService);
 
         String ifName0 = rspBuilder.getLogicalInterfaceName(0);
         String ifName1 = rspBuilder.getLogicalInterfaceName(1);

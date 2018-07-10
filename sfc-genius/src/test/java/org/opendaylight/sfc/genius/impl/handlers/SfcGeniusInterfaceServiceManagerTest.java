@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
@@ -65,14 +65,14 @@ public class SfcGeniusInterfaceServiceManagerTest {
     SfcGeniusServiceHandler sfcGeniusServiceHandler;
 
     @Mock
-    RpcProviderRegistry rpcProviderRegistry;
+    RpcConsumerRegistry rpcRegistry;
 
     SfcGeniusServiceManagerImpl sfcGeniusInterfaceServiceManager;
 
     @Before
     public void setup() {
         when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
-        when(rpcProviderRegistry.getRpcService(ItmRpcService.class)).thenReturn(itmRpcService);
+        when(rpcRegistry.getRpcService(ItmRpcService.class)).thenReturn(itmRpcService);
         doAnswer(invocationOnMock -> {
             invocationOnMock.getArgumentAt(0, Runnable.class).run();
             return null;
@@ -85,7 +85,7 @@ public class SfcGeniusInterfaceServiceManagerTest {
                 .thenReturn(CompletableFuture.completedFuture(null));
 
         sfcGeniusInterfaceServiceManager = spy(
-                new SfcGeniusServiceManagerImpl(dataBroker, rpcProviderRegistry, executor));
+                new SfcGeniusServiceManagerImpl(dataBroker, rpcRegistry, executor));
 
         doReturn(sfcGeniusRspHandler).when(sfcGeniusInterfaceServiceManager)
                 .getSfcGeniusRspHandler(readWriteTransaction);

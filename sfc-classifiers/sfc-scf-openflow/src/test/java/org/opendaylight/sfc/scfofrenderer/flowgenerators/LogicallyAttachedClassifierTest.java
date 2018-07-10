@@ -23,12 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
-import org.opendaylight.sfc.genius.util.SfcGeniusRpcClient;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceFunctionAPI;
 import org.opendaylight.sfc.scfofrenderer.logicalclassifier.LogicalClassifierDataGetter;
@@ -51,36 +47,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.rpcs.rev160406.OdlInterfaceRpcService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SfcGeniusDataUtils.class, SfcGeniusRpcClient.class, SfcRspInfo.class,
-        LogicalClassifierDataGetter.class, SfcProviderServiceFunctionAPI.class })
+@PrepareForTest({ SfcGeniusDataUtils.class, SfcRspInfo.class, LogicalClassifierDataGetter.class,
+        SfcProviderServiceFunctionAPI.class })
 public class LogicallyAttachedClassifierTest {
-    @InjectMocks
-    private SfcGeniusRpcClient geniusClient;
-
-    @Mock
-    private DataBroker dataBroker;
-
-    @Mock
-    private OdlInterfaceRpcService interfaceManagerRpcService;
-
-    @Mock
-    private ItmRpcService itmRpcService;
 
     @Mock
     private ServiceFunctionForwarder sff;
 
     @Mock
     private ServiceFunction sf;
-
-    @Mock
-    ReadWriteTransaction readWriteTransaction;
 
     @Mock
     Match aclMatch;

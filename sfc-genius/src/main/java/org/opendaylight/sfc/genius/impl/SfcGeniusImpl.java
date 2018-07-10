@@ -11,8 +11,10 @@ package org.opendaylight.sfc.genius.impl;
 import com.google.common.base.Preconditions;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusServiceManagerImpl;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfListener;
@@ -21,16 +23,18 @@ import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSffDpnStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class SfcGeniusImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusImpl.class);
     private final DataBroker dataBroker;
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private final RpcConsumerRegistry rpcRegistry;
     private AutoCloseable onDestroy;
 
-    public SfcGeniusImpl(DataBroker dataBroker, RpcProviderRegistry rpcProviderRegistry) {
+    @Inject
+    public SfcGeniusImpl(DataBroker dataBroker, RpcConsumerRegistry rpcRegistry) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.rpcProviderRegistry = Preconditions.checkNotNull(rpcProviderRegistry);
+        this.rpcRegistry = Preconditions.checkNotNull(rpcRegistry);
     }
 
     public void init() {
@@ -45,7 +49,7 @@ public class SfcGeniusImpl {
 
         // Main handler of data store events
         SfcGeniusServiceManager interfaceManager;
-        interfaceManager = new SfcGeniusServiceManagerImpl(dataBroker, rpcProviderRegistry, handlerExecutor);
+        interfaceManager = new SfcGeniusServiceManagerImpl(dataBroker, rpcRegistry, handlerExecutor);
 
         // Listeners to data store events
         SfcGeniusSfStateListener sfStateListener;

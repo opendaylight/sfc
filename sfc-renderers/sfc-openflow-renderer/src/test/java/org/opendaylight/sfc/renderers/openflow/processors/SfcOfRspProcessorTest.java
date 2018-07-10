@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.renderers.openflow.RspBuilder;
 import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerInterface;
@@ -78,8 +79,9 @@ public class SfcOfRspProcessorTest {
         this.flowProgrammerTestMoc = mock(SfcOfFlowProgrammerImpl.class);
         this.flowProgrammerTestMoc.setFlowWriter(mock(SfcOfFlowWriterInterface.class));
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
+        RpcConsumerRegistry rpcRegistry = mock(RpcConsumerRegistry.class);
         this.sfcOfRspProcessor = new SfcOfRspProcessor(this.flowProgrammerTestMoc, this.sfcUtilsTestMock,
-                                                       new SfcSynchronizer(), null, null);
+                                                       new SfcSynchronizer(), rpcRegistry, null);
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
 
         this.sfTypes = new ArrayList<>();

@@ -15,7 +15,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
@@ -45,28 +45,28 @@ import org.slf4j.LoggerFactory;
 public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager {
 
     private final DataBroker dataBroker;
-    private final RpcProviderRegistry rpcProviderRegistry;
+    private final RpcConsumerRegistry rpcRegistry;
     private final Executor executor;
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusServiceManagerImpl.class);
 
     /**
      * Constructs a {@code SfcGeniusInterfaceServiceManager} using the provided
      * {@link DataBroker} for data store operations, the
-     * {@link RpcProviderRegistry} to access RPC services and the
+     * {@link RpcConsumerRegistry} to access RPC services and the
      * {@link Executor} for asynchronous tasks.
      *
      *
      * @param dataBroker
      *            the data broker for data store operations.
-     * @param rpcProviderRegistry
-     *            the RPC provider registry of services.
+     * @param rpcRegistry
+     *            the RPC service registry.
      * @param executor
      *            the executor where asynchronous tasks are executed.
      */
-    public SfcGeniusServiceManagerImpl(DataBroker dataBroker, RpcProviderRegistry rpcProviderRegistry,
+    public SfcGeniusServiceManagerImpl(DataBroker dataBroker, RpcConsumerRegistry rpcRegistry,
             Executor executor) {
         this.dataBroker = dataBroker;
-        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.rpcRegistry = rpcRegistry;
         this.executor = executor;
     }
 
@@ -180,6 +180,6 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
     }
 
     protected SfcGeniusServiceHandler getSfcGeniusServiceHandler(ReadWriteTransaction readWriteTransaction) {
-        return new SfcGeniusServiceHandler(readWriteTransaction, rpcProviderRegistry, executor);
+        return new SfcGeniusServiceHandler(readWriteTransaction, rpcRegistry, executor);
     }
 }

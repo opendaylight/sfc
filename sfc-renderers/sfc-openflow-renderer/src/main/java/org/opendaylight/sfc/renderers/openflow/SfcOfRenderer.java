@@ -8,9 +8,12 @@
 
 package org.opendaylight.sfc.renderers.openflow;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.renderers.openflow.listeners.SfcOfRendererDataListener;
 import org.opendaylight.sfc.renderers.openflow.listeners.SfcOfRspDataListener;
 import org.opendaylight.sfc.renderers.openflow.listeners.SfcOfSfgDataListener;
@@ -29,6 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Entry point for the sfc openflow renderer (blueprint-instantiated).
  */
+@Singleton
 public final class SfcOfRenderer implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SfcOfRenderer.class);
 
@@ -42,8 +46,9 @@ public final class SfcOfRenderer implements AutoCloseable {
     private SfcIpv4PacketInHandler packetInHandler;
     private SfcOfRendererDataListener sfcOfRendererListener;
 
+    @Inject
     public SfcOfRenderer(DataBroker dataBroker, NotificationProviderService notificationService,
-                          RpcProviderRegistry rpcProviderRegistry) {
+                         RpcConsumerRegistry rpcRegistry) {
         LOG.info("SfcOfRenderer starting the SfcOfRenderer plugin...");
 
         this.sfcSynchronizer = new SfcSynchronizer();
@@ -52,7 +57,7 @@ public final class SfcOfRenderer implements AutoCloseable {
         this.sfcOfFlowProgrammer = new SfcOfFlowProgrammerImpl(sfcofflowwriterimpl);
         SfcOfBaseProviderUtils sfcOfProviderUtils = new SfcOfProviderUtils();
         this.sfcOfRspProcessor = new SfcOfRspProcessor(sfcOfFlowProgrammer, sfcOfProviderUtils, sfcSynchronizer,
-                rpcProviderRegistry, dataBroker);
+                rpcRegistry, dataBroker);
 
         this.openflowRspDataListener = new SfcOfRspDataListener(dataBroker, sfcOfRspProcessor);
         this.sfcOfSfgDataListener = new SfcOfSfgDataListener(dataBroker, sfcOfFlowProgrammer, sfcOfProviderUtils);
@@ -68,6 +73,7 @@ public final class SfcOfRenderer implements AutoCloseable {
      * Implemented from the AutoCloseable interface.
      */
     @Override
+    @PreDestroy
     public void close() throws Exception {
         LOG.info("SfcOfRenderer auto-closed");
         try {

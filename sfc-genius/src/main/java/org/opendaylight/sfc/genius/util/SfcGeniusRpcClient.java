@@ -7,11 +7,12 @@
  */
 package org.opendaylight.sfc.genius.util;
 
+import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
@@ -44,8 +45,9 @@ import org.slf4j.LoggerFactory;
 public class SfcGeniusRpcClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusRpcClient.class);
-    private ItmRpcService itmRpcService;
-    private OdlInterfaceRpcService interfaceManagerRpcService;
+    private final ItmRpcService itmRpcService;
+    private final OdlInterfaceRpcService ifmRpcService;
+
     /*
      * Tunnel key used in the transport zone created to support the logical SFF
      */
@@ -54,15 +56,14 @@ public class SfcGeniusRpcClient {
     /**
      * Constructor.
      *
-     * @param rpcProviderRegistry
+     * @param rpcRegistry
      *            The registry used to retrieve RPC services
      */
-    public SfcGeniusRpcClient(RpcProviderRegistry rpcProviderRegistry) {
+    public SfcGeniusRpcClient(RpcConsumerRegistry rpcRegistry) {
         LOG.debug("SfcGeniusRpcClient: starting");
-        if (rpcProviderRegistry != null) {
-            itmRpcService = rpcProviderRegistry.getRpcService(ItmRpcService.class);
-            interfaceManagerRpcService = rpcProviderRegistry.getRpcService(OdlInterfaceRpcService.class);
-        }
+        Preconditions.checkNotNull(rpcRegistry);
+        itmRpcService = rpcRegistry.getRpcService(ItmRpcService.class);
+        ifmRpcService = rpcRegistry.getRpcService(OdlInterfaceRpcService.class);
     }
 
     /**
@@ -96,7 +97,7 @@ public class SfcGeniusRpcClient {
 
         GetEgressActionsForInterfaceInput input = builder.build();
         try {
-            OdlInterfaceRpcService service = getInterfaceManagerRpcService();
+            OdlInterfaceRpcService service = getIfmRpcService();
             if (service != null) {
                 RpcResult<GetEgressActionsForInterfaceOutput> output = service.getEgressActionsForInterface(input)
                         .get();
@@ -198,7 +199,7 @@ public class SfcGeniusRpcClient {
         GetDpidFromInterfaceInput input = builder.build();
 
         try {
-            OdlInterfaceRpcService service = getInterfaceManagerRpcService();
+            OdlInterfaceRpcService service = getIfmRpcService();
             if (service != null) {
                 LOG.debug("getDpnIdFromInterfaceNameFromGeniusRPC: service is not null, invoking rpc");
                 RpcResult<GetDpidFromInterfaceOutput> output = service.getDpidFromInterface(input).get();
@@ -231,7 +232,7 @@ public class SfcGeniusRpcClient {
         GetEndpointIpForDpnInputBuilder builder = new GetEndpointIpForDpnInputBuilder();
         builder.setDpid(theDpnIdType.getValue());
         GetEndpointIpForDpnInput input = builder.build();
-        OdlInterfaceRpcService service = getInterfaceManagerRpcService();
+        OdlInterfaceRpcService service = getIfmRpcService();
 
         if (service == null) {
             LOG.error("Genius RPC service not available", input);
@@ -261,7 +262,7 @@ public class SfcGeniusRpcClient {
         return itmRpcService;
     }
 
-    private OdlInterfaceRpcService getInterfaceManagerRpcService() {
-        return interfaceManagerRpcService;
+    private OdlInterfaceRpcService getIfmRpcService() {
+        return ifmRpcService;
     }
 }

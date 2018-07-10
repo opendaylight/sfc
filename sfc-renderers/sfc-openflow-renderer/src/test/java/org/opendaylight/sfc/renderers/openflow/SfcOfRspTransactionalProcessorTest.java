@@ -10,6 +10,7 @@ package org.opendaylight.sfc.renderers.openflow;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerImpl;
 import org.opendaylight.sfc.renderers.openflow.openflow.SfcOfFlowProgrammerInterface;
 import org.opendaylight.sfc.renderers.openflow.processors.SfcOfRspProcessor;
@@ -100,10 +102,13 @@ public class SfcOfRspTransactionalProcessorTest {
         dataBroker = Mockito.mock(DataBroker.class);
         Mockito.when(dataBroker.newWriteOnlyTransaction()).thenReturn(Mockito.mock(WriteTransaction.class));
 
+        RpcConsumerRegistry rpcRegistry = Mockito.mock(RpcConsumerRegistry.class);
+        Mockito.when(rpcRegistry.getRpcService(any())).thenReturn(null);
+
         this.sfcUtilsTestMock = new SfcOfProviderUtilsTestMock();
         // spied in order to check private methods
         this.sfcOfRspProcessor = PowerMockito.spy(new SfcOfRspProcessor(this.flowProgrammerTestMock,
-                this.sfcUtilsTestMock, new SfcSynchronizer(), null, dataBroker));
+                this.sfcUtilsTestMock, new SfcSynchronizer(), rpcRegistry, dataBroker));
 
         this.rspBuilder = new RspBuilder(this.sfcUtilsTestMock);
         this.sfTypes = new ArrayList<>();

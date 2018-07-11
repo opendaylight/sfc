@@ -25,22 +25,18 @@
     <dependency>
       <groupId>org.opendaylight.genius</groupId>
       <artifactId>interfacemanager-api</artifactId>
-      <version>${genius.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.genius</groupId>
       <artifactId>mdsalutil-api</artifactId>
-      <version>${genius.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.serviceutils</groupId>
       <artifactId>tools-api</artifactId>
-      <version>0.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.genius</groupId>
       <artifactId>itm-api</artifactId>
-      <version>${genius.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -65,17 +61,11 @@
     </dependency>
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>sfc-genius-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
       <artifactId>sfc-provider</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

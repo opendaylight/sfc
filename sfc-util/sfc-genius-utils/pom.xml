@@ -1,46 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opendaylight.sfc</groupId>
-    <artifactId>sfc-renderers</artifactId>
+    <artifactId>sfc-util-parent</artifactId>
     <version>0.8.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
-  <artifactId>sfc-openflow-renderer</artifactId>
+  <artifactId>sfc-genius-utils</artifactId>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: sfc :: ${project.artifactId}</name>
+
   <dependencies>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-inventory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.genius</groupId>
+      <artifactId>interfacemanager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.genius</groupId>
+      <artifactId>itm-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.sfc</groupId>
       <artifactId>sfc-provider</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-ovs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-openflow-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.sfc</groupId>
-      <artifactId>sfc-genius-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.controller</groupId>
-      <artifactId>sal-binding-broker-impl</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -50,6 +45,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -71,10 +71,9 @@
         <artifactId>maven-bundle-plugin</artifactId>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
-
 </project>

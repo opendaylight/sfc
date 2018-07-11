@@ -6,29 +6,25 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.genius.impl.utils;
+package org.opendaylight.sfc.genius.util;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.math.BigInteger;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import org.opendaylight.genius.mdsalutil.MDSALUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 
 /**
  * Utility functions for sfc-genius module.
  */
-public final class SfcGeniusUtils {
+public final class SfcGeniusConcurrentUtils {
 
     /**
      * Private constructor to avoid instantiation.
      */
-    private SfcGeniusUtils() {
+    private SfcGeniusConcurrentUtils() {
     }
 
     /**
@@ -73,27 +69,4 @@ public final class SfcGeniusUtils {
         return completable;
     }
 
-    /**
-     * Extracts the data plane node Id from a lower layer interface list.
-     *
-     * @param lowerLayerIfList
-     *            to extract the data plane node Id from.
-     * @return the data plane node Id.
-     * @throws SfcGeniusRuntimeException
-     *             wrapping an {@link IllegalArgumentException} if the input
-     *             list does not contain one item only, or if the format of the
-     *             item is invalid.
-     */
-    public static BigInteger getDpnIdFromLowerLayerIfList(List<String> lowerLayerIfList) {
-        if (lowerLayerIfList == null || lowerLayerIfList.size() != 1) {
-            throw new SfcGeniusRuntimeException(
-                    new IllegalArgumentException("Expected 1 and only 1 item in lower layer interface list"));
-        }
-        long nodeId = MDSALUtil.getDpnIdFromPortName(new NodeConnectorId(lowerLayerIfList.get(0)));
-        if (nodeId < 0L) {
-            throw new SfcGeniusRuntimeException(
-                    new IllegalArgumentException("Unexpected format of lower layer interface list"));
-        }
-        return BigInteger.valueOf(nodeId);
-    }
 }

@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.InterfacesState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;

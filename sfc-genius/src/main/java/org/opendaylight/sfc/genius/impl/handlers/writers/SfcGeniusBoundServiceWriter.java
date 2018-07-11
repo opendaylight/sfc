@@ -11,7 +11,7 @@ package org.opendaylight.sfc.genius.impl.handlers.writers;
 import java.util.concurrent.CompletableFuture;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.genius.mdsalutil.NwConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
+import org.opendaylight.sfc.genius.util.SfcGeniusConstants;
 import org.opendaylight.sfc.genius.util.servicebinding.GeniusServiceBinder;
 
 /**

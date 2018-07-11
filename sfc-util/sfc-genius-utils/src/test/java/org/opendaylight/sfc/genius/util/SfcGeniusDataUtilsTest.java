@@ -8,19 +8,22 @@
 
 package org.opendaylight.sfc.genius.util;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfDataPlaneLocatorName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffName;
@@ -226,7 +229,7 @@ public class SfcGeniusDataUtilsTest {
      * OVS switch, but there's no TerminationPoint.
      *
      */
-    @Test(expected = org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException.class)
+    @Test(expected = org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException.class)
     public void readMacAddressInvalidDpnId() {
         PowerMockito.when(SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName))
                 .thenReturn(Optional.of(new InterfaceBuilder().withKey(new InterfaceKey(logicalIfName))
@@ -358,5 +361,39 @@ public class SfcGeniusDataUtilsTest {
         Assert.assertEquals(
                 Arrays.asList("40c552e0-3695-472d-bace-7618786aba27", "12345678-3695-472d-bace-7618786aba27"),
                 SfcGeniusDataUtils.getSfLogicalInterfaces(dpiNode));
+    }
+
+
+    @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public void getDpnIdFromLowerLayerIfListTooManyItems() throws Exception {
+        try {
+            SfcGeniusDataUtils.getDpnIdFromLowerLayerIfList(Arrays.asList("Item1", "Item2"));
+        } catch (Exception e) {
+            assertThat(e, is(Matchers.instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(Matchers.instanceOf(IllegalArgumentException.class)));
+        }
+    }
+
+    @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public void getDpnIdFromLowerLayerIfListBadItem() throws Exception {
+        try {
+            SfcGeniusDataUtils.getDpnIdFromLowerLayerIfList(Collections.singletonList(""));
+        } catch (Exception e) {
+            assertThat(e, is(Matchers.instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(Matchers.instanceOf(IllegalArgumentException.class)));
+        }
+    }
+
+    @Test
+    @SuppressWarnings("checkstyle:IllegalCatch")
+    public void getDpnIdFromNullLowerLayerIfList() throws Exception {
+        try {
+            SfcGeniusDataUtils.getDpnIdFromLowerLayerIfList(null);
+        } catch (Exception e) {
+            assertThat(e, is(Matchers.instanceOf(SfcGeniusRuntimeException.class)));
+            assertThat(e.getCause(), is(Matchers.instanceOf(IllegalArgumentException.class)));
+        }
     }
 }

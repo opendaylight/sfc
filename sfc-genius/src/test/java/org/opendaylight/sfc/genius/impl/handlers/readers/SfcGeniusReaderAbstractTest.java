@@ -30,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 @RunWith(MockitoJUnitRunner.class)

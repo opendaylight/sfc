@@ -16,12 +16,12 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.SfcGeniusServiceManagerImpl;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusInterfaceStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSfStateListener;
 import org.opendaylight.sfc.genius.impl.listeners.SfcGeniusSffDpnStateListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +30,13 @@ public class SfcGeniusImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusImpl.class);
     private final DataBroker dataBroker;
-    private final RpcConsumerRegistry rpcRegistry;
+    private final ItmRpcService itmRpcService;
     private AutoCloseable onDestroy;
 
     @Inject
-    public SfcGeniusImpl(DataBroker dataBroker, RpcConsumerRegistry rpcRegistry) {
+    public SfcGeniusImpl(DataBroker dataBroker, ItmRpcService itmRpcService) {
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
-        this.rpcRegistry = Preconditions.checkNotNull(rpcRegistry);
+        this.itmRpcService = Preconditions.checkNotNull(itmRpcService);
     }
 
     @PostConstruct
@@ -52,7 +52,7 @@ public class SfcGeniusImpl {
 
         // Main handler of data store events
         SfcGeniusServiceManager interfaceManager;
-        interfaceManager = new SfcGeniusServiceManagerImpl(dataBroker, rpcRegistry, handlerExecutor);
+        interfaceManager = new SfcGeniusServiceManagerImpl(dataBroker, itmRpcService, handlerExecutor);
 
         // Listeners to data store events
         SfcGeniusSfStateListener sfStateListener;

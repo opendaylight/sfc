@@ -8,6 +8,8 @@
 
 package org.opendaylight.sfc.genius.impl.handlers;
 
+import static org.opendaylight.sfc.genius.util.SfcGeniusConcurrentUtils.toCompletableFuture;
+
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -15,11 +17,10 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,28 +46,28 @@ import org.slf4j.LoggerFactory;
 public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager {
 
     private final DataBroker dataBroker;
-    private final RpcConsumerRegistry rpcRegistry;
+    private final ItmRpcService itmRpcService;
     private final Executor executor;
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusServiceManagerImpl.class);
 
     /**
      * Constructs a {@code SfcGeniusInterfaceServiceManager} using the provided
      * {@link DataBroker} for data store operations, the
-     * {@link RpcConsumerRegistry} to access RPC services and the
+     * {@link ItmRpcService} to access Genius ITM RPC services and the
      * {@link Executor} for asynchronous tasks.
      *
      *
      * @param dataBroker
      *            the data broker for data store operations.
-     * @param rpcRegistry
-     *            the RPC service registry.
+     * @param itmRpcService
+     *            the Genius ITM RPC service.
      * @param executor
      *            the executor where asynchronous tasks are executed.
      */
-    public SfcGeniusServiceManagerImpl(DataBroker dataBroker, RpcConsumerRegistry rpcRegistry,
-            Executor executor) {
+    public SfcGeniusServiceManagerImpl(DataBroker dataBroker, ItmRpcService itmRpcService,
+                                       Executor executor) {
         this.dataBroker = dataBroker;
-        this.rpcRegistry = rpcRegistry;
+        this.itmRpcService = itmRpcService;
         this.executor = executor;
     }
 
@@ -81,7 +82,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         sfReader.readInterfacesOfSf(new SfName(sfName))
                 .thenCompose(interfaceList -> CompletableFuture.allOf(interfaceList.stream()
                         .map(serviceHandler::bindToInterface).toArray(size -> new CompletableFuture<?>[size])))
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .exceptionally(exception -> {
                     if (exception.getCause() instanceof SfcGeniusRuntimeException) {
                         LOG.error("Error binding to interfaces of service function {}", sfName, exception.getCause());
@@ -102,7 +103,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         sfReader.readInterfacesOfSf(new SfName(sfName))
                 .thenCompose(interfaceList -> CompletableFuture.allOf(interfaceList.stream()
                         .map(serviceHandler::unbindFromInterface).toArray(size -> new CompletableFuture<?>[size])))
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .exceptionally(exception -> {
                     if (exception.getCause() instanceof SfcGeniusRuntimeException) {
                         LOG.error("Error unbinding from interfaces of service function {}", sfName,
@@ -123,7 +124,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         CompletableFuture.allOf(interfaceNames.stream()
                         .map(serviceHandler::unbindFromInterface)
                         .toArray(size -> new CompletableFuture<?>[size]))
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .exceptionally(exception -> {
                     if (exception.getCause() instanceof SfcGeniusRuntimeException) {
                         LOG.error("Error unbinding from interfaces {}", interfaceNames,
@@ -139,7 +140,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.bindToNode(dpnId)
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .join();
     }
 
@@ -148,7 +149,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.unbindFromNode(dpnId)
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .join();
     }
 
@@ -162,7 +163,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
                 .thenCompose(serviceFunctions -> serviceFunctions.isEmpty()
                         ? CompletableFuture.completedFuture(null)
                         : rspHandler.interfaceStateUp(interfaceName, serviceFunctions))
-                .thenCompose(aVoid -> SfcGeniusUtils.toCompletableFuture(readWriteTransaction.submit(), executor))
+                .thenCompose(aVoid -> toCompletableFuture(readWriteTransaction.submit(), executor))
                 .handle((nop, exception) -> {
                     if (exception != null) {
                         LOG.error("Error handling interface {} state up on {}", interfaceName, dpnId, exception);
@@ -180,6 +181,6 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
     }
 
     protected SfcGeniusServiceHandler getSfcGeniusServiceHandler(ReadWriteTransaction readWriteTransaction) {
-        return new SfcGeniusServiceHandler(readWriteTransaction, rpcRegistry, executor);
+        return new SfcGeniusServiceHandler(readWriteTransaction, itmRpcService, executor);
     }
 }

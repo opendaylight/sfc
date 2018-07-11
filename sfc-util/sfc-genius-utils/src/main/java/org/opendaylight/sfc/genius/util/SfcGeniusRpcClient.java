@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -47,11 +46,6 @@ public class SfcGeniusRpcClient {
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusRpcClient.class);
     private final ItmRpcService itmRpcService;
     private final OdlInterfaceRpcService ifmRpcService;
-
-    /*
-     * Tunnel key used in the transport zone created to support the logical SFF
-     */
-    private static final long LOGICAL_SFF_TZ_DEFAULT_TUNNEL_KEY = 0;
 
     /**
      * Constructor.
@@ -92,7 +86,7 @@ public class SfcGeniusRpcClient {
         GetEgressActionsForInterfaceInputBuilder builder = new GetEgressActionsForInterfaceInputBuilder()
                 .setIntfName(targetInterfaceName).setActionKey(actionOffset);
         if (interfaceIsPartOfTheTransportZone) {
-            builder.setTunnelKey(LOGICAL_SFF_TZ_DEFAULT_TUNNEL_KEY);
+            builder.setTunnelKey((long) SfcGeniusConstants.SFC_VNID);
         }
 
         GetEgressActionsForInterfaceInput input = builder.build();

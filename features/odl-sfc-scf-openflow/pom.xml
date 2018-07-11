@@ -48,13 +48,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.sfc</groupId>
-            <artifactId>odl-sfc-genius</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.sfc</groupId>
             <artifactId>odl-sfc-openflow-renderer</artifactId>
             <version>${project.version}</version>
             <type>xml</type>

@@ -15,8 +15,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import org.opendaylight.genius.mdsalutil.MDSALUtil;
 import org.opendaylight.genius.mdsalutil.NwConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.sfc.genius.util.SfcGeniusConstants;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsOutput;
@@ -42,7 +42,7 @@ public class SfcGeniusTsaWriter {
      * {@link ItmRpcService} to invoke the RPC and {@link Executor}
      * where RPC blocking call is performed.
      *
-     * @param itmRpcService the read transaction.
+     * @param itmRpcService the ITM RPC service.
      * @param executor the callback executor.
      */
     public SfcGeniusTsaWriter(ItmRpcService itmRpcService, Executor executor) {

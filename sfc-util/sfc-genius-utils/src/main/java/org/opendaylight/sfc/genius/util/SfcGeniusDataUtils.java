@@ -15,14 +15,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.genius.mdsalutil.MDSALUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.meta.rev160406.bridge.ref.info.BridgeRefEntry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeRef;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -45,7 +45,7 @@ public final class SfcGeniusDataUtils {
                 .orElseThrow(() -> new RuntimeException("Interface is not present in the CONFIG DS"));
         Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
                 .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
-        BigInteger theDataplaneId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf());
+        BigInteger theDataplaneId = getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf());
 
         return SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDataplaneId).map(BridgeRefEntry::getBridgeReference)
                 .map(OvsdbBridgeRef::getValue).map(iid -> iid.firstKeyOf(Node.class)).map(NodeKey::getNodeId)
@@ -121,5 +121,29 @@ public final class SfcGeniusDataUtils {
                 .filter(locatorType -> LogicalInterface.class.equals(locatorType.getImplementedInterface()))
                 .map(locatorType -> ((LogicalInterface) locatorType).getInterfaceName())
                 .orElse(null);
+    }
+
+    /**
+     * Extracts the data plane node Id from a lower layer interface list.
+     *
+     * @param lowerLayerIfList
+     *            to extract the data plane node Id from.
+     * @return the data plane node Id.
+     * @throws SfcGeniusRuntimeException
+     *             wrapping an {@link IllegalArgumentException} if the input
+     *             list does not contain one item only, or if the format of the
+     *             item is invalid.
+     */
+    public static BigInteger getDpnIdFromLowerLayerIfList(List<String> lowerLayerIfList) {
+        if (lowerLayerIfList == null || lowerLayerIfList.size() != 1) {
+            throw new SfcGeniusRuntimeException(
+                    new IllegalArgumentException("Expected 1 and only 1 item in lower layer interface list"));
+        }
+        long nodeId = MDSALUtil.getDpnIdFromPortName(new NodeConnectorId(lowerLayerIfList.get(0)));
+        if (nodeId < 0L) {
+            throw new SfcGeniusRuntimeException(
+                    new IllegalArgumentException("Unexpected format of lower layer interface list"));
+        }
+        return BigInteger.valueOf(nodeId);
     }
 }

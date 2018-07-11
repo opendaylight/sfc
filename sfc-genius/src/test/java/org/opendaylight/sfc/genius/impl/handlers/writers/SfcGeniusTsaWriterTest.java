@@ -31,8 +31,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.genius.mdsalutil.NwConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusConstants;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.sfc.genius.util.SfcGeniusConstants;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.CreateTerminatingServiceActionsInput;
@@ -179,7 +179,7 @@ public class SfcGeniusTsaWriterTest {
     }
 
     @Test
-    //@Test(expected = org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException.class)
+    //@Test(expected = org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException.class)
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionUnsuccessful() throws Exception {
         BigInteger dpnid = BigInteger.ZERO;

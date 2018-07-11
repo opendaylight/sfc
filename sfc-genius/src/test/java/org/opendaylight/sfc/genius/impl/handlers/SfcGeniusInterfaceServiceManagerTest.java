@@ -25,15 +25,12 @@ import java.util.concurrent.Executor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
 
@@ -49,9 +46,6 @@ public class SfcGeniusInterfaceServiceManagerTest {
     @Mock
     Executor executor;
 
-    @Captor
-    ArgumentCaptor<Runnable> runnableCaptor;
-
     @Mock
     ItmRpcService itmRpcService;
 
@@ -64,15 +58,11 @@ public class SfcGeniusInterfaceServiceManagerTest {
     @Mock
     SfcGeniusServiceHandler sfcGeniusServiceHandler;
 
-    @Mock
-    RpcConsumerRegistry rpcRegistry;
-
     SfcGeniusServiceManagerImpl sfcGeniusInterfaceServiceManager;
 
     @Before
     public void setup() {
         when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
-        when(rpcRegistry.getRpcService(ItmRpcService.class)).thenReturn(itmRpcService);
         doAnswer(invocationOnMock -> {
             invocationOnMock.getArgumentAt(0, Runnable.class).run();
             return null;
@@ -85,7 +75,7 @@ public class SfcGeniusInterfaceServiceManagerTest {
                 .thenReturn(CompletableFuture.completedFuture(null));
 
         sfcGeniusInterfaceServiceManager = spy(
-                new SfcGeniusServiceManagerImpl(dataBroker, rpcRegistry, executor));
+                new SfcGeniusServiceManagerImpl(dataBroker, itmRpcService, executor));
 
         doReturn(sfcGeniusRspHandler).when(sfcGeniusInterfaceServiceManager)
                 .getSfcGeniusRspHandler(readWriteTransaction);

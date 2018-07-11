@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>sfc-genius</artifactId>
+            <artifactId>sfc-genius-utils</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.genius</groupId>

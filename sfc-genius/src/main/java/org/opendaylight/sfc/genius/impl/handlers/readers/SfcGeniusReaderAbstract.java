@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusConcurrentUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -52,7 +52,7 @@ class SfcGeniusReaderAbstract {
      */
     protected <T extends DataObject> CompletableFuture<T> doRead(LogicalDatastoreType logicalDatastoreType,
             InstanceIdentifier<T> instanceIdentifier) {
-        return SfcGeniusUtils
+        return SfcGeniusConcurrentUtils
                 .toCompletableFuture(readTransaction.read(logicalDatastoreType, instanceIdentifier), executor)
                 .thenApply(optional -> {
                     if (optional.isPresent()) {
@@ -77,7 +77,7 @@ class SfcGeniusReaderAbstract {
      */
     protected <T extends DataObject> CompletableFuture<Optional<T>> doReadOptional(
             LogicalDatastoreType logicalDatastoreType, InstanceIdentifier<T> instanceIdentifier) {
-        return SfcGeniusUtils
+        return SfcGeniusConcurrentUtils
                 .toCompletableFuture(readTransaction.read(logicalDatastoreType, instanceIdentifier), executor)
                 .thenApply(optional -> {
                     if (optional.isPresent()) {

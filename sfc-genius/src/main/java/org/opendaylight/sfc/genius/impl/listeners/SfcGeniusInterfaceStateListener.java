@@ -15,8 +15,8 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusRuntimeException;
-import org.opendaylight.sfc.genius.impl.utils.SfcGeniusUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusDataUtils;
+import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.InterfacesState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -57,7 +57,7 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
         String interfaceName = newInterface.getName();
         BigInteger dpnId;
         try {
-            dpnId = SfcGeniusUtils.getDpnIdFromLowerLayerIfList(newInterface.getLowerLayerIf());
+            dpnId = SfcGeniusDataUtils.getDpnIdFromLowerLayerIfList(newInterface.getLowerLayerIf());
         } catch (SfcGeniusRuntimeException e) {
             LOG.debug("Event ignored, could not get underlying dpn id", e);
             return;

@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.sfc.genius.impl.utils;
+package org.opendaylight.sfc.genius.util;
 
 /**
  * Exception thrown when an error or other exception is encountered

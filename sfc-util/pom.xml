@@ -16,5 +16,6 @@
     <modules>
         <module>sfc-openflow-utils</module>
         <module>sfc-vpp-utils</module>
+        <module>sfc-genius-utils</module>
     </modules>
 </project>

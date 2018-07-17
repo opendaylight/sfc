@@ -16,8 +16,6 @@
 package org.opendaylight.sfc.ovs.api;
 
 import com.google.common.base.Preconditions;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -33,120 +31,14 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SfcOvsDataStoreAPI implements Callable<Object> {
-
-    public enum Method {
-        READ_OVSDB_BRIDGE,
-        PUT_OVSDB_BRIDGE,
-        PUT_OVSDB_TERMINATION_POINT,
-        DELETE_OVSDB_TERMINATION_POINT,
-        DELETE_OVSDB_NODE,
-        READ_OVSDB_NODE_BY_IP,
-        READ_OVSDB_NODE_BY_REF
-    }
+public final class SfcOvsDataStoreAPI {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsDataStoreAPI.class);
 
-    private final Method methodToCall;
-    private Object[] methodParameters;
-
-    public SfcOvsDataStoreAPI(Method methodToCall, Object[] newMethodParameters) {
-        this.methodToCall = methodToCall;
-        if (newMethodParameters == null) {
-            this.methodParameters = null;
-        } else {
-            this.methodParameters = Arrays.copyOf(newMethodParameters, newMethodParameters.length);
-        }
+    private SfcOvsDataStoreAPI() {
     }
 
-    @Override
-    public Object call() throws Exception {
-        Object result = null;
-
-        switch (methodToCall) {
-            case READ_OVSDB_BRIDGE:
-                try {
-                    InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID =
-                            (InstanceIdentifier<OvsdbBridgeAugmentation>) methodParameters[0];
-                    result = readOvsdbBridge(bridgeIID);
-                } catch (ClassCastException e) {
-                    LOG.error(
-                            "Cannot call readOvsdbBridge, passed method argument "
-                                    + "is not instance of InstanceIdentifier<OvsdbBridgeAugmentation>: {}",
-                            methodParameters[0].toString(), e);
-                }
-                break;
-            case PUT_OVSDB_BRIDGE:
-                try {
-                    OvsdbBridgeAugmentation ovsdbBridge = (OvsdbBridgeAugmentation) methodParameters[0];
-                    result = putOvsdbBridge(ovsdbBridge);
-                } catch (ClassCastException e) {
-                    LOG.error("Cannot call putOvsdbBridge, passed method argument "
-                            + "is not instance of OvsdbBridgeAugmentation: {}", methodParameters[0].toString(), e);
-                }
-                break;
-            case DELETE_OVSDB_NODE:
-                try {
-                    InstanceIdentifier<Node> nodeIID = (InstanceIdentifier<Node>) methodParameters[0];
-                    result = deleteOvsdbNode(nodeIID);
-                } catch (ClassCastException e) {
-                    LOG.error(
-                            "Cannot call deleteOvsdbNode, passed method argument "
-                                    + "is not instance of InstanceIdentifier<Node>: {}",
-                            methodParameters[0].toString(), e);
-                }
-                break;
-            case PUT_OVSDB_TERMINATION_POINT:
-                try {
-                    OvsdbBridgeAugmentation ovsdbBridge = (OvsdbBridgeAugmentation) methodParameters[0];
-                    OvsdbTerminationPointAugmentation ovsdbTerminationPoint =
-                            (OvsdbTerminationPointAugmentation) methodParameters[1];
-                    result = putOvsdbTerminationPoint(ovsdbBridge, ovsdbTerminationPoint);
-                } catch (ClassCastException e) {
-                    LOG.error(
-                            "Cannot call putOvsdbTerminationPoint, passed method arguments "
-                                    + "are not instances of OvsdbBridgeAugmentation{} and"
-                                    + "OvsdbTerminationPointAugmentation: {}",
-                            methodParameters[0].toString(), methodParameters[1].toString(), e);
-                }
-                break;
-            case DELETE_OVSDB_TERMINATION_POINT:
-                try {
-                    InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID =
-                            (InstanceIdentifier<TerminationPoint>) methodParameters[0];
-                    result = deleteOvsdbTerminationPoint(ovsdbTerminationPointIID);
-                } catch (ClassCastException e) {
-                    LOG.error(
-                            "Cannot call deleteOvsdbTerminationPoint, passed method argument "
-                                    + "is not instance of InstanceIdentifier<TerminationPoint>: {}",
-                            methodParameters[0].toString(), e);
-                }
-                break;
-            case READ_OVSDB_NODE_BY_IP:
-                try {
-                    result = readOvsdbNodeByIp((String) methodParameters[0]);
-                } catch (ClassCastException e) {
-                    LOG.error(
-                            "Cannot call readOvsdbNodeByIp, passed method argument " + "is not instance of String: {}",
-                            methodParameters[0].toString(), e);
-                }
-                break;
-            case READ_OVSDB_NODE_BY_REF:
-                try {
-                    result = readOvsdbNodeByRef((OvsdbNodeRef) methodParameters[0]);
-                } catch (ClassCastException e) {
-                    LOG.error("Cannot call readOvsdbNodeByIp, passed method argument "
-                            + "is not instance of OvsdbNodeRef: {}", methodParameters[0], e);
-                }
-                break;
-            default:
-                break;
-        }
-
-        return result;
-    }
-
-    private boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge) {
+    public static boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge) {
         Preconditions.checkNotNull(ovsdbBridge,
                 "Cannot PUT new OVS Bridge into OVS configuration store, OvsdbBridgeAugmentation is null.");
 
@@ -154,14 +46,14 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
                 LogicalDatastoreType.CONFIGURATION);
     }
 
-    private boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
+    public static boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
         Preconditions.checkNotNull(ovsdbNodeIID,
                 "Cannot DELETE OVS Node from OVS configuration store, InstanceIdentifier<Node> is null.");
 
         return SfcDataStoreAPI.deleteTransactionAPI(ovsdbNodeIID, LogicalDatastoreType.CONFIGURATION);
     }
 
-    private boolean putOvsdbTerminationPoint(OvsdbBridgeAugmentation ovsdbBridge,
+    public static boolean putOvsdbTerminationPoint(OvsdbBridgeAugmentation ovsdbBridge,
             OvsdbTerminationPointAugmentation ovsdbTerminationPoint) {
         Preconditions.checkNotNull(ovsdbTerminationPoint,
                 "Cannot PUT Termination Point into OVS configuration store,"
@@ -172,7 +64,7 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
                 ovsdbTerminationPoint, LogicalDatastoreType.CONFIGURATION);
     }
 
-    private boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
+    public static boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
         Preconditions.checkNotNull(ovsdbTerminationPointIID,
                 "Cannot DELETE Termination Point from OVS configuration store,"
                 + "InstanceIdentifier<TerminationPoint> is null.");
@@ -180,7 +72,7 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
         return SfcDataStoreAPI.deleteTransactionAPI(ovsdbTerminationPointIID, LogicalDatastoreType.CONFIGURATION);
     }
 
-    private Node readOvsdbNodeByIp(String ipAddress) {
+    public static Node readOvsdbNodeByIp(String ipAddress) {
         Preconditions.checkNotNull(ipAddress,
                 "Cannot READ Node for given ipAddress from OVS operational store, ipAddress is null.");
 
@@ -218,7 +110,7 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
         return null;
     }
 
-    private OvsdbBridgeAugmentation readOvsdbBridge(InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID) {
+    public static OvsdbBridgeAugmentation readOvsdbBridge(InstanceIdentifier<OvsdbBridgeAugmentation> bridgeIID) {
         Preconditions.checkNotNull(bridgeIID,
                 "Cannot READ OVS Bridge from OVS operational store, "
                 + "InstanceIdentifier<OvsdbBridgeAugmentation> is null.");
@@ -226,7 +118,7 @@ public class SfcOvsDataStoreAPI implements Callable<Object> {
         return SfcDataStoreAPI.readTransactionAPI(bridgeIID, LogicalDatastoreType.OPERATIONAL);
     }
 
-    private Node readOvsdbNodeByRef(OvsdbNodeRef nodeRef) {
+    public static Node readOvsdbNodeByRef(OvsdbNodeRef nodeRef) {
         Preconditions.checkNotNull(nodeRef, "Cannot READ OVS Node from OVSDB operational store, nodeRef is null.");
         InstanceIdentifier<Node> bridgeIID = (InstanceIdentifier<Node>) nodeRef.getValue();
 

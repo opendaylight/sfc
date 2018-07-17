@@ -9,14 +9,18 @@
 package org.opendaylight.sfc.provider.api;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FluentFuture;
+import com.google.common.util.concurrent.ListenableFuture;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,102 +36,132 @@ import org.slf4j.LoggerFactory;
  * @since 2014-11-22
  */
 public final class SfcDataStoreAPI {
-    private static DataBroker dataProvider = null;
+    private static DataBroker dataBroker = null;
     private static final Logger LOG = LoggerFactory.getLogger(SfcDataStoreAPI.class);
 
     // blueprint setter
     // FIXME - Suppress FB violation. This class should really be a normal instance and not use statics.
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void setDataProvider(DataBroker broker) {
-        dataProvider = broker;
+        SfcDataStoreAPI.dataBroker = broker;
     }
 
     // Auxiliary static setter just for testing, because in UT we can't use
-    // blueprint,
-    // so the injection should be manual
+    // blueprint, so the injection should be manual
     public static void setDataProviderAux(DataBroker broker) {
-        dataProvider = broker;
+        SfcDataStoreAPI.dataBroker = broker;
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean deleteTransactionAPI(
             InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType) {
-        boolean ret = false;
+        if (dataBroker == null) {
+            LOG.error("deleteTransactionAPI: dataBroker not initialized!");
+            return false;
+        }
 
-        if (dataProvider == null) {
-            LOG.error("deleteTransactionAPI: dataProvider not initialized!");
-            return ret;
-        }
-        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
-        writeTx.delete(logicalDatastoreType, deleteIID);
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+        FluentFuture<? extends CommitInfo> commitFuture = deleteTransactionAsyncAPI(deleteIID, logicalDatastoreType);
         try {
-            submitFuture.checkedGet();
-            ret = true;
-        } catch (TransactionCommitFailedException e) {
+            commitFuture.get();
+            return true;
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("deleteTransactionAPI: Transaction failed", e);
+            return false;
         }
-        return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject>
+        FluentFuture<? extends CommitInfo> deleteTransactionAsyncAPI(
+            InstanceIdentifier<U> deleteIID, LogicalDatastoreType logicalDatastoreType) {
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.delete(logicalDatastoreType, deleteIID);
+
+        return writeTx.commit();
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writeMergeTransactionAPI(
             InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
-        boolean ret = false;
-        if (dataProvider == null) {
-            LOG.error("writeMergeTransactionAPI: dataProvider not initialized!");
-            return ret;
+        if (dataBroker == null) {
+            LOG.error("writeMergeTransactionAPI: dataBroker not initialized!");
+            return false;
         }
-        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
-        writeTx.merge(logicalDatastoreType, addIID, data, true);
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+
+        FluentFuture<? extends CommitInfo> commitFuture =
+                writeMergeTransactionAsyncAPI(addIID, data, logicalDatastoreType);
+
         try {
-            submitFuture.checkedGet();
-            ret = true;
-        } catch (TransactionCommitFailedException e) {
+            commitFuture.get();
+            return true;
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("writeMergeTransactionAPI: Transaction failed", e);
+            return false;
         }
-        return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject>
+        FluentFuture<? extends CommitInfo> writeMergeTransactionAsyncAPI(
+            InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.merge(logicalDatastoreType, addIID, data, true);
+
+        return writeTx.commit();
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> boolean writePutTransactionAPI(
             InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
-        boolean ret = false;
-        if (dataProvider == null) {
-            LOG.error("writePutTransactionAPI: dataProvider not initialized!");
-            return ret;
+        if (dataBroker == null) {
+            LOG.error("writePutTransactionAPI: dataBroker not initialized!");
+            return false;
         }
-        WriteTransaction writeTx = dataProvider.newWriteOnlyTransaction();
-        writeTx.put(logicalDatastoreType, addIID, data, true);
-        CheckedFuture<Void, TransactionCommitFailedException> submitFuture = writeTx.submit();
+
+        FluentFuture<? extends CommitInfo> commitFuture =
+                writePutTransactionAsyncAPI(addIID, data, logicalDatastoreType);
+
         try {
-            submitFuture.checkedGet();
-            ret = true;
-        } catch (TransactionCommitFailedException e) {
+            commitFuture.get();
+            return true;
+        } catch (InterruptedException | ExecutionException e) {
             LOG.error("writePutTransactionAPI: Transaction failed", e);
+            return false;
         }
-        return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject>
+        FluentFuture<? extends CommitInfo> writePutTransactionAsyncAPI(
+            InstanceIdentifier<U> addIID, U data, LogicalDatastoreType logicalDatastoreType) {
+        WriteTransaction writeTx = dataBroker.newWriteOnlyTransaction();
+        writeTx.put(logicalDatastoreType, addIID, data, true);
+
+        return writeTx.commit();
     }
 
     public static <U extends org.opendaylight.yangtools.yang.binding.DataObject> U readTransactionAPI(
             InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType) {
         U ret = null;
 
-        if (dataProvider == null) {
-            LOG.error("readTransactionAPI: dataProvider not initialized!");
+        if (dataBroker == null) {
+            LOG.error("readTransactionAPI: dataBroker not initialized!");
             return ret;
         }
-        ReadOnlyTransaction readTx = dataProvider.newReadOnlyTransaction();
+        ListenableFuture<Optional<U>> submitFuture = readTransactionAsyncAPI(readIID, logicalDatastoreType);
         Optional<U> optionalDataObject;
-        CheckedFuture<Optional<U>, ReadFailedException> submitFuture = readTx.read(logicalDatastoreType, readIID);
         try {
-            optionalDataObject = submitFuture.checkedGet();
+            optionalDataObject = submitFuture.get();
             if (optionalDataObject != null && optionalDataObject.isPresent()) {
                 ret = optionalDataObject.get();
             } else {
                 LOG.debug("{}: Failed to read", Thread.currentThread().getStackTrace()[1]);
             }
-        } catch (ReadFailedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn("failed to ....", e);
         }
         return ret;
+    }
+
+    public static <U extends org.opendaylight.yangtools.yang.binding.DataObject>
+        ListenableFuture<Optional<U>> readTransactionAsyncAPI(
+            InstanceIdentifier<U> readIID, LogicalDatastoreType logicalDatastoreType) {
+        ReadOnlyTransaction readTx = dataBroker.newReadOnlyTransaction();
+
+        return readTx.read(logicalDatastoreType, readIID);
     }
 }

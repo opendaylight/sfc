@@ -19,11 +19,6 @@ package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
@@ -100,35 +95,7 @@ public final class SfcOvsUtil {
     public static final String DPL_NAME_INTERNAL = "Internal";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
 
-    private static ExecutorService executor = Executors.newFixedThreadPool(5);
-
     private SfcOvsUtil() {
-    }
-
-    /**
-     * Submits callable for execution by given ExecutorService. Thanks to this
-     * wrapper method, boolean result will be returned instead of Future.
-     *
-     * <p>
-     *
-     * @param callable
-     *            Callable
-     * @param executorService
-     *            ExecutorService
-     * @return true if callable completed successfully, otherwise false.
-     */
-    public static Object submitCallable(Callable<?> callable, ExecutorService executorService) {
-        Object result = null;
-
-        Future<?> future = executorService.submit(callable);
-
-        try {
-            result = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("{} failed to: {}", callable.toString(), e);
-        }
-
-        return result;
     }
 
     /**
@@ -403,42 +370,16 @@ public final class SfcOvsUtil {
                 .buildTerminationPointAugmentationList(sffDataPlaneLocatorList);
 
         for (OvsdbTerminationPointAugmentation ovsdbTerminationPoint : ovsdbTerminationPointList) {
-            Object[] methodParameters = { ovsdbBridge, ovsdbTerminationPoint };
-            SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutTerminationPoint = new SfcOvsDataStoreAPI(
-                    SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT, methodParameters);
-            boolean partialResult = (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutTerminationPoint,
-                    executor);
+            boolean partialResult = SfcOvsDataStoreAPI.putOvsdbTerminationPoint(ovsdbBridge, ovsdbTerminationPoint);
 
-            // once result is false, we will keep it false (it will be not
-            // overwritten with next
-            // partialResults)
+            // once result is false, we will keep it false
+            // (it will be not overwritten with next partialResults)
             if (result) {
                 result = partialResult;
             }
         }
 
         return result;
-    }
-
-    public static boolean putOvsdbBridge(OvsdbBridgeAugmentation ovsdbBridge) {
-        Object[] methodParameters = { ovsdbBridge };
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIPutBridge = new SfcOvsDataStoreAPI(
-                SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE, methodParameters);
-        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIPutBridge, executor);
-    }
-
-    public static boolean deleteOvsdbNode(InstanceIdentifier<Node> ovsdbNodeIID) {
-        Object[] methodParameters = { ovsdbNodeIID };
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteNode = new SfcOvsDataStoreAPI(
-                SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE, methodParameters);
-        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteNode, executor);
-    }
-
-    public static boolean deleteOvsdbTerminationPoint(InstanceIdentifier<TerminationPoint> ovsdbTerminationPointIID) {
-        Object[] methodParameters = { ovsdbTerminationPointIID };
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPIDeleteTerminationPoint = new SfcOvsDataStoreAPI(
-                SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT, methodParameters);
-        return (boolean) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPIDeleteTerminationPoint, executor);
     }
 
     public static ServiceFunctionForwarder augmentSffWithOpenFlowNodeId(ServiceFunctionForwarder sff) {
@@ -586,12 +527,7 @@ public final class SfcOvsUtil {
     }
 
     private static DatapathId getOvsDataPathId(NodeId nodeId) {
-        Object[] methodParams = { SfcOvsUtil.buildOvsdbBridgeIID(nodeId) };
-        SfcOvsDataStoreAPI readOvsdbBridge = new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE,
-                methodParams);
-
-        OvsdbBridgeAugmentation readBridge = (OvsdbBridgeAugmentation) SfcOvsUtil.submitCallable(readOvsdbBridge,
-                executor);
+        OvsdbBridgeAugmentation readBridge = SfcOvsDataStoreAPI.readOvsdbBridge(SfcOvsUtil.buildOvsdbBridgeIID(nodeId));
 
         if (readBridge == null) {
             LOG.warn("getOvsDataPathId cant readBridge from data store");
@@ -623,27 +559,19 @@ public final class SfcOvsUtil {
         } else if (ip.getIpv6Address() != null) {
             ipAddressString = ip.getIpv6Address().getValue();
         }
-        Object[] methodParams = { ipAddressString };
-        SfcOvsDataStoreAPI sfcOvsDataStoreAPI = new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP,
-                methodParams);
-        Node node = (Node) SfcOvsUtil.submitCallable(sfcOvsDataStoreAPI, executor);
+        Node node = SfcOvsDataStoreAPI.readOvsdbNodeByIp(ipAddressString);
 
         if (node != null && node.getNodeId() != null) {
             return node;
         } else {
-            LOG.warn("OVS Node for IP address {} does not exist!", methodParams[0]);
+            LOG.warn("OVS Node for IP address {} does not exist!", ipAddressString);
             return null;
         }
     }
 
     public static OvsdbNodeAugmentation getOvsdbNodeAugmentation(OvsdbNodeRef nodeRef) {
-        Preconditions.checkNotNull(executor);
         if (nodeRef.getValue().getTargetType().equals(Node.class)) {
-            Object[] methodParams = { nodeRef };
-            SfcOvsDataStoreAPI readOvsdbNode = new SfcOvsDataStoreAPI(SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF,
-                    methodParams);
-
-            Node ovsdbNode = (Node) SfcOvsUtil.submitCallable(readOvsdbNode, executor);
+            Node ovsdbNode = SfcOvsDataStoreAPI.readOvsdbNodeByRef(nodeRef);
 
             if (ovsdbNode != null) {
                 return ovsdbNode.augmentation(OvsdbNodeAugmentation.class);
@@ -653,6 +581,7 @@ public final class SfcOvsUtil {
         } else {
             LOG.warn("Bridge 'managedBy' non-ovsdb-node.  nodeRef {}", nodeRef);
         }
+
         return null;
     }
 

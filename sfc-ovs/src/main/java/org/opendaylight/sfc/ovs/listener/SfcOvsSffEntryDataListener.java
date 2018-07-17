@@ -22,6 +22,7 @@ import javax.inject.Singleton;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
+import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.ovs.api.SfcSffToOvsMappingAPI;
 import org.opendaylight.sfc.ovs.provider.SfcOvsUtil;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
@@ -94,7 +95,7 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
 
         if (ovsdbBridge != null) {
             // put Bridge
-            SfcOvsUtil.putOvsdbBridge(ovsdbBridge);
+            SfcOvsDataStoreAPI.putOvsdbBridge(ovsdbBridge);
 
             // put Termination Points
             SfcOvsUtil.putOvsdbTerminationPoints(ovsdbBridge, sff.getSffDataPlaneLocator());
@@ -123,7 +124,7 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
                     .augmentation(SffOvsLocatorOptionsAugmentation.class);
             if (sffOvsOptions != null && sffDpl.getDataPlaneLocator().getTransport().equals(VxlanGpe.class)) {
                 // delete OvsdbTerminationPoint
-                SfcOvsUtil.deleteOvsdbTerminationPoint(
+                SfcOvsDataStoreAPI.deleteOvsdbTerminationPoint(
                         SfcOvsUtil.buildOvsdbTerminationPointIID(ovsdbBridgeNodeId, sffDpl.getName().getValue()));
             }
         }

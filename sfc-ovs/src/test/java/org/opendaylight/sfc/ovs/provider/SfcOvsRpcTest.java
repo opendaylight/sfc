@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.CreateOvsBridgeOutput;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.ovs.rev140701.create.ovs.bridge.input.OvsNodeBuilder;
@@ -40,7 +41,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(SfcOvsUtil.class)
+@PrepareForTest({SfcOvsUtil.class, SfcDataStoreAPI.class})
 public class SfcOvsRpcTest {
 
     private static final String IP_ADDRESS = "170.0.0.1";
@@ -68,6 +69,7 @@ public class SfcOvsRpcTest {
         // set node ip
         ovsNodeBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS)));
         createOvsBridgeInputBuilder.setOvsNode(ovsNodeBuilder.build());
+        createOvsBridgeInputBuilder.setName(TEST_NAME);
 
         futureResult = sfcOvsRpcObject.createOvsBridge(createOvsBridgeInputBuilder.build());
 
@@ -95,7 +97,6 @@ public class SfcOvsRpcTest {
         createOvsBridgeInputBuilder.setName(TEST_NAME).setOvsNode(ovsNodeBuilder.build());
 
         PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "getManagerNodeByIp")).toReturn(nodeBuilder.build());
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(false);
 
         futureResult = sfcOvsRpcObject.createOvsBridge(createOvsBridgeInputBuilder.build());
 
@@ -117,8 +118,6 @@ public class SfcOvsRpcTest {
         ovsNodeBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS))).setPort(new PortNumber(PORT_NUMBER));
         createOvsBridgeInputBuilder.setName(TEST_NAME).setOvsNode(ovsNodeBuilder.build());
 
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(false);
-
         futureResult = sfcOvsRpcObject.createOvsBridge(createOvsBridgeInputBuilder.build());
 
         assertNotNull("Must not be null", futureResult);
@@ -134,16 +133,22 @@ public class SfcOvsRpcTest {
 
         // set node ip & port
         ovsNodeBuilder.setIp(new IpAddress(new Ipv4Address(IP_ADDRESS))).setPort(new PortNumber(PORT_NUMBER));
-        createOvsBridgeInputBuilder.setOvsNode(ovsNodeBuilder.build()).setName(TEST_NAME);
+        createOvsBridgeInputBuilder.setOvsNode(ovsNodeBuilder.build())
+                .setName(TEST_NAME);
 
-        createOvsBridgeInputBuilder.setOvsNode(ovsNodeBuilder.build()).setName(TEST_NAME);
-
-        PowerMockito.stub(PowerMockito.method(SfcOvsUtil.class, "submitCallable")).toReturn(true);
+        PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "writeMergeTransactionAPI"))
+                .toReturn(true);
 
         futureResult = sfcOvsRpcObject.createOvsBridge(createOvsBridgeInputBuilder.build());
 
-        assertNotNull("Must not be null", futureResult);
-        assertTrue("Result must be null", futureResult.get().getResult().isResult());
-        assertTrue("Must be true", futureResult.get().isSuccessful());
+        assertNotNull(futureResult);
+
+        RpcResult<CreateOvsBridgeOutput> result = futureResult.get();
+        assertNotNull(result);
+        assertTrue(result.isSuccessful());
+
+        assertNotNull(result.getResult());
+        assertNotNull(result.getResult().isResult());
+        assertTrue(result.getResult().isResult());
     }
 }

@@ -17,7 +17,6 @@ import static junit.framework.TestCase.assertTrue;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import org.junit.After;
 import org.junit.Before;
@@ -25,6 +24,7 @@ import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.AbstractDataStoreManager;
+import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPITest;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SffDataPlaneLocatorName;
@@ -119,37 +119,6 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
     public void finalized() {
         // delete node after test
         deleteOvsdbNode(LogicalDatastoreType.CONFIGURATION);
-    }
-
-    @Test
-    public void testSubmitCallable() throws Exception {
-
-        // create simple call() method for testing purposes
-        class CallableTestSuccess implements Callable {
-
-            @Override
-            public String call() throws Exception {
-                return TEST_STRING;
-            }
-        }
-
-        // call() method throws exception
-        class CallableTestException implements Callable {
-
-            @Override
-            public Object call() throws Exception {
-                throw new InterruptedException();
-            }
-        }
-
-        Object object = SfcOvsUtil.submitCallable(new CallableTestSuccess(), executorService);
-
-        assertNotNull("Must not be null", object);
-        assertEquals("Must be equal", object, TEST_STRING);
-
-        object = SfcOvsUtil.submitCallable(new CallableTestException(), executorService);
-
-        assertNull("Must be null", object);
     }
 
     @Test
@@ -328,25 +297,10 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         SffName sffName = new SffName(TEST_IP_ADDRESS + OVSDB_BRIDGE_PREFIX + TEST_BRIDGE_NAME);
 
         // delete created ovsdb termination point
-        result = SfcOvsUtil.deleteOvsdbTerminationPoint(
+        result = SfcOvsDataStoreAPI.deleteOvsdbTerminationPoint(
                 SfcOvsUtil.buildOvsdbTerminationPointIID(new NodeId(sffName.getValue()), "Dpl"));
 
         assertNotNull("Must not be null", result);
-        assertTrue("Must be true", result);
-    }
-
-    @Test
-    // put ovsdb bridge into ovs node (created in @Before block) and then delete whole node
-    public void testPutAndDeleteOvsdbNode() throws Exception {
-
-        boolean result = SfcOvsUtil.putOvsdbBridge(createOvsdbBridgeAugmentation());
-
-        assertNotNull("Must be not null", result);
-        assertTrue("Must be true", result);
-
-        result = SfcOvsUtil.deleteOvsdbNode(nodeIID);
-
-        assertNotNull("Must be not null", result);
         assertTrue("Must be true", result);
     }
 

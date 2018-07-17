@@ -73,7 +73,6 @@ public class SfcOvsDataStoreAPITest {
     private final String testIpv6 = "01:23:45:67:89:AB:CD:EF";
     private final InstanceIdentifier<Node> nodeIID = createNodeIID();
     private SfcOvsDataStoreAPI sfcOvsDataStoreAPIObject;
-    private SfcOvsDataStoreAPI.Method methodToCall;
     private Object testResult;
 
     @Before
@@ -90,17 +89,12 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testReadOvsdbBridge() throws Exception {
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE;
-        methodParams[0] = createBridgeIID();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI"))
                 .toReturn(createOvsdbBridgeAugmentation());
 
-        testResult = sfcOvsDataStoreAPIObject.call();
+        OvsdbBridgeAugmentation ovsdbBridge = SfcOvsDataStoreAPI.readOvsdbBridge(createBridgeIID());
 
-        assertNotNull("Must not be null", testResult);
+        assertNotNull(ovsdbBridge);
     }
 
     /*
@@ -109,12 +103,7 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testPutOvsdbBridge() throws Exception {
-        methodToCall = SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE;
-        methodParams[0] = createOvsdbBridgeAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.putOvsdbBridge(createOvsdbBridgeAugmentation());
 
         assertNotNull("Must not be null", testResult);
     }
@@ -125,11 +114,7 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testDeleteOvsdbNode() throws Exception {
-        methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE;
-        methodParams[0] = nodeIID;
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.deleteOvsdbNode(nodeIID);
 
         assertNotNull("Must not be null", testResult);
     }
@@ -143,21 +128,15 @@ public class SfcOvsDataStoreAPITest {
         sffDataPlaneLocatorBuilder.setName(dplName);
 
         // put tp
-        methodToCall = SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT;
-        methodParams[0] = createOvsdbBridgeAugmentation();
-        methodParams[1] = createOvsdbTerminationPointAugmentation();
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.putOvsdbTerminationPoint(createOvsdbBridgeAugmentation(),
+                createOvsdbTerminationPointAugmentation());
 
         assertNotNull("Must not be null", testResult);
 
         // delete tp
-        methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT;
         SffDataPlaneLocator sffDataPlaneLocator = sffDataPlaneLocatorBuilder.build();
-        methodParams[0] = createOvsdbTerminationPointIID(new SffName(testIpv4), sffDataPlaneLocator.getName());
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.deleteOvsdbTerminationPoint(
+                createTerminationPointIID(new SffName(testIpv4), sffDataPlaneLocator.getName()));
 
         assertNotNull("Must not be null", testResult);
     }
@@ -165,16 +144,10 @@ public class SfcOvsDataStoreAPITest {
     // method returns null, because node is missing in topology
     @Test
     public void testReadOvsdbNodeByIpFailed() throws Exception {
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
-        methodParams[0] = testIpv4;
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI"))
                 .toReturn(createFaultyTopology());
 
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.readOvsdbNodeByIp(testIpv4);
 
         assertNull("Must be null", testResult);
     }
@@ -182,16 +155,10 @@ public class SfcOvsDataStoreAPITest {
     // method returns null, because remote ip is missing in topology
     @Test
     public void testReadOvsdbNodeByIpFailedAgain() throws Exception {
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
-        methodParams[0] = testIpv4;
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI"))
                 .toReturn(createFaultyTopologyAgain());
 
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.readOvsdbNodeByIp(testIpv4);
 
         assertNull("Must be null", testResult);
     }
@@ -203,16 +170,10 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testReadOvsdbNodeByIpv4() throws Exception {
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
-        methodParams[0] = testIpv4;
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI"))
                 .toReturn(createIpv4Topology());
 
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.readOvsdbNodeByIp(testIpv4);
 
         assertNotNull("Must not be null", testResult);
     }
@@ -224,16 +185,10 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testReadOvsdbNodeByIpv6() throws Exception {
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
-        methodParams[0] = testIpv6;
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI"))
                 .toReturn(createIpv6Topology());
 
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.readOvsdbNodeByIp(testIpv6);
 
         assertNotNull("Must not be null", testResult);
     }
@@ -245,81 +200,11 @@ public class SfcOvsDataStoreAPITest {
      */
     @Test
     public void testReadOvsdbNodeByRef() throws Exception {
-        OvsdbNodeRef ovsdbNodeRef = new OvsdbNodeRef(nodeIID);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF;
-        methodParams[0] = ovsdbNodeRef;
-
         PowerMockito.stub(PowerMockito.method(SfcDataStoreAPI.class, "readTransactionAPI")).toReturn(createNode());
 
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
+        testResult = SfcOvsDataStoreAPI.readOvsdbNodeByRef(new OvsdbNodeRef(nodeIID));
 
         assertNotNull("Must not be null", testResult);
-    }
-
-    /*
-     * there are tested all options with incorrect parameters, so every test
-     * returns null
-     */
-    @Test
-    public void testAllCallsWithIncorrectParameters() throws Exception {
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_BRIDGE;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.PUT_OVSDB_BRIDGE;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_NODE;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.PUT_OVSDB_TERMINATION_POINT;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-        methodParams[1] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.DELETE_OVSDB_TERMINATION_POINT;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_IP;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
-
-        methodToCall = SfcOvsDataStoreAPI.Method.READ_OVSDB_NODE_BY_REF;
-        methodParams[0] = createOvsdbTerminationPointAugmentation();
-
-        sfcOvsDataStoreAPIObject = new SfcOvsDataStoreAPI(methodToCall, methodParams);
-        testResult = sfcOvsDataStoreAPIObject.call();
-
-        assertNull("Must be null", testResult);
     }
 
     /*
@@ -383,6 +268,18 @@ public class SfcOvsDataStoreAPITest {
                         sffName.getValue() + bridgePrefix + BRIDGE_NAME + terminationPointPrefix
                                 + sffDataPlaneLocatorName.getValue())))
                 .augmentation(OvsdbTerminationPointAugmentation.class);
+    }
+
+    private InstanceIdentifier<TerminationPoint>
+        createTerminationPointIID(SffName sffName, SffDataPlaneLocatorName sffDataPlaneLocatorName) {
+        final String bridgePrefix = "/bridge/";
+        final String terminationPointPrefix = "/terminationpoint/";
+        return InstanceIdentifier.create(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(SouthboundConstants.OVSDB_TOPOLOGY_ID))
+                .child(Node.class, new NodeKey(new NodeId(sffName.getValue() + bridgePrefix + BRIDGE_NAME)))
+                .child(TerminationPoint.class, new TerminationPointKey(new TpId(
+                        sffName.getValue() + bridgePrefix + BRIDGE_NAME + terminationPointPrefix
+                                + sffDataPlaneLocatorName.getValue())));
     }
 
     // create ipv4 topology for successful "readOvsdbNodeByIp" test

@@ -24,11 +24,34 @@
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opendaylight.mdsal.model</groupId>
+                <artifactId>mdsal-model-artifacts</artifactId>
+                <version>0.13.0-SNAPSHOT</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
-            <artifactId>odl-mdsal-models</artifactId>
-            <version>0.13.0-SNAPSHOT</version>
+            <artifactId>odl-mdsal-model-rfc7224</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>odl-mdsal-model-rfc7277</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>odl-mdsal-model-draft-ietf-netmod-acl-model-07</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

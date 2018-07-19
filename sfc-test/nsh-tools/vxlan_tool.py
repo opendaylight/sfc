@@ -880,7 +880,7 @@ def main():
                 tcp_offset = eth_length * 2 + ip_length + nshbase_length + nshcontext_length
                 decode_tcp(packet, tcp_offset, mytcpheader)
                 if (mytcpheader.tcp_dport == args.block):
-                    print bcolors.WARNING + "TCP packet dropped on port: " + str(args.block) + bcolors.ENDC
+                    print(bcolors.WARNING,"TCP packet dropped on port: ", str(args.block),bcolors.ENDC)
                     continue
 
             if ((args.do == "forward") and (args.interface is not None)):
@@ -1076,7 +1076,7 @@ def main():
                 tcp_offset = eth_length * 2 + ip_length * 2 + nshbase_length + nshcontext_length + udp_length + vxlan_length
                 decode_tcp(packet, tcp_offset, mytcpheader)
                 if (mytcpheader.tcp_dport == args.block):
-                    print bcolors.WARNING + "TCP packet dropped on port: " + str(args.block) + bcolors.ENDC
+                    print(bcolors.WARNING , "TCP packet dropped on port: " , str(args.block) , bcolors.ENDC)
                     continue
 
             if ((args.do == "forward") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):

@@ -138,7 +138,7 @@ public final class SfcSffToOvsMappingAPI {
         ControllerEntryBuilder controllerBuilder = new ControllerEntryBuilder();
         List<ControllerEntry> result = new ArrayList<>();
         if (connection.getConnectionInfo().getLocalIp() != null) {
-            String localIp = String.valueOf(connection.getConnectionInfo().getLocalIp().getValue());
+            String localIp = connection.getConnectionInfo().getLocalIp().stringValue();
             String targetString = "tcp:" + localIp + ":" + OF_PORT;
             controllerBuilder.setTarget(new Uri(targetString));
             result.add(controllerBuilder.build());

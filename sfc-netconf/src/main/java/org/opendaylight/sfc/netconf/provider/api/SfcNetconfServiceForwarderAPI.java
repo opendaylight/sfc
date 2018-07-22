@@ -52,7 +52,7 @@ public class SfcNetconfServiceForwarderAPI {
 
         ServiceFunctionForwarderBuilder serviceFunctionForwarderBuilder = new ServiceFunctionForwarderBuilder();
         serviceFunctionForwarderBuilder.setName(sffName);
-        IpAddress ipAddress = new IpAddress(nnode.getHost().getIpAddress().getValue());
+        IpAddress ipAddress = nnode.getHost().getIpAddress();
         serviceFunctionForwarderBuilder.setIpMgmtAddress(ipAddress);
         return serviceFunctionForwarderBuilder.build();
     }

@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.SlTransportType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -221,7 +222,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
             String ipMgmtAddress, String dpLocatorIpAddress, int dpLocatorPort, SfDataPlaneLocatorName dpLocatorKey) {
 
         // prepare ip builder for data plane locator
-        IpAddress ipAddress = new IpAddress(dpLocatorIpAddress.toCharArray());
+        IpAddress ipAddress = IpAddressBuilder.getDefaultInstance(dpLocatorIpAddress);
         PortNumber portNumber = new PortNumber(dpLocatorPort);
         IpBuilder ipBuilder = new IpBuilder();
         ipBuilder = ipBuilder.setIp(ipAddress).setPort(portNumber);
@@ -238,7 +239,7 @@ public class SfcProviderRpcTest extends AbstractSfcRendererServicePathAPITest {
         // create PutServiceFunctionInput
         PutServiceFunctionInputBuilder putServiceFunctionInputBuilder = new PutServiceFunctionInputBuilder();
         putServiceFunctionInputBuilder = putServiceFunctionInputBuilder.setName(sfName).setType(sfType)
-                .setIpMgmtAddress(new IpAddress(ipMgmtAddress.toCharArray()))
+                .setIpMgmtAddress(IpAddressBuilder.getDefaultInstance(ipMgmtAddress))
                 .setSfDataPlaneLocator(sfDataPlaneLocators);
         return putServiceFunctionInputBuilder.build();
     }

@@ -71,7 +71,7 @@ public class SfcOvsRpc implements ServiceFunctionForwarderOvsService, AutoClosea
 
         //create parent OVS Node InstanceIdentifier (based on ip)
         } else if (ovsNode.getIp() != null) {
-            IpAddress ipAddress = new IpAddress(ovsNode.getIp().getValue());
+            IpAddress ipAddress = ovsNode.getIp();
             Node node = SfcOvsUtil.getManagerNodeByIp(ipAddress);
             if (node != null) {
                 nodeId = node.getNodeId();

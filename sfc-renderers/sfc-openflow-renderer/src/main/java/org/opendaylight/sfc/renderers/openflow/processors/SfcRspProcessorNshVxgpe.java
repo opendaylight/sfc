@@ -127,7 +127,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId(),
                 entry.getDstDpnId());
         IpPortLocator dstSfLocator = (IpPortLocator) sfDpl.getLocatorType();
-        String sfIp = new String(dstSfLocator.getIp().getValue());
+        String sfIp = dstSfLocator.getIp().stringValue();
         short vxlanUdpPort = dstSfLocator.getPort().getValue().shortValue();
         long sffPort = sfcProviderUtils.getPortNumberFromName(entry.getDstSff().getValue(),
                 sfDplOvs.getOvsPort().getPortId(), entry.getPathId());
@@ -227,7 +227,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         }
 
         IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
-        String dstIp = new String(locator.getIp().getValue());
+        String dstIp = locator.getIp().strinValue();
         String nshProxyIp = null;
         SfLocatorProxyAugmentation augment = dstSfDpl.augmentation(SfLocatorProxyAugmentation.class);
         if (augment != null) {
@@ -237,7 +237,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
                 return;
             }
             locator = (IpPortLocator) proxyDpl.getLocatorType();
-            nshProxyIp = new String(locator.getIp().getValue());
+            nshProxyIp = locator.getIp().stringValue();
         }
         this.configureNextHopFlow(entry, entry.getDstSff(), dstIp, nshProxyIp);
     }
@@ -259,7 +259,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         // can be used by other transports. For Nsh, just skip it.
         if (dstSffDpl != null) {
             IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
-            this.configureNextHopFlow(entry, entry.getSrcSff(), new String(dstSffLocator.getIp().getValue()), null);
+            this.configureNextHopFlow(entry, entry.getSrcSff(), dstSffLocator.getIp().stringValue(), null);
         }
     }
 
@@ -288,7 +288,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
         }
 
         IpPortLocator locator = (IpPortLocator) dstSfDpl.getLocatorType();
-        String dstIp = new String(locator.getIp().getValue());
+        String dstIp = locator.getIp().stringValue();
         String nshProxyIp = null;
         SfLocatorProxyAugmentation augment = dstSfDpl.augmentation(SfLocatorProxyAugmentation.class);
         if (augment != null) {
@@ -298,7 +298,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
                 return;
             }
             locator = (IpPortLocator) proxyDpl.getLocatorType();
-            nshProxyIp = new String(locator.getIp().getValue());
+            nshProxyIp = locator.getIp().stringValue();
         }
         this.configureNextHopFlow(entry, entry.getSrcSff(), dstIp, nshProxyIp);
     }
@@ -317,7 +317,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
     public void configureNextHopFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SffDataPlaneLocator dstSffDpl) {
         IpPortLocator dstSffLocator = (IpPortLocator) dstSffDpl.getDataPlaneLocator().getLocatorType();
-        this.configureNextHopFlow(entry, entry.getDstSff(), new String(dstSffLocator.getIp().getValue()), null);
+        this.configureNextHopFlow(entry, entry.getDstSff(), dstSffLocator.getIp().stringValue(), null);
     }
 
     /**
@@ -396,7 +396,7 @@ public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
             this.sfcFlowProgrammer.configureNshVxgpeLastHopTransportEgressFlow(sffNodeName, nsp, nsi, srcOfsPortStr);
             IpPortLocator srcSffLocator = (IpPortLocator) srcSffDpl.getDataPlaneLocator().getLocatorType();
             this.sfcFlowProgrammer.configureNshVxgpeAppCoexistTransportEgressFlow(sffNodeName, nsp, nsi,
-                    new String(srcSffLocator.getIp().getValue()));
+                    srcSffLocator.getIp().stringValue());
         } else {
             this.sfcFlowProgrammer.configureNshVxgpeTransportEgressFlow(sffNodeName, nsp, nsi, srcOfsPortStr);
         }

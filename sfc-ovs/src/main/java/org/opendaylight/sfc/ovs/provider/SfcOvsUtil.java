@@ -529,7 +529,7 @@ public final class SfcOvsUtil {
                         .getImplementedInterface();
                 if (locatorType.isAssignableFrom(Ip.class)) {
                     Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
-                    ip = new IpAddress(ipPortLocator.getIp().getValue());
+                    ip = ipPortLocator.getIp();
                 }
             }
         }

@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterfaceBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana._if.type.rev140508.L2vlan;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.InterfaceBuilder;
@@ -292,7 +292,7 @@ public class SfcGeniusDataUtilsTest {
         };
 
         ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
-                .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
+                .setIpMgmtAddress(IpAddressBuilder.getDefaultInstance(dpiIpAddress))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 
@@ -313,13 +313,14 @@ public class SfcGeniusDataUtilsTest {
                 add(new SfDataPlaneLocatorBuilder()
                         .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
                         .setServiceFunctionForwarder(new SffName("sfflogical1")).setLocatorType(new IpBuilder()
-                                .setIp(new IpAddress(dpiIpAddress.toCharArray())).setPort(new PortNumber(8181)).build())
+                                .setIp(IpAddressBuilder.getDefaultInstance(dpiIpAddress)).setPort(new PortNumber(8181))
+                                .build())
                         .build());
             }
         };
 
         ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
-                .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
+                .setIpMgmtAddress(IpAddressBuilder.getDefaultInstance(dpiIpAddress))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 
@@ -354,7 +355,7 @@ public class SfcGeniusDataUtilsTest {
         };
 
         ServiceFunction dpiNode = new ServiceFunctionBuilder().withKey(dpiKey)
-                .setIpMgmtAddress(new IpAddress(dpiIpAddress.toCharArray()))
+                .setIpMgmtAddress(IpAddressBuilder.getDefaultInstance(dpiIpAddress))
                 .setRestUri(new Uri(dpiIpAddress.concat(":5000"))).setType(new SftTypeName("dpi"))
                 .setSfDataPlaneLocator(dpLocators).build();
 

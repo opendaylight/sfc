@@ -155,7 +155,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
         Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
 
         if (implementedInterface.equals(Ip.class) && ((IpPortLocator) sffLocatorType).getIp() != null) {
-            sfIp = String.valueOf(((IpPortLocator) sffLocatorType).getIp().getValue());
+            sfIp = ((IpPortLocator) sffLocatorType).getIp().stringValue();
         }
         return sfIp;
     }

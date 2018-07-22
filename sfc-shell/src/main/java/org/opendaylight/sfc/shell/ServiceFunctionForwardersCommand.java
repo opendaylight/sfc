@@ -74,7 +74,7 @@ public class ServiceFunctionForwardersCommand extends AbstractCommand {
             table.addRow().addContent(serviceFunctionForwarder.getName().getValue(),
                                       serviceFunctionForwarder.getIpMgmtAddress()
                                               == null ? LOGICAL_SFF : serviceFunctionForwarder.getIpMgmtAddress()
-                                              .getValue(), serviceFunctionForwarder.getRestUri()
+                                              .stringValue(), serviceFunctionForwarder.getRestUri()
                                               == null ? LOGICAL_SFF : serviceFunctionForwarder.getRestUri().getValue(),
                                       serviceFunctionForwarder.getSffDataPlaneLocator() == null
                                               || serviceFunctionForwarder.getSffDataPlaneLocator().get(0)

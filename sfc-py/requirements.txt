@@ -5,11 +5,11 @@ itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
 netifaces==0.10.4
-paramiko==1.16.0
+paramiko~=1.17.6
 pexpect==4.0.1
 ptyprocess==0.5
 py==1.4.31
-pycrypto==2.6.1
+pycrypto~=2.6.1
 pytest==2.8.3
 requests==2.8.1
 scapy-python3==0.18

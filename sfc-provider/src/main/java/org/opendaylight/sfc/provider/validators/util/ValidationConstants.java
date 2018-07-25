@@ -7,15 +7,14 @@
  */
 package org.opendaylight.sfc.provider.validators.util;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.Futures;
-import org.opendaylight.mdsal.common.api.DataValidationFailedException;
+import com.google.common.util.concurrent.FluentFuture;
 import org.opendaylight.mdsal.common.api.PostCanCommitStep;
 import org.opendaylight.mdsal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.ServiceFunctions;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.ServiceFunctionPaths;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfp.rev140701.service.function.paths.ServiceFunctionPath;
+import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 public final class ValidationConstants {
@@ -59,10 +58,8 @@ public final class ValidationConstants {
     /*
      * Futures
      */
-    public static final CheckedFuture<PostCanCommitStep, DataValidationFailedException> FAILED_CAN_COMMIT_SFP_FUTURE =
-            Futures.immediateFailedCheckedFuture(SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_CONSISTENCY);
-    public static final CheckedFuture<PostCanCommitStep, DataValidationFailedException> SUCCESS_CAN_COMMIT_FUTURE =
-            Futures.immediateCheckedFuture(PostCanCommitStep.NOOP);
+    public static final FluentFuture<PostCanCommitStep> FAILED_CAN_COMMIT_SFP_FUTURE =
+            FluentFutures.immediateFailedFluentFuture(SFP_FAILED_CAN_COMMIT_EXCEPTION_SF_CONSISTENCY);
 
     private ValidationConstants() {
     }

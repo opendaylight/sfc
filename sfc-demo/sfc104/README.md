@@ -18,16 +18,16 @@ Topology
                        /      |          |     \
                     /         |          |         \
                 /             |          |             \
-+---------------+  +--------------+   +--------------+  +---------------+
-|  classifier1  |  |    sff1      |   |     sff2     |  |  classifier2  |
-| 192.168.60.10 |  |192.168.60.20 |   |192.168.60.50 |  | 192.168.60.60 |
-+---------------+  +--------------+   +--------------+  +---------------+
-                              |          |
-                              |          |
-                   +---------------+  +--------------+
-                   |  sf1(DPI-1)   |  |   sf2(FW-1)  |
-                   |192.168.60.30  |  |192.168.60.40 |
-                   +---------------+  +--------------+
+    +---------------+  +--------------+   +--------------+  +---------------+
+    |  classifier1  |  |    sff1      |   |     sff2     |  |  classifier2  |
+    | 192.168.60.10 |  |192.168.60.20 |   |192.168.60.50 |  | 192.168.60.60 |
+    +---------------+  +--------------+   +--------------+  +---------------+
+                              |              |
+                              |              |
+                   +---------------+      +--------------+
+                   |  sf1(DPI-1)   |      |   sf2(FW-1)  |
+                   |192.168.60.30  |      |192.168.60.40 |
+                   +---------------+      +--------------+
 
 Setup Demo
 ----------
@@ -51,7 +51,7 @@ Setup Demo
 
 3. Run demo
 
-  SFC 104 demos will download Ubuntu trusty x86_64 vagrant image and install all the necessary packages into host and vagrant VMs, so please make sure to export http_proxy and http_proxy environment variables if you have proxy behind your network before run demo script, demo script will inject these proxy settings to vagrant VMS.
+  SFC 104 demos will download Ubuntu xenial x86_64 vagrant image and install all the necessary packages into host and vagrant VMs, so please make sure to export http_proxy and http_proxy environment variables if you have proxy behind your network before run demo script, demo script will inject these proxy settings to vagrant VMS.
 
   1) For OVS demo
 

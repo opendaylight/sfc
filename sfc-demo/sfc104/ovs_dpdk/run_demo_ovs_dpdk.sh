@@ -5,7 +5,13 @@ HTTPSPROXY=$2
 
 source ./env.sh
 
-vagrant up
+# Start all the VMs, except SF2_PROXY_NAME
+vagrant up ${CLASSIFIER1_NAME}
+vagrant up ${SFF1_NAME}
+vagrant up ${SF1_NAME}
+vagrant up ${SF2_NAME}
+vagrant up ${SFF2_NAME}
+vagrant up ${CLASSIFIER2_NAME}
 
 ./common/install_ovs_to_all.sh ${HTTPPROXY} ${HTTPSPROXY}
 if [ $? -ne 0 ] ; then

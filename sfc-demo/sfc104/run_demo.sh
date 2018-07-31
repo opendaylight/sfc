@@ -49,21 +49,29 @@ if [ "${root_dir}" != "." ] ; then
 fi
 
 demo="./ovs/run_demo_ovs.sh"
+install_script=""
+installed_executable=""
 features=""
 uninstall_features=""
 case "${1}" in
 "ovs")
     demo="./ovs/run_demo_ovs.sh"
+    install_script="/vagrant/common/install_ovs.sh"
+    installed_executable="/usr/sbin/ovs-vswitchd"
     features="${features} odl-sfc-scf-openflow odl-sfc-openflow-renderer"
     uninstall_features="odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     ;;
 "ovs_dpdk")
     demo="./ovs_dpdk/run_demo_ovs_dpdk.sh"
+    install_script="/vagrant/common/install_ovs_dpdk.sh"
+    installed_executable="/usr/sbin/ovs-vswitchd"
     features="${features} odl-sfc-scf-openflow odl-sfc-openflow-renderer"
     uninstall_features="odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     ;;
 "vpp")
     demo="./vpp/run_demo_vpp.sh"
+    install_script="/vagrant/common/install_vpp.sh"
+    installed_executable="/usr/bin/vpp"
     features="${features} odl-sfc-vpp-renderer odl-sfc-scf-vpp"
     uninstall_features="odl-sfc-openflow-renderer odl-sfc-scf-openflow"
     ;;
@@ -97,10 +105,11 @@ if [ $? -ne 0 ] ;  then
     exit -1
 fi
 
-echo "Install and wait for sfc features: ${features}"
+echo "UN-Install unnecessary SFC features, this may fail: ${uninstall_features}"
 #Uninstall unnecessary features automatically
 sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} feature:uninstall ${uninstall_features}
 
+echo "Install and wait for SFC features: ${features}"
 #Install necessary features automatically
 sshpass -p karaf ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 8101 -l karaf ${LOCALHOST} feature:install odl-restconf ${features}
 retries=6
@@ -198,24 +207,22 @@ VBoxManage setextradata global VBoxInternal/CPUM/SSE4.2 1
 
 ### Halt current VMS in order to clean up dirty environment
 
+echo "Trying to stop all the VMs, if they were previously running, this may fail"
 vagrant halt -f
 
-### Just install one VM once but cloned for all the rest VMs ###
+### Just install one VM once, and clone it for all the rest of the VMs ###
 vagrant up ${CLASSIFIER1_NAME} --provider virtualbox
-vagrant ssh ${CLASSIFIER1_NAME} -c "if [ -x /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd -a -x /home/vagrant/ovs/vswitchd/ovs-vswitchd -a -x /usr/bin/vpp -a -x /opt/honeycomb/honeycomb ] ; then exit 0; else exit -1; fi"
+vagrant ssh ${CLASSIFIER1_NAME} -c "if [ -x ${installed_executable} ] ; then exit 0; else exit -1; fi"
 if [ $? -ne 0 ] ; then
-    vagrant ssh ${CLASSIFIER1_NAME} -c "sudo /vagrant/common/install_ovs.sh ${HTTPPROXY} ${HTTPSPROXY}"
+    vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ${install_script} ${HTTPPROXY} ${HTTPSPROXY}"
     if [ $? -ne 0 ] ; then
-        echo "Failed to install ovs on ${CLASSIFIER1_NAME}"
+        echo "Failed to execute ${install_script} on ${CLASSIFIER1_NAME}"
         exit -1
     fi
-    vagrant ssh ${CLASSIFIER1_NAME} -c "sudo /vagrant/common/install_vpp.sh ${HTTPPROXY} ${HTTPSPROXY}"
-    if [ $? -ne 0 ] ; then
-        echo "Failed to install vpp on ${CLASSIFIER1_NAME}"
-        exit -1
-    fi
-    vagrant ssh ${CLASSIFIER1_NAME} -c "if [ -x /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd -a -x /home/vagrant/ovs/vswitchd/ovs-vswitchd -a -x /usr/bin/vpp -a -x /opt/honeycomb/honeycomb ] ; then exit 0; else exit -1; fi"
+
+    vagrant ssh ${CLASSIFIER1_NAME} -c "if [ -x ${installed_executable} ] ; then exit 0; else exit -1; fi"
     if [ $? -eq 0 ] ; then
+        echo -e "\n\nPreparing ${UBUNTU_VBOX_IMAGE} for the rest of the VMs.\n"
         vagrant package --output ./${UBUNTU_VBOX_IMAGE}.ready ${CLASSIFIER1_NAME}
         vagrant halt -f
         vagrant destroy -f
@@ -229,6 +236,7 @@ ${demo} ${HTTPPROXY} ${HTTPSPROXY}
 
 if [ "${1}" == "vpp" ] ; then
     if [ $nshproxy = true ] ; then
+        vagrant up ${SF2_PROXY_NAME}
         ./common/setup_sfc_vpp_proxy.py
     else
         ./common/setup_sfc_vpp.py
@@ -242,12 +250,16 @@ if [ "${1}" == "vpp" ] ; then
     vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ip netns exec app ping -c 5 192.168.2.2"
 else
     if [ $nshproxy = true ] ; then
+        vagrant up ${SF2_PROXY_NAME}
         ./common/setup_sfc_proxy.py
         vagrant ssh ${SF2_PROXY_NAME} -c "sudo nohup /vagrant/common/setup_sf_proxy.sh & sleep 1"
     else
         ./common/setup_sfc.py
     fi
 fi
+
+# Common SFC data model setup, independently of VPP/OVS or proxied SFs
+./common/setup_sfc_common.py
 
 vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ip netns exec app ping -c 5 192.168.2.2"
 vagrant ssh ${CLASSIFIER1_NAME} -c "sudo ip netns exec app wget http://192.168.2.2/"

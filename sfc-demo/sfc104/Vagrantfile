@@ -11,7 +11,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "#{ENV['UBUNTU_VBOX_NAME']}"
   config.vm.box_url = "file://./#{ENV['UBUNTU_VBOX_IMAGE']}"
   config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--memory", 4096]
+    # v.customize ["modifyvm", :id, "--memory", 4096]
+    v.customize ["modifyvm", :id, "--memory", 1024]
     v.customize ["modifyvm", :id, "--cpus", 4]
   end
 

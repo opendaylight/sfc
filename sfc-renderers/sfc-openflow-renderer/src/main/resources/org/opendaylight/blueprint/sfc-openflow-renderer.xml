@@ -6,9 +6,9 @@
   <reference id="dataBroker"
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
-  <reference id="notificationService"
+  <reference id="notificationProviderService"
     interface="org.opendaylight.controller.sal.binding.api.NotificationProviderService"/>
-  <reference id="rpcRegistry"
+  <reference id="rpcConsumerRegistry"
     interface="org.opendaylight.mdsal.binding.api.RpcConsumerRegistry"/>
 
 </blueprint>

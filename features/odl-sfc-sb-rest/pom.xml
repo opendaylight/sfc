@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-sb-rest</artifactId>
-    <version>0.7.3-SNAPSHOT</version>
+    <version>0.7.4-SNAPSHOT</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 

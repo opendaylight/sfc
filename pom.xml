@@ -115,13 +115,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.opendaylight.mdsal.model</groupId>
-        <artifactId>mdsal-model-artifacts</artifactId>
-        <version>${mdsal.model.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
 
       <!-- Controller infrastructure -->
       <dependency>

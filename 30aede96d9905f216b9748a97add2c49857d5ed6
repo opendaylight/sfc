@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44912e03_d4a9246b",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 883,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-08-13T12:15:06Z",
+      "side": 1,
+      "message": "Use consistent spacing: no space before the comma, space after the comma",
+      "range": {
+        "startLine": 883,
+        "startChar": 0,
+        "endLine": 883,
+        "endChar": 103
+      },
+      "revId": "30aede96d9905f216b9748a97add2c49857d5ed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "abd02725_b3d966d6",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1079,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-08-13T12:15:06Z",
+      "side": 1,
+      "message": "Use consistent spacing: no space before the comma, space after the comma",
+      "range": {
+        "startLine": 1079,
+        "startChar": 0,
+        "endLine": 1079,
+        "endChar": 108
+      },
+      "revId": "30aede96d9905f216b9748a97add2c49857d5ed6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

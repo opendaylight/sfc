@@ -13,6 +13,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.google.common.collect.ImmutableSet;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +65,7 @@ public class AbstractDataStoreManager extends AbstractConcurrentDataBrokerTest {
      * YANG which should be loaded
      */
     @Override
-    protected Iterable<YangModuleInfo> getModuleInfos() throws Exception {
+    protected Set<YangModuleInfo> getModuleInfos() throws Exception {
         ImmutableSet.Builder<YangModuleInfo> moduleInfoSet = ImmutableSet.<YangModuleInfo>builder();
         loadModuleInfos(Nodes.class, moduleInfoSet);
         loadModuleInfos(FlowCapableNode.class, moduleInfoSet);

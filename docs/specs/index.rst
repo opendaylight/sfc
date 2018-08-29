@@ -13,6 +13,7 @@ Contents:
    Design Specification Template <specs-template>
    rsp-config-datastore
    rsp-stats
+   sff-stats
    sfc-shell
    directional-dpl
    sfc-openflow-pipeline

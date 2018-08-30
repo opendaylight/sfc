@@ -6,13 +6,13 @@
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.13.0-SNAPSHOT</version>
+    <version>0.13.1-SNAPSHOT</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-parent</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.8.1-SNAPSHOT</version>
   <name>sfc</name> <!-- Used by Sonar to set project name -->
   <packaging>pom</packaging>
 
@@ -72,24 +72,24 @@
     <!-- Build Plugin Versions -->
     <karaf.maven.version>3.0.1</karaf.maven.version>
 
-    <config.version>0.9.0-SNAPSHOT</config.version>
-    <mdsal.version>1.8.0-SNAPSHOT</mdsal.version>
-    <netconf.parent.version>1.5.0-SNAPSHOT</netconf.parent.version>
-    <restconf.version>1.8.0-SNAPSHOT</restconf.version>
+    <config.version>0.9.1-SNAPSHOT</config.version>
+    <mdsal.version>1.8.1-SNAPSHOT</mdsal.version>
+    <netconf.parent.version>1.5.1-SNAPSHOT</netconf.parent.version>
+    <restconf.version>1.8.1-SNAPSHOT</restconf.version>
     <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-    <mdsal.model.version>0.13.0-SNAPSHOT</mdsal.model.version>
-    <lispflowmapping.version>1.8.0-SNAPSHOT</lispflowmapping.version>
-    <ovsdb.southbound.version>1.7.0-SNAPSHOT</ovsdb.southbound.version>
-    <l2switch.version>0.8.0-SNAPSHOT</l2switch.version>
-    <genius.version>0.5.0-SNAPSHOT</genius.version>
-    <serviceutils.version>0.2.0-SNAPSHOT</serviceutils.version>
-    <infrautils.version>1.4.0-SNAPSHOT</infrautils.version>
+    <mdsal.model.version>0.13.1-SNAPSHOT</mdsal.model.version>
+    <lispflowmapping.version>1.8.1-SNAPSHOT</lispflowmapping.version>
+    <ovsdb.southbound.version>1.7.1-SNAPSHOT</ovsdb.southbound.version>
+    <l2switch.version>0.8.1-SNAPSHOT</l2switch.version>
+    <genius.version>0.5.1-SNAPSHOT</genius.version>
+    <serviceutils.version>0.2.1-SNAPSHOT</serviceutils.version>
+    <infrautils.version>1.4.1-SNAPSHOT</infrautils.version>
 
     <!-- Supporting Libraries -->
-    <feature.openflowplugin.version>0.7.0-SNAPSHOT</feature.openflowplugin.version>
-    <openflowplugin.version>0.7.0-SNAPSHOT</openflowplugin.version>
+    <feature.openflowplugin.version>0.7.1-SNAPSHOT</feature.openflowplugin.version>
+    <openflowplugin.version>0.7.1-SNAPSHOT</openflowplugin.version>
 
-    <branding.version>1.7.0-SNAPSHOT</branding.version>
+    <branding.version>1.7.1-SNAPSHOT</branding.version>
     <pax.logging.service.version>1.8.2</pax.logging.service.version>
     <pax.logging.api.version>1.8.2</pax.logging.api.version>
 
@@ -111,7 +111,7 @@
       <dependency>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>mdsal-artifacts</artifactId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>2.5.1-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "41dd9c68_b5696511",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-09-03T11:07:42Z",
+      "side": 1,
+      "message": "Missing from which flow SFF out and SFF RSP in statistics will be collected from. Maybe an example of the mentioned flows helps the reader get a rough idea how those flows are.",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 38
+      },
+      "revId": "6301018d7e08fdcdc8d904b85d6c580029bb19cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e62dceb1_965fa383",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-09-03T11:07:42Z",
+      "side": 1,
+      "message": "space at EOL",
+      "range": {
+        "startLine": 182,
+        "startChar": 61,
+        "endLine": 182,
+        "endChar": 62
+      },
+      "revId": "6301018d7e08fdcdc8d904b85d6c580029bb19cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

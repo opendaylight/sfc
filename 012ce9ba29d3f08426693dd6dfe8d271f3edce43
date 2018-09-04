@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "33a241e4_3f91e0ff",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2018-09-04T11:18:20Z",
+      "side": 1,
+      "message": "Would this also be true? \n\"The SFF input statistics will be collected by accumulating all of the SFC OpenFlow TransportIngress flow entries from the SFF.\"\nIf so, would it be a better way to express it as it is parallel to how SFF output was explained? This way we probably dont need to give TransportIngress flow examples, just as none were given for TransportEgress.",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 67
+      },
+      "revId": "012ce9ba29d3f08426693dd6dfe8d271f3edce43",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

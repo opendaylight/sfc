@@ -22,6 +22,30 @@
       "revId": "012ce9ba29d3f08426693dd6dfe8d271f3edce43",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1fdf7112_a267f633",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-09-04T11:37:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "33a241e4_3f91e0ff",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 67
+      },
+      "revId": "012ce9ba29d3f08426693dd6dfe8d271f3edce43",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

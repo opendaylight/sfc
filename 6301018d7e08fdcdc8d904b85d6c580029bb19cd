@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "8a6312d8_93f70379",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-09-04T11:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "41dd9c68_b5696511",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 38
+      },
+      "revId": "6301018d7e08fdcdc8d904b85d6c580029bb19cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e62dceb1_965fa383",
         "filename": "docs/specs/sff-stats.rst",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2018-09-03T11:07:42Z",
       "side": 1,
       "message": "space at EOL",
+      "range": {
+        "startLine": 182,
+        "startChar": 61,
+        "endLine": 182,
+        "endChar": 62
+      },
+      "revId": "6301018d7e08fdcdc8d904b85d6c580029bb19cd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0906751b_543ade44",
+        "filename": "docs/specs/sff-stats.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-09-04T11:14:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e62dceb1_965fa383",
       "range": {
         "startLine": 182,
         "startChar": 61,

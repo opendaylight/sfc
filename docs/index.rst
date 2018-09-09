@@ -13,4 +13,6 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
+   dev-guide
+   user-guide
    specs/index

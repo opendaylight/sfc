@@ -13,7 +13,7 @@
 from docs_conf.conf import *
 
 # Append to intersphinx_mapping
-#intersphinx_mapping['odl-releng-builder'] = ('http://docs.opendaylight.org/projects/releng-builder/en/latest/', None)
+intersphinx_mapping['genius'] = ('https://docs.opendaylight.org/projects/genius/en/stable-fluorine/', None)
 
 linkcheck_ignore = [
     # Ignore jenkins because it's often slow to respond.

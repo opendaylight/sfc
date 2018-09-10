@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57e0f069_c3a02b4d",
+        "filename": "docs/dev-guide.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 622,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2018-09-10T08:04:13Z",
+      "side": 1,
+      "message": "We need to fix this reference, its causing the verification failure.",
+      "range": {
+        "startLine": 621,
+        "startChar": 87,
+        "endLine": 622,
+        "endChar": 19
+      },
+      "revId": "b70c5f0cde3131939bfbf78a3ad5f909991f6ae6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

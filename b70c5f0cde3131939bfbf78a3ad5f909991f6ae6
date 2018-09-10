@@ -22,6 +22,30 @@
       "revId": "b70c5f0cde3131939bfbf78a3ad5f909991f6ae6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4d92496f_3458e0c0",
+        "filename": "docs/dev-guide.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 622,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2018-09-10T15:46:33Z",
+      "side": 1,
+      "message": "Yes, don\u0027t merge this yet. I have a patch in Genius that will allow us to fix this. Just waiting for Genius first.",
+      "parentUuid": "57e0f069_c3a02b4d",
+      "range": {
+        "startLine": 621,
+        "startChar": 87,
+        "endLine": 622,
+        "endChar": 19
+      },
+      "revId": "b70c5f0cde3131939bfbf78a3ad5f909991f6ae6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

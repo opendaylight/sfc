@@ -16,6 +16,8 @@ import static junit.framework.TestCase.assertTrue;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.junit.After;
@@ -62,6 +64,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.node.attributes.ConnectionInfoBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.Options;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.ovsdb.port._interface.attributes.OptionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -98,6 +102,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
             new SffDataPlaneLocatorName("SFF_DATA_PLANE_LOCATOR test");
     private static final String TEST_DATA_PATH = "12:34:56:78:9A:BC:DE:F0";
     private static final Long  TEST_PORT = 1L;
+    private static final Long  TEST_GPE_PORT = 2L;
     private static final SffDataPlaneLocatorName DPL_NAME = new SffDataPlaneLocatorName("sffdpl");
     private static final String TEST_IP_ADDRESS = "170.0.0.1";
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtilTest.class);
@@ -666,6 +671,16 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
         assertEquals("Must be equal", SfcOvsUtil.getVxlanOfPort(ofNodeId), TEST_PORT);
     }
 
+    @Test
+    /*
+     * Test case for getVxlanGpeOfPort
+     *
+     */
+    public void getVxlanGpeOfPortTest() {
+        final String ofNodeId = "openflow:95075992133360";
+        assertEquals("Must be equal", TEST_GPE_PORT, SfcOvsUtil.getVxlanGpeOfPort(ofNodeId));
+    }
+
     /*
      * create node IID
      */
@@ -719,13 +734,19 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
      * needed to create a node
      */
     private List<TerminationPoint> createTerminationPointList() {
-        List<TerminationPoint> terminationPointList = new ArrayList<>();
-        TerminationPointBuilder terminationPointBuilder = new TerminationPointBuilder();
-        terminationPointBuilder.setTpId(new TpId("tp_id"));
-        terminationPointBuilder.addAugmentation(OvsdbTerminationPointAugmentation.class,
-                createOvsdbTerminationPointAugmentation());
-        terminationPointList.add(terminationPointBuilder.build());
-        return terminationPointList;
+        TerminationPoint vxlanTp = new TerminationPointBuilder()
+                .setTpId(new TpId("vxlan_tp"))
+                .addAugmentation(
+                        OvsdbTerminationPointAugmentation.class,
+                        createVxlanFlowOvsdbTerminationPointAugmentation())
+                .build();
+        TerminationPoint vxlanGpeTp = new TerminationPointBuilder()
+                .setTpId(new TpId("vxlan_gpe_tp"))
+                .addAugmentation(
+                        OvsdbTerminationPointAugmentation.class,
+                        createVxlanGpeFlowOvsdbTerminationPointAugmentation())
+                .build();
+        return Arrays.asList(vxlanTp, vxlanGpeTp);
     }
 
     /*
@@ -743,15 +764,43 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
 //    }
 
     /*
-     * build ovsdb termination point augmentation
+     * build vxlan flow ovsdb termination point augmentation
      *
      */
-    private OvsdbTerminationPointAugmentation createOvsdbTerminationPointAugmentation() {
+    private OvsdbTerminationPointAugmentation createVxlanFlowOvsdbTerminationPointAugmentation() {
         OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
                 new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTerminationPointAugmentationBuilder.setName(TEST_STRING);
         ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
         ovsdbTerminationPointAugmentationBuilder.setOfport(TEST_PORT);
+        Options flowOption = new OptionsBuilder()
+                .setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP)
+                .setValue(SfcOvsUtil.OVSDB_OPTION_VALUE_FLOW)
+                .build();
+        ovsdbTerminationPointAugmentationBuilder.setOptions(Collections.singletonList(flowOption));
+
+        return ovsdbTerminationPointAugmentationBuilder.build();
+    }
+
+    /*
+     * build vxlan gpe ovsdb termination point augmentation
+     *
+     */
+    private OvsdbTerminationPointAugmentation createVxlanGpeFlowOvsdbTerminationPointAugmentation() {
+        OvsdbTerminationPointAugmentationBuilder ovsdbTerminationPointAugmentationBuilder =
+                new OvsdbTerminationPointAugmentationBuilder();
+        ovsdbTerminationPointAugmentationBuilder.setName("gpe_port");
+        ovsdbTerminationPointAugmentationBuilder.setInterfaceType(InterfaceTypeVxlan.class);
+        ovsdbTerminationPointAugmentationBuilder.setOfport(TEST_GPE_PORT);
+        Options flowOption = new OptionsBuilder()
+                .setOption(SfcOvsUtil.OVSDB_OPTION_REMOTE_IP)
+                .setValue(SfcOvsUtil.OVSDB_OPTION_VALUE_FLOW)
+                .build();
+        Options gpeOption = new OptionsBuilder()
+                .setOption(SfcOvsUtil.OVSDB_OPTION_EXTS)
+                .setValue(SfcOvsUtil.OVSDB_OPTION_GPE)
+                .build();
+        ovsdbTerminationPointAugmentationBuilder.setOptions(Arrays.asList(flowOption, gpeOption));
 
         return ovsdbTerminationPointAugmentationBuilder.build();
     }

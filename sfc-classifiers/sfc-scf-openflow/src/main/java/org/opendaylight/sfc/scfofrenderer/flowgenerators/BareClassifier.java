@@ -48,7 +48,7 @@ public class BareClassifier implements ClassifierInterface {
 
     @Override
     public FlowDetails createClassifierOutFlow(String nodeId, String flowKey, Match match, SfcRspInfo sfcRspInfo) {
-        Long outPort = SfcOvsUtil.getVxlanGpeOfPort(nodeId);
+        Long outPort = SfcOvsUtil.getVxlanOfPort(nodeId);
         return classifierHandler.addRspRelatedFlowIntoNode(nodeId,
                 SfcScfOfUtils.createClassifierOutFlow(flowKey, match, sfcRspInfo, outPort), sfcRspInfo.getNshNsp());
     }

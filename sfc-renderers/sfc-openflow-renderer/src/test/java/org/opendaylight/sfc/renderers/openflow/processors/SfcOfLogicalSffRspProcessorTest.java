@@ -448,7 +448,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                                 .build()));
 
         PowerMockito.mockStatic(SfcOvsUtil.class);
-        PowerMockito.when(SfcOvsUtil.getVxlanGpeOfPort(any())).thenReturn(VXLAN_GPE_OF_PORT);
+        PowerMockito.when(SfcOvsUtil.getVxlanOfPort(any())).thenReturn(VXLAN_GPE_OF_PORT);
         PowerMockito.when(SfcOvsUtil.getDpdkOfPort(any(), any())).thenReturn(null);
 
         RenderedServicePath vlanRsp = rspBuilder.createRspFromSfTypes(this.sfTypes, true);

@@ -1453,7 +1453,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // flow2:
         // actions=output:port (flow2 is basically the else condition)
 
-        Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        Long vxgpePort = SfcOvsUtil.getVxlanOfPort(sffNodeName);
         String inportStr = OutputPortValues.INPORT.toString();
 
         if (vxgpePort != null) {
@@ -1561,7 +1561,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
     public void configureNshEthLastHopTransportEgressFlow(final String sffNodeName, final IpAddress sffIpAddress,
                                                           final MacAddress sfMacAddress, final long nshNsp,
                                                           final short nshNsi) {
-        final Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        final Long vxgpePort = SfcOvsUtil.getVxlanOfPort(sffNodeName);
         if (vxgpePort != null) {
             // If a VXLAN GPE openflow based port is available,
             // support egress scenarios that forward the traffic
@@ -1838,7 +1838,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
         // flow2:
         // actions=output:port (flow2 is basically the else condition)
 
-        Long vxgpePort = SfcOvsUtil.getVxlanGpeOfPort(sffNodeName);
+        Long vxgpePort = SfcOvsUtil.getVxlanOfPort(sffNodeName);
         String inportStr = OutputPortValues.INPORT.toString();
 
         if (vxgpePort != null) {

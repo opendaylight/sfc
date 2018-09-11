@@ -19,6 +19,9 @@ package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.ovsdb.southbound.SouthboundConstants;
 import org.opendaylight.sfc.ovs.api.SfcOvsDataStoreAPI;
@@ -43,7 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathTypeNetdev;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeDpdk;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlan;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeVxlanGpe;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeName;
@@ -94,6 +96,16 @@ public final class SfcOvsUtil {
     public static final String DPL_NAME_DPDKVHOSTUSER = "Dpdkvhostuser";
     public static final String DPL_NAME_INTERNAL = "Internal";
     public static final PortNumber NSH_VXLAN_TUNNEL_PORT = new PortNumber(6633);
+
+    private static final Predicate<Options> FLOW_BASED_OPT = (option) ->
+            Objects.equals(option.getOption(), OVSDB_OPTION_REMOTE_IP)
+            && Objects.equals(option.getValue(), OVSDB_OPTION_VALUE_FLOW);
+    private static final Predicate<Options> GPE_OPT = (option) ->
+            Objects.equals(option.getOption(), OVSDB_OPTION_EXTS)
+            && Objects.equals(option.getValue(), OVSDB_OPTION_GPE);
+    private static final Predicate<Options> FLOW_BASED_OR_GPE_OPT = Stream.of(FLOW_BASED_OPT, GPE_OPT)
+            .reduce(Predicate::or)
+            .orElse(x -> false);
 
     private SfcOvsUtil() {
     }
@@ -661,10 +673,17 @@ public final class SfcOvsUtil {
                     return false;
                 }
 
-                if (otp.getInterfaceType() == InterfaceTypeVxlan.class) {
-                    return true;
+                if (otp.getInterfaceType() != InterfaceTypeVxlan.class) {
+                    return false;
                 }
-                return false;
+
+                List<Options> options = otp.getOptions();
+                if (options == null || options.isEmpty()) {
+                    return false;
+                }
+
+                return options.stream().anyMatch(FLOW_BASED_OPT);
+
             }
         }
 
@@ -686,24 +705,16 @@ public final class SfcOvsUtil {
                     return false;
                 }
 
-                if (otp.getInterfaceType() == InterfaceTypeVxlanGpe.class) {
-                    return true;
+                if (otp.getInterfaceType() != InterfaceTypeVxlan.class) {
+                    return false;
                 }
 
-                // If the interface type is not VxlanGpe, then it may be Vxlan
-                // with the option exts=gpe set
                 List<Options> options = otp.getOptions();
-                if (options != null) {
-                    for (Options option : options) {
-                        if (option.getValue() != null && option.getOption() != null
-                                && option.getOption().equals(OVSDB_OPTION_EXTS)
-                                && option.getValue().equals(OVSDB_OPTION_GPE)) {
-                            return true;
-                        }
-                    }
+                if (options == null || options.isEmpty()) {
+                    return false;
                 }
 
-                return false;
+                return options.stream().filter(FLOW_BASED_OR_GPE_OPT).distinct().count() == 2;
             }
         }
 

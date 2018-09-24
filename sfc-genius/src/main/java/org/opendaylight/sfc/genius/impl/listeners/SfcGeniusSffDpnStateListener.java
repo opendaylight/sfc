@@ -83,7 +83,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     @Override
     public void update(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier, @Nonnull Dpn originalDpn,
                        @Nonnull Dpn updatedDpn) {
-        LOG.debug("Receive SFF state DPN update event {}", originalDpn, updatedDpn);
+        LOG.debug("Receive SFF state DPN: originalDpn {} updated DPN {}", originalDpn, updatedDpn);
         BigInteger dpnId = updatedDpn.getDpnId().getValue();
         boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();
         boolean pathsOnOldDpn = this.getPathsOnDpn(originalDpn).isEmpty();

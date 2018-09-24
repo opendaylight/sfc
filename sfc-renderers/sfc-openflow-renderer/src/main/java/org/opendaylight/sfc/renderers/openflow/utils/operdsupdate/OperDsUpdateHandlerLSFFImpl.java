@@ -75,7 +75,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
      *            The graph used for rendering
      * @param rsp
      *            The rendered service path
-     * @param transaction
+     * @param trans
      *            The write transaction to which the datastore operations will
      *            be added
      */
@@ -204,7 +204,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
             try {
                 submitFuture.get();
             } catch (ExecutionException | InterruptedException e) {
-                LOG.error("commitChangesAsync: Transaction failed. Message: {}", e.getMessage(), e);
+                LOG.error("commitChangesAsync: Transaction failed. Message: ", e);
             }
         });
     }

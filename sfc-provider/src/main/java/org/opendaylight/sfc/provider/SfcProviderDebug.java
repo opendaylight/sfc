@@ -20,13 +20,11 @@ import org.slf4j.Logger;
 public final class SfcProviderDebug {
 
     private static boolean on = false;
-    private static String traceStart = "####### Start: {}";
-    private static String traceStop = "####### Stop: {}";
 
     private SfcProviderDebug() {
     }
 
-    public static void setON(boolean value) {
+    public static void setOn(boolean value) {
         SfcProviderDebug.on = value;
     }
 
@@ -34,31 +32,15 @@ public final class SfcProviderDebug {
         return on;
     }
 
-    public static String getTraceStart() {
-        return traceStart;
-    }
-
-    public static void setTraceStart(String traceStart) {
-        SfcProviderDebug.traceStart = traceStart;
-    }
-
-    public static String getTraceStop() {
-        return traceStop;
-    }
-
-    public static void setTraceStop(String traceStop) {
-        SfcProviderDebug.traceStop = traceStop;
-    }
-
     public static void printTraceStart(Logger log) {
         if (log.isDebugEnabled()) {
-            log.debug(traceStart, Thread.currentThread().getStackTrace()[1]);
+            log.debug("####### Start {}", Thread.currentThread().getStackTrace()[1]);
         }
     }
 
     public static void printTraceStop(Logger log) {
         if (log.isDebugEnabled()) {
-            log.debug(traceStop, Thread.currentThread().getStackTrace()[1]);
+            log.debug("####### Stop {}", Thread.currentThread().getStackTrace()[1]);
         }
     }
 }

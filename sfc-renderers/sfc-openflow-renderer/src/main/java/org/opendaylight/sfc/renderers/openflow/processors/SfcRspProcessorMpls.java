@@ -19,8 +19,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MacAddressLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.MplsLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MplsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SfcRspProcessorMpls.class);
     private static final int MPLS_LABEL_INCR_HOP = 1;
     private static final int MPLS_LABEL_INCR_RSP = 100;
     private static final AtomicLong LAST_MPLS_LABEL = new AtomicLong(0);

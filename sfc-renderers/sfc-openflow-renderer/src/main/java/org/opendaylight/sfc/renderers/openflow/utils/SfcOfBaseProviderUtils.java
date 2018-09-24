@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SfcOfBaseProviderUtils {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(SfcOfBaseProviderUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcOfBaseProviderUtils.class);
 
     public abstract void addRsp(long rspId);
 

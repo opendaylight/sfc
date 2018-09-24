@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sf.ovs.r
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.SfLocatorProxyAugmentation;
 import org.opendaylight.yang.gen.v1.urn.intel.params.xml.ns.yang.sfc.sf.proxy.rev160125.proxy.ProxyDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SfcRspProcessorNshVxgpe class
@@ -43,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Output
  */
 public class SfcRspProcessorNshVxgpe extends SfcRspTransportProcessorBase {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SfcRspProcessorNshVxgpe.class);
     SfcRspProcessorNshEth sfcRspProcessorNshEth;
 
     /*

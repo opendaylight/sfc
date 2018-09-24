@@ -69,7 +69,7 @@ public class FlowSetWriterTask implements Runnable {
         try {
             submitFuture.get();
         } catch (ExecutionException | InterruptedException e) {
-            LOG.error("deleteTransactionAPI: Transaction failed. Message: {}", e.getMessage(), e);
+            LOG.error("deleteTransactionAPI: Transaction failed. Message: ", e);
         }
     }
 }

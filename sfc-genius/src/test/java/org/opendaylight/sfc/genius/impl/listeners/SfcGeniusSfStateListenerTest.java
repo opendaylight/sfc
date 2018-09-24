@@ -62,7 +62,6 @@ public class SfcGeniusSfStateListenerTest {
 
     @Test
     public void removeNoPaths() throws Exception {
-        when(serviceFunctionState.getName()).thenReturn(new SfName("SF1"));
         when(serviceFunctionState.getSfServicePath()).thenReturn(sfpList);
         when(sfpList.size()).thenReturn(0);
         sfcGeniusSfStateListener.remove(InstanceIdentifier.create(ServiceFunctionState.class), serviceFunctionState);

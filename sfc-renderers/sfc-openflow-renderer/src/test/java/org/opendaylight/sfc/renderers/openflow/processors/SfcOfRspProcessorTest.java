@@ -8,10 +8,11 @@
 
 package org.opendaylight.sfc.renderers.openflow.processors;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyShort;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -120,11 +121,11 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_1");
 
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // Verify calls to configureVlanTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureVlanTransportIngressFlow("SFF_0");
@@ -188,11 +189,11 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_1");
 
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // The calls to the VLAN methods are for the packets sent between SFF-SF
 
@@ -217,10 +218,10 @@ public class SfcOfRspProcessorTest {
                 anyBoolean());
 
         // Verify calls to configureNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(eq("SFF_0"), anyLong(), anyString(),
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(anyString(), anyLong(), isNull(),
                 anyString());
-        verify(this.flowProgrammerTestMoc, times(3)).configureMacNextHopFlow(eq("SFF_1"), anyLong(), anyString(),
-                anyString());
+        verify(this.flowProgrammerTestMoc, times(3)).configureMacNextHopFlow(anyString(), anyLong(), anyString(),
+                isNull());
 
         // Verify calls to configureVlanTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_0"), anyString(),
@@ -229,10 +230,10 @@ public class SfcOfRspProcessorTest {
                 anyString(), anyInt(), anyString(), anyLong(), anyBoolean());
 
         // Verify calls to configureMplsTransportEgressFlow
-        verify(this.flowProgrammerTestMoc, times(1)).configureMplsTransportEgressFlow(eq("SFF_0"), anyString(),
-                anyString(), anyLong(), anyString(), anyLong());
-        verify(this.flowProgrammerTestMoc, times(1)).configureMplsLastHopTransportEgressFlow(eq("SFF_1"), anyString(),
-                anyString(), anyLong(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureMplsTransportEgressFlow(eq("SFF_0"), isNull(),
+                isNull(), anyLong(), anyString(), anyLong());
+        verify(this.flowProgrammerTestMoc, times(1)).configureMplsLastHopTransportEgressFlow(eq("SFF_1"), isNull(),
+                isNull(), anyLong(), anyString(), anyLong());
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
@@ -253,11 +254,11 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_1");
 
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // Verify calls to setup transport ingress flows
         verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq("SFF_0"));
@@ -267,9 +268,9 @@ public class SfcOfRspProcessorTest {
 
         // Verify calls to configureNshVxgpeNextHopFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeNextHopFlow(eq("SFF_0"), anyString(),
-                anyString(), anyLong(), anyShort());
+                isNull(), anyLong(), anyShort());
         verify(this.flowProgrammerTestMoc, times(1)).configureNshVxgpeNextHopFlow(eq("SFF_1"), anyString(),
-                anyString(), anyLong(), anyShort());
+                isNull(), anyLong(), anyShort());
 
         // Verify calls to configureNshVxgpeTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureNshVxgpeTransportEgressFlow(eq("SFF_0"), anyLong(),
@@ -307,11 +308,11 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_0");
 
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // Verify calls to setup transport ingress flows
         verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq("SFF_0"));
@@ -359,11 +360,11 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled(sffName);
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // Verify calls to setup transport ingress flows
         verify(this.flowProgrammerTestMoc, times(1)).configureNshTransportIngressFlow(eq(sffName));
@@ -376,7 +377,7 @@ public class SfcOfRspProcessorTest {
         // Verify calls to configureSffTransportEgressFlow and configureSfTransportEgressFlow
         verify(this.flowProgrammerTestMoc).configureNshEthTransportEgressFlow(
                 eq(sffName), anyLong(), anyShort(), anyString());
-        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(eq(sffName), anyInt(), anyShort(),
+        verify(this.flowProgrammerTestMoc).configureNshNscTransportEgressFlow(eq(sffName), anyLong(), anyShort(),
                anyString());
         verify(this.flowProgrammerTestMoc).configureNshVxgpeLastHopTransportEgressFlow(eq(sffName), anyLong(),
                 anyShort(), anyString());
@@ -409,22 +410,24 @@ public class SfcOfRspProcessorTest {
 
         assertMatchAnyMethodsCalled(sffName);
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(1)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter(any());
 
         // Verify calls to configureMacChainingTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureMacChainingTransportIngressFlow(eq(sffName));
 
         // Verify calls to configureMacChainingNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(3)).configureMacChainingNextHopFlow(eq(sffName), anyString(),
+        verify(this.flowProgrammerTestMoc, times(1)).configureMacChainingNextHopFlow(eq(sffName), anyString(),
                 anyString(), anyString(), anyBoolean());
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacChainingNextHopFlow(eq(sffName), anyString(),
+                isNull(), isNull(), anyBoolean());
 
         // Verify calls to configureMacChainingSfTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureMacChainingSfTransportEgressFlow(
-                eq(sffName), anyString(), anyString(), anyString());
+                eq(sffName), anyString(), anyString(), isNull());
 
         // verify flow flushing
         verify(this.flowProgrammerTestMoc).flushFlows();
@@ -457,11 +460,11 @@ public class SfcOfRspProcessorTest {
         assertMatchAnyMethodsCalled("SFF_1");
 
         // verify table index mapper setting
-        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(anyObject());
+        verify(this.flowProgrammerTestMoc, times(1)).setTableIndexMapper(any());
         verify(this.flowProgrammerTestMoc, times(2)).getTableBase();
 
         verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowRspId(anyLong());
-        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) anyObject());
+        verify(this.flowProgrammerTestMoc, atLeastOnce()).setFlowWriter((SfcOfFlowWriterInterface) any());
 
         // Verify calls to configureVlanTransportIngressFlow
         verify(this.flowProgrammerTestMoc, times(2)).configureVlanTransportIngressFlow(eq("SFF_0"));
@@ -478,16 +481,18 @@ public class SfcOfRspProcessorTest {
                 anyBoolean());
 
         // Verify calls to configureNextHopFlow
-        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(eq("SFF_0"), anyLong(), anyString(),
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(anyString(), anyLong(), anyString(),
                 anyString());
-        verify(this.flowProgrammerTestMoc, times(3)).configureMacNextHopFlow(eq("SFF_1"), anyLong(), anyString(),
+        verify(this.flowProgrammerTestMoc, times(2)).configureMacNextHopFlow(anyString(), anyLong(), anyString(),
+                isNull());
+        verify(this.flowProgrammerTestMoc, times(1)).configureMacNextHopFlow(anyString(), anyLong(), isNull(),
                 anyString());
 
         // Verify calls to configureVlanTransportEgressFlow
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanTransportEgressFlow(eq("SFF_0"), anyString(),
                 anyString(), anyInt(), anyString(), anyLong());
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanLastHopTransportEgressFlow(eq("SFF_1"), anyString(),
-                anyString(), anyInt(), anyString(), anyLong());
+                isNull(), anyInt(), anyString(), anyLong());
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_0"), anyString(),
                 anyString(), anyInt(), anyString(), anyLong(), eq(true));
         verify(this.flowProgrammerTestMoc, times(1)).configureVlanSfTransportEgressFlow(eq("SFF_1"), anyString(),

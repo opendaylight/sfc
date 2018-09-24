@@ -68,6 +68,9 @@ public class LogicallyAttachedClassifierTest {
     @Mock
     LogicalClassifierDataGetter dataGetter;
 
+    @Mock
+    RenderedServicePath rsp;
+
     private final String firstSfNeutronPort = "eba7a40e-a8f7-4b25-b1a2-4128f0da988e";
 
     private LogicallyAttachedClassifier logicalScf;
@@ -130,7 +133,8 @@ public class LogicallyAttachedClassifierTest {
         SfcRspInfo nshHeader = new SfcRspInfo().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
                 .setNshMetaC1(123L).setNshMetaC2(321L).setNshMetaC3(2323L).setNshMetaC4(3232L).setNshNsp(666L)
                 .setNshStartNsi((short) 255).setLastSffName(new SffName("sff#1"))
-                .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080));
+                .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080))
+                .setRsp(rsp);
         PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RspName.class))).thenReturn(nshHeader);
         PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RenderedServicePath.class))).thenReturn(nshHeader);
 

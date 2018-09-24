@@ -96,7 +96,7 @@ public final class SfcStatisticsFactory {
             // Assuming if its not OVS nor VPP based, then its ios-xe based
             return new SfcIosXeStatisticsReader(sff);
         } catch (IllegalArgumentException e) {
-            LOG.error("Exception in getStatsReader: ", e.getMessage(), e);
+            LOG.error("Exception in getStatsReader: ", e);
             return null;
         }
     }

@@ -31,6 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RSP processor class for RSPs which use Logical SFFs Transport protocols are
@@ -54,6 +56,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
  */
 public class SfcRspProcessorLogicalSff extends SfcRspTransportProcessorBase {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SfcRspProcessorLogicalSff.class);
     private final SfcTableIndexMapper tableIndexMapper;
     private final SfcGeniusRpcClient sfcGeniusRpcClient;
     private final OperDsUpdateHandlerInterface operDsHandler;

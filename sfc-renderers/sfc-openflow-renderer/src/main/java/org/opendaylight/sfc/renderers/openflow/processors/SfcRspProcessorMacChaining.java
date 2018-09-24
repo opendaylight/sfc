@@ -17,9 +17,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sft.rev140701.service.function.types.ServiceFunctionType;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.DataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.MacBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SfcRspProcessorMacChaining.class);
 
     /*
     * Set the RSP path egress DPL and SFF Hop Ingress DPLs for

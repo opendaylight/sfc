@@ -53,7 +53,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
                   serviceFunction.getType().getValue());
         SfcDatastoreCache.getSfToSfTypeCache().put(serviceFunction.getName(), serviceFunction.getType().getValue());
         if (!SfcProviderServiceTypeAPI.createServiceFunctionTypeEntry(serviceFunction)) {
-            LOG.error("add:Failed to create Service Function: ", serviceFunction.getName());
+            LOG.error("add:Failed to create Service Function: {}", serviceFunction.getName());
         }
     }
 
@@ -67,7 +67,7 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
 
         deleteSfSfps(serviceFunction);
         if (!SfcProviderServiceTypeAPI.deleteServiceFunctionTypeEntry(serviceFunction)) {
-            LOG.error("remove: Failed to delete Service Function: ", serviceFunction.getName());
+            LOG.error("remove: Failed to delete Service Function: {}", serviceFunction.getName());
         }
     }
 

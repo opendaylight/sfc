@@ -46,8 +46,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <instructions>
             <!-- This bundle works with Karaf 3 and 4.0 -->
             <Import-Package>
-              org.apache.karaf.shell.commands;version="[3.0.0,4.2)",
-              org.apache.karaf.shell.console;version="[3.0.0,4.2)",
+              org.apache.karaf.shell.commands;version="[4,5)",
+              org.apache.karaf.shell.console;version="[4,5)",
               *
             </Import-Package>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>

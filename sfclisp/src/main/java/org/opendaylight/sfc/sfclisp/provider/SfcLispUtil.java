@@ -56,7 +56,7 @@ public final class SfcLispUtil {
         try {
             result = future.get();
         } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("{} failed to: {}", callable.toString(), e);
+            LOG.warn("{} failed to: ", callable.toString(), e);
         }
 
         return result;

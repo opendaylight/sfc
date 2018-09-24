@@ -23,7 +23,6 @@ import java.util.concurrent.Executors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opendaylight.sfc.provider.api.SfcProviderAclAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceClassifierAPI;
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
@@ -108,8 +107,8 @@ public class SbRestAclTaskTest {
     @Test
     public void testSbRestAclTaskEmpty() throws IOException {
         PowerMockito.mockStatic(SfcProviderServiceForwarderAPI.class);
-        Mockito.when(SfcProviderServiceForwarderAPI.readServiceFunctionForwarder(SFF_NAME))
-                .thenReturn(new ServiceFunctionForwarderBuilder().build());
+        PowerMockito.stub(PowerMockito.method(SfcProviderServiceForwarderAPI.class, "readServiceFunctionForwarder",
+                SffName.class)).toReturn(new ServiceFunctionForwarderBuilder().build());
 
         SbRestAclTask sbRestAclTask = new SbRestAclTask(RestOperation.PUT, this.buildAccessList(), executorService);
 

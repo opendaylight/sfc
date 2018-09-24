@@ -928,7 +928,7 @@ public class SfcOfFlowProgrammerImpl implements SfcOfFlowProgrammerInterface {
      */
     private FlowBuilder configurePathMapperFlow(final long pathId, MatchBuilder match, List<Action> actionList,
             int flowPriority) {
-        LOG.debug("SfcProviderSffFlowWriter.configurePathMapperFlow sff [{}] pathId [{}]", pathId);
+        LOG.debug("SfcProviderSffFlowWriter.configurePathMapperFlow pathId [{}]", pathId);
 
         // Apply actions take actions instantly - so, does not matter which
         // order they take - let's assume first

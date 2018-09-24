@@ -229,7 +229,7 @@ public class SfcGeniusRpcClient {
         OdlInterfaceRpcService service = getIfmRpcService();
 
         if (service == null) {
-            LOG.error("Genius RPC service not available", input);
+            LOG.error("Genius RPC service not available {}", input);
             throw new SfcGeniusRuntimeException(new RuntimeException("Genius RPC service not available"));
         }
 

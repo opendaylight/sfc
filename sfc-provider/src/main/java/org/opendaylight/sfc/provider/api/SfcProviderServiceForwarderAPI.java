@@ -263,8 +263,7 @@ public final class SfcProviderServiceForwarderAPI {
                         ret = true;
                     } else {
                         ret = false;
-                        LOG.error("Could not delete Service Path {} from SFF {} operational state : {}", rspName,
-                                sffName);
+                        LOG.error("Could not delete Service Path {} from SFF {}", rspName, sffName);
                     }
                     List<SffServicePath> sffServicePathList = readSffState(sffName);
                     if (sffServicePathList != null && sffServicePathList.isEmpty()
@@ -343,8 +342,7 @@ public final class SfcProviderServiceForwarderAPI {
                         ret = true;
                     } else {
                         ret = false;
-                        LOG.error("Could not delete Service Path {} from SFF {} operational state : {}", rspName,
-                                sffname);
+                        LOG.error("Could not delete Service Path {} from SFF {}", rspName, sffname);
                     }
                     List<SffServicePath> sffServicePathList = readSffState(sffname);
                     if (sffServicePathList != null && sffServicePathList.isEmpty()

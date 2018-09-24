@@ -159,7 +159,7 @@ public class SfcOfRspProcessor {
             LOG.info("Processing complete for RSP: name [{}] Id [{}]", rsp.getName(), rsp.getPathId());
 
         } catch (SfcRenderingException e) {
-            LOG.error("SfcRenderingException in processRenderedServicePath: ", e.getMessage(), e);
+            LOG.error("SfcRenderingException in processRenderedServicePath: ", e);
         } finally {
             // If there were any errors, purge any remaining flows so they're
             // not written

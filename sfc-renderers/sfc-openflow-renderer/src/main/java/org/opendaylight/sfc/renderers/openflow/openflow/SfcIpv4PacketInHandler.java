@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Metadata;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -167,8 +166,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         // - Ingress nodeConnectorRef
         // - instanceID for the Node in the tree above us
         // - instance identifier for the nodeConnectorRef
-        final String nodeName = packetIn.getIngress().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
-                .getValue();
+        final String nodeName = packetIn.getIngress().getValue().firstKeyOf(Node.class).getId().getValue();
 
         // Configure the uplink packet
         if (ulPathId >= 0) {
@@ -211,7 +209,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         try {
             pktSrcIpStr = InetAddress.getByAddress(ipSrcBytes).getHostAddress();
         } catch (UnknownHostException e) {
-            LOG.error("Exception getting Src IP address [{}]", e.getMessage(), e);
+            LOG.error("Exception getting Src IP address ", e);
         }
         return pktSrcIpStr;
     }
@@ -228,7 +226,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         try {
             pktDstIpStr = InetAddress.getByAddress(ipDstBytes).getHostAddress();
         } catch (UnknownHostException e) {
-            LOG.error("Exception getting Dst IP address [{}]", e.getMessage(), e);
+            LOG.error("Exception getting Dst IP address ", e);
         }
         return pktDstIpStr;
     }

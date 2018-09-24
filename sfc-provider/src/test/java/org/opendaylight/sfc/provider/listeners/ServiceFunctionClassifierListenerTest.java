@@ -105,8 +105,10 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
 
         // We verify the removal of <ACL, Classifier> entry from ACL by checking
         // no ServiceFunctionClassifier is assigned to the ACL
-        assertEquals(SfcProviderAclAPI.readAccessListState(serviceFunctionClassifier.getAcl().getName(),
-                serviceFunctionClassifier.getAcl().getType()).getAclServiceFunctionClassifier().size(), 0);
+        assertNull(SfcProviderAclAPI.readAccessListState(
+                serviceFunctionClassifier.getAcl().getName(),
+                serviceFunctionClassifier.getAcl().getType())
+                        .getAclServiceFunctionClassifier());
     }
 
     /**
@@ -151,12 +153,10 @@ public class ServiceFunctionClassifierListenerTest extends AbstractDataStoreMana
         // We verify the removal of the Original <ACL, Classifier> entry from
         // ACL by checking
         // no ServiceFunctionClassifier is assigned to the ACL
-        assertEquals(
-                SfcProviderAclAPI
-                        .readAccessListState(originalServiceFunctionClassifier.getAcl().getName(),
-                                originalServiceFunctionClassifier.getAcl().getType())
-                        .getAclServiceFunctionClassifier().size(),
-                0);
+        assertNull(SfcProviderAclAPI
+                .readAccessListState(originalServiceFunctionClassifier.getAcl().getName(),
+                        originalServiceFunctionClassifier.getAcl().getType())
+                .getAclServiceFunctionClassifier());
 
         // We verify the addition of the Updated <ACL, Classifier> entry to ACL
         // by checking

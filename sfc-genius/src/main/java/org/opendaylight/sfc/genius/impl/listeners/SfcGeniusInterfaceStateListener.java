@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChangeListener<Interface> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfStateListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusInterfaceStateListener.class);
     private final SfcGeniusServiceManager interfaceManger;
 
     public SfcGeniusInterfaceStateListener(DataBroker dataBroker,

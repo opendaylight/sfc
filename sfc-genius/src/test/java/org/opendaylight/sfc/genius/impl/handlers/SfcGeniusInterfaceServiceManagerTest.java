@@ -64,11 +64,10 @@ public class SfcGeniusInterfaceServiceManagerTest {
     public void setup() {
         when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
         doAnswer(invocationOnMock -> {
-            invocationOnMock.getArgumentAt(0, Runnable.class).run();
+            ((Runnable) invocationOnMock.getArgument(0)).run();
             return null;
         }).when(executor).execute(any());
         when(readWriteTransaction.submit()).thenReturn(Futures.immediateCheckedFuture(null));
-        when(sfcGeniusRspHandler.interfaceStateUp(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.bindToInterface(any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
         when(sfcGeniusServiceHandler.unbindFromInterface(any()))
@@ -77,8 +76,6 @@ public class SfcGeniusInterfaceServiceManagerTest {
         sfcGeniusInterfaceServiceManager = spy(
                 new SfcGeniusServiceManagerImpl(dataBroker, itmRpcService, executor));
 
-        doReturn(sfcGeniusRspHandler).when(sfcGeniusInterfaceServiceManager)
-                .getSfcGeniusRspHandler(readWriteTransaction);
         doReturn(sfcGeniusServiceHandler).when(sfcGeniusInterfaceServiceManager)
                 .getSfcGeniusServiceHandler(readWriteTransaction);
         doReturn(sfcGeniusSfReader).when(sfcGeniusInterfaceServiceManager)

@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.AbstractDataStoreManager;
@@ -39,9 +40,12 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev1407
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathBuilder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sfc.rev140701.service.function.chains.state.service.function.chain.state.SfcServicePathKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SfcProviderServiceChainAPITest.class);
     private final List<ServiceFunction> sfList = new ArrayList<>();
 
     @Before
@@ -49,7 +53,9 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         setupSfc();
     }
 
+    // TODO this test is broken, since it uses sfList, which is never populated: JIRA SFC-231
     @Test
+    @Ignore
     public void testCreateReadServiceFunctionChain() {
 
         SfcName name = new SfcName("unittest-chain-1");
@@ -61,8 +67,7 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
 
             SfcServiceFunctionBuilder sfcServiceFunctionBuilder = new SfcServiceFunctionBuilder();
             // As per YANG model for service-chain, this name is NOT Service
-            // Function name hence
-            // still String
+            // Function name hence still String
             SfcServiceFunction sfcServiceFunction = sfcServiceFunctionBuilder
                     .setName(serviceFunction.getName().getValue())
                     .withKey(new SfcServiceFunctionKey(serviceFunction.getName().getValue()))
@@ -79,7 +84,9 @@ public class SfcProviderServiceChainAPITest extends AbstractDataStoreManager {
         assertEquals("Must be equal", sfc2.getSfcServiceFunction(), sfcServiceFunctionList);
     }
 
+    // TODO this test is broken, since it uses sfList, which is never populated JIRA SFC-231
     @Test
+    @Ignore
     public void testCreateReadServiceFunctionChains() {
 
         List<SfcServiceFunction> sfcAllServiceFunctionList = new ArrayList<>();

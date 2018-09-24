@@ -74,6 +74,9 @@ public class ClassifierRspsUpdateListenerTest {
         Mockito.doNothing().when(theOpenflowWriter).deleteFlowSet();
         Mockito.doNothing().when(theOpenflowWriter).flushFlows();
 
+        Mockito.when(oldRsp.getName()).thenReturn(new RspName(""));
+        Mockito.when(theAcl.getAclName()).thenReturn("");
+
         List<Acl> aclList = new ArrayList<Acl>() {
             {
                 add(theAcl);

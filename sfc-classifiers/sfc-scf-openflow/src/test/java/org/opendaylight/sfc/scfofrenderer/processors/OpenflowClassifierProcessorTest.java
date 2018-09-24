@@ -96,12 +96,12 @@ public class OpenflowClassifierProcessorTest {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowClassifierProcessorTest.class);
 
     public OpenflowClassifierProcessorTest() {
-        initMocks(this);
         interfaceToClassify = "750135c0-67a9-4fc1-aac0-1359ae7944d4";
     }
 
     @Before
     public void setUp() {
+        initMocks(this);
         when(sffClassifier.getName()).thenReturn("sffName");
         when(sffClassifier.getAttachmentPointType())
                 .thenReturn(new InterfaceBuilder().setInterface(interfaceToClassify).build());
@@ -119,7 +119,8 @@ public class OpenflowClassifierProcessorTest {
         List<Ace> aclBuilder = new ClassifierAclDataBuilder().mockAces(1);
         when(acl.getAclName()).thenReturn("aclName");
         when(acl.getAccessListEntries()).thenReturn(accessListEntries);
-        when(SfcProviderRenderedPathAPI.readRenderedServicePath(any(RspName.class))).thenReturn(rsp);
+        PowerMockito.when(SfcProviderRenderedPathAPI.readRenderedServicePath(any(RspName.class))).thenReturn(rsp);
+        PowerMockito.when(SfcProviderRenderedPathAPI.generateReversedPathName(any())).thenCallRealMethod();
         when(accessListEntries.getAce()).thenReturn(aclBuilder);
 
         PowerMockito.mockStatic(LogicalClassifierDataGetter.class);
@@ -141,7 +142,8 @@ public class OpenflowClassifierProcessorTest {
         SfcRspInfo theNshHeader = new SfcRspInfo().setFirstSfName(new SfName("sf#1")).setNshEndNsi((short) 254)
                 .setNshMetaC1(123L).setNshMetaC2(321L).setNshMetaC3(2323L).setNshMetaC4(3232L).setNshNsp(666L)
                 .setNshStartNsi((short) 255).setLastSffName(new SffName("sff#1"))
-                .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080));
+                .setVxlanIpDst(new Ipv4Address("192.168.1.1")).setVxlanUdpPort(new PortNumber(8080))
+                .setRsp(rsp);
 
         PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RspName.class))).thenReturn(theNshHeader);
         PowerMockito.when(SfcRspInfo.getSfcRspInfo(any(RenderedServicePath.class))).thenReturn(theNshHeader);
@@ -176,7 +178,7 @@ public class OpenflowClassifierProcessorTest {
         when(sff.getSffDataPlaneLocator()).thenReturn(new ArrayList<>());
 
         // disable DPDK extensions
-        PowerMockito.when(SfcOvsUtil.getDpdkOfPort(anyString(), anyString())).thenReturn(null);
+        PowerMockito.when(SfcOvsUtil.getDpdkOfPort(any(), any())).thenReturn(null);
 
         BareClassifier bareClassifierHandler = Mockito.spy(new BareClassifier(sff));
         LogicallyAttachedClassifier logicallyAttachedClassifierHandler = new LogicallyAttachedClassifier(dataGetter);

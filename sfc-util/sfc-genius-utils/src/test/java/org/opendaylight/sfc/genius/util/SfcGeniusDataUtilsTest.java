@@ -36,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunctionKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sl.rev140701.data.plane.locator.locator.type.IpBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.service.functions.service.function.sf.data.plane.locator.locator.type.LogicalInterfaceBuilder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.iana._if.type.rev140508.L2vlan;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -98,7 +97,7 @@ public class SfcGeniusDataUtilsTest {
                             {
                                 add("openflow:79268612506848:1");
                             }
-                        }).setType(L2vlan.class).build()));
+                        })/* TODO FIXME .setType(L2vlan.class) */.build()));
 
         OvsdbTerminationPointAugmentationBuilder ovsdbTpAug = new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTpAug.setPortUuid(new Uuid("451f440a-a828-41ad-993c-93aaec43eb31"));
@@ -183,7 +182,7 @@ public class SfcGeniusDataUtilsTest {
                             {
                                 add("openflow:79268612506848:1");
                             }
-                        }).setType(L2vlan.class).build()));
+                        })/* TODO FIXME .setType(L2vlan.class) */.build()));
         SfcGeniusDataUtils.getServiceFunctionForwarderPortMacAddress(ifName);
     }
 
@@ -237,7 +236,7 @@ public class SfcGeniusDataUtilsTest {
                             {
                                 add("qua-qua");
                             }
-                        }).setType(L2vlan.class).build()));
+                        })/* TODO FIXME .setType(L2vlan.class) */.build()));
         SfcGeniusDataUtils.getServiceFunctionMacAddress(ifName);
     }
 

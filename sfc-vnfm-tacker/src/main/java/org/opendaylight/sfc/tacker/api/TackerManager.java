@@ -92,14 +92,14 @@ public final class TackerManager implements AutoCloseableSfcVnfManager {
                     String json = response.readEntity(String.class);
                     TackerResponse tackerResponse = GSON.fromJson(json, TackerResponse.class);
                     LOG.info("VNF successfully created.");
-                    LOG.debug(GSON.toJson(tackerResponse));
+                    LOG.debug("Response {}", GSON.toJson(tackerResponse));
                     return true;
                 case 401:
                     LOG.debug("Unauthorized! Wrong username or password.");
                     break;
                 default:
                     TackerError error = GSON.fromJson(response.readEntity(String.class), TackerError.class);
-                    LOG.debug(error.toString());
+                    LOG.debug("Error {}", error.toString());
                     break;
             }
         }
@@ -125,17 +125,17 @@ public final class TackerManager implements AutoCloseableSfcVnfManager {
         if (response != null) {
             switch (response.getStatus()) {
                 case 200:
-                    LOG.info("VNF:" + vnfId + " successfully deleted.");
+                    LOG.info("VNF: {} successfully deleted.", vnfId);
                     return true;
                 case 404:
-                    LOG.debug("404 - Not Found:" + response.toString());
+                    LOG.debug("404 - Not Found: {}", response.toString());
                     return false;
                 case 405:
-                    LOG.debug("405 - Method not found: " + response.toString());
+                    LOG.debug("405 - Method not found: {}", response.toString());
                     return false;
                 default:
                     TackerError error = GSON.fromJson(response.readEntity(String.class), TackerError.class);
-                    LOG.debug(error.toString());
+                    LOG.debug("Error {}", error.toString());
                     break;
             }
         }
@@ -184,7 +184,7 @@ public final class TackerManager implements AutoCloseableSfcVnfManager {
                     LOG.debug("Authentication token successfully created.");
                     return GSON.fromJson(jsonObject, Token.class);
                 default:
-                    LOG.debug(response.readEntity(String.class));
+                    LOG.debug("Response {}", response.readEntity(String.class));
                     break;
             }
         }

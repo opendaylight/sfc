@@ -167,8 +167,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         // - Ingress nodeConnectorRef
         // - instanceID for the Node in the tree above us
         // - instance identifier for the nodeConnectorRef
-        final String nodeName = packetIn.getIngress().getValue().firstKeyOf(Node.class, NodeKey.class).getId()
-                .getValue();
+        final String nodeName = packetIn.getIngress().getValue().firstKeyOf(Node.class).getId().getValue();
 
         // Configure the uplink packet
         if (ulPathId >= 0) {

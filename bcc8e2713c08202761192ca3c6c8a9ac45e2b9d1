@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "d4865e83_5e51b197",
+        "filename": "docs/dev-guide.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2018-10-16T19:39:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b95213ac_d961d7b5",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 25
+      },
+      "revId": "bcc8e2713c08202761192ca3c6c8a9ac45e2b9d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "89eca171_d72a8662",
         "filename": "docs/user-guide.rst",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2018-10-08T16:05:46Z",
       "side": 1,
       "message": "This needs to be \"Service Function Chaining User Guide\".",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 25
+      },
+      "revId": "bcc8e2713c08202761192ca3c6c8a9ac45e2b9d1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fda40cce_1b5570f1",
+        "filename": "docs/user-guide.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2018-10-16T19:39:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89eca171_d72a8662",
       "range": {
         "startLine": 3,
         "startChar": 0,

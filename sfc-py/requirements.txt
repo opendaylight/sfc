@@ -5,7 +5,7 @@ itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
 netifaces==0.10.4
-paramiko~=1.17.6
+paramiko~=2.0.9
 pexpect==4.0.1
 ptyprocess==0.5
 py==1.4.31

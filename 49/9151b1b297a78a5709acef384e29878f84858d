@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-by: Jaime Caamaño Ruiz <jcaamano@suse.com>
+Submitted-at: Wed, 17 Oct 2018 17:43:04 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/75884
+Project: sfc
+Branch: refs/heads/stable/fluorine

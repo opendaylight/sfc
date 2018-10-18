@@ -1,7 +1,7 @@
 .. _sfc-dev-guide:
 
-Service Function Chaining
-=========================
+Service Function Chaining Developer Guide
+=========================================
 
 OpenDaylight Service Function Chaining (SFC) Overview
 -----------------------------------------------------

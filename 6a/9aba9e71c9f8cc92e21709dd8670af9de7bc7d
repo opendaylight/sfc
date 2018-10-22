@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Thanh Ha (zxiiro) <thanh.ha@linuxfoundation.org>
+Submitted-by: Thanh Ha (zxiiro) <thanh.ha@linuxfoundation.org>
+Submitted-at: Mon, 22 Oct 2018 20:38:34 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/76864
+Project: sfc
+Branch: refs/heads/stable/fluorine

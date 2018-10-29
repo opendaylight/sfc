@@ -135,7 +135,7 @@ public abstract class SfcOfBaseProviderUtils {
     public SfDataPlaneLocator getSfDataPlaneLocator(ServiceFunction sf, final SffName sffName) {
         List<SfDataPlaneLocator> sfDataPlanelocatorList = sf.getSfDataPlaneLocator();
         for (SfDataPlaneLocator sfDpl : sfDataPlanelocatorList) {
-            if (sfDpl.getServiceFunctionForwarder().equals(sffName)) {
+            if (sfDpl.getServiceFunctionForwarder() != null && sfDpl.getServiceFunctionForwarder().equals(sffName)) {
                 return sfDpl;
             }
         }

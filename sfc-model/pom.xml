@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.13.1-SNAPSHOT</version>
+    <version>0.13.2-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-model</artifactId>
-  <version>0.8.1-SNAPSHOT</version>
+  <version>0.8.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
@@ -22,7 +22,7 @@
       <dependency>
         <groupId>org.opendaylight.ovsdb</groupId>
         <artifactId>southbound-artifacts</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.7.2-SNAPSHOT</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

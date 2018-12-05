@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-pot-netconf-renderer</artifactId>
-    <version>0.7.4-SNAPSHOT</version>
+    <version>0.7.4</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 

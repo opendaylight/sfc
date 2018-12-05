@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-openflow-renderer</artifactId>
-    <version>0.7.4-SNAPSHOT</version>
+    <version>0.7.4</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -28,28 +28,28 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>0.6.4-SNAPSHOT</version>
+            <version>0.6.4</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
-            <version>0.6.4-SNAPSHOT</version>
+            <version>0.6.4</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.genius</groupId>
             <artifactId>odl-genius-api</artifactId>
-            <version>0.4.4-SNAPSHOT</version>
+            <version>0.4.4</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.serviceutils</groupId>
             <artifactId>odl-serviceutils-tools</artifactId>
-            <version>0.1.4-SNAPSHOT</version>
+            <version>0.1.4</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

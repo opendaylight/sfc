@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-netconf</artifactId>
-    <version>0.7.4-SNAPSHOT</version>
+    <version>0.7.5-SNAPSHOT</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-netconf-connector</artifactId>
-            <version>1.4.4-SNAPSHOT</version>
+            <version>1.4.5-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

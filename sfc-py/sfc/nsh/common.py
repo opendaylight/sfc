@@ -43,7 +43,7 @@ VXLAN_START_OFFSET = 0
 
 # NSH constants
 
-NSH_TYPE1_DATA_PACKET = int('000000000000011000000001', 2)
+NSH_TYPE1_DATA_PACKET = int('000011111100011000000001', 2)
 # the lenght of NSH itself, without encapsulation heeder in 4 byte words = 8 bytes BASE + 16 bytes
 NSH_TYPE1_LEN = 0x6
 NSH_MD_TYPE1 = 0x1

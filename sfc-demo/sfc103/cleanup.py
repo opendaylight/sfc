@@ -40,9 +40,6 @@ def get_service_function_metadata_uri():
 def get_service_function_paths_uri():
     return "/restconf/config/service-function-path:service-function-paths/"
 
-def get_rendered_service_path_uri():
-    return "/restconf/operations/rendered-service-path:create-rendered-path/"
-
 def get_service_function_acl_uri():
     return "/restconf/config/ietf-access-control-list:access-lists/"
 
@@ -55,14 +52,11 @@ if __name__ == "__main__":
     delete(controller, DEFAULT_PORT, get_service_function_classifiers_uri())
     time.sleep(1)
 
-    print "deleting rendered service path"
-    delete(controller, DEFAULT_PORT, get_rendered_service_path_uri())
-    time.sleep(1)
-
     print "deleting service function acl"
     delete(controller, DEFAULT_PORT, get_service_function_acl_uri())
     time.sleep(1)
 
+    # This also deletes the RSPs
     print "deleting service function paths"
     delete(controller, DEFAULT_PORT, get_service_function_paths_uri())
     time.sleep(1)

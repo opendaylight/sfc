@@ -17,16 +17,16 @@ function clean {
 
 function start_sfc {
     cd $HOME/sfc/karaf/target/assembly/
-    sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-model,odl-sfc-provider,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-sb-rest,odl-sfc-ovs/" etc/org.apache.karaf.features.cfg;
+    sed -i "/^featuresBoot[ ]*=/ s/$/,odl-sfc-model,odl-sfc-provider-rest,odl-sfc-sb-rest,odl-sfc-openflow-renderer,odl-sfc-scf-openflow,odl-sfc-ovs/" etc/org.apache.karaf.features.cfg;
     echo "log4j.logger.org.opendaylight.sfc = DEBUG,stdout" >> etc/org.ops4j.pax.logging.cfg;
     rm -rf journal snapshots data; bin/start
     #wait for sfc ready
-    retries=3
+    retries=6
     while [ $retries -gt 0 ]
     do
-        sleep 60
+        sleep 30
         sfcfeatures=$($HOME/sfc/karaf/target/assembly/bin/client -u karaf -p karaf 'feature:list -i' 2>&1 | grep odl-sfc | wc -l)
-        if [ $sfcfeatures -eq 9 ]; then
+        if [ $sfcfeatures -eq 7 ]; then
             break
         fi
         retries=$(( $retries - 1 ))

@@ -41,6 +41,7 @@ plane implementation (sff_thread.py)
 """
 
 app = flask.Flask(__name__)
+logging.basicConfig(filename='/var/log/sfc_agent.log', level=logging.INFO)
 logger = logging.getLogger(__file__)
 nfq_classifier = classifier.NfqClassifier()
 sfc_globals = _sfc_globals.sfc_globals

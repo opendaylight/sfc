@@ -30,21 +30,22 @@ def put(host, port, uri, data, debug=False):
     r.raise_for_status()
     time.sleep(5)
 
-def post(host, port, uri, data, debug=False):
-    '''Perform a POST rest operation, using the URL and data provided'''
+def get(host, port, uri, debug=False):
+    '''Perform a GET rest operation, using the URL provided'''
 
     url='http://'+host+":"+port+uri
+
     headers = {'Content-type': 'application/yang.data+json',
                'Accept': 'application/yang.data+json'}
+    r = requests.get(url, headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+
     if debug == True:
-        print "POST %s" % url
-        print json.dumps(data, indent=4, sort_keys=True)
-    r = requests.post(url, data=json.dumps(data), headers=headers, auth=HTTPBasicAuth(USERNAME, PASSWORD))
-    if debug == True:
-        print r.text
-    print "HTTP POST %s\nresult: %s" % (uri, r.status_code)
-    r.raise_for_status()
-    time.sleep(5)
+        print "GET %s" % url
+    print '\nHTTP GET %s\nresult: %s' % (url, r.status_code)
+    if r.status_code >= 200 and r.status_code <= 299:
+        return json.loads(r.text)
+    else:
+        return {}
 
 def get_service_nodes_uri():
     return "/restconf/config/service-node:service-nodes"
@@ -160,14 +161,7 @@ def get_service_function_forwarders_data():
                         "service-function-forwarder-ovs:ovs-options": {
                             "remote-ip": "flow",
                             "dst-port": "6633",
-                            "key": "flow",
-                            "exts": "gpe",
-                            "nsp": "flow",
-                            "nsi": "flow",
-                            "nshc1": "flow",
-                            "nshc2": "flow",
-                            "nshc3": "flow",
-                            "nshc4": "flow"
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -189,14 +183,7 @@ def get_service_function_forwarders_data():
                         "service-function-forwarder-ovs:ovs-options": {
                             "remote-ip": "flow",
                             "dst-port": "6633",
-                            "key": "flow",
-                            "exts": "gpe",
-                            "nsp": "flow",
-                            "nsi": "flow",
-                            "nshc1": "flow",
-                            "nshc2": "flow",
-                            "nshc3": "flow",
-                            "nshc4": "flow"
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -227,14 +214,7 @@ def get_service_function_forwarders_data():
                         "service-function-forwarder-ovs:ovs-options": {
                             "remote-ip": "flow",
                             "dst-port": "6633",
-                            "key": "flow",
-                            "exts": "gpe",
-                            "nsp": "flow",
-                            "nsi": "flow",
-                            "nshc1": "flow",
-                            "nshc2": "flow",
-                            "nshc3": "flow",
-                            "nshc4": "flow"
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -265,14 +245,7 @@ def get_service_function_forwarders_data():
                         "service-function-forwarder-ovs:ovs-options": {
                             "remote-ip": "flow",
                             "dst-port": "6633",
-                            "key": "flow",
-                            "exts": "gpe",
-                            "nsp": "flow",
-                            "nsi": "flow",
-                            "nshc1": "flow",
-                            "nshc2": "flow",
-                            "nshc3": "flow",
-                            "nshc4": "flow"
+                            "exts": "gpe"
                         }
                     }
                 ],
@@ -370,21 +343,10 @@ def get_service_function_metadata_data():
   }
 }
 
-def get_rendered_service_path_uri():
-    return "/restconf/operations/rendered-service-path:create-rendered-path/"
-
-def get_rendered_service_path_data():
-    return {
-    "input": {
-        "name": "RSP1",
-        "parent-service-function-path": "SFP1"
-    }
-}
-
 def get_service_function_acl_uri():
     return "/restconf/config/ietf-access-control-list:access-lists/"
 
-def get_service_function_acl_data():
+def get_service_function_acl_data(rsp_name, rsp_rev_name):
     return  {
   "access-lists": {
     "acl": [
@@ -396,7 +358,7 @@ def get_service_function_acl_data():
             {
               "rule-name": "ACE1",
               "actions": {
-                "service-function-acl:rendered-service-path": "RSP1"
+                "service-function-acl:rendered-service-path": rsp_name
               },
               "matches": {
                 "destination-ipv4-network": "192.168.2.0/24",
@@ -421,7 +383,7 @@ def get_service_function_acl_data():
             {
               "rule-name": "ACE2",
               "actions": {
-                "service-function-acl:rendered-service-path": "RSP1-Reverse"
+                "service-function-acl:rendered-service-path": rsp_rev_name
               },
               "matches": {
                 "destination-ipv4-network": "192.168.2.0/24",
@@ -479,6 +441,25 @@ def get_service_function_classifiers_data():
   }
 }
 
+def get_service_function_path_state(sfp_name):
+    return "/restconf/operational/service-function-path:service-function-paths-state/service-function-path-state/%s" % (sfp_name)
+
+def get_rsp_name(sfp_name, is_reverse=False):
+    sfp_state_list = get(controller, DEFAULT_PORT, get_service_function_path_state(sfp_name))
+
+    for sfp_state in sfp_state_list["service-function-path-state"]:
+        rsp_list = sfp_state["sfp-rendered-service-path"]
+        for rsp in rsp_list:
+            rsp_name = rsp["name"]
+            if rsp_name.endswith("-Reverse"):
+                if is_reverse:
+                    return rsp_name
+            else:
+                if not is_reverse:
+                    return rsp_name
+
+    return ""
+
 if __name__ == "__main__":
 
     print "sending service nodes"
@@ -491,11 +472,13 @@ if __name__ == "__main__":
     put(controller, DEFAULT_PORT, get_service_function_chains_uri(), get_service_function_chains_data(), True)
     print "sending service function metadata"
     put(controller, DEFAULT_PORT, get_service_function_metadata_uri(), get_service_function_metadata_data(), True)
+    # Creating the SFP also creates the RSP
     print "sending service function paths"
     put(controller, DEFAULT_PORT, get_service_function_paths_uri(), get_service_function_paths_data(), True)
+    rsp_name = get_rsp_name("SFP1", False)
+    rsp_rev_name = get_rsp_name("SFP1", True)
+
     print "sending service function acl"
-    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(), True)
-    print "sending rendered service path"
-    post(controller, DEFAULT_PORT, get_rendered_service_path_uri(), get_rendered_service_path_data(), True)
+    put(controller, DEFAULT_PORT, get_service_function_acl_uri(), get_service_function_acl_data(rsp_name, rsp_rev_name), True)
     print "sending service function classifiers"
     put(controller, DEFAULT_PORT, get_service_function_classifiers_uri(), get_service_function_classifiers_data(), True)

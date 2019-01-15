@@ -152,7 +152,6 @@ public final class SfcScfOfUtils {
     public static List<Action> buildNshActions(SfcRspInfo sfcRspInfo) {
         List<Action> theActions = new ArrayList<>();
         theActions.add(SfcOpenflowUtils.createActionEncap(OpenflowConstants.PACKET_TYPE_NSH, theActions.size()));
-        theActions.add(SfcOpenflowUtils.createActionEncap(OpenflowConstants.PACKET_TYPE_ETH, theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNsp(sfcRspInfo.getNshNsp(), theActions.size()));
         theActions.add(SfcOpenflowUtils.createActionNxSetNsi(sfcRspInfo.getNshStartNsi(), theActions.size()));
         if (sfcRspInfo.getNshMetaC1() != null) {
@@ -167,6 +166,7 @@ public final class SfcScfOfUtils {
         if (sfcRspInfo.getNshMetaC4() != null) {
             theActions.add(SfcOpenflowUtils.createActionNxSetNshc4(sfcRspInfo.getNshMetaC4(), theActions.size()));
         }
+        theActions.add(SfcOpenflowUtils.createActionEncap(OpenflowConstants.PACKET_TYPE_ETH, theActions.size()));
         return theActions;
     }
 

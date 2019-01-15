@@ -1,12 +1,19 @@
 #!/bin/bash
 
+# Set OVS & ODL versions to use
+OVS_VERSION=v2.11.0
+ODL_VERSION=0.10.0
+
+NEXUS_BASE_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/karaf
+
 # If DIST_URL is commented out, then build SFC from scratch
-# Uncomment and adjust this if you want to use a pre-built SFC distro either from a localy built file or remotely
-# DIST_URL=https://nexus.opendaylight.org/content/repositories/opendaylight.snapshot/org/opendaylight/integration/karaf/
-DIST_URL=$HOME/odl/sfc/karaf/target/sfc-karaf-0.8.0-SNAPSHOT.tar.gz
+# DIST_URL can point to a tgz file
+# DIST_URL=/sfc/karaf/target/sfc-karaf-${ODL_VERSION}-SNAPSHOT.tar.gz
+# DIST_URL=${NEXUS_BASE_URL}/${ODL_VERSION}/karaf-${ODL_VERSION}.tar.gz
+DIST_URL=/sfc/karaf/target/sfc-karaf-0.10.0-SNAPSHOT.tar.gz
 
 function install_packages {
-    sudo apt-get install npm vim git git-review diffstat bridge-utils -y
+    sudo apt-get install locales-all npm vim git git-review diffstat bridge-utils -y
 
     #install java8
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
@@ -29,21 +36,20 @@ export JAVA_HOME=/usr/lib/jvm/java-8-oracle # This matches sudo update-alternati
 EOF
 
     # install docker compose
-    sudo apt-get install -y docker docker.io python-pip
-    sudo pip install docker-compose
+    sudo apt-get install -y docker docker.io docker-compose
 }
 
 function install_ovs {
     # Open vSwitch 2.9 with VxLAN-GPE and NSH support
     cd $HOME
     sudo apt-get install -y git libtool m4 autoconf automake make libssl-dev libcap-ng-dev python3 python-six vlan iptables \
-         graphviz debhelper dh-autoreconf python-all python-qt4 python-twisted-conch dkms
+         graphviz debhelper dh-autoreconf python-all python-qt4 python-twisted-conch dkms libelf-dev
     git clone https://github.com/openvswitch/ovs.git
     cd ovs
     sudo DEB_BUILD_OPTIONS='parallel=8 nocheck' fakeroot debian/rules binary
-    sudo dpkg -i $HOME/libopenvswitch_*.deb $HOME/openvswitch-datapath-dkms* $HOME/openvswitch-common* $HOME/openvswitch-switch* $HOME/python-openvswitch*
+    sudo dpkg -i $HOME/libopenvswitch_*.deb $HOME/openvswitch-datapath-dkms*.deb $HOME/openvswitch-common* $HOME/openvswitch-switch* $HOME/python-openvswitch*
     mkdir -p /vagrant/ovs-debs
-    cp $HOME/libopenvswitch_*.deb $HOME/openvswitch-common*.deb $HOME/openvswitch-switch*.deb $HOME/python-openvswitch*.deb /vagrant/ovs-debs/
+    cp $HOME/libopenvswitch_*.deb $HOME/openvswitch-datapath-dkms*.deb $HOME/openvswitch-common*.deb $HOME/openvswitch-switch*.deb $HOME/python-openvswitch*.deb /vagrant/ovs-debs/
 }
 
 function install_sfc {
@@ -54,17 +60,14 @@ function install_sfc {
 
         # Is it a remote URL or a local file
         if [[ "http" =~ ^$DIST_URL ]]; then
-            # Remote URL
-            latest_version=$(curl $DIST_URL/maven-metadata.xml | grep latest | cut -f2 -d'>' | cut -f1 -d'<')
-            latest_build=$(curl $DIST_URL/${latest_version}/maven-metadata.xml | grep -A2 tar.gz | grep value | cut -f2 -d'>' | cut -f1 -d'<')
-            curl $DIST_URL/${latest_version}/karaf-${latest_build}.tar.gz | tar xvz-
+            curl $DIST_URL | tar xvz-
         else
             # Local distro file
-            tar xvzf ${DIST_URL}
+            tar xvzf "$DIST_URL"
         fi
 
         rm -rf $HOME/sfc; mkdir -p $HOME/sfc/karaf/target
-        mv karaf* $HOME/sfc/karaf/target/assembly
+        mv *karaf* $HOME/sfc/karaf/target/assembly
     else
         # Build SFC
         echo "Building SFC from source"
@@ -81,10 +84,10 @@ function install_sfc {
 }
 
 
-echo "SFC DEMO: Packages installation"
+#echo "SFC DEMO: Packages installation"
 install_packages
 
-echo "SFC DEMO: Open vSwitch installation"
+#echo "SFC DEMO: Open vSwitch installation"
 install_ovs
 
 echo "SFC DEMO: SFC installation"

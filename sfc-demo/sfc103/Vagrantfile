@@ -6,9 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "generic/ubuntu1604"
   config.vm.provision "docker"
-
+  
+  config.vm.synced_folder ".", "/vagrant"
   config.vm.synced_folder "../..", "/sfc"
 
   config.vm.define "odl" do | h |
@@ -16,6 +17,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     h.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--memory", 4096]
       v.customize ["modifyvm", :id, "--cpus", 2]
+    end
+    h.vm.provider :libvirt do |libvirt|
+      libvirt.cpus = 2
+      libvirt.memory = 4096
     end
     h.vm.provision :shell, :inline => "/vagrant/setup_odl.sh", privileged: false
   end

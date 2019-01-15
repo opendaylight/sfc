@@ -273,7 +273,7 @@ class BasicService(object):
         :type addr: tuple
 
         """
-        logger.info('%s service received packet from %s:', self.service_type, addr)
+        logger.info('%s service process packet from %s:', self.service_type, addr)
         logger.debug('%s %s', addr, binascii.hexlify(data))
         rw_data = self._process_incoming_packet(data, addr)
         if self.is_eth_nsh:
@@ -286,10 +286,11 @@ class BasicService(object):
             # Disregard source port of received packet and send packet back to 6633
             addr_l = list(addr)
             addr_l[1] = 6633
+            logger.info('%s: sending data packets to %s', self.service_type, addr)
             addr = tuple(addr_l)
             self.transport.sendto(rw_data, addr)
-            logger.info('%s: sending packets to %s', self.service_type, addr)
         elif nsh_decode.is_trace_message(data, offset):
+            logger.info('%s: sending trace packets', self.service_type)
             # Add SF information to packet
             if self.server_base_values.service_index == self.server_trace_values.sil:
                 trace_pkt = add_sf_to_trace_pkt(rw_data, self.service_type, self.service_name)
@@ -297,6 +298,8 @@ class BasicService(object):
             # Send packet back to SFF
             else:
                 self.transport.sendto(rw_data, addr)
+        else:
+            logger.info('%s: ignoring packet, offset %d', self.service_type, offset)
 
     def read_queue(self):
         """

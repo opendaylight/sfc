@@ -11,7 +11,7 @@
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-parent</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.10.0-SNAPSHOT</version>
   <name>sfc</name> <!-- Used by Sonar to set project name -->
   <packaging>pom</packaging>
 
@@ -71,23 +71,23 @@
     <!-- Build Plugin Versions -->
     <karaf.maven.version>3.0.1</karaf.maven.version>
 
-    <config.version>0.10.0-SNAPSHOT</config.version>
-    <mdsal.version>1.9.0-SNAPSHOT</mdsal.version>
-    <netconf.parent.version>1.6.0-SNAPSHOT</netconf.parent.version>
-    <restconf.version>1.9.0-SNAPSHOT</restconf.version>
+    <config.version>0.11.0-SNAPSHOT</config.version>
+    <mdsal.version>1.10.0-SNAPSHOT</mdsal.version>
+    <netconf.parent.version>1.7.0-SNAPSHOT</netconf.parent.version>
+    <restconf.version>1.10.0-SNAPSHOT</restconf.version>
     <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-    <lispflowmapping.version>1.9.0-SNAPSHOT</lispflowmapping.version>
-    <ovsdb.southbound.version>1.8.0-SNAPSHOT</ovsdb.southbound.version>
-    <l2switch.version>0.9.0-SNAPSHOT</l2switch.version>
-    <genius.version>0.6.0-SNAPSHOT</genius.version>
-    <serviceutils.version>0.3.0-SNAPSHOT</serviceutils.version>
-    <infrautils.version>1.5.0-SNAPSHOT</infrautils.version>
+    <lispflowmapping.version>1.10.0-SNAPSHOT</lispflowmapping.version>
+    <ovsdb.southbound.version>1.9.0-SNAPSHOT</ovsdb.southbound.version>
+    <l2switch.version>0.10.0-SNAPSHOT</l2switch.version>
+    <genius.version>0.7.0-SNAPSHOT</genius.version>
+    <serviceutils.version>0.4.0-SNAPSHOT</serviceutils.version>
+    <infrautils.version>1.6.0-SNAPSHOT</infrautils.version>
 
     <!-- Supporting Libraries -->
-    <feature.openflowplugin.version>0.8.0-SNAPSHOT</feature.openflowplugin.version>
-    <openflowplugin.version>0.8.0-SNAPSHOT</openflowplugin.version>
+    <feature.openflowplugin.version>0.9.0-SNAPSHOT</feature.openflowplugin.version>
+    <openflowplugin.version>0.9.0-SNAPSHOT</openflowplugin.version>
 
-    <branding.version>1.8.0-SNAPSHOT</branding.version>
+    <branding.version>1.9.0-SNAPSHOT</branding.version>
 
     <!-- Test Libraries -->
     <junitparams.version>1.0.3</junitparams.version>

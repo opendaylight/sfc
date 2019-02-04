@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.sfc</groupId>
     <artifactId>odl-sfc-model</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2</version>
     <packaging>feature</packaging>
     <name>ODL :: sfc :: ${project.artifactId}</name>
 
@@ -29,7 +29,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
                 <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.13.2-SNAPSHOT</version>
+                <version>0.13.2</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.opendaylight.ovsdb</groupId>
             <artifactId>odl-ovsdb-southbound-api</artifactId>
-            <version>1.7.2-SNAPSHOT</version>
+            <version>1.7.2</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

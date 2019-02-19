@@ -518,8 +518,10 @@ def main():
     parser.add_argument('--forward-inner', '-f', dest='forward_inner',
                         default=False, action='store_true',
                         help='Strip the outer encapsulation and forward the inner packet')
-    parser.add_argument('--block', '-b', type=int, default=0,
+    parser.add_argument('--destination-block', '-db', type=int, default=0,
                         help='Acts as a firewall dropping packets that match this TCP dst port')
+    parser.add_argument('--source-block', '-sb', type=int, default=0,
+                        help='Acts as a firewall dropping packets that match this TCP src port')
 
     args = parser.parse_args()
     macaddr = None
@@ -874,13 +876,16 @@ def main():
             print_nsh_contextheader(mynshcontextheader)
 
             """ Check if Firewall checking is enabled, and block/drop if its the same TCP port """
-            if (args.block != 0):
+            if ((args.destination_block != 0) or (args.source_block != 0)):
                 mytcpheader = TCPHEADER()
                 # When ETH+NSH the TCP header is after ETH, NSH, ETH, IP
                 tcp_offset = eth_length * 2 + ip_length + nshbase_length + nshcontext_length
                 decode_tcp(packet, tcp_offset, mytcpheader)
-                if (mytcpheader.tcp_dport == args.block):
-                    print(bcolors.WARNING, "TCP packet dropped on port: ", str(args.block), bcolors.ENDC)
+                if (mytcpheader.tcp_dport == args.destination_block):
+                    print(bcolors.WARNING, "TCP packet dropped on destination port: ", str(args.destination_block), bcolors.ENDC)
+                    continue
+                if (mytcpheader.tcp_sport == args.source_block):
+                    print(bcolors.WARNING, "TCP packet dropped on source port: ", str(args.source_block), bcolors.ENDC)
                     continue
 
             if ((args.do == "forward") and (args.interface is not None)):
@@ -1070,13 +1075,16 @@ def main():
                 print_nsh_contextheader(mynshcontextheader)
 
             """ Check if Firewall checking is enabled, and block/drop if its the same TCP port """
-            if (args.block != 0):
+            if ((args.destination_block != 0) or (args.source_block != 0)):
                 mytcpheader = TCPHEADER()
                 # TCP header is after ETH, IP, UDP, VXLAN, ETH, NSH, ETH, IP
                 tcp_offset = eth_length * 2 + ip_length * 2 + nshbase_length + nshcontext_length + udp_length + vxlan_length
                 decode_tcp(packet, tcp_offset, mytcpheader)
-                if (mytcpheader.tcp_dport == args.block):
-                    print(bcolors.WARNING, "TCP packet dropped on port: ", str(args.block), bcolors.ENDC)
+                if (mytcpheader.tcp_dport == args.destination_block):
+                    print(bcolors.WARNING, "TCP packet dropped on destination port: ", str(args.destination_block), bcolors.ENDC)
+                    continue
+                if (mytcpheader.tcp_sport == args.source_block):
+                    print(bcolors.WARNING, "TCP packet dropped on source port: ", str(args.source_block), bcolors.ENDC)
                     continue
 
             if ((args.do == "forward") and (args.interface is not None) and (mynshbaseheader.service_index > 1)):

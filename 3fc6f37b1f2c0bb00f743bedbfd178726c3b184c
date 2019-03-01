@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fe23f982_0ec9b758",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 521,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2019-03-01T09:53:08Z",
+      "side": 1,
+      "message": "Could you keep the --block and -b arguments as well so that tools that were already using that dont break?",
+      "range": {
+        "startLine": 521,
+        "startChar": 0,
+        "endLine": 521,
+        "endChar": 74
+      },
+      "revId": "3fc6f37b1f2c0bb00f743bedbfd178726c3b184c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

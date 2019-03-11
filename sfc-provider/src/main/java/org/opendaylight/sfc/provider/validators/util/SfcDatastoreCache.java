@@ -35,10 +35,10 @@ public final class SfcDatastoreCache {
     private static final LoadingCache<SfName, String> SF_TO_SF_TYPE_CACHE = CacheBuilder.newBuilder().maximumSize(500)
             .build(new CacheLoader<SfName, String>() {
                 @Override
-                public String load(SfName key) {
+                public String load(SfName key) throws Exception {
                     ServiceFunction sf = SfcProviderServiceFunctionAPI.readServiceFunction(key);
                     if (sf == null) {
-                        return null;
+                        throw new Exception("Could not read service function " + key);
                     }
                     return sf.getType().getValue();
                 }
@@ -52,11 +52,11 @@ public final class SfcDatastoreCache {
             = CacheBuilder.newBuilder().maximumSize(500)
             .build(new CacheLoader<SfcName, List<String>>() {
                 @Override
-                public List<String> load(SfcName key) {
+                public List<String> load(SfcName key) throws Exception {
                     ServiceFunctionChain serviceFunctionChain = SfcProviderServiceChainAPI
                             .readServiceFunctionChain(key);
                     if (serviceFunctionChain == null) {
-                        return null;
+                        throw new Exception("Could not read service function chain " + key);
                     }
                     List<String> serviceFunctionTypesForChain = new ArrayList<>();
                     for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a9eb19a5_952d5876",
+        "filename": "sfc-test/nsh-tools/vxlan_tool.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 523,
+      "author": {
+        "id": 6230
+      },
+      "writtenOn": "2019-03-11T14:08:14Z",
+      "side": 1,
+      "message": "This should be single letter (sorry I did not spot it before). Why not remove it and just leave \u0027--source-block\u0027",
+      "range": {
+        "startLine": 523,
+        "startChar": 42,
+        "endLine": 523,
+        "endChar": 47
+      },
+      "revId": "83b842635138e56bb87f9e209e2de33b650bbb85",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

@@ -39,6 +39,11 @@
             <groupId>org.opendaylight.serviceutils</groupId>
             <artifactId>tools-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!-- Testing dependencies -->
         <dependency>

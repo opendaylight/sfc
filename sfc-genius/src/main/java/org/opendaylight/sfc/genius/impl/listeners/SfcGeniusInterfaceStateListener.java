@@ -10,7 +10,7 @@ package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
@@ -50,7 +50,7 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Interface> instanceIdentifier, @Nonnull Interface newInterface) {
+    public void add(@NonNull InstanceIdentifier<Interface> instanceIdentifier, @NonNull Interface newInterface) {
         // VM migration: logical interface state is added once the VM has migrated
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         LOG.debug("Received interface state add event {}", newInterface);
@@ -66,16 +66,16 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Interface> instanceIdentifier, @Nonnull Interface removedInterface) {
+    public void remove(@NonNull InstanceIdentifier<Interface> instanceIdentifier, @NonNull Interface removedInterface) {
         // VM migration: logical interface state is removed while VM migrates to different node/port
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         // This is a NOP, we wait until until the VM has migrated once it's interface registers again
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Interface> instanceIdentifier,
-                       @Nonnull Interface originalInterface,
-                       @Nonnull Interface updatedInterface) {
+    public void update(@NonNull InstanceIdentifier<Interface> instanceIdentifier,
+                       @NonNull Interface originalInterface,
+                       @NonNull Interface updatedInterface) {
         // NOT VM migration: VM unavailable for any other reason
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#update
         // Do nothing, should be handled by a failover mechanism

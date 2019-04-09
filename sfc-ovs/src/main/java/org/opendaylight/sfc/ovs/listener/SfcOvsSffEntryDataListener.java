@@ -17,8 +17,9 @@
 package org.opendaylight.sfc.ovs.listener;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -49,8 +50,8 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @NonNull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.info("Created Service Function Forwarder: {}", serviceFunctionForwarder.toString());
         // add augmentations for serviceFunctionForwarder
         addOvsdbAugmentations(serviceFunctionForwarder);
@@ -58,16 +59,16 @@ public class SfcOvsSffEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder deletedServiceFunctionForwarder) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder deletedServiceFunctionForwarder) {
         LOG.info("Deleted Service Function Forwarder: {}", deletedServiceFunctionForwarder.toString());
         deleteOvsdbAugmentations(deletedServiceFunctionForwarder);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
-                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder originalServiceFunctionForwarder,
+                       @NonNull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         // Notice: Adding an SffDpl to an existing SFF will trigger this
         // listener, not a separate SffDplListener
         // which means 2 different listeners are not needed. This was tested

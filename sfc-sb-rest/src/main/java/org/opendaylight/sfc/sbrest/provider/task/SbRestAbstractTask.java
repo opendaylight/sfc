@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.sfc.sbrest.json.ExporterFactory;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -24,8 +25,8 @@ public abstract class SbRestAbstractTask implements Runnable {
     private final String jsonObject;
     private final List<String> restUriList = new ArrayList<>();
 
-    public SbRestAbstractTask(@Nonnull RestOperation restOperation, @Nonnull ExporterFactory exporterFactory,
-            @Nullable DataObject dataObject, @Nonnull ExecutorService odlExecutor) {
+    public SbRestAbstractTask(@NonNull RestOperation restOperation, @NonNull ExporterFactory exporterFactory,
+                              @Nullable DataObject dataObject, @NonNull ExecutorService odlExecutor) {
         this.restOperation = restOperation;
         this.odlExecutor = odlExecutor;
 

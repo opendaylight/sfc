@@ -23,10 +23,10 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -67,7 +67,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void add(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         LOG.debug("Created OVS Node: {}", node.toString());
 
         /*
@@ -107,7 +107,7 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void remove(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled
@@ -116,8 +116,8 @@ public class SfcOvsNodeDataListener extends AbstractSyncDataTreeChangeListener<N
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalNode,
-                       @Nonnull Node updatedNode) {
+    public void update(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node originalNode,
+                       @NonNull Node updatedNode) {
         /*
          * NODE UPDATE and NODE DELETE This case would mean, that user has
          * modified vSwitch state directly by ovs command, which is not handled

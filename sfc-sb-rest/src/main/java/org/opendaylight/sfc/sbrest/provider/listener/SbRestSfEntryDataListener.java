@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -36,21 +37,21 @@ public class SbRestSfEntryDataListener extends AbstractSyncDataTreeChangeListene
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                    @Nonnull ServiceFunction serviceFunction) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                    @NonNull ServiceFunction serviceFunction) {
         update(instanceIdentifier, serviceFunction, serviceFunction);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction serviceFunction) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction serviceFunction) {
         LOG.debug("Deleted Service Function Name: {}", serviceFunction.getName());
         new SbRestSfTask(RestOperation.DELETE, serviceFunction, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction originalDataObject, @Nonnull ServiceFunction updatedServiceFunction) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction originalDataObject, @NonNull ServiceFunction updatedServiceFunction) {
         LOG.debug("Updated Service Function Name: {}", updatedServiceFunction.getName());
         new SbRestSfTask(RestOperation.PUT, updatedServiceFunction, executorService).run();
     }

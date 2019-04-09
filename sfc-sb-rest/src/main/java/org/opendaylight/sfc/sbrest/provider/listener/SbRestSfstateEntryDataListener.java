@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -37,22 +38,22 @@ public class SbRestSfstateEntryDataListener extends AbstractSyncDataTreeChangeLi
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                    @Nonnull ServiceFunctionState serviceFunctionState) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                    @NonNull ServiceFunctionState serviceFunctionState) {
         update(instanceIdentifier, serviceFunctionState, serviceFunctionState);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                       @Nonnull ServiceFunctionState serviceFunctionState) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @NonNull ServiceFunctionState serviceFunctionState) {
         LOG.debug("Deleted Service Function State Name: {}", serviceFunctionState.getName());
         new SbRestSfstateTask(RestOperation.DELETE, serviceFunctionState, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                       @Nonnull ServiceFunctionState originalServiceFunctionState,
-                       @Nonnull ServiceFunctionState updatedServiceFunctionState) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @NonNull ServiceFunctionState originalServiceFunctionState,
+                       @NonNull ServiceFunctionState updatedServiceFunctionState) {
         LOG.debug("Updated Service Function State Name: {}", updatedServiceFunctionState.getName());
         new SbRestSfstateTask(RestOperation.PUT, updatedServiceFunctionState, executorService).run();
     }

@@ -10,10 +10,10 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -45,8 +45,8 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
-                    @Nonnull ServiceFunctionPath serviceFunctionPath) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                    @NonNull ServiceFunctionPath serviceFunctionPath) {
         LOG.info("add: SFP: {}", serviceFunctionPath.getName().getValue());
 
         // Internally, this will optionally create the symmetric RSP
@@ -58,8 +58,8 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
-                       @Nonnull ServiceFunctionPath serviceFunctionPath) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                       @NonNull ServiceFunctionPath serviceFunctionPath) {
         SfpName sfpName = serviceFunctionPath.getName();
         LOG.info("remove: Deleting SFP: {}", sfpName.getValue());
 
@@ -76,9 +76,9 @@ public class ServiceFunctionPathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
-                       @Nonnull ServiceFunctionPath originalServiceFunctionPath,
-                       @Nonnull ServiceFunctionPath updatedServiceFunctionPath) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionPath> instanceIdentifier,
+                       @NonNull ServiceFunctionPath originalServiceFunctionPath,
+                       @NonNull ServiceFunctionPath updatedServiceFunctionPath) {
         LOG.warn("Updating the SFP is not supported: {}", updatedServiceFunctionPath.getName().getValue());
     }
 }

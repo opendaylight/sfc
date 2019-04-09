@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.genius.mdsalutil.MDSALUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
@@ -101,11 +102,11 @@ public final class SfcGeniusDataUtils {
      * @return The list of logical interface dataplane locators attached to the
      *         Service Function
      */
-    public static List<String> getSfLogicalInterfaces(@Nonnull ServiceFunction sf) {
+    public static List<String> getSfLogicalInterfaces(@NonNull ServiceFunction sf) {
         return sf.getSfDataPlaneLocator()
                 .stream()
                 .map(SfcGeniusDataUtils::getLogicalInterfaceNameFromLocator)
-                .filter(Objects::nonNull)
+                .filter(Objects::NonNull)
                 .collect(Collectors.toList());
     }
 
@@ -116,7 +117,7 @@ public final class SfcGeniusDataUtils {
      * @return the logical interface name or {@code Null} if locator is not a
      *         logical interface.
      */
-    public static String getLogicalInterfaceNameFromLocator(@Nonnull SfDataPlaneLocator sfDataPlaneLocator) {
+    public static String getLogicalInterfaceNameFromLocator(@NonNull SfDataPlaneLocator sfDataPlaneLocator) {
         return Optional.ofNullable(sfDataPlaneLocator.getLocatorType())
                 .filter(locatorType -> LogicalInterface.class.equals(locatorType.getImplementedInterface()))
                 .map(locatorType -> ((LogicalInterface) locatorType).getInterfaceName())

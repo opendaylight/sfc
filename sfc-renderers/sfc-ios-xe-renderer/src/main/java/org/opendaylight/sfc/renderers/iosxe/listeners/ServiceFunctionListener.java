@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.iosxe.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -31,23 +32,23 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
-                    @Nonnull ServiceFunctions serviceFunctions) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                    @NonNull ServiceFunctions serviceFunctions) {
         update(instanceIdentifier, serviceFunctions, serviceFunctions);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
-                       @Nonnull ServiceFunctions serviceFunctions) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                       @NonNull ServiceFunctions serviceFunctions) {
         if (serviceFunctions.getServiceFunction() != null) {
             sfManager.syncFunctions(serviceFunctions.getServiceFunction(), true);
         }
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
-                       @Nonnull ServiceFunctions originalServiceFunctions,
-                       @Nonnull ServiceFunctions updatedServiceFunctions) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctions> instanceIdentifier,
+                       @NonNull ServiceFunctions originalServiceFunctions,
+                       @NonNull ServiceFunctions updatedServiceFunctions) {
         if (updatedServiceFunctions.getServiceFunction() != null) {
             sfManager.syncFunctions(originalServiceFunctions.getServiceFunction(), false);
         }

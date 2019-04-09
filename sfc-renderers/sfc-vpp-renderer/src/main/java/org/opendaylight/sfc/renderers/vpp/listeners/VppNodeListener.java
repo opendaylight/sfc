@@ -11,9 +11,10 @@
  */
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -41,7 +42,7 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void add(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         if (vppNodeManager.isCapableNetconfDevice(node)) {
             LOG.debug("Adding node");
             vppNodeManager.updateNode(node);
@@ -49,8 +50,8 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
-                       @Nonnull Node node) {
+    public void remove(@NonNull InstanceIdentifier<Node> instanceIdentifier,
+                       @NonNull Node node) {
         if (vppNodeManager.isCapableNetconfDevice(node)) {
             LOG.debug("Removing node");
             vppNodeManager.removeNode(node);
@@ -58,8 +59,8 @@ public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
-                       @Nonnull Node originalNode, @Nonnull Node updatedNode) {
+    public void update(@NonNull InstanceIdentifier<Node> instanceIdentifier,
+                       @NonNull Node originalNode, @NonNull Node updatedNode) {
         if (vppNodeManager.isCapableNetconfDevice(updatedNode)) {
             LOG.info("Updating node");
             vppNodeManager.updateNode(updatedNode);

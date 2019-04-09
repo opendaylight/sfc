@@ -13,7 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
@@ -61,7 +62,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier, @Nonnull Dpn newDpn) {
+    public void add(@NonNull InstanceIdentifier<Dpn> instanceIdentifier, @NonNull Dpn newDpn) {
         LOG.debug("Receive SFF state DPN add event {}", newDpn);
         boolean pathsOnDpn = getPathsOnDpn(newDpn).isEmpty();
         if (!pathsOnDpn) {
@@ -71,7 +72,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier, @Nonnull Dpn removedDpn) {
+    public void remove(@NonNull InstanceIdentifier<Dpn> instanceIdentifier, @NonNull Dpn removedDpn) {
         LOG.debug("Receive SFF state DPN remove event {}", removedDpn);
         boolean pathsOnDpn = getPathsOnDpn(removedDpn).isEmpty();
         if (!pathsOnDpn) {
@@ -81,8 +82,8 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Dpn> instanceIdentifier, @Nonnull Dpn originalDpn,
-                       @Nonnull Dpn updatedDpn) {
+    public void update(@NonNull InstanceIdentifier<Dpn> instanceIdentifier, @NonNull Dpn originalDpn,
+                       @NonNull Dpn updatedDpn) {
         LOG.debug("Receive SFF state DPN: originalDpn {} updated DPN {}", originalDpn, updatedDpn);
         BigInteger dpnId = updatedDpn.getDpnId().getValue();
         boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();

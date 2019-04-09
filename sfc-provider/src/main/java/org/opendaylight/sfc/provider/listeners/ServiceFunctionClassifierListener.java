@@ -7,9 +7,10 @@
  */
 package org.opendaylight.sfc.provider.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -38,8 +39,8 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Adding Service Function Classifier: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getName() != null && serviceFunctionClassifier.getAcl() != null) {
@@ -52,8 +53,8 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         if (serviceFunctionClassifier.getAcl() != null) {
             LOG.debug("Removing Service Function Classifier: {}", serviceFunctionClassifier.getName());
             if (serviceFunctionClassifier.getName() != null) {
@@ -67,9 +68,9 @@ public class ServiceFunctionClassifierListener extends AbstractSyncDataTreeChang
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
-                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier originalServiceFunctionClassifier,
+                       @NonNull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         if (originalServiceFunctionClassifier.getAcl() != null
                 && updatedServiceFunctionClassifier.getAcl() != null && !originalServiceFunctionClassifier.getAcl()
                 .equals(updatedServiceFunctionClassifier.getAcl())) {

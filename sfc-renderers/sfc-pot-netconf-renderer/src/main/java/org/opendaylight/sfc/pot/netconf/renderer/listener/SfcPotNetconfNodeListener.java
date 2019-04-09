@@ -10,9 +10,10 @@ package org.opendaylight.sfc.pot.netconf.renderer.listener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -62,20 +63,20 @@ public class SfcPotNetconfNodeListener extends AbstractSyncDataTreeChangeListene
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void add(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         update(instanceIdentifier, node, node);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void remove(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         if (isIoamCapableNetconfDevice(node)) {
             nodeManager.removeNode(node);
         }
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalNode,
-                       @Nonnull Node updatedNode) {
+    public void update(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node originalNode,
+                       @NonNull Node updatedNode) {
         if (isIoamCapableNetconfDevice(updatedNode)) {
             nodeManager.updateNode(updatedNode);
         }

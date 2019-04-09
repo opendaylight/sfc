@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -36,23 +37,23 @@ public class ServiceForwarderListener extends AbstractSyncDataTreeChangeListener
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @NonNull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.debug("SFF added [{}]", serviceFunctionForwarder.getName());
         sffManager.disposeSff(serviceFunctionForwarder, false);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.debug("SFF removed [{}]", serviceFunctionForwarder.getName());
         sffManager.disposeSff(serviceFunctionForwarder, true);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
-                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder originalServiceFunctionForwarder,
+                       @NonNull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.info("SFF updated original [{}] updated [{}]", originalServiceFunctionForwarder.getName(),
                  updatedServiceFunctionForwarder.getName());
         sffManager.disposeSff(updatedServiceFunctionForwarder, false);

@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -36,19 +37,19 @@ public class SbRestAclEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Acl> instanceIdentifier, @Nonnull Acl acl) {
+    public void add(@NonNull InstanceIdentifier<Acl> instanceIdentifier, @NonNull Acl acl) {
         update(instanceIdentifier, acl, acl);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Acl> instanceIdentifier, @Nonnull Acl acl) {
+    public void remove(@NonNull InstanceIdentifier<Acl> instanceIdentifier, @NonNull Acl acl) {
         LOG.debug("Deleted Access List Name: {}", acl.getAclName());
         new SbRestAclTask(RestOperation.DELETE, acl, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Acl> instanceIdentifier,
-                       @Nonnull Acl originalAcl, @Nonnull Acl updatedAcl) {
+    public void update(@NonNull InstanceIdentifier<Acl> instanceIdentifier,
+                       @NonNull Acl originalAcl, @NonNull Acl updatedAcl) {
         LOG.debug("Updated Access List Name: {}", updatedAcl.getAclName());
         new SbRestAclTask(RestOperation.PUT, updatedAcl, executorService).run();
     }

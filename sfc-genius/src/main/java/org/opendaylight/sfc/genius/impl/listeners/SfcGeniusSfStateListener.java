@@ -9,7 +9,8 @@
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
@@ -42,8 +43,8 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                    @Nonnull ServiceFunctionState newServiceFunctionState) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                    @NonNull ServiceFunctionState newServiceFunctionState) {
         // If this SF starts participating in RSPs, we need to bind to its interfaces
         LOG.debug("Received service function state add event {}", newServiceFunctionState);
         int numberOfNewPaths = newServiceFunctionState.getSfServicePath() != null
@@ -56,8 +57,8 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                       @Nonnull ServiceFunctionState removedServiceFunctionState) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @NonNull ServiceFunctionState removedServiceFunctionState) {
         // If this SF stops participating in RSPs, we need to unbind from its interfaces
         LOG.debug("Received service function state remove event {}", removedServiceFunctionState);
         int numberOfOldPaths = removedServiceFunctionState.getSfServicePath() != null
@@ -70,9 +71,9 @@ public class SfcGeniusSfStateListener extends AbstractAsyncDataTreeChangeListene
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
-                       @Nonnull ServiceFunctionState originalServiceFunctionState,
-                       @Nonnull ServiceFunctionState updatedServiceFunctionState) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionState> instanceIdentifier,
+                       @NonNull ServiceFunctionState originalServiceFunctionState,
+                       @NonNull ServiceFunctionState updatedServiceFunctionState) {
         // If this SF stops participating in RSPs, we need to unbind from its interfaces
         LOG.debug("Received service function state update event {} {}",
                 originalServiceFunctionState,

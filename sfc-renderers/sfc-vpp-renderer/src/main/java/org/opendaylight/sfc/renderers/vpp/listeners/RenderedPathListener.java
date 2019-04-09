@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -36,23 +37,23 @@ public class RenderedPathListener extends AbstractSyncDataTreeChangeListener<Ren
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                    @Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @NonNull RenderedServicePath renderedServicePath) {
         LOG.debug("RSP created");
         this.rspProcessor.updateRsp(renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath renderedServicePath) {
         LOG.debug("RSP deleted");
         this.rspProcessor.deleteRsp(renderedServicePath);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath originalRenderedServicePath,
-                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath originalRenderedServicePath,
+                       @NonNull RenderedServicePath updatedRenderedServicePath) {
         // Needn't care it
     }
 }

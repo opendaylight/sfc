@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.MountPoint;
 import org.opendaylight.controller.md.sal.binding.api.MountPointService;
@@ -299,7 +300,7 @@ public final class SfcVppUtils {
             }
 
             @Override
-            public void onFailure(@Nonnull Throwable throwable) {
+            public void onFailure(@NonNull Throwable throwable) {
                 if (data == null) {
                     LOG.error("Error deleting {}", id, throwable);
                 } else {

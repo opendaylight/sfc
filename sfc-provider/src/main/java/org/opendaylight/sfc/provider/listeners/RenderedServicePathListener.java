@@ -10,10 +10,10 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.Collections;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -44,8 +44,8 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                    @Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @NonNull RenderedServicePath renderedServicePath) {
 
         // As of the Oxygen release, the RSP creation workflow is as follows:
         // - An SFP creation in the Config Data Store triggers an RSP and
@@ -75,8 +75,8 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath renderedServicePath) {
         LOG.info("remove: Deleting RSP {}", renderedServicePath.getName().getValue());
         // It may be that someone deleted the Config RSP without first deleting
         // the SFP, but if we delete the SFP here, that could cause a race condition
@@ -93,9 +93,9 @@ public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListe
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath originalRenderedServicePath,
-                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath originalRenderedServicePath,
+                       @NonNull RenderedServicePath updatedRenderedServicePath) {
         LOG.warn("Updating the RSP in config is not supported: {}",
                 updatedRenderedServicePath.getName().getValue());
     }

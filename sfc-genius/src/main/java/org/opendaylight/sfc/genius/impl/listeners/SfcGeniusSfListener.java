@@ -10,7 +10,8 @@ package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractAsyncDataTreeChangeListener;
@@ -39,23 +40,23 @@ public class SfcGeniusSfListener extends AbstractAsyncDataTreeChangeListener<Ser
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                    @Nonnull ServiceFunction newServiceFunction) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                    @NonNull ServiceFunction newServiceFunction) {
         // noop
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction removedServiceFunction) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction removedServiceFunction) {
         LOG.debug("Received service function remove event {}", removedServiceFunction);
         List<String> interfaceNames = SfcGeniusDataUtils.getSfLogicalInterfaces(removedServiceFunction);
         interfaceManager.unbindInterfaces(interfaceNames);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction originalServiceFunction,
-                       @Nonnull ServiceFunction updatedServiceFunction) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction originalServiceFunction,
+                       @NonNull ServiceFunction updatedServiceFunction) {
         // noop
     }
 }

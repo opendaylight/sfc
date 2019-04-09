@@ -10,7 +10,8 @@ package org.opendaylight.sfc.scfofrenderer.listeners;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -54,21 +55,21 @@ public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeList
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                    @Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @NonNull RenderedServicePath renderedServicePath) {
         // nothing to do when RSPs are added
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath removedRenderedServicePath) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath removedRenderedServicePath) {
         // nothing to do when RSPs are deleted
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath originalRenderedServicePath,
-                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath originalRenderedServicePath,
+                       @NonNull RenderedServicePath updatedRenderedServicePath) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("update - old rspId: {}; new rspId: {}", originalRenderedServicePath, updatedRenderedServicePath);
         }

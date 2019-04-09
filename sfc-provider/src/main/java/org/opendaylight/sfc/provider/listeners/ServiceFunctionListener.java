@@ -10,9 +10,10 @@ package org.opendaylight.sfc.provider.listeners;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -47,8 +48,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                    @Nonnull ServiceFunction serviceFunction) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                    @NonNull ServiceFunction serviceFunction) {
         LOG.debug("add: storing name [{}] type [{}]", serviceFunction.getName().getValue(),
                   serviceFunction.getType().getValue());
         SfcDatastoreCache.getSfToSfTypeCache().put(serviceFunction.getName(), serviceFunction.getType().getValue());
@@ -58,8 +59,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction serviceFunction) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction serviceFunction) {
         LOG.debug("remove: Deleting Service Function: {}", serviceFunction.getName());
 
         // delete cache
@@ -72,9 +73,9 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunction> instanceIdentifier,
-                       @Nonnull ServiceFunction originalServiceFunction,
-                       @Nonnull ServiceFunction updatedServiceFunction) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunction> instanceIdentifier,
+                       @NonNull ServiceFunction originalServiceFunction,
+                       @NonNull ServiceFunction updatedServiceFunction) {
         LOG.debug("update:Updating Service Function: {}", originalServiceFunction.getName());
 
         if (!compareSfs(originalServiceFunction, updatedServiceFunction)) {
@@ -93,8 +94,8 @@ public class ServiceFunctionListener extends AbstractSyncDataTreeChangeListener<
         }
     }
 
-    private boolean compareSfs(@Nonnull ServiceFunction originalServiceFunction,
-                               @Nonnull ServiceFunction serviceFunction) {
+    private boolean compareSfs(@NonNull ServiceFunction originalServiceFunction,
+                               @NonNull ServiceFunction serviceFunction) {
         // Compare SFF IP Mgmt Addresses
         if (serviceFunction.getIpMgmtAddress() != null && originalServiceFunction.getIpMgmtAddress() != null) {
             if (!serviceFunction.getIpMgmtAddress().toString()

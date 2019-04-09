@@ -21,9 +21,10 @@ import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStart;
 import static org.opendaylight.sfc.provider.SfcProviderDebug.printTraceStop;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -74,18 +75,18 @@ public class SfcNetconfNodeDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node newDataObject) {
+    public void add(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node newDataObject) {
         // NOOP
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node removedDataObject) {
+    public void remove(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node removedDataObject) {
         // NOOP
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node originalDataObject,
-                       @Nonnull Node updatedDataObject) {
+    public void update(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node originalDataObject,
+                       @NonNull Node updatedDataObject) {
         // React to data changes in Netconf nodes present in the Netconf topology
         netconfNodeUpdated(getNodeId(instanceIdentifier), updatedDataObject.augmentation(NetconfNode.class));
     }

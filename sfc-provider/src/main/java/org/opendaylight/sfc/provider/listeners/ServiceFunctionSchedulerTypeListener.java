@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.provider.listeners;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -41,8 +42,8 @@ public class ServiceFunctionSchedulerTypeListener extends
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
-                    @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                    @NonNull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Adding Service Function Scheduler Type {} {}", serviceFunctionSchedulerType.getType(),
                   serviceFunctionSchedulerType.getName());
         if (serviceFunctionSchedulerType.isEnabled()) {
@@ -65,17 +66,17 @@ public class ServiceFunctionSchedulerTypeListener extends
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
-                       @Nonnull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @NonNull ServiceFunctionSchedulerType serviceFunctionSchedulerType) {
         LOG.debug("Deleting Service FunctionScheduler Type {} {}", serviceFunctionSchedulerType.getType(),
                   serviceFunctionSchedulerType.getName());
     }
 
     // SF Scheduler Type UPDATE
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
-                       @Nonnull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
-                       @Nonnull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionSchedulerType> instanceIdentifier,
+                       @NonNull ServiceFunctionSchedulerType originalServiceFunctionSchedulerType,
+                       @NonNull ServiceFunctionSchedulerType updatedServiceFunctionSchedulerType) {
         if (originalServiceFunctionSchedulerType.getType() != null
                 && updatedServiceFunctionSchedulerType.getType() != null && originalServiceFunctionSchedulerType
                 .getType().equals(updatedServiceFunctionSchedulerType.getType())) {

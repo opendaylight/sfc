@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -37,22 +38,22 @@ public class SbRestSfgEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
-                    @Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                    @NonNull ServiceFunctionGroup serviceFunctionGroup) {
         update(instanceIdentifier, serviceFunctionGroup, serviceFunctionGroup);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
-                       @Nonnull ServiceFunctionGroup serviceFunctionGroup) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                       @NonNull ServiceFunctionGroup serviceFunctionGroup) {
         LOG.debug("Deleted Service Function Name: {}", serviceFunctionGroup.getName());
         new SbRestSfgTask(RestOperation.DELETE, serviceFunctionGroup, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
-                       @Nonnull ServiceFunctionGroup originalServiceFunctionGroup,
-                       @Nonnull ServiceFunctionGroup updatedServiceFunctionGroup) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionGroup> instanceIdentifier,
+                       @NonNull ServiceFunctionGroup originalServiceFunctionGroup,
+                       @NonNull ServiceFunctionGroup updatedServiceFunctionGroup) {
         LOG.debug("Modified Service Function Name: {}", updatedServiceFunctionGroup.getName());
         new SbRestSfgTask(RestOperation.PUT, updatedServiceFunctionGroup, executorService).run();
     }

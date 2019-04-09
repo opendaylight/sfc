@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -58,14 +59,14 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                    @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                    @NonNull ServiceFunctionForwarder serviceFunctionForwarder) {
         LOG.info("Adding Service Function Forwarder: {}", serviceFunctionForwarder.getName());
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder serviceFunctionForwarder) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder serviceFunctionForwarder) {
         SffName sffName = serviceFunctionForwarder.getName();
         // Get RSPs of SFF
         LOG.info("Deleting Service Function Forwarder {}", sffName);
@@ -80,9 +81,9 @@ public class ServiceFunctionForwarderListener extends AbstractSyncDataTreeChange
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarder originalServiceFunctionForwarder,
-                       @Nonnull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionForwarder> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarder originalServiceFunctionForwarder,
+                       @NonNull ServiceFunctionForwarder updatedServiceFunctionForwarder) {
         LOG.info("Updating Service Function Forwarder: {}", originalServiceFunctionForwarder.getName());
         List<RspName> rspNames = findAffectedRsp(originalServiceFunctionForwarder, updatedServiceFunctionForwarder);
 

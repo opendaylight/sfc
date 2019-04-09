@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.iosxe.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -31,23 +32,23 @@ public class ServiceForwarderListener extends AbstractSyncDataTreeChangeListener
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
-                    @Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                    @NonNull ServiceFunctionForwarders serviceFunctionForwarders) {
         update(instanceIdentifier, serviceFunctionForwarders, serviceFunctionForwarders);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarders serviceFunctionForwarders) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarders serviceFunctionForwarders) {
         if (serviceFunctionForwarders.getServiceFunctionForwarder() != null) {
             sffManager.syncForwarders(serviceFunctionForwarders.getServiceFunctionForwarder(), true);
         }
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
-                       @Nonnull ServiceFunctionForwarders originalServiceFunctionForwarders,
-                       @Nonnull ServiceFunctionForwarders updatedServiceFunctionForwarders) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionForwarders> instanceIdentifier,
+                       @NonNull ServiceFunctionForwarders originalServiceFunctionForwarders,
+                       @NonNull ServiceFunctionForwarders updatedServiceFunctionForwarders) {
         if (updatedServiceFunctionForwarders.getServiceFunctionForwarder() != null) {
             sffManager.syncForwarders(updatedServiceFunctionForwarders.getServiceFunctionForwarder(), false);
         }

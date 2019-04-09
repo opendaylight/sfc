@@ -9,9 +9,10 @@ package org.opendaylight.sfc.provider.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -39,8 +40,8 @@ public class ServiceFunctionChainListener extends AbstractSyncDataTreeChangeList
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
-                    @Nonnull ServiceFunctionChain serviceFunctionChain) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
+                    @NonNull ServiceFunctionChain serviceFunctionChain) {
         LOG.debug("add:starting..(new sfc name: {})", serviceFunctionChain.getName());
         List<String> serviceFunctionTypesForChain = new ArrayList<>();
         for (SfcServiceFunction sfcSf : serviceFunctionChain.getSfcServiceFunction()) {
@@ -51,16 +52,16 @@ public class ServiceFunctionChainListener extends AbstractSyncDataTreeChangeList
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
-                       @Nonnull ServiceFunctionChain serviceFunctionChain) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
+                       @NonNull ServiceFunctionChain serviceFunctionChain) {
         LOG.debug("remove: Deleting Service Function chain: {}", serviceFunctionChain.getName());
         SfcDatastoreCache.getSfChainToSfTypeList().invalidate(serviceFunctionChain.getName());
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
-                       @Nonnull ServiceFunctionChain originalServiceFunctionChain,
-                       @Nonnull ServiceFunctionChain updatedServiceFunctionChain) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionChain> instanceIdentifier,
+                       @NonNull ServiceFunctionChain originalServiceFunctionChain,
+                       @NonNull ServiceFunctionChain updatedServiceFunctionChain) {
         LOG.debug("update:Updating Service Function chain: {}", originalServiceFunctionChain.getName());
         SfcDatastoreCache.getSfChainToSfTypeList().invalidate(originalServiceFunctionChain.getName());
         add(updatedServiceFunctionChain);

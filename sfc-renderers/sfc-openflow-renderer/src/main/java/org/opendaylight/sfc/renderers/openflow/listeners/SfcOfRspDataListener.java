@@ -9,7 +9,8 @@
 package org.opendaylight.sfc.renderers.openflow.listeners;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
 import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
@@ -43,7 +44,7 @@ public class SfcOfRspDataListener implements DataTreeChangeListener<RenderedServ
     }
 
     @Override
-    public void onDataTreeChanged(@Nonnull Collection<DataTreeModification<RenderedServicePath>> collection) {
+    public void onDataTreeChanged(@NonNull Collection<DataTreeModification<RenderedServicePath>> collection) {
         for (DataTreeModification<RenderedServicePath> modification : collection) {
             DataObjectModification<RenderedServicePath> rootNode = modification.getRootNode();
 

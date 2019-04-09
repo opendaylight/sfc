@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.pot.netconf.renderer.listener;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -43,22 +44,22 @@ public class SfcPotNetconfRSPListener extends AbstractSyncDataTreeChangeListener
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                    @Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @NonNull RenderedServicePath renderedServicePath) {
         update(renderedServicePath, renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath renderedServicePath) {
         LOG.debug("iOAM:PoT:SB:Deleted RSP: {}", renderedServicePath.getName());
         sfcPotNetconfIoam.deleteRsp(renderedServicePath);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath originalRenderedServicePath,
-                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath originalRenderedServicePath,
+                       @NonNull RenderedServicePath updatedRenderedServicePath) {
         // As of now, it is not expected that PoT configurations will be
         // configured as part of the RSP creation itself.
         LOG.debug("iOAM:PoT:SB:Updated RSP: {}", updatedRenderedServicePath.getName());

@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -37,23 +38,23 @@ public class SbRestRspEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                    @Nonnull RenderedServicePath renderedServicePath) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                    @NonNull RenderedServicePath renderedServicePath) {
         update(instanceIdentifier,
                renderedServicePath, renderedServicePath);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath renderedServicePath) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath renderedServicePath) {
         LOG.debug("Deleted Rendered Service Path Name: {}", renderedServicePath.getName());
         new SbRestRspTask(RestOperation.DELETE, renderedServicePath, executorService).run();
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
-                       @Nonnull RenderedServicePath originalRenderedServicePath,
-                       @Nonnull RenderedServicePath updatedRenderedServicePath) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePath> instanceIdentifier,
+                       @NonNull RenderedServicePath originalRenderedServicePath,
+                       @NonNull RenderedServicePath updatedRenderedServicePath) {
         LOG.debug("Updated Rendered Service Path: {}", updatedRenderedServicePath.getName());
         new SbRestRspTask(RestOperation.PUT, updatedRenderedServicePath, executorService).run();
     }

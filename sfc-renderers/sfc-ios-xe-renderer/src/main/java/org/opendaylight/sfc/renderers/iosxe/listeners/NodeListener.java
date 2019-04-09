@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.iosxe.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -36,20 +37,20 @@ public class NodeListener extends AbstractSyncDataTreeChangeListener<Node> {
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void add(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         update(instanceIdentifier, node, node);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<Node> instanceIdentifier, @Nonnull Node node) {
+    public void remove(@NonNull InstanceIdentifier<Node> instanceIdentifier, @NonNull Node node) {
         if (nodeManager.isCapableNetconfDevice(node)) {
             nodeManager.removeNode(node);
         }
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<Node> instanceIdentifier,
-                       @Nonnull Node originalNode, Node updatedNode) {
+    public void update(@NonNull InstanceIdentifier<Node> instanceIdentifier,
+                       @NonNull Node originalNode, Node updatedNode) {
         if (nodeManager.isCapableNetconfDevice(originalNode)) {
             nodeManager.updateNode(originalNode);
         }

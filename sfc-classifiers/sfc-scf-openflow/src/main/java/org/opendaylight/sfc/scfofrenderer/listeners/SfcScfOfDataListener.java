@@ -8,7 +8,7 @@
 
 package org.opendaylight.sfc.scfofrenderer.listeners;
 
-import javax.annotation.Nonnull;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -37,16 +37,16 @@ public class SfcScfOfDataListener extends AbstractSyncDataTreeChangeListener<Ser
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Created ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
         this.sfcScfProcessor.createdServiceFunctionClassifier(serviceFunctionClassifier);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier originalServiceFunctionClassifier,
-                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier originalServiceFunctionClassifier,
+                       @NonNull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
 
         if (originalServiceFunctionClassifier.getName() != null && updatedServiceFunctionClassifier.getName() != null
                 && !originalServiceFunctionClassifier.equals(updatedServiceFunctionClassifier)) {
@@ -57,8 +57,8 @@ public class SfcScfOfDataListener extends AbstractSyncDataTreeChangeListener<Ser
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Deleted ServiceFunctionClassifier name: {}\n", serviceFunctionClassifier.getName());
         this.sfcScfProcessor.deletedServiceFunctionClassifier(serviceFunctionClassifier);
     }

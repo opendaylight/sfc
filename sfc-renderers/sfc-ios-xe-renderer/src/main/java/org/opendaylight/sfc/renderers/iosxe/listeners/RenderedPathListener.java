@@ -8,9 +8,10 @@
 
 package org.opendaylight.sfc.renderers.iosxe.listeners;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -30,21 +31,21 @@ public class RenderedPathListener extends AbstractSyncDataTreeChangeListener<Ren
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
-                    @Nonnull RenderedServicePaths renderedServicePaths) {
+    public void add(@NonNull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
+                    @NonNull RenderedServicePaths renderedServicePaths) {
         update(instanceIdentifier, renderedServicePaths, renderedServicePaths);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
-                       @Nonnull RenderedServicePaths renderedServicePaths) {
+    public void remove(@NonNull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
+                       @NonNull RenderedServicePaths renderedServicePaths) {
         renderedServicePaths.getRenderedServicePath().forEach(rspProcessor::deleteRsp);
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
-                       @Nonnull RenderedServicePaths originalRenderedServicePaths,
-                       @Nonnull RenderedServicePaths updatedRenderedServicePaths) {
+    public void update(@NonNull InstanceIdentifier<RenderedServicePaths> instanceIdentifier,
+                       @NonNull RenderedServicePaths originalRenderedServicePaths,
+                       @NonNull RenderedServicePaths updatedRenderedServicePaths) {
         if (updatedRenderedServicePaths.getRenderedServicePath() != null) {
             updatedRenderedServicePaths.getRenderedServicePath().forEach(rspProcessor::updateRsp);
         }

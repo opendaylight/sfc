@@ -8,9 +8,10 @@
 package org.opendaylight.sfc.sbrest.provider.listener;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractSyncDataTreeChangeListener;
@@ -38,14 +39,14 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void add(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                    @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void add(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                    @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         update(instanceIdentifier, serviceFunctionClassifier, serviceFunctionClassifier);
     }
 
     @Override
-    public void remove(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier serviceFunctionClassifier) {
+    public void remove(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier serviceFunctionClassifier) {
         LOG.debug("Deleted Service Classifier Name: {}", serviceFunctionClassifier.getName());
 
         if (serviceFunctionClassifier.getAcl() != null) {
@@ -56,9 +57,9 @@ public class SbRestScfEntryDataListener extends AbstractSyncDataTreeChangeListen
     }
 
     @Override
-    public void update(@Nonnull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
-                       @Nonnull ServiceFunctionClassifier originalDataObject,
-                       @Nonnull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
+    public void update(@NonNull InstanceIdentifier<ServiceFunctionClassifier> instanceIdentifier,
+                       @NonNull ServiceFunctionClassifier originalDataObject,
+                       @NonNull ServiceFunctionClassifier updatedServiceFunctionClassifier) {
         LOG.debug("Updated Service Classifier Name: {}", updatedServiceFunctionClassifier.getName());
 
         if (updatedServiceFunctionClassifier.getAcl() != null) {

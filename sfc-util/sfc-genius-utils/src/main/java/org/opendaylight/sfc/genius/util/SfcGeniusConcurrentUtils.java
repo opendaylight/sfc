@@ -8,13 +8,13 @@
 
 package org.opendaylight.sfc.genius.util;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import javax.annotation.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Utility functions for sfc-genius module.

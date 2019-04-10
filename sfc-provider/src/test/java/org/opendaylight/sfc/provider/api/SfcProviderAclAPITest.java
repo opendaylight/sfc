@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.DestinationPortRangeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.packet.fields.rev160218.acl.transport.header.fields.SourcePortRangeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 /**
  * This class contains unit tests for SfcProviderAclAPI.
@@ -209,7 +210,7 @@ public class SfcProviderAclAPITest extends AbstractDataStoreManager {
 
             // build actions
             PermitBuilder permitBuilder = new PermitBuilder();
-            permitBuilder.setPermit(true);
+            permitBuilder.setPermit(Empty.getInstance());
 
             ActionsBuilder actionsBuilder = new ActionsBuilder();
             actionsBuilder.setPacketHandling(permitBuilder.build());

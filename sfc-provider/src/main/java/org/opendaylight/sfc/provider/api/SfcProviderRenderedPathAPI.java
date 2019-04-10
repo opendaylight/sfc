@@ -784,9 +784,9 @@ public final class SfcProviderRenderedPathAPI {
 
             if (sffDataPlaneLocator != null && sffDataPlaneLocator.getDataPlaneLocator() != null
                     && sffDataPlaneLocator.getDataPlaneLocator().getLocatorType() != null
-                    && sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface() != null) {
+                    && sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().implementedInterface() != null) {
 
-                String type = sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().getImplementedInterface()
+                String type = sffDataPlaneLocator.getDataPlaneLocator().getLocatorType().implementedInterface()
                         .getSimpleName().toLowerCase(Locale.getDefault());
 
                 switch (type) {

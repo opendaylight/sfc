@@ -94,7 +94,7 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
                 LOG.debug("canCommit:registerValidationCohorts:the first SFP (as dataobject):  {}", dobj);
                 ServiceFunctionPath sfp = (ServiceFunctionPath) dobj;
                 LOG.debug("canCommit:registerValidationCohorts:the implemented interface: {}",
-                        dobj.getImplementedInterface());
+                        dobj.implementedInterface());
                 LOG.debug("canCommit:the first SF (as binding representation):  {}", sfp);
                 try {
                     if (!sfpv.validateServiceFunctionPath(sfp)) {

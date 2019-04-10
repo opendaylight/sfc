@@ -84,7 +84,7 @@ public final class ExporterUtil {
 
         if (dataPlaneLocator.getLocatorType() != null) {
             locatorNode = mapper.createObjectNode();
-            String type = dataPlaneLocator.getLocatorType().getImplementedInterface().getSimpleName()
+            String type = dataPlaneLocator.getLocatorType().implementedInterface().getSimpleName()
                     .toLowerCase(Locale.getDefault());
             switch (type) {
                 case FUNCTION:

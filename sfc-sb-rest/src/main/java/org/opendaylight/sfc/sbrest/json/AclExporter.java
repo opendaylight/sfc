@@ -161,7 +161,7 @@ class AclExporter extends AbstractExporter implements Exporter {
         }
 
         if (matches.getAceType() != null) {
-            String aceType = matches.getAceType().getImplementedInterface().getSimpleName();
+            String aceType = matches.getAceType().implementedInterface().getSimpleName();
 
             switch (aceType) {
                 case ACE_IP:
@@ -257,7 +257,7 @@ class AclExporter extends AbstractExporter implements Exporter {
         }
 
         if (aceIp.getAceIpVersion() != null) {
-            String aceIpVersion = aceIp.getAceIpVersion().getImplementedInterface().getSimpleName();
+            String aceIpVersion = aceIp.getAceIpVersion().implementedInterface().getSimpleName();
 
             switch (aceIpVersion) {
                 case ACE_IPV4:
@@ -297,7 +297,7 @@ class AclExporter extends AbstractExporter implements Exporter {
         ObjectNode actionsNode = mapper.createObjectNode();
 
         if (actions.getPacketHandling() != null) {
-            String actionType = actions.getPacketHandling().getImplementedInterface().getSimpleName();
+            String actionType = actions.getPacketHandling().implementedInterface().getSimpleName();
 
             switch (actionType) {
                 case PERMIT:
@@ -315,7 +315,7 @@ class AclExporter extends AbstractExporter implements Exporter {
             SfcAction sfcAction = actions1.getSfcAction();
 
             if (sfcAction != null) {
-                String sfcActionType = sfcAction.getImplementedInterface().getSimpleName();
+                String sfcActionType = sfcAction.implementedInterface().getSimpleName();
 
                 switch (sfcActionType) {
                     case ACL_RENDERED_SERVICE_PATH:

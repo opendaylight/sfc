@@ -119,7 +119,7 @@ public final class SfcGeniusDataUtils {
      */
     public static String getLogicalInterfaceNameFromLocator(@NonNull SfDataPlaneLocator sfDataPlaneLocator) {
         return Optional.ofNullable(sfDataPlaneLocator.getLocatorType())
-                .filter(locatorType -> LogicalInterface.class.equals(locatorType.getImplementedInterface()))
+                .filter(locatorType -> LogicalInterface.class.equals(locatorType.implementedInterface()))
                 .map(locatorType -> ((LogicalInterface) locatorType).getInterfaceName())
                 .orElse(null);
     }

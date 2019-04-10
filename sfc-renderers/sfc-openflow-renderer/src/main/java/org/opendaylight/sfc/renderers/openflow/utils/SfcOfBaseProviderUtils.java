@@ -325,7 +325,7 @@ public abstract class SfcOfBaseProviderUtils {
         String sfMac = null;
 
         LocatorType sffLocatorType = sfDpl.getLocatorType();
-        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.implementedInterface();
 
         // Mac/IP and possibly VLAN
         if (implementedInterface.equals(Mac.class) && ((MacAddressLocator) sffLocatorType).getMac() != null) {
@@ -345,7 +345,7 @@ public abstract class SfcOfBaseProviderUtils {
         String sffMac = null;
 
         LocatorType sffLocatorType = sfDpl.getDataPlaneLocator().getLocatorType();
-        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.implementedInterface();
 
         // Mac/IP and possibly VLAN
         if (implementedInterface.equals(Mac.class) && ((MacAddressLocator) sffLocatorType).getMac() != null) {

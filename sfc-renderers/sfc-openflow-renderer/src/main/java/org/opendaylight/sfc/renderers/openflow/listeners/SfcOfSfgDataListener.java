@@ -137,7 +137,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
         String sfMac = null;
 
         LocatorType sffLocatorType = sfDpl.getLocatorType();
-        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.implementedInterface();
 
         LOG.debug("implementedInterface: {}", implementedInterface);
         // Mac/IP and possibly VLAN
@@ -152,7 +152,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
         String sfIp = null;
 
         LocatorType sffLocatorType = sfDpl.getLocatorType();
-        Class<? extends DataContainer> implementedInterface = sffLocatorType.getImplementedInterface();
+        Class<? extends DataContainer> implementedInterface = sffLocatorType.implementedInterface();
 
         if (implementedInterface.equals(Ip.class) && ((IpPortLocator) sffLocatorType).getIp() != null) {
             sfIp = ((IpPortLocator) sffLocatorType).getIp().stringValue();

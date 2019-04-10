@@ -787,7 +787,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         .types.rev131026.instruction.Instruction> Optional<T> filterInstructionType(
             Instruction theInstruction, Class<T> instructionType) {
         return Optional.ofNullable(theInstruction.getInstruction())
-                .filter(instruction -> instruction.getImplementedInterface().equals(instructionType))
+                .filter(instruction -> instruction.implementedInterface().equals(instructionType))
                 .map(instructionType::cast);
     }
 
@@ -795,7 +795,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         .types.rev131112.action.Action> Optional<T> filterActionType(
             Action theAction, Class<T> actionType) {
         return Optional.ofNullable(theAction.getAction())
-                .filter(action -> action.getImplementedInterface().equals(actionType)).map(actionType::cast);
+                .filter(action -> action.implementedInterface().equals(actionType)).map(actionType::cast);
     }
 
 

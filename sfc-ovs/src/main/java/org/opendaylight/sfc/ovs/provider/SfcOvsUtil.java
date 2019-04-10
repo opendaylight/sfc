@@ -479,7 +479,7 @@ public final class SfcOvsUtil {
         for (SffDataPlaneLocator sffDpl : sffDplList) {
             if (sffDpl.getDataPlaneLocator() != null && sffDpl.getDataPlaneLocator().getLocatorType() != null) {
                 Class<? extends DataContainer> locatorType = sffDpl.getDataPlaneLocator().getLocatorType()
-                        .getImplementedInterface();
+                        .implementedInterface();
                 if (locatorType.isAssignableFrom(Ip.class)) {
                     Ip ipPortLocator = (Ip) sffDpl.getDataPlaneLocator().getLocatorType();
                     ip = ipPortLocator.getIp();

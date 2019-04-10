@@ -385,7 +385,7 @@ public class SfcOvsUtilTest extends AbstractDataStoreManager {
             .get(0)
             .getDataPlaneLocator()
             .getLocatorType()
-            .getImplementedInterface(), Ip.class);
+            .implementedInterface(), Ip.class);
     }
 
     @Test

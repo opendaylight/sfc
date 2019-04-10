@@ -3124,13 +3124,13 @@ module ned {
                 description "Configure speed operation.";
                 type enumeration {
                     enum "10" {
-                        tailf:info "Force 10 Mbps operation";
+                        //tailf:info "Force 10 Mbps operation";
                     }
                     enum "100" {
-                        tailf:info "Force 100 Mbps operation";
+                        //tailf:info "Force 100 Mbps operation";
                     }
                     enum "1000" {
-                        tailf:info "Enable AUTO speed configuration";
+                        //tailf:info "Enable AUTO speed configuration";
                     }
                     enum "nonegotiate" {
                         //FIXME

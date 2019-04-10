@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.function.forwarder.ServiceFfNameKey;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.ConfigServiceChainPathModeBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.config.service.chain.path.mode.ServiceIndexBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
 
@@ -221,7 +222,7 @@ public class IosXeDataStoreAPITest extends AbstractDataBrokerTest {
     private ServiceFunction buildTestServiceFunction() {
         ConfigServiceChainSfModeBuilder sfModeBuilder = new ConfigServiceChainSfModeBuilder();
         sfModeBuilder.setIp(new IpBuilder().setAddress(new Ipv4Address("10.0.0.1")).build())
-                .setEncapsulation(new EncapsulationBuilder().setNone(true).build());
+                .setEncapsulation(new EncapsulationBuilder().setNone(Empty.getInstance()).build());
         ServiceFunctionBuilder serviceFunctionBuilder = new ServiceFunctionBuilder();
         serviceFunctionBuilder.setName(SERVICE_NAME).withKey(new ServiceFunctionKey(SERVICE_NAME))
                 .setConfigServiceChainSfMode(sfModeBuilder.build());

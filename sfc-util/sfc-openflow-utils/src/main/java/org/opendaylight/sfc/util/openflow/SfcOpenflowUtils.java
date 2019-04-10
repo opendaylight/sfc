@@ -170,6 +170,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNspBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.reg.grouping.NxmNxRegBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Empty;
 
 public final class SfcOpenflowUtils {
     public static final int ETHERTYPE_IPV4 = 0x0800;
@@ -882,8 +883,8 @@ public final class SfcOpenflowUtils {
         int ip = InetAddresses.coerceToInteger(InetAddresses.forString(ipStr));
         long ipl = ip & 0xffffffffL;
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(),
-                BigInteger.valueOf(ipl), 31, false));
+        ab.setAction(nxLoadRegAction(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(
+                Empty.getInstance()).build(), BigInteger.valueOf(ipl), 31, false));
 
         return ab.build();
     }
@@ -892,16 +893,16 @@ public final class SfcOpenflowUtils {
     // dest tunnel
     public static Action createActionNxMoveTunIdRegister(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(),
-                new DstNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(), 31, false));
+        ab.setAction(nxMoveRegAction(new SrcNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(),
+                new DstNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(), 31, false));
 
         return ab.build();
     }
 
     public static Action createActionNxMoveTunIpv4Dst(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(),
-                new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(), 31, false));
+        ab.setAction(nxMoveRegAction(new SrcNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(),
+                new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(), 31, false));
 
         return ab.build();
     }
@@ -914,8 +915,8 @@ public final class SfcOpenflowUtils {
     // https://git.opendaylight.org/gerrit/#/c/19478
     public static Action createActionNxMoveNsc2ToTunIdRegister(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcNxNshc2CaseBuilder().setNxNshc2Dst(Boolean.TRUE).build(),
-                new DstNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(), 31, false));
+        ab.setAction(nxMoveRegAction(new SrcNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build(),
+                new DstNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(), 31, false));
 
         return ab.build();
     }
@@ -924,15 +925,16 @@ public final class SfcOpenflowUtils {
     // https://git.opendaylight.org/gerrit/#/c/19478
     public static Action createActionNxMoveNsc1ToTunIpv4DstRegister(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcNxNshc1CaseBuilder().setNxNshc1Dst(Boolean.TRUE).build(),
-                new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(), 31, false));
+        ab.setAction(nxMoveRegAction(new SrcNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build(),
+                new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(), 31,
+                false));
 
         return ab.build();
     }
 
     public static Action createActionNxLoadArpOpAction(int value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstOfArpOpCaseBuilder().setOfArpOp(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstOfArpOpCaseBuilder().setOfArpOp(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 15, false));
 
         return ab.build();
@@ -942,23 +944,23 @@ public final class SfcOpenflowUtils {
     // (THA)
     public static Action createActionNxMoveArpShaToArpThaAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcNxArpShaCaseBuilder().setNxArpSha(Boolean.TRUE).build(),
-                new DstNxArpThaCaseBuilder().setNxArpTha(Boolean.TRUE).build(), 47, false));
+        ab.setAction(nxMoveRegAction(new SrcNxArpShaCaseBuilder().setNxArpSha(Empty.getInstance()).build(),
+                new DstNxArpThaCaseBuilder().setNxArpTha(Empty.getInstance()).build(), 47, false));
 
         return ab.build();
     }
 
     public static Action createActionNxMoveEthSrcToEthDstAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcOfEthSrcCaseBuilder().setOfEthSrc(Boolean.TRUE).build(),
-                new DstOfEthDstCaseBuilder().setOfEthDst(Boolean.TRUE).build(), 47, false));
+        ab.setAction(nxMoveRegAction(new SrcOfEthSrcCaseBuilder().setOfEthSrc(Empty.getInstance()).build(),
+                new DstOfEthDstCaseBuilder().setOfEthDst(Empty.getInstance()).build(), 47, false));
 
         return ab.build();
     }
 
     public static Action createActionNxLoadNsp(int value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNspCaseBuilder().setNxNspDst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNspCaseBuilder().setNxNspDst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 23, false));
 
         return ab.build();
@@ -966,7 +968,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadNsi(short value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNsiCaseBuilder().setNxNsiDst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNsiCaseBuilder().setNxNsiDst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 7, false));
 
         return ab.build();
@@ -974,7 +976,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadNshc1(long value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNshc1CaseBuilder().setNxNshc1Dst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNshc1CaseBuilder().setNxNshc1Dst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 31, false));
 
         return ab.build();
@@ -982,7 +984,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadNshc2(long value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNshc2CaseBuilder().setNxNshc2Dst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNshc2CaseBuilder().setNxNshc2Dst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 31, false));
 
         return ab.build();
@@ -990,7 +992,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadNshc3(long value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNshc3CaseBuilder().setNxNshc3Dst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNshc3CaseBuilder().setNxNshc3Dst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 31, false));
 
         return ab.build();
@@ -998,7 +1000,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadNshc4(long value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxNshc4CaseBuilder().setNxNshc4Dst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxNshc4CaseBuilder().setNxNshc4Dst(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 31, false));
 
         return ab.build();
@@ -1029,7 +1031,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadTunId(long value, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxTunIdCaseBuilder().setNxTunId(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxTunIdCaseBuilder().setNxTunId(Empty.getInstance()).build(),
                 BigInteger.valueOf(value), 63, false));
 
         return ab.build();
@@ -1039,7 +1041,7 @@ public final class SfcOpenflowUtils {
         int ip = InetAddresses.coerceToInteger(InetAddresses.forString(ipStr));
         long ipl = ip & 0xffffffffL;
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxTunIpv4DstCaseBuilder().setNxTunIpv4Dst(Empty.getInstance()).build(),
                 BigInteger.valueOf(ipl), 31, false));
 
         return ab.build();
@@ -1060,14 +1062,14 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadArpShaAction(String mac, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstNxArpShaCaseBuilder().setNxArpSha(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstNxArpShaCaseBuilder().setNxArpSha(Empty.getInstance()).build(),
                 new BigInteger(1, bytesFromHexString(new MacAddress(mac).getValue())), 47, false));
         return ab.build();
     }
 
     public static Action createActionNxMoveArpTpaToRegAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcOfArpTpaCaseBuilder().setOfArpTpa(Boolean.TRUE).build(),
+        ab.setAction(nxMoveRegAction(new SrcOfArpTpaCaseBuilder().setOfArpTpa(Empty.getInstance()).build(),
                 new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(), 31, false));
 
         return ab.build();
@@ -1075,7 +1077,7 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxLoadArpSpaAction(String ip, int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxLoadRegAction(new DstOfArpSpaCaseBuilder().setOfArpSpa(Boolean.TRUE).build(),
+        ab.setAction(nxLoadRegAction(new DstOfArpSpaCaseBuilder().setOfArpSpa(Empty.getInstance()).build(),
                 new BigInteger(1, convertIPAdressToBytes(ip)), 31, false));
 
         return ab.build();
@@ -1102,15 +1104,15 @@ public final class SfcOpenflowUtils {
 
     public static Action createActionNxMoveArpSpaToArpTpaAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
-        ab.setAction(nxMoveRegAction(new SrcOfArpSpaCaseBuilder().setOfArpSpa(Boolean.TRUE).build(),
-                new DstOfArpTpaCaseBuilder().setOfArpTpa(Boolean.TRUE).build(), 31, false));
+        ab.setAction(nxMoveRegAction(new SrcOfArpSpaCaseBuilder().setOfArpSpa(Empty.getInstance()).build(),
+                new DstOfArpTpaCaseBuilder().setOfArpTpa(Empty.getInstance()).build(), 31, false));
         return ab.build();
     }
 
     public static Action createActionNxMoveRegToArpSpaAction(int order) {
         ActionBuilder ab = createActionBuilder(order);
         ab.setAction(nxMoveRegAction(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
-                new DstOfArpSpaCaseBuilder().setOfArpSpa(Boolean.TRUE).build(), 31, false));
+                new DstOfArpSpaCaseBuilder().setOfArpSpa(Empty.getInstance()).build(), 31, false));
         return ab.build();
     }
 

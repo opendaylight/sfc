@@ -285,13 +285,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3)
                                 .getAction();
                 DstNxArpShaCase arpSha = (DstNxArpShaCase) regLoad2.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(arpSha.isNxArpSha());
+                assertTrue(arpSha.getNxArpSha());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
                                 .getAction();
                 DstNxArpThaCase arpTha = (DstNxArpThaCase) regMove2.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpTha.isNxArpTha());
+                assertTrue(arpTha.getNxArpTha());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
@@ -304,13 +304,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6)
                                 .getAction();
                 DstOfArpTpaCase arpTpa = (DstOfArpTpaCase) regMove4.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpTpa.isOfArpTpa());
+                assertTrue(arpTpa.getOfArpTpa());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(7)
                                 .getAction();
                 DstOfArpSpaCase arpSpa = (DstOfArpSpaCase) regMove5.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpSpa.isOfArpSpa());
+                assertTrue(arpSpa.getOfArpSpa());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(8).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
@@ -910,7 +910,7 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
                 DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIdDst.isNxTunId());
+                assertTrue(tunIdDst.getNxTunId());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(1).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
@@ -944,13 +944,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
                 DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove0.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
+                assertTrue(tunIpv4Dst.getNxTunIpv4Dst());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
                                 .getAction();
                 DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove1.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIdDst.isNxTunId());
+                assertTrue(tunIdDst.getNxTunId());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(2).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);

@@ -106,7 +106,7 @@ public final class SfcGeniusDataUtils {
         return sf.getSfDataPlaneLocator()
                 .stream()
                 .map(SfcGeniusDataUtils::getLogicalInterfaceNameFromLocator)
-                .filter(Objects::nonNull)
+                .filter(Objects::NonNull)
                 .collect(Collectors.toList());
     }
 

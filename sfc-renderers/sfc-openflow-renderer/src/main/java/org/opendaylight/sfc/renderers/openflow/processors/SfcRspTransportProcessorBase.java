@@ -356,10 +356,10 @@ public abstract class SfcRspTransportProcessorBase {
      * @return true if the locators are equal, false otherwise
      */
     private boolean compareLocatorTypes(LocatorType lhs, LocatorType rhs) {
-        if (lhs.getImplementedInterface() != rhs.getImplementedInterface()) {
+        if (lhs.implementedInterface() != rhs.implementedInterface()) {
             return false;
         }
-        String type = lhs.getImplementedInterface().getSimpleName().toLowerCase(Locale.getDefault());
+        String type = lhs.implementedInterface().getSimpleName().toLowerCase(Locale.getDefault());
 
         switch (type) {
             case IP:

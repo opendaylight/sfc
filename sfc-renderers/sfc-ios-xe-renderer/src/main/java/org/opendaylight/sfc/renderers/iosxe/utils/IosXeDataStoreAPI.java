@@ -204,7 +204,7 @@ public class IosXeDataStoreAPI implements Callable {
                         Thread.sleep(timeout);
                         timeout += 1000L;
                     } catch (InterruptedException i) {
-                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                        LOG.error("Thread interrupted while waiting ...", i);
                     }
                 } else {
                     LOG.error("Runtime exception ...", e);
@@ -246,7 +246,7 @@ public class IosXeDataStoreAPI implements Callable {
                         Thread.sleep(timeout);
                         timeout += 1000L;
                     } catch (InterruptedException i) {
-                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                        LOG.error("Thread interrupted while waiting ...", i);
                     }
                 } else {
                     LOG.error("Runtime exception ...", e);
@@ -288,7 +288,7 @@ public class IosXeDataStoreAPI implements Callable {
                         Thread.sleep(timeout);
                         timeout += 1000L;
                     } catch (InterruptedException i) {
-                        LOG.error("Thread interrupted while waiting ... {} ", i);
+                        LOG.error("Thread interrupted while waiting ...", i);
                     }
                 } else {
                     LOG.error("Runtime exception ...", e);

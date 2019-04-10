@@ -91,7 +91,7 @@ public final class SfcPotTimerThread implements Runnable {
             try {
                 Thread.sleep(SLEEP_TIME_MS);
             } catch (InterruptedException e) {
-                LOG.warn("Thread interrupted while sleeping... {} ", e);
+                LOG.warn("Thread interrupted while sleeping...", e);
             }
         }
     }

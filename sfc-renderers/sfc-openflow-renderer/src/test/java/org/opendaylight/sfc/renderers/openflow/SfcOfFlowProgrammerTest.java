@@ -57,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNodesNodeTableFlowApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionResubmitNodesNodeTableFlowWriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
+import org.opendaylight.yangtools.yang.common.Empty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -285,13 +286,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegLoadNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(3)
                                 .getAction();
                 DstNxArpShaCase arpSha = (DstNxArpShaCase) regLoad2.getNxRegLoad().getDst().getDstChoice();
-                assertTrue(arpSha.isNxArpSha());
+                assertEquals(Empty.getInstance(), arpSha.getNxArpSha());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove2 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(4)
                                 .getAction();
                 DstNxArpThaCase arpTha = (DstNxArpThaCase) regMove2.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpTha.isNxArpTha());
+                assertEquals(Empty.getInstance(), arpTha.getNxArpTha());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove3 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(5)
@@ -304,13 +305,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(6)
                                 .getAction();
                 DstOfArpTpaCase arpTpa = (DstOfArpTpaCase) regMove4.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpTpa.isOfArpTpa());
+                assertEquals(Empty.getInstance(), arpTpa.getOfArpTpa());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove5 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(7)
                                 .getAction();
                 DstOfArpSpaCase arpSpa = (DstOfArpSpaCase) regMove5.getNxRegMove().getDst().getDstChoice();
-                assertTrue(arpSpa.isOfArpSpa());
+                assertEquals(Empty.getInstance(), arpSpa.getOfArpSpa());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(8).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
@@ -910,7 +911,7 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
                 DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIdDst.isNxTunId());
+                assertEquals(Empty.getInstance(), tunIdDst.getNxTunId());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(1).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);
@@ -944,13 +945,13 @@ public class SfcOfFlowProgrammerTest {
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(0)
                                 .getAction();
                 DstNxTunIpv4DstCase tunIpv4Dst = (DstNxTunIpv4DstCase) regMove0.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIpv4Dst.isNxTunIpv4Dst());
+                assertEquals(Empty.getInstance(), tunIpv4Dst.getNxTunIpv4Dst());
 
                 NxActionRegMoveNodesNodeTableFlowApplyActionsCase regMove1 =
                         (NxActionRegMoveNodesNodeTableFlowApplyActionsCase) action.getApplyActions().getAction().get(1)
                                 .getAction();
                 DstNxTunIdCase tunIdDst = (DstNxTunIdCase) regMove1.getNxRegMove().getDst().getDstChoice();
-                assertTrue(tunIdDst.isNxTunId());
+                assertEquals(Empty.getInstance(), tunIdDst.getNxTunId());
 
                 OutputActionCase output = (OutputActionCase) action.getApplyActions().getAction().get(2).getAction();
                 assertEquals(output.getOutputAction().getOutputNodeConnector().getValue(), INPORT);

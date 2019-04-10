@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.serv
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.config.service.chain.path.mode.service.index.services.service.type.choice.ServiceFunctionBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.config.service.chain.path.mode.service.index.services.service.type.choice.ServiceFunctionForwarderBuilder;
 import org.opendaylight.yang.gen.v1.urn.ios.rev160308._native.service.chain.service.path.config.service.chain.path.mode.service.index.services.service.type.choice.TerminateBuilder;
+import org.opendaylight.yangtools.yang.common.Empty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,7 +223,7 @@ public class IosXeRspProcessor {
 
     private ServiceTypeChoice buildTerminateChoice() {
         TerminateBuilder terminateBuilder = new TerminateBuilder();
-        terminateBuilder.setTerminate(true);
+        terminateBuilder.setTerminate(Empty.getInstance());
         return terminateBuilder.build();
     }
 

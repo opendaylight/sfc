@@ -11,12 +11,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.FluentFuture;
 import java.util.Collection;
 import java.util.Iterator;
-import javassist.ClassPool;
-import org.opendaylight.mdsal.binding.dom.codec.gen.impl.StreamWriterGenerator;
 import org.opendaylight.mdsal.binding.dom.codec.impl.BindingNormalizedNodeCodecRegistry;
 import org.opendaylight.mdsal.binding.generator.impl.ModuleInfoBackedContext;
 import org.opendaylight.mdsal.binding.generator.util.BindingRuntimeContext;
-import org.opendaylight.mdsal.binding.generator.util.JavassistUtils;
 import org.opendaylight.mdsal.binding.spec.reflect.BindingReflections;
 import org.opendaylight.mdsal.common.api.DataValidationFailedException;
 import org.opendaylight.mdsal.common.api.PostCanCommitStep;
@@ -48,8 +45,7 @@ public class ServiceFunctionPathCohort implements DOMDataTreeCommitCohort {
     private final ModuleInfoBackedContext moduleContext = ModuleInfoBackedContext.create();
     private final ImmutableSet<YangModuleInfo> infos = BindingReflections.loadModuleInfos();
     private BindingRuntimeContext bindingContext;
-    private final BindingNormalizedNodeCodecRegistry codecRegistry = new BindingNormalizedNodeCodecRegistry(
-            StreamWriterGenerator.create(JavassistUtils.forClassPool(ClassPool.getDefault())));
+    private final BindingNormalizedNodeCodecRegistry codecRegistry = new BindingNormalizedNodeCodecRegistry();
     private final ServiceFunctionPathValidator sfpv;
 
     public ServiceFunctionPathCohort(ServiceFunctionPathValidator sfpv) {

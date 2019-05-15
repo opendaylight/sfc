@@ -66,11 +66,19 @@
       <plugin>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint-maven-plugin</artifactId>
+        <version>1.10.0</version>
         <configuration>
           <scanPaths>
             <scanPath>org.opendaylight.sfc.ovs</scanPath>
           </scanPaths>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-finder-shaded</artifactId>
+            <version>4.13</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

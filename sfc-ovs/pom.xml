@@ -66,6 +66,7 @@
       <plugin>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint-maven-plugin</artifactId>
+        <version>1.10.0</version>
         <configuration>
           <scanPaths>
             <scanPath>org.opendaylight.sfc.ovs</scanPath>

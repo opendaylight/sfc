@@ -70,6 +70,15 @@
             <scanPath>org.opendaylight.sfc.iosxe.provider</scanPath>
           </scanPaths>
         </configuration>
+        <dependencies>
+          <dependency>
+            <!-- See https://issues.apache.org/jira/browse/ARIES-1596 -->
+            <!-- This shouldn't be necessary with plugin version 1.5.0 -->
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-finder-shaded</artifactId>
+            <version>4.9</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

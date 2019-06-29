@@ -43,11 +43,6 @@
       <artifactId>javax.annotation-api</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <optional>true</optional>
-    </dependency>
 
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -85,14 +80,6 @@
             <scanPath>org.opendaylight.sfc.genius</scanPath>
           </scanPaths>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.opendaylight.yangtools</groupId>
-        <artifactId>yang-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

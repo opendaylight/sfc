@@ -74,7 +74,6 @@
     <config.version>0.12.0-SNAPSHOT</config.version>
     <mdsal.version>1.11.0-SNAPSHOT</mdsal.version>
     <netconf.parent.version>1.8.0-SNAPSHOT</netconf.parent.version>
-    <restconf.version>1.11.0-SNAPSHOT</restconf.version>
     <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
     <lispflowmapping.version>1.11.0-SNAPSHOT</lispflowmapping.version>
     <ovsdb.southbound.version>1.10.0-SNAPSHOT</ovsdb.southbound.version>
@@ -117,13 +116,6 @@
         <groupId>org.opendaylight.controller</groupId>
         <artifactId>mdsal-artifacts</artifactId>
         <version>${mdsal.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opendaylight.netconf</groupId>
-        <artifactId>restconf-artifacts</artifactId>
-        <version>${restconf.version}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

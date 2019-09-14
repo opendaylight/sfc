@@ -5,10 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-/**
- * DataChangeListener attached to the Network Topology
- */
 package org.opendaylight.sfc.renderers.vpp.listeners;
 
 import javax.annotation.Nonnull;
@@ -25,6 +21,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * DataChangeListener attached to the Network Topology.
+ */
 @Singleton
 public class VppNodeListener extends AbstractSyncDataTreeChangeListener<Node> {
 

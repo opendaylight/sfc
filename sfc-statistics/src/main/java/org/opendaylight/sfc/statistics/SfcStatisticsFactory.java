@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2017 Inocybe Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.statistics;
 
 import java.util.List;
@@ -41,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * from the type of stats (RSP, SFF, or SF) being collected,
  * thus increasing the cohesion of both the stats reader
  * classes and the stats handler classes.
- *
  */
 public final class SfcStatisticsFactory {
 

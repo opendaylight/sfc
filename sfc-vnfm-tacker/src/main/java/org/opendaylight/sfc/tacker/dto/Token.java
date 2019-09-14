@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.tacker.dto;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,7 +27,9 @@ public final class Token {
     private String[] auditIds;
 
     // used by GSON
-    private Token() {}
+    private Token() {
+
+    }
 
     private Token(TokenBuilder builder) {
         this.issuedAt = builder.issuedAt;

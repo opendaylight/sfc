@@ -5,16 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-/**
- * Class for handling SFC OVS RPCs
- * <p>
- *
- * @author Andrej Kincel (andrej.kincel@gmail.com)
- * @version 0.1
- * @since 2015-03-31
- */
-
 package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
@@ -36,6 +26,14 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
+/**
+ * Class for handling SFC OVS RPCs.
+ *
+ * <p>
+ * @author Andrej Kincel (andrej.kincel@gmail.com)
+ * @version 0.1
+ * @since 2015-03-31
+ */
 public class SfcOvsRpc implements ServiceFunctionForwarderOvsService, AutoCloseable {
 
     private static final String OVSDB_NODE_PREFIX = "ovsdb://";

@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright (c) 2018 Inocybe Inc. and others.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.statistics.rpc;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.inocybe.params.xml.ns.yang.sfc.stats.ops
 import org.opendaylight.yang.gen.v1.urn.inocybe.params.xml.ns.yang.sfc.stats.ops.rev171215.GetSffStatisticsOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-
 
 public class SfcStatisticsRpcTest extends AbstractDataStoreManager {
 

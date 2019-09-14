@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.tacker.dto;
 
 import com.google.gson.annotations.SerializedName;
@@ -25,7 +24,9 @@ public final class Attributes {
     private String failurePolicy;
 
     // used by GSON
-    private Attributes() {}
+    private Attributes() {
+
+    }
 
     private Attributes(AttributesBuilder attributesBuilder) {
         this.serviceType = attributesBuilder.getServiceType();

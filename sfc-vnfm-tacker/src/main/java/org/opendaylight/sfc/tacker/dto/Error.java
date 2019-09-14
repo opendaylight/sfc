@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.tacker.dto;
 
 public class Error {
@@ -15,7 +14,9 @@ public class Error {
     private String detail;
 
     // used by GSON
-    private Error() {}
+    private Error() {
+
+    }
 
     public Error(ErrorBuilder builder) {
         this.message = builder.getMessage();

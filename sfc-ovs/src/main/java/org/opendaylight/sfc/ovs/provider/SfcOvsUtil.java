@@ -5,16 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-/**
- * SfcOvsUtil class contains various wrapper and utility methods
- * <p>
- *
- * @author Andrej Kincel (andrej.kincel@gmail.com)
- * @version 0.1
- * @since 2015-04-01
- */
-
 package org.opendaylight.sfc.ovs.provider;
 
 import com.google.common.base.Preconditions;
@@ -68,6 +58,14 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SfcOvsUtil class contains various wrapper and utility methods.
+ *
+ * <p>
+ * @author Andrej Kincel (andrej.kincel@gmail.com)
+ * @version 0.1
+ * @since 2015-04-01
+ */
 public final class SfcOvsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SfcOvsUtil.class);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.tacker.dto;
 
 public final class Tenant {
@@ -16,7 +15,9 @@ public final class Tenant {
     private String name;
 
     // used by GSON
-    private Tenant() {}
+    private Tenant() {
+
+    }
 
     private Tenant(TenantBuilder builder) {
         this.description = builder.getDescription();

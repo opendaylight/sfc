@@ -68,14 +68,14 @@ public class RspStatisticsHandler extends SfcStatisticsHandlerBase {
         }
 
         Optional<ServiceStatistic> inStats = getStatsReader().getNextHopStatistics(
-               true, firstHopSff, rsp.getPathId(), firstHop.get().getServiceIndex());
+               true, firstHopSff, rsp.getPathId().toJava(), firstHop.get().getServiceIndex().toJava());
         if (!inStats.isPresent()) {
             LOG.warn("RspStatisticsHandler cant get input stats for RSP [{}]", rsp.getPathId());
             return Collections.emptyList();
         }
 
         Optional<ServiceStatistic> outStats = getStatsReader().getNextHopStatistics(
-                false, lastHopSff, rsp.getPathId(), lastHop.get().getServiceIndex());
+                false, lastHopSff, rsp.getPathId().toJava(), lastHop.get().getServiceIndex().toJava());
         if (!outStats.isPresent()) {
             LOG.warn("RspStatisticsHandler cant get output stats for RSP [{}]", rsp.getPathId());
             return Collections.emptyList();

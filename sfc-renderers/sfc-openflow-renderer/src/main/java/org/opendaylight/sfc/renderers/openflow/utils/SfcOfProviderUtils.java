@@ -204,7 +204,7 @@ public class SfcOfProviderUtils extends SfcOfBaseProviderUtils {
     private Long getOFPort(OvsdbTerminationPointAugmentation port) {
         Long ofPort = 0L;
         if (port.getOfport() != null) {
-            ofPort = port.getOfport();
+            ofPort = port.getOfport().toJava();
         }
         return ofPort;
     }

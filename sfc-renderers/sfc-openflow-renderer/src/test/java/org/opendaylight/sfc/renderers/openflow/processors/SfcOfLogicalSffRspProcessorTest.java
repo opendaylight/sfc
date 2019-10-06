@@ -119,6 +119,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsi.grouping.NxmNxNsi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsp.grouping.NxmNxNsp;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -387,7 +390,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertTrue(addedFlows.stream().map(flowDetail -> flowDetail.getFlow())
                 .filter(flow -> flow.getFlowName().startsWith(OpenflowConstants.OF_NAME_NEXT_HOP))
                 .peek(checkedFlows::add)
-                .allMatch(nextHopFlow -> matchNextHop(nextHopFlow, vlanRsp.getPathId())));
+                .allMatch(nextHopFlow -> matchNextHop(nextHopFlow, vlanRsp.getPathId().toJava())));
 
         // transport ingress eth+nsh
         Assert.assertTrue(addedFlows.stream().map(FlowDetails::getFlow)
@@ -406,7 +409,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .filter(flow -> flow.getFlowName().startsWith(OpenflowConstants.OF_NAME_TRANSPORT_EGRESS
                         + OpenflowConstants.OF_NAME_DELIMITER))
                 .peek(checkedFlows::add).allMatch(
-                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, vlanRsp.getPathId())));
+                    transportEgressFlow -> matchTransportEgress(transportEgressFlow, vlanRsp.getPathId().toJava())));
 
         // transport egress last hop
         addedFlows.stream()
@@ -414,8 +417,8 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .filter(flow -> flow.getFlowName()
                         .startsWith(OpenflowConstants.OF_NAME_LASTHOP_TRANSPORT_EGRESS))
                 .peek(checkedFlows::add)
-                .forEach(flow -> assertTransportEgressLastHop(flow, vlanRsp.getPathId(), (short) (255 - sfTypes.size()),
-                        MAC_ADDRESS_SF_SIDE[1], LOCALHOST_IP, -1));
+                .forEach(flow -> assertTransportEgressLastHop(flow, vlanRsp.getPathId().toJava(),
+                        (short) (255 - sfTypes.size()), MAC_ADDRESS_SF_SIDE[1], LOCALHOST_IP, -1));
 
         // assure that the only flows we didn't check are the MatchAny flows
         Assert.assertEquals(addedFlows.size() - checkedFlows.size(),
@@ -533,7 +536,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         Assert.assertTrue(addedFlows.stream()
                 .filter(flowDetail -> flowDetail.getFlow().getFlowName().startsWith(OpenflowConstants.OF_NAME_NEXT_HOP))
                 .peek(checkedFlows::add)
-                .allMatch(flowDetail -> matchNextHop(flowDetail.getFlow(), vlanRsp.getPathId())));
+                .allMatch(flowDetail -> matchNextHop(flowDetail.getFlow(), vlanRsp.getPathId().toJava())));
 
         // transport ingress eth+nsh
         Assert.assertTrue(addedFlows.stream()
@@ -554,7 +557,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .filter(flowDetail -> flowDetail.getFlow().getFlowName().startsWith(
                         OpenflowConstants.OF_NAME_TRANSPORT_EGRESS + OpenflowConstants.OF_NAME_DELIMITER))
                 .peek(checkedFlows::add)
-                .allMatch(flowDetail -> matchTransportEgress(flowDetail.getFlow(), vlanRsp.getPathId())));
+                .allMatch(flowDetail -> matchTransportEgress(flowDetail.getFlow(), vlanRsp.getPathId().toJava())));
 
         // transport egress last hop
         addedFlows.stream()
@@ -563,7 +566,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .peek(checkedFlows::add)
                 .forEach(flowDetail -> assertTransportEgressLastHop(
                         flowDetail.getFlow(),
-                        vlanRsp.getPathId(),
+                        vlanRsp.getPathId().toJava(),
                         (short) (255 - sfTypes.size()),
                         MAC_ADDRESS_SF_SIDE[1],
                         VTEP_IP, VXLAN_GPE_OF_PORT));
@@ -667,14 +670,14 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .map(EthernetMatchFields::getEthernetType)
                 .map(EthernetType::getType)
                 .map(EtherType::getValue)
-                .filter(etherType -> etherType == OpenflowConstants.ETHERTYPE_NSH)
+                .filter(etherType -> etherType.toJava() == OpenflowConstants.ETHERTYPE_NSH)
                 .isPresent();
         if (!hasEtherTypeNshMatch) {
             return false;
         }
 
         // check actions - gotoTable 4
-        Optional<Short> goToTableId = getGotoTableIdFromIntructions(transportIngressFlow);
+        Optional<Uint8> goToTableId = getGotoTableIdFromIntructions(transportIngressFlow);
         return goToTableId.filter(tableId -> tableId.equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).isPresent();
     }
 
@@ -682,7 +685,7 @@ public class SfcOfLogicalSffRspProcessorTest {
         boolean hasPacketTypeNshMatch = Optional.ofNullable(transportIngressFlow.getMatch())
                 .map(Match::getPacketTypeMatch)
                 .map(PacketTypeFields::getPacketType)
-                .filter(packetType -> packetType == OpenflowConstants.PACKET_TYPE_NSH)
+                .filter(packetType -> packetType.toJava() == OpenflowConstants.PACKET_TYPE_NSH)
                 .isPresent();
         if (!hasPacketTypeNshMatch) {
             return false;
@@ -694,13 +697,13 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .map(o -> o.map(NxEncap::getPacketType))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .anyMatch(packetType -> packetType == OpenflowConstants.PACKET_TYPE_ETH);
+                .anyMatch(packetType -> packetType.toJava() == OpenflowConstants.PACKET_TYPE_ETH);
         if (!hasEthEncap) {
             return false;
         }
 
         // check actions - gotoTable 4
-        Optional<Short> goToTableId = getGotoTableIdFromIntructions(transportIngressFlow);
+        Optional<Uint8> goToTableId = getGotoTableIdFromIntructions(transportIngressFlow);
         return goToTableId.filter(tableId -> tableId.equals(NwConstants.SFC_TRANSPORT_NEXT_HOP_TABLE)).isPresent();
     }
 
@@ -714,18 +717,18 @@ public class SfcOfLogicalSffRspProcessorTest {
             return false;
         }
 
-        Short theNsi = theNciraExtensions.stream().filter(node -> node.getNxmNxNsi() != null)
+        Uint8 theNsi = theNciraExtensions.stream().filter(node -> node.getNxmNxNsi() != null)
                 .map(NxAugMatchNodesNodeTableFlow::getNxmNxNsi).findFirst().map(NxmNxNsi::getNsi).get();
 
         // handle the Actions part
         // assure 1 goto table instruction; goto table transport egress
-        Optional<Short> goToTableId = getGotoTableIdFromIntructions(nextHopFlow);
+        Optional<Uint8> goToTableId = getGotoTableIdFromIntructions(nextHopFlow);
         if (!goToTableId.filter(tableId -> tableId.equals(NwConstants.SFC_TRANSPORT_EGRESS_TABLE)).isPresent()) {
             return false;
         }
 
-        assertSetEthSrc(nextHopFlow, MAC_ADDRESS_OVS_SIDE[rspBuilder.getStartingIndex() - theNsi]);
-        assertSetEthDst(nextHopFlow, MAC_ADDRESS_SF_SIDE[rspBuilder.getStartingIndex() - theNsi]);
+        assertSetEthSrc(nextHopFlow, MAC_ADDRESS_OVS_SIDE[rspBuilder.getStartingIndex() - theNsi.toJava()]);
+        assertSetEthDst(nextHopFlow, MAC_ADDRESS_SF_SIDE[rspBuilder.getStartingIndex() - theNsi.toJava()]);
 
         return true;
     }
@@ -755,7 +758,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .collect(Collectors.toList());
     }
 
-    private Optional<Short> getGotoTableIdFromIntructions(Flow theFlow) {
+    private Optional<Uint8> getGotoTableIdFromIntructions(Flow theFlow) {
         return getInstructionsFromFlow(theFlow).stream().map(inst -> filterInstructionType(inst, GoToTableCase.class))
                 .filter(Optional::isPresent).map(gotoTableInst -> gotoTableInst.get().getGoToTable())
                 .map(GoToTable::getTableId).findFirst();
@@ -775,8 +778,8 @@ public class SfcOfLogicalSffRspProcessorTest {
 
         // must check if the NSI is within range
         if (checkNsi) {
-            if (!theNsi.map(NxmNxNsi::getNsi).filter(nsi -> nsi <= 255).filter(nsi -> nsi >= 255 - sfTypes.size())
-                    .isPresent()) {
+            if (!theNsi.map(NxmNxNsi::getNsi).filter(nsi -> nsi.toJava() <= 255)
+                    .filter(nsi -> nsi.toJava() >= 255 - sfTypes.size()).isPresent()) {
                 return false;
             }
         }
@@ -801,30 +804,30 @@ public class SfcOfLogicalSffRspProcessorTest {
 
     private void assertNshFields(Flow theFlow, Long theNsp, Short theNsi, Long theNshc1, Long theNshc2) {
         List<NxAugMatchNodesNodeTableFlow> nciraExtensions = getNciraExtensions(theFlow);
-        Optional<Long> nsp = nciraExtensions.stream()
+        Optional<Uint32> nsp = nciraExtensions.stream()
                 .map(NxmNxNspGrouping::getNxmNxNsp)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .map(NxmNxNsp::getValue);
-        assertThat(nsp, is(Optional.ofNullable(theNsp)));
-        Optional<Short> nsi = nciraExtensions.stream()
+        assertThat(nsp, is(Optional.ofNullable(Uint32.valueOf(theNsp.longValue()))));
+        Optional<Uint8> nsi = nciraExtensions.stream()
                 .map(NxmNxNsiGrouping::getNxmNxNsi)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .map(NxmNxNsi::getNsi);
-        assertThat(nsi, is(Optional.ofNullable(theNsi)));
-        Optional<Long> nshc1 = nciraExtensions.stream()
+        assertThat(nsi, is(Optional.ofNullable(Uint8.valueOf(theNsi.shortValue()))));
+        Optional<Uint32> nshc1 = nciraExtensions.stream()
                 .map(NxmNxNshc1Grouping::getNxmNxNshc1)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .map(NxmNxNshc1::getValue);
-        assertThat(nshc1, is(Optional.ofNullable(theNshc1)));
-        Optional<Long> nshc2 = nciraExtensions.stream()
+        assertThat(nshc1, is(Optional.ofNullable(Uint32.valueOf(theNshc1.longValue()))));
+        Optional<Uint32> nshc2 = nciraExtensions.stream()
                 .map(NxmNxNshc2Grouping::getNxmNxNshc2)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .map(NxmNxNshc2::getValue);
-        assertThat(nshc2, is(Optional.ofNullable(theNshc2)));
+        assertThat(nshc2, is(Optional.ofNullable(Uint32.valueOf(theNshc2.longValue()))));
     }
 
     private void assertSetEthSrc(Flow theFlow, MacAddress theMacAddress) {
@@ -856,7 +859,7 @@ public class SfcOfLogicalSffRspProcessorTest {
     }
 
     private void assertResubmit(Flow theFlow, short theTable) {
-        Optional<Short> resubmit = getActionsFromFlow(theFlow).stream()
+        Optional<Uint8> resubmit = getActionsFromFlow(theFlow).stream()
                 .map(action -> filterActionType(action, NxActionResubmitNodesNodeTableFlowWriteActionsCase.class))
                 .map(o -> o.map(NxActionResubmitNodesNodeTableFlowWriteActionsCase::getNxResubmit))
                 .map(o -> o.map(NxResubmit::getTable))
@@ -864,7 +867,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                 .map(Optional::get)
                 .findFirst();
         assertThat(resubmit.isPresent(), is(true));
-        assertThat(resubmit.get(), is(theTable));
+        assertThat(resubmit.get(), is(Uint8.valueOf(theTable)));
     }
 
     private void assertMoveC1ToTunDst(Flow theFlow) {
@@ -975,7 +978,7 @@ public class SfcOfLogicalSffRspProcessorTest {
                                               long theOutputPort) {
         assertThat(theFlow.getCookie(), notNullValue());
         assertThat(theFlow.getCookie().getValue(), notNullValue());
-        BigInteger cookie = theFlow.getCookie().getValue();
+        BigInteger cookie = theFlow.getCookie().getValue().toJava();
 
         BigInteger egresspipelineCookie = new BigInteger(SfcOfFlowProgrammerImpl.TRANSPORT_EGRESS_COOKIE_STR_BASE
                                                                  + SfcOfFlowProgrammerImpl

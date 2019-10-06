@@ -69,7 +69,7 @@ public class IosXeRspProcessor {
         status.writeStatus(InProgress);
 
         Preconditions.checkNotNull(renderedServicePath);
-        Long pathId = renderedServicePath.getPathId();
+        Long pathId = renderedServicePath.getPathId().toJava();
 
         DataBroker previousMountPoint;
         DataBroker currentMountpoint;
@@ -190,7 +190,7 @@ public class IosXeRspProcessor {
 
     public void deleteRsp(RenderedServicePath renderedServicePath) {
         boolean success = true;
-        long pathId = renderedServicePath.getPathId();
+        long pathId = renderedServicePath.getPathId().toJava();
         ServicePathKey servicePathKey = new ServicePathKey(pathId);
         for (RenderedServicePathHop renderedServicePathHop : renderedServicePath.getRenderedServicePathHop()) {
             SffName sffName = renderedServicePathHop.getServiceFunctionForwarder();

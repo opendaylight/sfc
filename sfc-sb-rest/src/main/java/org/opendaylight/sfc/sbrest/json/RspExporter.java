@@ -46,14 +46,14 @@ class RspExporter extends AbstractExporter implements Exporter {
             if (rsp.getName() != null) {
                 node.put(NAME, rsp.getName().getValue());
             }
-            node.put(PATH_ID, rsp.getPathId());
+            node.put(PATH_ID, rsp.getPathId().toJava());
             if (rsp.getParentServiceFunctionPath() != null) {
                 node.put(PARENT_SERVICE_FUNCTION_PATH, rsp.getParentServiceFunctionPath().getValue());
             }
             if (rsp.getServiceChainName() != null) {
                 node.put(SERVICE_CHAIN_NAME, rsp.getServiceChainName().getValue());
             }
-            node.put(STARTING_INDEX, rsp.getStartingIndex());
+            node.put(STARTING_INDEX, rsp.getStartingIndex().toJava());
             if (rsp.getVariableMetadata() != null) {
                 node.put(VARIABLE_METADATA, rsp.getVariableMetadata());
             }
@@ -63,14 +63,14 @@ class RspExporter extends AbstractExporter implements Exporter {
                 ArrayNode hopArray = mapper.createArrayNode();
                 for (RenderedServicePathHop e : hopList) {
                     ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put(HOP_NUMBER, e.getHopNumber());
+                    objectNode.put(HOP_NUMBER, e.getHopNumber().toJava());
                     if (e.getServiceFunctionForwarder() != null) {
                         objectNode.put(SERVICE_FUNCTION_FORWARDER, e.getServiceFunctionForwarder().getValue());
                     }
                     if (e.getServiceFunctionName() != null) {
                         objectNode.put(SERVICE_FUNCTION_NAME, e.getServiceFunctionName().getValue());
                     }
-                    objectNode.put(SERVICE_INDEX, e.getServiceIndex());
+                    objectNode.put(SERVICE_INDEX, e.getServiceIndex().toJava());
                     hopArray.add(objectNode);
                 }
                 node.putArray(RENDERED_SERVICE_PATH_HOP).addAll(hopArray);

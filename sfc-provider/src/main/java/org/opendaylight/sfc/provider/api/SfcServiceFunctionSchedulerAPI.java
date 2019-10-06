@@ -51,7 +51,7 @@ public abstract class SfcServiceFunctionSchedulerAPI {
         List<ServicePathHop> hops = sfp.getServicePathHop();
         if (hops != null) {
             for (ServicePathHop hop : hops) {
-                ret.put(hop.getHopNumber(), hop.getServiceFunctionName());
+                ret.put(hop.getHopNumber().toJava(), hop.getServiceFunctionName());
             }
         }
         return ret;

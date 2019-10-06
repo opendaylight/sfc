@@ -94,7 +94,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
             if (values == null) {
                 values = new ArrayList<>();
                 LOG.debug("updateSffStateWithDpnIds: new rsp list for dpnid {}", graphEntry.getDstDpnId().getValue());
-                valuesMap.put(graphEntry.getDstDpnId().getValue(), values);
+                valuesMap.put(graphEntry.getDstDpnId().getValue().toJava(), values);
             } else {
                 LOG.debug("updateSffStateWithDpnIds: rsp list already existing for dpnid {}",
                         graphEntry.getDstDpnId().getValue());

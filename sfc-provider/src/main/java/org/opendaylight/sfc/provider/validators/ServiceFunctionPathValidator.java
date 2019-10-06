@@ -119,7 +119,7 @@ public class ServiceFunctionPathValidator {
                     continue;
                 }
                 String sfChainTypeName = sfChainTypes
-                        .get(serviceFunctionPath.getServicePathHop().get(i).getHopNumber());
+                        .get(serviceFunctionPath.getServicePathHop().get(i).getHopNumber().toJava());
 
                 String sfTypeNameFromSFP;
                 try {

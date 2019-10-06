@@ -110,6 +110,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -698,7 +700,7 @@ public final class SfcVppUtils {
         classifySessionBuilder.setMatch(match);
         classifySessionBuilder.setHitNext(new VppNode(new VppNodeName("nsh-classifier")));
         Long opaqueIndexValue = Long.valueOf(nsp.longValue() << 8 | nsi.intValue());
-        classifySessionBuilder.setOpaqueIndex(new OpaqueIndex(opaqueIndexValue));
+        classifySessionBuilder.setOpaqueIndex(new OpaqueIndex(Uint32.valueOf(opaqueIndexValue)));
         return classifySessionBuilder;
     }
 

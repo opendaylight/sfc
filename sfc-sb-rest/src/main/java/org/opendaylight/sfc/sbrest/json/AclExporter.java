@@ -167,9 +167,9 @@ class AclExporter extends AbstractExporter implements Exporter {
                 case ACE_IP:
                     AceIp aceIp = (AceIp) matches.getAceType();
                     if (aceIp.getDscp() != null) {
-                        matchesNode.put(DSCP, aceIp.getDscp().getValue());
+                        matchesNode.put(DSCP, aceIp.getDscp().getValue().toJava());
                     }
-                    matchesNode.put(PROTOCOL, aceIp.getProtocol());
+                    matchesNode.put(PROTOCOL, aceIp.getProtocol().toJava());
                     matchesNode.put(SOURCE_PORT_RANGE, this.getSourcePortRangeObjectNode(aceIp));
                     matchesNode.put(DESTINATION_PORT_RANGE, this.getDestinationPortRangeObjectNode(aceIp));
                     matchesNode = this.getAceIpVersionObjectNode(aceIp, matchesNode);
@@ -220,10 +220,10 @@ class AclExporter extends AbstractExporter implements Exporter {
         if (sourcePortRange != null) {
             sourcePortRangeNode = mapper.createObjectNode();
             if (sourcePortRange.getLowerPort() != null) {
-                sourcePortRangeNode.put(LOWER_PORT, sourcePortRange.getLowerPort().getValue());
+                sourcePortRangeNode.put(LOWER_PORT, sourcePortRange.getLowerPort().getValue().toJava());
             }
             if (sourcePortRange.getUpperPort() != null) {
-                sourcePortRangeNode.put(UPPER_PORT, sourcePortRange.getUpperPort().getValue());
+                sourcePortRangeNode.put(UPPER_PORT, sourcePortRange.getUpperPort().getValue().toJava());
             }
         }
 
@@ -241,10 +241,10 @@ class AclExporter extends AbstractExporter implements Exporter {
         if (destinationPortRange != null) {
             destinationPortRangeNode = mapper.createObjectNode();
             if (destinationPortRange.getLowerPort() != null) {
-                destinationPortRangeNode.put(LOWER_PORT, destinationPortRange.getLowerPort().getValue());
+                destinationPortRangeNode.put(LOWER_PORT, destinationPortRange.getLowerPort().getValue().toJava());
             }
             if (destinationPortRange.getUpperPort() != null) {
-                destinationPortRangeNode.put(UPPER_PORT, destinationPortRange.getUpperPort().getValue());
+                destinationPortRangeNode.put(UPPER_PORT, destinationPortRange.getUpperPort().getValue().toJava());
             }
         }
 
@@ -278,7 +278,7 @@ class AclExporter extends AbstractExporter implements Exporter {
                         matchesNode.put(SOURCE_IPV6_NETWORK, aceIpv6.getSourceIpv6Network().getValue());
                     }
                     if (aceIpv6.getFlowLabel() != null) {
-                        matchesNode.put(FLOW_LABEL, aceIpv6.getFlowLabel().getValue());
+                        matchesNode.put(FLOW_LABEL, aceIpv6.getFlowLabel().getValue().toJava());
                     }
                     break;
                 default:

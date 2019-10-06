@@ -8,8 +8,8 @@
 
 package org.opendaylight.sfc.scfofrenderer.flowgenerators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -47,6 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.GoToTableCase;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -101,7 +102,7 @@ public class LogicallyAttachedClassifierTest {
         // mock the first SF in the RSP
         String sfName = "SF#1";
         sf = mock(ServiceFunction.class);
-        List<SfDataPlaneLocator> theSfDpls = new ArrayList<SfDataPlaneLocator>() {
+        List<SfDataPlaneLocator> theSfDpls = new ArrayList<>() {
             {
                 LocatorType theLocatorType = new LogicalInterfaceBuilder().setInterfaceName(firstSfNeutronPort).build();
                 add(new SfDataPlaneLocatorBuilder().setLocatorType(theLocatorType).build());
@@ -165,7 +166,7 @@ public class LogicallyAttachedClassifierTest {
         Assert.assertEquals(8, ((ApplyActionsCase) flow.getInstructions().getInstruction().get(0).getInstruction())
                 .getApplyActions().getAction().size());
 
-        Assert.assertEquals(new Short("83"),
+        Assert.assertEquals(Uint8.valueOf(83),
                 ((GoToTableCase) flow.getInstructions().getInstruction().get(1).getInstruction()).getGoToTable()
                         .getTableId());
     }

@@ -14,6 +14,8 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.rendered.service.path.RenderedServicePathHop;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +48,21 @@ class RspExporter extends AbstractExporter implements Exporter {
             if (rsp.getName() != null) {
                 node.put(NAME, rsp.getName().getValue());
             }
-            node.put(PATH_ID, rsp.getPathId());
+
+            Uint32 pathId = rsp.getPathId();
+            if (pathId != null) {
+                node.put(PATH_ID, pathId.toJava());
+            }
             if (rsp.getParentServiceFunctionPath() != null) {
                 node.put(PARENT_SERVICE_FUNCTION_PATH, rsp.getParentServiceFunctionPath().getValue());
             }
             if (rsp.getServiceChainName() != null) {
                 node.put(SERVICE_CHAIN_NAME, rsp.getServiceChainName().getValue());
             }
-            node.put(STARTING_INDEX, rsp.getStartingIndex());
+            Uint8 startingIndex = rsp.getStartingIndex();
+            if (startingIndex != null) {
+                node.put(STARTING_INDEX, startingIndex.toJava());
+            }
             if (rsp.getVariableMetadata() != null) {
                 node.put(VARIABLE_METADATA, rsp.getVariableMetadata());
             }
@@ -63,14 +72,20 @@ class RspExporter extends AbstractExporter implements Exporter {
                 ArrayNode hopArray = mapper.createArrayNode();
                 for (RenderedServicePathHop e : hopList) {
                     ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put(HOP_NUMBER, e.getHopNumber());
+                    Uint8 hopNumber = e.getHopNumber();
+                    if (hopNumber != null) {
+                        objectNode.put(HOP_NUMBER, hopNumber.toJava());
+                    }
                     if (e.getServiceFunctionForwarder() != null) {
                         objectNode.put(SERVICE_FUNCTION_FORWARDER, e.getServiceFunctionForwarder().getValue());
                     }
                     if (e.getServiceFunctionName() != null) {
                         objectNode.put(SERVICE_FUNCTION_NAME, e.getServiceFunctionName().getValue());
                     }
-                    objectNode.put(SERVICE_INDEX, e.getServiceIndex());
+                    Uint8 serviceIndex = e.getServiceIndex();
+                    if (serviceIndex != null) {
+                        objectNode.put(SERVICE_INDEX, serviceIndex.toJava());
+                    }
                     hopArray.add(objectNode);
                 }
                 node.putArray(RENDERED_SERVICE_PATH_HOP).addAll(hopArray);

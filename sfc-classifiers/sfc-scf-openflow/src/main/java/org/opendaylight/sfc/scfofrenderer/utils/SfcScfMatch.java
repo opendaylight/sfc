@@ -74,28 +74,28 @@ public class SfcScfMatch {
             AceIp aceip = (AceIp) matches.getAceType();
 
             if (aceip.getDscp() != null) {
-                SfcOpenflowUtils.addMatchDscp(mb, aceip.getDscp().getValue());
+                SfcOpenflowUtils.addMatchDscp(mb, aceip.getDscp().getValue().toJava());
             }
 
             if (aceip.getProtocol() != null) {
-                SfcOpenflowUtils.addMatchIpProtocol(mb, aceip.getProtocol());
+                SfcOpenflowUtils.addMatchIpProtocol(mb, aceip.getProtocol().toJava());
 
                 Integer srcPort = null;
                 Integer dstPort = null;
 
                 if (aceip.getSourcePortRange() != null && aceip.getSourcePortRange().getLowerPort() != null
                         && aceip.getSourcePortRange().getLowerPort().getValue() != null
-                        && aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
-                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
+                        && aceip.getSourcePortRange().getLowerPort().getValue().toJava() != 0) {
+                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue().toJava();
                 }
                 if (aceip.getDestinationPortRange() != null && aceip.getDestinationPortRange().getLowerPort() != null
                         && aceip.getDestinationPortRange().getLowerPort().getValue() != null
-                        && aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
-                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
+                        && aceip.getDestinationPortRange().getLowerPort().getValue().toJava() != 0) {
+                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue().toJava();
                 }
 
                 // don't support port range
-                switch (aceip.getProtocol()) {
+                switch (aceip.getProtocol().toJava()) {
                     case SfcOpenflowUtils.IP_PROTOCOL_UDP:
                         if (srcPort != null) {
                             SfcOpenflowUtils.addMatchSrcUdpPort(mb, srcPort);

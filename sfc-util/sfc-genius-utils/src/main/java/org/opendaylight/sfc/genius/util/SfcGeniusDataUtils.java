@@ -8,13 +8,11 @@
 
 package org.opendaylight.sfc.genius.util;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.genius.mdsalutil.MDSALUtil;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.function.base.SfDataPlaneLocator;
@@ -28,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 public final class SfcGeniusDataUtils {
     // hide the default constructor
@@ -46,7 +45,7 @@ public final class SfcGeniusDataUtils {
                 .orElseThrow(() -> new RuntimeException("Interface is not present in the CONFIG DS"));
         Interface theIf = SfcGeniusUtilsDataGetter.getServiceFunctionAttachedInterfaceState(ifName)
                 .orElseThrow(() -> new RuntimeException("Interface is not present in the OPERATIONAL DS"));
-        BigInteger theDataplaneId = getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf());
+        Uint64 theDataplaneId = getDpnIdFromLowerLayerIfList(theIf.getLowerLayerIf());
 
         return SfcGeniusUtilsDataGetter.getBridgeFromDpnId(theDataplaneId).map(BridgeRefEntry::getBridgeReference)
                 .map(OvsdbBridgeRef::getValue).map(iid -> iid.firstKeyOf(Node.class)).map(NodeKey::getNodeId)
@@ -135,7 +134,7 @@ public final class SfcGeniusDataUtils {
      *             list does not contain one item only, or if the format of the
      *             item is invalid.
      */
-    public static BigInteger getDpnIdFromLowerLayerIfList(List<String> lowerLayerIfList) {
+    public static Uint64 getDpnIdFromLowerLayerIfList(List<String> lowerLayerIfList) {
         if (lowerLayerIfList == null || lowerLayerIfList.size() != 1) {
             throw new SfcGeniusRuntimeException(
                     new IllegalArgumentException("Expected 1 and only 1 item in lower layer interface list"));
@@ -145,6 +144,6 @@ public final class SfcGeniusDataUtils {
             throw new SfcGeniusRuntimeException(
                     new IllegalArgumentException("Unexpected format of lower layer interface list"));
         }
-        return BigInteger.valueOf(nodeId);
+        return Uint64.valueOf(nodeId);
     }
 }

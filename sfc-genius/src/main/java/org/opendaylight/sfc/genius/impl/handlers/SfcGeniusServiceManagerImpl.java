@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl.handlers;
 
 import static org.opendaylight.sfc.genius.util.SfcGeniusConcurrentUtils.toCompletableFuture;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -21,6 +19,7 @@ import org.opendaylight.sfc.genius.impl.handlers.readers.SfcGeniusSfReader;
 import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.common.rev151017.SfName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,7 +135,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
     }
 
     @Override
-    public void bindNode(BigInteger dpnId) {
+    public void bindNode(Uint64 dpnId) {
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.bindToNode(dpnId)
@@ -145,7 +144,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
     }
 
     @Override
-    public void unbindNode(BigInteger dpnId) {
+    public void unbindNode(Uint64 dpnId) {
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusServiceHandler serviceHandler = getSfcGeniusServiceHandler(readWriteTransaction);
         serviceHandler.unbindFromNode(dpnId)
@@ -154,7 +153,7 @@ public class SfcGeniusServiceManagerImpl implements org.opendaylight.sfc.genius.
     }
 
     @Override
-    public void interfaceStateUp(String interfaceName, BigInteger dpnId) {
+    public void interfaceStateUp(String interfaceName, Uint64 dpnId) {
         ReadWriteTransaction readWriteTransaction = dataBroker.newReadWriteTransaction();
         SfcGeniusRspHandler rspHandler = getSfcGeniusRspHandler(readWriteTransaction);
         SfcGeniusSfReader sfReader = getSfcGeniusSfReader(readWriteTransaction);

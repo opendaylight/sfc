@@ -13,12 +13,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -42,6 +41,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.R
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusTsaWriterTest {
@@ -73,7 +75,7 @@ public class SfcGeniusTsaWriterTest {
     @Test
     @SuppressWarnings("VariableDeclarationUsageDistance")
     public void createTerminatingServiceAction() throws Exception {
-        BigInteger dpnid = BigInteger.valueOf(8);
+        Uint64 dpnid = Uint64.valueOf(8);
 
         when(itmRpcService.createTerminatingServiceActions(any()))
                 .thenReturn(Futures.immediateFuture(createActionsRpcResult));
@@ -91,19 +93,19 @@ public class SfcGeniusTsaWriterTest {
         CreateTerminatingServiceActionsInput input = createInputCaptor.getValue();
         assertThat(input, notNullValue());
         assertThat(input.getDpnId(), is(dpnid));
-        assertThat(input.getServiceId(), is(SfcGeniusConstants.SFC_VNID));
+        assertThat(input.getServiceId(), is(Uint16.valueOf(SfcGeniusConstants.SFC_VNID)));
         assertThat(input.getInstruction().size(), is(1));
 
         Instruction instruction = input.getInstruction().get(0);
         assertThat(instruction.getInstruction(), is(instanceOf(GoToTableCase.class)));
 
         GoToTableCase goToTable = (GoToTableCase) instruction.getInstruction();
-        assertThat(goToTable.getGoToTable().getTableId(), is(NwConstants.SFC_TRANSPORT_INGRESS_TABLE));
+        assertThat(goToTable.getGoToTable().getTableId(), is(Uint8.valueOf(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)));
     }
 
     @Test
     public void createTerminatingServiceActionUnsuccessful() throws Exception {
-        BigInteger dpnid = BigInteger.ZERO;
+        Uint64 dpnid = Uint64.ZERO;
         Throwable throwable = new Throwable();
 
         when(itmRpcService.createTerminatingServiceActions(any()))
@@ -130,7 +132,7 @@ public class SfcGeniusTsaWriterTest {
 
     @Test
     public void createTerminatingServiceActionException() throws Exception {
-        BigInteger dpnid = BigInteger.ZERO;
+        Uint64 dpnid = Uint64.ZERO;
         Throwable throwable = new Throwable();
 
         when(itmRpcService.createTerminatingServiceActions(any())).thenReturn(
@@ -156,7 +158,7 @@ public class SfcGeniusTsaWriterTest {
     @Test
     @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
     public void removeTerminatingServiceAction() throws Exception {
-        BigInteger dpnid = BigInteger.valueOf(37);
+        Uint64 dpnid = Uint64.valueOf(37);
 
         when(itmRpcService.removeTerminatingServiceActions(any()))
                 .thenReturn(Futures.immediateFuture(removeActionsRpcResult));
@@ -173,7 +175,7 @@ public class SfcGeniusTsaWriterTest {
 
         assertThat(completableFuture.isDone(), is(true));
         assertThat(dpnid, is(input.getDpnId()));
-        assertThat(SfcGeniusConstants.SFC_VNID, is(input.getServiceId()));
+        assertThat(input.getServiceId(), is(Uint16.valueOf(SfcGeniusConstants.SFC_VNID)));
         assertThat(completableFuture.isCompletedExceptionally(), is(false));
         assertThat(completableFuture.isCancelled(), is(false));
     }
@@ -182,7 +184,7 @@ public class SfcGeniusTsaWriterTest {
     //@Test(expected = org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException.class)
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionUnsuccessful() throws Exception {
-        BigInteger dpnid = BigInteger.ZERO;
+        Uint64 dpnid = Uint64.ZERO;
         Throwable throwable = new Throwable();
 
         when(itmRpcService.removeTerminatingServiceActions(any()))
@@ -210,7 +212,7 @@ public class SfcGeniusTsaWriterTest {
     @Test
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void removeTerminatingServiceActionException() throws Exception {
-        BigInteger dpnid = BigInteger.ZERO;
+        Uint64 dpnid = Uint64.ZERO;
         Throwable throwable = new Throwable();
 
         when(itmRpcService.removeTerminatingServiceActions(any())).thenReturn(Futures.immediateFailedFuture(throwable));

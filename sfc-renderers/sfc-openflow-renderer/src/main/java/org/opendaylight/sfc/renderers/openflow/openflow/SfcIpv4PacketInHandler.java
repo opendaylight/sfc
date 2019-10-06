@@ -153,7 +153,7 @@ public class SfcIpv4PacketInHandler implements PacketProcessingListener, AutoClo
         }
 
         Metadata pktMatchMetadata = packetIn.getMatch().getMetadata();
-        BigInteger metadata = pktMatchMetadata.getMetadata();
+        BigInteger metadata = pktMatchMetadata.getMetadata().toJava();
 
         short ulPathId = metadata.shortValue();
         // Assuming the RSP is symmetric

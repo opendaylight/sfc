@@ -8,11 +8,10 @@
 
 package org.opendaylight.sfc.genius.impl.handlers;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusBoundServiceWriter;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusTsaWriter;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusServiceHandlerTest {
@@ -59,14 +59,14 @@ public class SfcGeniusServiceHandlerTest {
 
     @Test
     public void bindToNode() throws Exception {
-        BigInteger dpnId = BigInteger.valueOf(18);
+        Uint64 dpnId = Uint64.valueOf(18);
         sfcGeniusServiceHandler.bindToNode(dpnId);
         verify(sfcGeniusTsaWriter).createTerminatingServiceAction(dpnId);
     }
 
     @Test
     public void unbindFromNode() throws Exception {
-        BigInteger dpnId = BigInteger.valueOf(18);
+        Uint64 dpnId = Uint64.valueOf(18);
         sfcGeniusServiceHandler.unbindFromNode(dpnId);
         verify(sfcGeniusTsaWriter).removeTerminatingServiceAction(dpnId);
     }

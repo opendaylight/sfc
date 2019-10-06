@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import java.math.BigInteger;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -20,6 +19,7 @@ import org.opendaylight.sfc.genius.util.SfcGeniusRuntimeException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.InterfacesState;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class SfcGeniusInterfaceStateListener extends AbstractAsyncDataTreeChange
         // See org.opendaylight.genius.interfacemanager.listeners.InterfaceInventoryStateListener#remove
         LOG.debug("Received interface state add event {}", newInterface);
         String interfaceName = newInterface.getName();
-        BigInteger dpnId;
+        Uint64 dpnId;
         try {
             dpnId = SfcGeniusDataUtils.getDpnIdFromLowerLayerIfList(newInterface.getLowerLayerIf());
         } catch (SfcGeniusRuntimeException e) {

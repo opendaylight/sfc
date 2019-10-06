@@ -5,15 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl.listeners;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -27,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.RspsForDpnid;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.Rsps;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +64,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
         LOG.debug("Receive SFF state DPN add event {}", newDpn);
         boolean pathsOnDpn = getPathsOnDpn(newDpn).isEmpty();
         if (!pathsOnDpn) {
-            BigInteger dpnId = newDpn.getDpnId().getValue();
-            interfaceManager.bindNode(dpnId);
+            interfaceManager.bindNode(newDpn.getDpnId().getValue());
         }
     }
 
@@ -76,8 +73,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
         LOG.debug("Receive SFF state DPN remove event {}", removedDpn);
         boolean pathsOnDpn = getPathsOnDpn(removedDpn).isEmpty();
         if (!pathsOnDpn) {
-            BigInteger dpnId = removedDpn.getDpnId().getValue();
-            interfaceManager.unbindNode(dpnId);
+            interfaceManager.unbindNode(removedDpn.getDpnId().getValue());
         }
     }
 
@@ -85,9 +81,9 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     public void update(@NonNull InstanceIdentifier<Dpn> instanceIdentifier, @NonNull Dpn originalDpn,
                        @NonNull Dpn updatedDpn) {
         LOG.debug("Receive SFF state DPN: originalDpn {} updated DPN {}", originalDpn, updatedDpn);
-        BigInteger dpnId = updatedDpn.getDpnId().getValue();
         boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();
         boolean pathsOnOldDpn = this.getPathsOnDpn(originalDpn).isEmpty();
+        Uint64 dpnId = updatedDpn.getDpnId().getValue();
         if (!pathsOnUpdatedDpn && pathsOnOldDpn) {
             interfaceManager.bindNode(dpnId);
         } else if (!pathsOnOldDpn && pathsOnUpdatedDpn) {

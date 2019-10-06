@@ -8,7 +8,6 @@
 
 package org.opendaylight.sfc.genius.impl.handlers.writers;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.R
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.RemoveTerminatingServiceActionsOutput;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Helper class to handle terminating service actions through the Genius ITM
@@ -57,7 +57,7 @@ public class SfcGeniusTsaWriter {
      * @param dpnId the data plane node identifier.
      * @return future signaling completion.
      */
-    public CompletableFuture<Void> createTerminatingServiceAction(BigInteger dpnId) {
+    public CompletableFuture<Void> createTerminatingServiceAction(Uint64 dpnId) {
         short offset = NwConstants.SFC_TRANSPORT_INGRESS_TABLE;
         CreateTerminatingServiceActionsInput input = new CreateTerminatingServiceActionsInputBuilder()
                 .setDpnId(dpnId)
@@ -91,7 +91,7 @@ public class SfcGeniusTsaWriter {
      * @param dpnId the data plane node identifier.
      * @return future signaling completion.
      */
-    public CompletableFuture<Void> removeTerminatingServiceAction(BigInteger dpnId) {
+    public CompletableFuture<Void> removeTerminatingServiceAction(Uint64 dpnId) {
         RemoveTerminatingServiceActionsInput input = new RemoveTerminatingServiceActionsInputBuilder()
                 .setDpnId(dpnId)
                 .setServiceId(SfcGeniusConstants.SFC_VNID)

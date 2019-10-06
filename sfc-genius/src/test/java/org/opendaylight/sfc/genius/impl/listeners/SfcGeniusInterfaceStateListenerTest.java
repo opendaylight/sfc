@@ -5,25 +5,24 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.interfaces.rev140508.interfaces.state.Interface;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusInterfaceStateListenerTest {
@@ -52,7 +51,7 @@ public class SfcGeniusInterfaceStateListenerTest {
     @Test
     public void add() throws Exception {
         sfcGeniusInterfaceStateListener.add(InstanceIdentifier.create(Interface.class), anInterface);
-        verify(handler).interfaceStateUp("IF1", BigInteger.valueOf(123456789));
+        verify(handler).interfaceStateUp("IF1", Uint64.valueOf(123456789));
     }
 
     @Test

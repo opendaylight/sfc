@@ -8,7 +8,6 @@
 package org.opendaylight.sfc.renderers.openflow.utils.operdsupdate;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.RspsBuilder;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.RspsKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,7 @@ public class OperDsUpdateHandlerLSFFImpl implements OperDsUpdateHandlerInterface
     private void updateSffStateWithDpnIds(SffGraph theGraph, RenderedServicePath rsp, WriteTransaction trans) {
         LOG.debug("updateSffStateWithDpnIds: starting addition of dpnids-rsps to RSP state");
         Iterator<SffGraph.SffGraphEntry> graphEntries = theGraph.getGraphEntryIterator();
-        Map<BigInteger, List<Rsps>> valuesMap = new HashMap<>();
+        Map<Uint64, List<Rsps>> valuesMap = new HashMap<>();
         SffGraph.SffGraphEntry graphEntry;
         while (graphEntries.hasNext()) {
             graphEntry = graphEntries.next();

@@ -20,6 +20,7 @@ import org.opendaylight.sfc.renderers.openflow.utils.SfcSynchronizer;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.of.renderer.rev151123.SfcOfRendererConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +83,13 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
             return;
         }
 
-        if (config.getSfcOfTableOffset() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
+        if (config.getSfcOfTableOffset().toJava() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
             LOG.error("Error SfcOfTableOffset value [{}]", config.getSfcOfTableOffset());
             return;
         }
 
         // Cant set the egress table negative
-        if (config.getSfcOfAppEgressTableOffset() < 0) {
+        if (config.getSfcOfAppEgressTableOffset().toJava() < 0) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}]", config.getSfcOfAppEgressTableOffset());
             return;
         }
@@ -98,18 +99,18 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
         // Example: tableBase = 20, SfcMaxTableOffset=10, then the SFC tables
         // would be in the range [20..30]. So an egress value of 25
         // would be invalid
-        if (config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset()
-                && config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset()
+        if (config.getSfcOfAppEgressTableOffset().toJava() >= config.getSfcOfTableOffset().toJava()
+                && config.getSfcOfAppEgressTableOffset().toJava() <= config.getSfcOfTableOffset().toJava()
                         + this.sfcOfFlowProgrammer.getMaxTableOffset()) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}] cant be in the SFC table range [{}..{}]",
-                    config.getSfcOfAppEgressTableOffset(), config.getSfcOfTableOffset(),
-                    config.getSfcOfTableOffset() + this.sfcOfFlowProgrammer.getMaxTableOffset());
+                    config.getSfcOfAppEgressTableOffset().toJava(), config.getSfcOfTableOffset().toJava(),
+                    config.getSfcOfTableOffset().toJava() + this.sfcOfFlowProgrammer.getMaxTableOffset());
 
             return;
         }
 
-        UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset(),
-                config.getSfcOfAppEgressTableOffset());
+        UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset().toJava(),
+                config.getSfcOfAppEgressTableOffset().toJava());
 
         threadExecutor.execute(updateThread);
     }
@@ -123,9 +124,9 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
      *            optionally the number of tables beyond tableOffset to be used
      * @return a valid TableId or null if invalid
      */
-    public TableId verifyMaxTableId(short tableOffset, short maxTable) {
+    public TableId verifyMaxTableId(Uint8 tableOffset, short maxTable) {
         try {
-            return new TableId((short) (tableOffset + maxTable));
+            return new TableId((short) (tableOffset.toJava() + maxTable));
         } catch (IllegalArgumentException e) {
             LOG.error("SfcOfRendererDataListener::verifyMaxTableId invalid table offset [{}] maxTable [{}]",
                     tableOffset, maxTable, e);

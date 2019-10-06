@@ -155,7 +155,7 @@ public final class SfcProviderRenderedPathAPI {
                         serviceFunctionPath.getName().getValue());
             } else {
                 renderedServicePath = SfcProviderRenderedPathAPI.setSymmetricPathId(renderedServicePath,
-                        revRenderedServicePath.getPathId(), null);
+                        revRenderedServicePath.getPathId().toJava(), null);
             }
         }
 
@@ -478,7 +478,7 @@ public final class SfcProviderRenderedPathAPI {
         if (serviceFunctionPath.getPathId() == null) {
             pathId = SfcServicePathId.checkAndAllocatePathId();
         } else {
-            pathId = SfcServicePathId.chechAndAllocatePathId(serviceFunctionPath.getPathId());
+            pathId = SfcServicePathId.chechAndAllocatePathId(serviceFunctionPath.getPathId().toJava());
         }
 
         if (pathId == -1) {
@@ -537,7 +537,7 @@ public final class SfcProviderRenderedPathAPI {
     public static RenderedServicePath createReverseRenderedServicePathEntry(RenderedServicePath renderedServicePath) {
         RenderedServicePath ret = null;
 
-        long pathId = SfcServicePathId.checkAndAllocateSymmetricPathId(renderedServicePath.getPathId());
+        long pathId = SfcServicePathId.checkAndAllocateSymmetricPathId(renderedServicePath.getPathId().toJava());
         printTraceStart(LOG);
 
         if (pathId == -1) {
@@ -723,7 +723,7 @@ public final class SfcProviderRenderedPathAPI {
         RenderedServicePath renderedServicePath = SfcDataStoreAPI.readTransactionAPI(rspEntryIID,
                 logicalDatastoreType);
         if (renderedServicePath != null) {
-            long pathId = renderedServicePath.getPathId();
+            long pathId = renderedServicePath.getPathId().toJava();
             if (SfcDataStoreAPI.deleteTransactionAPI(rspEntryIID, logicalDatastoreType)) {
                 ret = true;
                 // Free pathId

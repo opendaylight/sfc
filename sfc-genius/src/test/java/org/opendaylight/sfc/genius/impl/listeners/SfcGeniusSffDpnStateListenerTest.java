@@ -5,21 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.sfc.genius.impl.SfcGeniusServiceManager;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.DpnIdType;
@@ -27,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logi
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.RspsForDpnid;
 import org.opendaylight.yang.gen.v1.urn.ericsson.params.xml.ns.yang.sfc.sff.logical.rev160620.dpnid.rsps.dpn.rsps.dpn.rsps._for.dpnid.Rsps;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusSffDpnStateListenerTest {
@@ -53,7 +52,7 @@ public class SfcGeniusSffDpnStateListenerTest {
 
     @Before
     public void setup() {
-        when(dpn.getDpnId()).thenReturn(new DpnIdType(new BigInteger("1")));
+        when(dpn.getDpnId()).thenReturn(new DpnIdType(Uint64.ONE));
         when(dpn.getRspsForDpnid()).thenReturn(rspsForDpnid);
         when(rspsForDpnid.getRsps()).thenReturn(rspsList);
         sfcGeniusSffDpnStateListener = new SfcGeniusSffDpnStateListener(
@@ -66,7 +65,7 @@ public class SfcGeniusSffDpnStateListenerTest {
     public void remove() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
         sfcGeniusSffDpnStateListener.remove(InstanceIdentifier.create(Dpn.class), dpn);
-        verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
+        verify(sfcGeniusServiceManager).unbindNode(Uint64.ONE);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class SfcGeniusSffDpnStateListenerTest {
     public void updateAddPaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false).thenReturn(true);
         sfcGeniusSffDpnStateListener.update(InstanceIdentifier.create(Dpn.class), dpn, dpn);
-        verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
+        verify(sfcGeniusServiceManager).bindNode(Uint64.ONE);
     }
 
     @Test
@@ -94,14 +93,14 @@ public class SfcGeniusSffDpnStateListenerTest {
     public void updateRemovePaths() throws Exception {
         when(rspsList.isEmpty()).thenReturn(true).thenReturn(false);
         sfcGeniusSffDpnStateListener.update(InstanceIdentifier.create(Dpn.class), dpn, dpn);
-        verify(sfcGeniusServiceManager).unbindNode(new BigInteger("1"));
+        verify(sfcGeniusServiceManager).unbindNode(Uint64.ONE);
     }
 
     @Test
     public void add() throws Exception {
         when(rspsList.isEmpty()).thenReturn(false);
         sfcGeniusSffDpnStateListener.add(InstanceIdentifier.create(Dpn.class), dpn);
-        verify(sfcGeniusServiceManager).bindNode(new BigInteger("1"));
+        verify(sfcGeniusServiceManager).bindNode(Uint64.ONE);
     }
 
     @Test

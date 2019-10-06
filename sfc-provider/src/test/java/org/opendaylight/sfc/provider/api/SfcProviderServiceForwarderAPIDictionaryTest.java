@@ -50,7 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
  */
 public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataStoreManager {
 
-    private final List<SffName> sffNames = new ArrayList<SffName>() {
+    private final List<SffName> sffNames = new ArrayList<>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -144,8 +144,6 @@ public class SfcProviderServiceForwarderAPIDictionaryTest extends AbstractDataSt
             .setSffInterfaces(null);
 
         ServiceFunctionDictionary newDictEntry = dictionaryEntryBuilder1.build();
-
-        sff2.getServiceFunctionDictionary().add(newDictEntry);
         dictionary.add(newDictEntry);
 
         SfcProviderServiceForwarderAPI.putServiceFunctionForwarder(sff);

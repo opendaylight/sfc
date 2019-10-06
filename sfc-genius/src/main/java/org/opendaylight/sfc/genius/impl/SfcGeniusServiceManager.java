@@ -5,11 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl;
 
-import java.math.BigInteger;
 import java.util.List;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Genius SFC Service manager.
@@ -38,7 +37,7 @@ public interface SfcGeniusServiceManager {
      * @param dpnId
      *            the data plane id of the new node associated to the interface.
      */
-    void interfaceStateUp(String interfaceName, BigInteger dpnId);
+    void interfaceStateUp(String interfaceName, Uint64 dpnId);
 
     /**
      * Bind the interfaces of a service function to SFC service.
@@ -70,7 +69,7 @@ public interface SfcGeniusServiceManager {
      * @param dpnId
      *            the node DPN Id.
      */
-    void bindNode(BigInteger dpnId);
+    void bindNode(Uint64 dpnId);
 
     /**
      * Unbind node from SFC service.
@@ -78,5 +77,5 @@ public interface SfcGeniusServiceManager {
      * @param dpnId
      *            the node DPN Id.
      */
-    void unbindNode(BigInteger dpnId);
+    void unbindNode(Uint64 dpnId);
 }

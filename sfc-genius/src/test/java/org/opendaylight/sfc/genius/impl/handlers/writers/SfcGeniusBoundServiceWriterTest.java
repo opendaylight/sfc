@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.servicebinding.rev160406.service.bindings.services.info.BoundServices;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.servicebinding.rev160406.service.bindings.services.info.BoundServicesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SfcGeniusBoundServiceWriterTest {
@@ -80,19 +82,19 @@ public class SfcGeniusBoundServiceWriterTest {
 
         BoundServices boundServices = boundServicesCaptor.getValue();
         assertThat(boundServices.getServiceName(), is(NwConstants.SFC_SERVICE_NAME));
-        assertThat(boundServices.getServicePriority(), is(NwConstants.SFC_SERVICE_INDEX));
+        assertThat(boundServices.getServicePriority(), is(Uint8.valueOf(NwConstants.SFC_SERVICE_INDEX)));
         assertThat(boundServices.getServiceType(), is(equalTo(ServiceTypeFlowBased.class)));
 
         StypeOpenflow stypeOpenflow = boundServices.augmentation(StypeOpenflow.class);
         assertThat(stypeOpenflow.getFlowCookie(), is(SfcGeniusConstants.COOKIE_SFC_INGRESS_TABLE));
-        assertThat(stypeOpenflow.getFlowPriority(), is(SfcGeniusConstants.SFC_SERVICE_PRIORITY));
+        assertThat(stypeOpenflow.getFlowPriority(), is(Uint16.valueOf(SfcGeniusConstants.SFC_SERVICE_PRIORITY)));
         assertThat(stypeOpenflow.getInstruction().size(), is(1));
 
         Instruction instruction = stypeOpenflow.getInstruction().get(0);
         assertThat(instruction.getInstruction(), is(instanceOf(GoToTableCase.class)));
 
         GoToTableCase goToTable = (GoToTableCase) instruction.getInstruction();
-        assertThat(goToTable.getGoToTable().getTableId(), is(NwConstants.SFC_TRANSPORT_INGRESS_TABLE));
+        assertThat(goToTable.getGoToTable().getTableId(), is(Uint8.valueOf(NwConstants.SFC_TRANSPORT_INGRESS_TABLE)));
     }
 
     @Test

@@ -10,10 +10,9 @@ package org.opendaylight.sfc.genius.util;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -79,7 +79,7 @@ public class SfcGeniusDataUtilsTest {
 
     private final String ifName = "40c552e0-3695-472d-bace-7618786aba27";
     private final String macAddress = "b2:0e:19:ad:1e:22";
-    private final BigInteger theDpnId = new BigInteger("79268612506848");
+    private final Uint64 theDpnId = Uint64.valueOf("79268612506848");
     private final String logicalIfName = "tap40c552e0-36";
 
     public SfcGeniusDataUtilsTest() {
@@ -102,7 +102,7 @@ public class SfcGeniusDataUtilsTest {
         OvsdbTerminationPointAugmentationBuilder ovsdbTpAug = new OvsdbTerminationPointAugmentationBuilder();
         ovsdbTpAug.setPortUuid(new Uuid("451f440a-a828-41ad-993c-93aaec43eb31"));
         ovsdbTpAug.setOfport((long) 1);
-        List<InterfaceExternalIds> theInterfaces = new ArrayList<InterfaceExternalIds>() {
+        List<InterfaceExternalIds> theInterfaces = new ArrayList<>() {
             {
                 add(new InterfaceExternalIdsBuilder().setExternalIdKey("attached-mac").setExternalIdValue(macAddress)
                         .build());
@@ -136,7 +136,7 @@ public class SfcGeniusDataUtilsTest {
 
         PowerMockito.when(SfcGeniusUtilsDataGetter.readOvsNodeInterfaces(anyString(), anyString()))
                 .thenReturn(theInterfaces);
-        PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(any(BigInteger.class)))
+        PowerMockito.when(SfcGeniusUtilsDataGetter.getBridgeFromDpnId(any(Uint64.class)))
                 .thenReturn(Optional.of(theBridge));
     }
 
@@ -251,7 +251,7 @@ public class SfcGeniusDataUtilsTest {
     public void readMacAddressInvalidTerminationPoint() {
         // this InterfaceExternalIds list does not have the
         // 'attached-mac-address' key
-        List<InterfaceExternalIds> theInterfaces = new ArrayList<InterfaceExternalIds>() {
+        List<InterfaceExternalIds> theInterfaces = new ArrayList<>() {
             {
                 add(new InterfaceExternalIdsBuilder().build());
             }
@@ -282,7 +282,7 @@ public class SfcGeniusDataUtilsTest {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
-        List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
+        List<SfDataPlaneLocator> dpLocators = new ArrayList<>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
                         .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
@@ -307,7 +307,7 @@ public class SfcGeniusDataUtilsTest {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
-        List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
+        List<SfDataPlaneLocator> dpLocators = new ArrayList<>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
                         .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))
@@ -336,7 +336,7 @@ public class SfcGeniusDataUtilsTest {
         SfName sf1Name = new SfName("dpi");
         String dpiIpAddress = "192.168.1.30";
         ServiceFunctionKey dpiKey = new ServiceFunctionKey(sf1Name);
-        List<SfDataPlaneLocator> dpLocators = new ArrayList<SfDataPlaneLocator>() {
+        List<SfDataPlaneLocator> dpLocators = new ArrayList<>() {
             {
                 add(new SfDataPlaneLocatorBuilder()
                         .withKey(new SfDataPlaneLocatorKey(new SfDataPlaneLocatorName("dpi-1-dpl")))

@@ -8,13 +8,13 @@
 
 package org.opendaylight.sfc.genius.impl.handlers;
 
-import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusBoundServiceWriter;
 import org.opendaylight.sfc.genius.impl.handlers.writers.SfcGeniusTsaWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.itm.rpcs.rev160406.ItmRpcService;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ class SfcGeniusServiceHandler {
      *            the node dataplane id.
      * @return future signaling completion of the operation.
      */
-    CompletableFuture<Void> bindToNode(BigInteger dpnId) {
+    CompletableFuture<Void> bindToNode(Uint64 dpnId) {
         LOG.debug("Bind SFC service on node {}", dpnId);
         SfcGeniusTsaWriter tsaWriter = getTsaWriter();
         return tsaWriter.createTerminatingServiceAction(dpnId);
@@ -103,7 +103,7 @@ class SfcGeniusServiceHandler {
      *            the node dataplane id.
      * @return future signaling completion of the operation.
      */
-    CompletableFuture<Void> unbindFromNode(BigInteger dpnId) {
+    CompletableFuture<Void> unbindFromNode(Uint64 dpnId) {
         LOG.debug("Unbind SFC service on node {}", dpnId);
         SfcGeniusTsaWriter tsaWriter = getTsaWriter();
         return tsaWriter.removeTerminatingServiceAction(dpnId);

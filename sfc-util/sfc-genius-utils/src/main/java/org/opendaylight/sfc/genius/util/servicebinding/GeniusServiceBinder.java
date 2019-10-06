@@ -9,7 +9,6 @@
 package org.opendaylight.sfc.genius.util.servicebinding;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -27,13 +26,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.servicebinding.rev160406.service.bindings.services.info.BoundServicesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.genius.interfacemanager.servicebinding.rev160406.service.bindings.services.info.BoundServicesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 // Invalid violation for completedFuture(null) - https://sourceforge.net/p/findbugs/bugs/1403/
 @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
 public class GeniusServiceBinder {
 
     public CompletableFuture<Void> bindService(WriteTransaction theTx, String theInterfaceName, short theServiceId,
-            short theDestTable, BigInteger theCookie, int theServicePriority, String theServiceName) {
+            short theDestTable, Uint64 theCookie, int theServicePriority, String theServiceName) {
 
         InstanceIdentifier<BoundServices> id = InstanceIdentifier.builder(ServiceBindings.class)
                 .child(ServicesInfo.class, new ServicesInfoKey(theInterfaceName, ServiceModeIngress.class))
@@ -58,7 +58,7 @@ public class GeniusServiceBinder {
         return CompletableFuture.completedFuture(null);
     }
 
-    public static BigInteger getSfcIngressCookie() {
+    public static Uint64 getSfcIngressCookie() {
         return SfcGeniusConstants.COOKIE_SFC_INGRESS_TABLE;
     }
 

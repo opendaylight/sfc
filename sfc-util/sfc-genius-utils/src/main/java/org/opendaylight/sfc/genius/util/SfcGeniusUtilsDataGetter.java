@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.util;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 final class SfcGeniusUtilsDataGetter {
 
@@ -97,7 +96,7 @@ final class SfcGeniusUtilsDataGetter {
      *            the dataplane ID for that bridge
      * @return the BridgeRef object
      */
-    public static Optional<BridgeRefEntry> getBridgeFromDpnId(BigInteger theDpnId) {
+    public static Optional<BridgeRefEntry> getBridgeFromDpnId(Uint64 theDpnId) {
         InstanceIdentifier<BridgeRefEntry> theBridgeRefIID = InstanceIdentifier.create(BridgeRefInfo.class)
                 .child(BridgeRefEntry.class, new BridgeRefEntryKey(theDpnId));
         return Optional

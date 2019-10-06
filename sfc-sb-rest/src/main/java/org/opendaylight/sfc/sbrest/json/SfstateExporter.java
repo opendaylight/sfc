@@ -179,7 +179,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             }
 
             if (sfDescriptionInfo.getDataPlanePort() != null) {
-                sfDescriptionInfoNode.put(DATA_PLANE_PORT, sfDescriptionInfo.getDataPlanePort().getValue());
+                sfDescriptionInfoNode.put(DATA_PLANE_PORT, sfDescriptionInfo.getDataPlanePort().getValue().toJava());
             }
 
             if (sfDescriptionInfo.getType() != null) {
@@ -187,18 +187,18 @@ class SfstateExporter extends AbstractExporter implements Exporter {
             }
 
             if (sfDescriptionInfo.getNumberOfDataports() != null) {
-                sfDescriptionInfoNode.put(NUMBER_OF_DATAPORTS, sfDescriptionInfo.getNumberOfDataports());
+                sfDescriptionInfoNode.put(NUMBER_OF_DATAPORTS, sfDescriptionInfo.getNumberOfDataports().toJava());
             }
 
             if (sfDescriptionInfo.getCapabilities() != null) {
                 ObjectNode capabilitiesNode = mapper.createObjectNode();
                 Capabilities capabilities = sfDescriptionInfo.getCapabilities();
 
-                capabilitiesNode.put(SUPPORTED_PACKET_RATE, capabilities.getSupportedPacketRate());
-                capabilitiesNode.put(SUPPORTED_BANDWIDTH, capabilities.getSupportedBandwidth());
-                capabilitiesNode.put(SUPPORTED_ACL_NUMBER, capabilities.getSupportedACLNumber());
-                capabilitiesNode.put(RIB_SIZE, capabilities.getRIBSize());
-                capabilitiesNode.put(FIB_SIZE, capabilities.getFIBSize());
+                capabilitiesNode.put(SUPPORTED_PACKET_RATE, capabilities.getSupportedPacketRate().toJava());
+                capabilitiesNode.put(SUPPORTED_BANDWIDTH, capabilities.getSupportedBandwidth().toJava());
+                capabilitiesNode.put(SUPPORTED_ACL_NUMBER, capabilities.getSupportedACLNumber().toJava());
+                capabilitiesNode.put(RIB_SIZE, capabilities.getRIBSize().toJava());
+                capabilitiesNode.put(FIB_SIZE, capabilities.getFIBSize().toJava());
 
                 if (capabilities.getPortsBandwidth() != null) {
                     ArrayNode portsBandwidthArray = mapper.createArrayNode();
@@ -206,10 +206,10 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                     PortsBandwidth portsBandwidth = capabilities.getPortsBandwidth();
                     for (PortBandwidth portBandwidth : portsBandwidth.getPortBandwidth()) {
                         ObjectNode portBandwidthNode = mapper.createObjectNode();
-                        portBandwidthNode.put(PORT_ID, portBandwidth.getPortId());
+                        portBandwidthNode.put(PORT_ID, portBandwidth.getPortId().toJava());
                         portBandwidthNode.put(IPADDRESS, portBandwidth.getIpaddress().getValue());
                         portBandwidthNode.put(MACADDRESS, portBandwidth.getMacaddress().getValue());
-                        portBandwidthNode.put(SUPPORTED_BANDWIDTH, portBandwidth.getSupportedBandwidth());
+                        portBandwidthNode.put(SUPPORTED_BANDWIDTH, portBandwidth.getSupportedBandwidth().toJava());
                         portsBandwidthArray.add(portBandwidthNode);
                     }
                     portBandwidthArrayNode.put(PORT_BANDWIDTH, portsBandwidthArray);
@@ -232,14 +232,16 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                 ObjectNode resourceUtilizationNode = mapper.createObjectNode();
                 ResourceUtilization resourceUtilization = sfMonitoringInfo.getResourceUtilization();
 
-                resourceUtilizationNode.put(PACKET_RATE_UTILIZATION, resourceUtilization.getPacketRateUtilization());
-                resourceUtilizationNode.put(BANDWIDTH_UTILIZATION, resourceUtilization.getBandwidthUtilization());
-                resourceUtilizationNode.put(CPU_UTILIZATION, resourceUtilization.getCPUUtilization());
-                resourceUtilizationNode.put(MEMORY_UTILIZATION, resourceUtilization.getMemoryUtilization());
-                resourceUtilizationNode.put(AVAILABLE_MEMORY, resourceUtilization.getAvailableMemory());
-                resourceUtilizationNode.put(RIB_UTILIZATION, resourceUtilization.getRIBUtilization());
-                resourceUtilizationNode.put(FIB_UTILIZATION, resourceUtilization.getFIBUtilization());
-                resourceUtilizationNode.put(POWER_UTILIZATION, resourceUtilization.getPowerUtilization());
+                resourceUtilizationNode.put(PACKET_RATE_UTILIZATION,
+                    resourceUtilization.getPacketRateUtilization().toJava());
+                resourceUtilizationNode.put(BANDWIDTH_UTILIZATION,
+                    resourceUtilization.getBandwidthUtilization().toJava());
+                resourceUtilizationNode.put(CPU_UTILIZATION, resourceUtilization.getCPUUtilization().toJava());
+                resourceUtilizationNode.put(MEMORY_UTILIZATION, resourceUtilization.getMemoryUtilization().toJava());
+                resourceUtilizationNode.put(AVAILABLE_MEMORY, resourceUtilization.getAvailableMemory().toJava());
+                resourceUtilizationNode.put(RIB_UTILIZATION, resourceUtilization.getRIBUtilization().toJava());
+                resourceUtilizationNode.put(FIB_UTILIZATION, resourceUtilization.getFIBUtilization().toJava());
+                resourceUtilizationNode.put(POWER_UTILIZATION, resourceUtilization.getPowerUtilization().toJava());
 
                 if (resourceUtilization.getSFPortsBandwidthUtilization() != null) {
                     ArrayNode portsBandwidthUtilizationArray = mapper.createArrayNode();
@@ -249,7 +251,7 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                     for (PortBandwidthUtilization portBandwidthUtilization : portsBandwidthUtilization
                             .getPortBandwidthUtilization()) {
                         ObjectNode portBandwidthUtilizationNode = mapper.createObjectNode();
-                        portBandwidthUtilizationNode.put(PORT_ID, portBandwidthUtilization.getPortId());
+                        portBandwidthUtilizationNode.put(PORT_ID, portBandwidthUtilization.getPortId().toJava());
                         portBandwidthUtilizationNode.put(RX_PACKET,
                                 portBandwidthUtilization.getRxPacket().getValue().intValue());
                         portBandwidthUtilizationNode.put(TX_PACKET,
@@ -258,12 +260,16 @@ class SfstateExporter extends AbstractExporter implements Exporter {
                                 portBandwidthUtilization.getRxBytes().getValue().intValue());
                         portBandwidthUtilizationNode.put(TX_BYTES,
                                 portBandwidthUtilization.getTxBytes().getValue().intValue());
-                        portBandwidthUtilizationNode.put(RX_BYTES_RATE, portBandwidthUtilization.getRxBytesRate());
-                        portBandwidthUtilizationNode.put(TX_BYTES_RATE, portBandwidthUtilization.getTxBytesRate());
-                        portBandwidthUtilizationNode.put(RX_PACKET_RATE, portBandwidthUtilization.getRxPacketRate());
-                        portBandwidthUtilizationNode.put(TX_PACKET_RATE, portBandwidthUtilization.getTxPacketRate());
+                        portBandwidthUtilizationNode.put(RX_BYTES_RATE,
+                                portBandwidthUtilization.getRxBytesRate().toJava());
+                        portBandwidthUtilizationNode.put(TX_BYTES_RATE,
+                                portBandwidthUtilization.getTxBytesRate().toJava());
+                        portBandwidthUtilizationNode.put(RX_PACKET_RATE,
+                                portBandwidthUtilization.getRxPacketRate().toJava());
+                        portBandwidthUtilizationNode.put(TX_PACKET_RATE,
+                                portBandwidthUtilization.getTxPacketRate().toJava());
                         portBandwidthUtilizationNode.put(BANDWIDTH_UTILIZATION,
-                                portBandwidthUtilization.getBandwidthUtilization());
+                                portBandwidthUtilization.getBandwidthUtilization().toJava());
                         portsBandwidthUtilizationArray.add(portBandwidthUtilizationNode);
                     }
                     portBandwidthUtilizationArrayNode.put(PORT_BANDWIDTH_UTILIZATION, portsBandwidthUtilizationArray);

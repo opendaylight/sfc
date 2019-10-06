@@ -19,7 +19,7 @@
       <dependency>
         <groupId>org.opendaylight.mdsal</groupId>
         <artifactId>mdsal-artifacts</artifactId>
-        <version>4.0.6</version>
+        <version>5.0.2</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -38,6 +38,7 @@
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
       <optional>true</optional>
     </dependency>
 

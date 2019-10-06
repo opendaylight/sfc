@@ -111,7 +111,7 @@ public final class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServic
                 }
 
                 java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
-                        .getCPUUtilization();
+                        .getCPUUtilization().toJava();
 
                 if (preCPUUtilization > curCPUUtilization) {
                     preCPUUtilization = curCPUUtilization;
@@ -189,7 +189,7 @@ public final class SfcServiceFunctionLoadPathAwareSchedulerAPI extends SfcServic
             }
 
             java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             LOG.debug("CPU Utilization of {} is {}", curSfName, curCPUUtilization);
             if (preCPUUtilization > curCPUUtilization && pathLength <= pathThreshold) {
                 preCPUUtilization = curCPUUtilization;

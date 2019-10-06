@@ -32,7 +32,7 @@ public class SfcOpenFlowLogicalSffStatisticsReader extends SfcOpenFlowStatistics
     protected Optional<NodeId> getSffNodeId(ServiceFunctionForwarder sff, long nsp, short nsi) {
         List<RenderedServicePathHop> rspHops = this.rsp.getRenderedServicePathHop();
         for (RenderedServicePathHop rspHop : rspHops) {
-            if (rspHop.getServiceIndex() != nsi) {
+            if (rspHop.getServiceIndex().toJava() != nsi) {
                 continue;
             }
 

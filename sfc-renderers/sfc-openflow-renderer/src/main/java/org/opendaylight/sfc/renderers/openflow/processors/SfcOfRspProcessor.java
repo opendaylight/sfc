@@ -109,7 +109,7 @@ public class SfcOfRspProcessor {
             // This call blocks until the lock is obtained
             sfcSynchronizer.lock();
 
-            sfcOfProviderUtils.addRsp(rsp.getPathId());
+            sfcOfProviderUtils.addRsp(rsp.getPathId().toJava());
 
             //
             // Populate the SFF Connection Graph
@@ -143,7 +143,7 @@ public class SfcOfRspProcessor {
                 // particular RSP
                 sfcOfFlowProgrammer.setFlowRspId(OpenflowConstants.SFC_FLOWS);
                 initializeSff(entry, transportProcessor);
-                sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId());
+                sfcOfFlowProgrammer.setFlowRspId(rsp.getPathId().toJava());
                 configureTransportIngressFlows(entry, sffGraph, transportProcessor);
                 configurePathMapperFlows(entry, sffGraph, transportProcessor);
                 configureNextHopFlows(entry, sffGraph, transportProcessor);
@@ -165,7 +165,7 @@ public class SfcOfRspProcessor {
             // not written
             this.sfcOfFlowProgrammer.purgeFlows();
             sfcSynchronizer.unlock();
-            sfcOfProviderUtils.removeRsp(rsp.getPathId());
+            sfcOfProviderUtils.removeRsp(rsp.getPathId().toJava());
         }
     }
 
@@ -176,7 +176,7 @@ public class SfcOfRspProcessor {
      *            - the Rendered Service Path to delete
      */
     public void deleteRenderedServicePath(RenderedServicePath rsp) {
-        Set<NodeId> clearedSffNodeIDs = sfcOfFlowProgrammer.deleteRspFlows(rsp.getPathId());
+        Set<NodeId> clearedSffNodeIDs = sfcOfFlowProgrammer.deleteRspFlows(rsp.getPathId().toJava());
         for (NodeId sffNodeId : clearedSffNodeIDs) {
             setSffInitialized(sffNodeId, false);
         }
@@ -255,7 +255,7 @@ public class SfcOfRspProcessor {
         SfName prevSfName = null;
         String sfgName = null;
         SffGraph.SffGraphEntry entry;
-        short lastServiceIndex = rsp.getStartingIndex();
+        short lastServiceIndex = rsp.getStartingIndex().toJava();
         boolean isForwardPath = !rsp.isReversePath();
 
         while (servicePathHopIter.hasNext()) {
@@ -264,13 +264,13 @@ public class SfcOfRspProcessor {
             sfName = rspHop.getServiceFunctionName();
             sfgName = rspHop.getServiceFunctionGroupName();
 
-            entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId(),
-                    isForwardPath, rspHop.getServiceIndex());
+            entry = sffGraph.addGraphEntry(prevSffName, curSffName, sfName, sfgName, rsp.getPathId().toJava(),
+                    isForwardPath, rspHop.getServiceIndex().toJava());
             entry.setPrevSf(prevSfName);
-            lastServiceIndex = rspHop.getServiceIndex();
+            lastServiceIndex = rspHop.getServiceIndex().toJava();
             prevSfName = sfName;
             prevSffName = curSffName;
-            ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(sfName, rsp.getPathId());
+            ServiceFunction sf = sfcOfProviderUtils.getServiceFunction(sfName, rsp.getPathId().toJava());
             DpnIdType dpnId = this.getSfDpn(sf);
             entry.setDstDpnId(dpnId);
             entry.setSrcDpnId(srcDpnId);
@@ -279,8 +279,8 @@ public class SfcOfRspProcessor {
         }
         // Add the final connection, which will be the RSP Egress
         // Using the previous sfName as the SrcSf
-        entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName, rsp.getPathId(), isForwardPath,
-                (short) (lastServiceIndex - 1));
+        entry = sffGraph.addGraphEntry(prevSffName, SffGraph.EGRESS, sfName, sfgName,
+                    rsp.getPathId().toJava(), isForwardPath, (short) (lastServiceIndex - 1));
         entry.setPrevSf(prevSfName);
         entry.setSrcDpnId(srcDpnId);
 

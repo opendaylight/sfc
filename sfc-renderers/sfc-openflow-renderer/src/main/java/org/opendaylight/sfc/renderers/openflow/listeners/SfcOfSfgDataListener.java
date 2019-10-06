@@ -117,7 +117,7 @@ public class SfcOfSfgDataListener extends SfcOfAbstractDataListener<ServiceFunct
             bucketsInfo.add(buildBucket(sf, outPort, index));
             index++;
         }
-        this.sfcOfFlowProgrammer.configureGroup(sffName.getValue(), sffNodeId, sfg.getName(), sfg.getGroupId(),
+        this.sfcOfFlowProgrammer.configureGroup(sffName.getValue(), sffNodeId, sfg.getName(), sfg.getGroupId().toJava(),
                 algorithm.getAlgorithmType().getIntValue(), bucketsInfo, isAdd);
     }
 

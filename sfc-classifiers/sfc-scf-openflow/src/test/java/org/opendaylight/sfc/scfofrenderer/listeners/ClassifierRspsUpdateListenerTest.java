@@ -107,7 +107,7 @@ public class ClassifierRspsUpdateListenerTest {
     public void testUpdateRsp() {
         theUpdateListener.update(InstanceIdentifier.create(RenderedServicePath.class), oldRsp, newRsp);
 
-        Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId());
+        Mockito.verify(theOpenflowWriter).deleteRspFlows(oldRsp.getPathId().toJava());
         Mockito.verify(theOpenflowWriter).deleteFlowSet();
         Mockito.verify(theClassifierProcessor).processClassifier(theClassifier, theAcl, newRsp);
     }

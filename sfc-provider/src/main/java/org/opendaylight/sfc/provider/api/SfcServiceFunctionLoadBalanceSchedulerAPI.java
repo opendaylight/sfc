@@ -78,7 +78,7 @@ public final class SfcServiceFunctionLoadBalanceSchedulerAPI extends SfcServiceF
             }
 
             java.lang.Long curCPUUtilization = sfcSfDescMon.getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
 
             if (preCPUUtilization > curCPUUtilization) {
                 preCPUUtilization = curCPUUtilization;

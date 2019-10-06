@@ -61,7 +61,7 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
                             entry.getSrcSff(), entry.getDstSff());
 
                 } else {
-                    sffGraph.setSffEgressDpl(entry.getSrcSff(),rsp.getPathId(), srcSffDplEgress.getName());
+                    sffGraph.setSffEgressDpl(entry.getSrcSff(),rsp.getPathId().toJava(), srcSffDplEgress.getName());
                 }
 
                 // setting Ingress DPL of destination SFF
@@ -72,7 +72,7 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
                             entry.getDstSff(), entry.getSrcSff());
 
                 } else {
-                    sffGraph.setSffEgressDpl(entry.getDstSff(),rsp.getPathId(), dstSffDplIngress.getName());
+                    sffGraph.setSffEgressDpl(entry.getDstSff(),rsp.getPathId().toJava(), dstSffDplIngress.getName());
                 }
             }
 
@@ -80,10 +80,11 @@ public class SfcRspProcessorMacChaining extends SfcRspTransportProcessorBase {
 
             if (entry.getDstSff().equals(SffGraph.EGRESS)) {
                 sffGraph.setPathEgressDpl(entry.getPathId(), dpl.build());
-                LOG.info("sffGraph {}", sffGraph.getPathEgressDpl(rsp.getPathId()).toString());
+                LOG.info("sffGraph {}", sffGraph.getPathEgressDpl(rsp.getPathId().toJava()).toString());
             } else {
                 sffGraph.setHopIngressDpl(entry.getDstSff(), entry.getPathId(), dpl.build());
-                LOG.info("sffGraph {}", sffGraph.getHopIngressDpl(entry.getDstSff(), rsp.getPathId()).toString());
+                LOG.info("sffGraph {}", sffGraph.getHopIngressDpl(entry.getDstSff(),
+                    rsp.getPathId().toJava()).toString());
             }
         }
     }

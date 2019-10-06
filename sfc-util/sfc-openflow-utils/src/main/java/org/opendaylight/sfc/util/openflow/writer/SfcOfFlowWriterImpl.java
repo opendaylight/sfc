@@ -159,7 +159,7 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
                 flowBuilder.build(), rspId));
 
         // This will store the flow info and rspId for removal later
-        storeFlowDetails(rspId, sffNodeName, flow.key(), flow.getTableId());
+        storeFlowDetails(rspId, sffNodeName, flow.key(), flow.getTableId().toJava());
     }
 
     @Override
@@ -171,13 +171,13 @@ public class SfcOfFlowWriterImpl implements SfcOfFlowWriterInterface {
         setOfFlowsToAdd.add(theFlowData);
 
         storeFlowDetails(theFlowData.getRspId(), theFlowData.getSffNodeName(), theFlowData.getFlowKey(),
-                theFlowData.getTableKey().getId());
+                theFlowData.getTableKey().getId().toJava());
     }
 
     @Override
     public boolean writeFlows(Collection<FlowDetails> theFlows) {
         theFlows.forEach(flow -> storeFlowDetails(flow.getRspId(), flow.getSffNodeName(), flow.getFlowKey(),
-                flow.getTableKey().getId()));
+                flow.getTableKey().getId().toJava()));
         return setOfFlowsToAdd.addAll(theFlows);
     }
 

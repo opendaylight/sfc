@@ -105,7 +105,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfPathMapperFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        Integer vlanTag = ((MacAddressLocator) sfDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) sfDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag != null) {
             this.sfcFlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, entry.getPathId(), true);
         }
@@ -122,7 +122,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffPathMapperFlow(SffGraph.SffGraphEntry entry, DataPlaneLocator hopDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag != null) {
             this.sfcFlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, entry.getPathId(), false);
         }
@@ -229,7 +229,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
-        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag == null) {
             return;
         }
@@ -279,7 +279,7 @@ public class SfcRspProcessorVlan extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SffDataPlaneLocator dstSffDpl, DataPlaneLocator hopDpl) {
-        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag == null) {
             return;
         }

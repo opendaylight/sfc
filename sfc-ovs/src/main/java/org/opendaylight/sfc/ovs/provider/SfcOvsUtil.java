@@ -629,7 +629,7 @@ public final class SfcOvsUtil {
                 for (TerminationPoint tp : tpList) {
                     OvsdbTerminationPointAugmentation otp = tp.augmentation(OvsdbTerminationPointAugmentation.class);
                     if (comp.compare(otp) && otp.getOfport() != null) {
-                        return otp.getOfport();
+                        return otp.getOfport().toJava();
                     }
                 }
             }
@@ -772,7 +772,7 @@ public final class SfcOvsUtil {
                         OvsdbTerminationPointAugmentation otp = tp
                                 .augmentation(OvsdbTerminationPointAugmentation.class);
                         if (otp != null && otp.getInterfaceType().equals(InterfaceTypeDpdk.class)) {
-                            dpdkOfPort = otp.getOfport();
+                            dpdkOfPort = otp.getOfport().toJava();
                         }
                         break;
                     }

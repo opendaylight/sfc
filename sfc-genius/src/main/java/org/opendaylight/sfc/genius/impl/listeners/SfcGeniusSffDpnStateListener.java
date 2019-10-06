@@ -66,7 +66,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
         LOG.debug("Receive SFF state DPN add event {}", newDpn);
         boolean pathsOnDpn = getPathsOnDpn(newDpn).isEmpty();
         if (!pathsOnDpn) {
-            BigInteger dpnId = newDpn.getDpnId().getValue();
+            BigInteger dpnId = newDpn.getDpnId().getValue().toJava();
             interfaceManager.bindNode(dpnId);
         }
     }
@@ -76,7 +76,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
         LOG.debug("Receive SFF state DPN remove event {}", removedDpn);
         boolean pathsOnDpn = getPathsOnDpn(removedDpn).isEmpty();
         if (!pathsOnDpn) {
-            BigInteger dpnId = removedDpn.getDpnId().getValue();
+            BigInteger dpnId = removedDpn.getDpnId().getValue().toJava();
             interfaceManager.unbindNode(dpnId);
         }
     }
@@ -85,7 +85,7 @@ public class SfcGeniusSffDpnStateListener extends AbstractAsyncDataTreeChangeLis
     public void update(@NonNull InstanceIdentifier<Dpn> instanceIdentifier, @NonNull Dpn originalDpn,
                        @NonNull Dpn updatedDpn) {
         LOG.debug("Receive SFF state DPN: originalDpn {} updated DPN {}", originalDpn, updatedDpn);
-        BigInteger dpnId = updatedDpn.getDpnId().getValue();
+        BigInteger dpnId = updatedDpn.getDpnId().getValue().toJava();
         boolean pathsOnUpdatedDpn = this.getPathsOnDpn(updatedDpn).isEmpty();
         boolean pathsOnOldDpn = this.getPathsOnDpn(originalDpn).isEmpty();
         if (!pathsOnUpdatedDpn && pathsOnOldDpn) {

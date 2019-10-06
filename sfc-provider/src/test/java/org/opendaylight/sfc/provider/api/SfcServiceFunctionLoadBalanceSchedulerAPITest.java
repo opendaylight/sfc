@@ -249,7 +249,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfName sfFWName = new SfName(sftFirewallList.get(i).getName());
             Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfFWName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
         }
 
@@ -257,7 +257,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfName sfDPIName = new SfName(sftDpiList.get(i).getName());
             Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfDPIName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
         }
 
@@ -265,7 +265,7 @@ public class SfcServiceFunctionLoadBalanceSchedulerAPITest extends AbstractDataS
             SfName sfNATName = new SfName(sftNapt44List.get(i).getName());
             Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfNATName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
         }
 

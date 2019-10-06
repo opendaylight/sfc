@@ -42,7 +42,7 @@ public class VppRspProcessor {
 
     public void updateRsp(RenderedServicePath renderedServicePath) {
         Preconditions.checkNotNull(renderedServicePath);
-        Long pathId = renderedServicePath.getPathId();
+        Long pathId = renderedServicePath.getPathId().toJava();
         DataBroker previousMountPoint;
         DataBroker currentMountpoint = null;
         SffName previousSffName;
@@ -74,7 +74,7 @@ public class VppRspProcessor {
             }
 
             sfName = hop.getServiceFunctionName();
-            final Short serviceIndex = hop.getServiceIndex();
+            final Short serviceIndex = hop.getServiceIndex().toJava();
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if (serviceFunction == null) {
                 LOG.error("Service function {} not present in datastore", sfName.getValue());
@@ -127,7 +127,7 @@ public class VppRspProcessor {
     public void deleteRsp(RenderedServicePath renderedServicePath) {
         boolean ret;
         Preconditions.checkNotNull(renderedServicePath);
-        Long pathId = renderedServicePath.getPathId();
+        Long pathId = renderedServicePath.getPathId().toJava();
         DataBroker previousMountPoint;
         DataBroker currentMountpoint = null;
         SffName previousSffName;
@@ -158,7 +158,7 @@ public class VppRspProcessor {
             }
 
             sfName = hop.getServiceFunctionName();
-            final Short serviceIndex = hop.getServiceIndex();
+            final Short serviceIndex = hop.getServiceIndex().toJava();
             ServiceFunction serviceFunction = SfcProviderServiceFunctionAPI.readServiceFunction(sfName);
             if (serviceFunction == null) {
                 LOG.error("Service function {} not present in datastore", sfName.getValue());

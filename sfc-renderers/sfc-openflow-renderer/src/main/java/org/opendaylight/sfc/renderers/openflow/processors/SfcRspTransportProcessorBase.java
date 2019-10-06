@@ -231,7 +231,7 @@ public abstract class SfcRspTransportProcessorBase {
             return false;
         }
 
-        long pathId = rsp.getPathId();
+        long pathId = rsp.getPathId().toJava();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> sffDplList = sff.getSffDataPlaneLocator();
 
@@ -270,7 +270,7 @@ public abstract class SfcRspTransportProcessorBase {
      */
     private boolean setSffHopDataPlaneLocators(final ServiceFunctionForwarder prevSff,
             final ServiceFunctionForwarder curSff) {
-        long pathId = rsp.getPathId();
+        long pathId = rsp.getPathId().toJava();
         final String rspTransport = this.rsp.getTransportType().getName();
         List<SffDataPlaneLocator> prevSffDplList = prevSff.getSffDataPlaneLocator();
         List<SffDataPlaneLocator> curSffDplList = curSff.getSffDataPlaneLocator();

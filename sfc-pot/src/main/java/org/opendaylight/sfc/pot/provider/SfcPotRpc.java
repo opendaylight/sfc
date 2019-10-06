@@ -59,8 +59,8 @@ public class SfcPotRpc implements SfcIoamNbPotService {
         RspName rspName = new RspName(input.getSfcIoamPotRspName());
 
         /* Enable iOAM Proof of Transit on the SFC/RSP */
-        ret = sfcPotRspProcessor.enableSfcPot(rspName, input.getRefreshPeriodTimeUnits(), input.getRefreshPeriodValue(),
-                input.getIoamPotBitMask(), input.getIoamPotNumProfiles());
+        ret = sfcPotRspProcessor.enableSfcPot(rspName, input.getRefreshPeriodTimeUnits(), input.getRefreshPeriodValue().toJava(),
+                input.getIoamPotBitMask(), input.getIoamPotNumProfiles().toJava());
         if (ret) {
             /* success */
             EnableSfcIoamPotRenderedPathOutputBuilder enableSfcIoamPotRenderedPathOutputBuilder =

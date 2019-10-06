@@ -96,7 +96,7 @@ public final class ExporterUtil {
                     if (ipLocator.getIp() != null) {
                         locatorNode.put(IP, convertIpAddress(ipLocator.getIp()));
                         if (ipLocator.getPort() != null) {
-                            locatorNode.put(PORT, ipLocator.getPort().getValue());
+                            locatorNode.put(PORT, ipLocator.getPort().getValue().toJava());
                         }
                     }
                     break;
@@ -111,7 +111,7 @@ public final class ExporterUtil {
                     if (macLocator.getMac() != null) {
                         locatorNode.put(MAC, macLocator.getMac().getValue());
                     }
-                    locatorNode.put(VLAN_ID, macLocator.getVlanId());
+                    locatorNode.put(VLAN_ID, macLocator.getVlanId().toJava());
                     break;
                 default:
                     break;

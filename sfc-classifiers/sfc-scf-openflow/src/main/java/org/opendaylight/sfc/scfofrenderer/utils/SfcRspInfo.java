@@ -182,8 +182,8 @@ public class SfcRspInfo {
             return null;
         }
 
-        SfcRspInfo sfcRspInfo = new SfcRspInfo().setRsp(theRsp).setNshNsp(theRsp.getPathId())
-                .setNshStartNsi(theRsp.getStartingIndex())
+        SfcRspInfo sfcRspInfo = new SfcRspInfo().setRsp(theRsp).setNshNsp(theRsp.getPathId().toJava())
+                .setNshStartNsi(theRsp.getStartingIndex().toJava())
                 .setNshEndNsi((short) (lastRspHop.getServiceIndex().intValue() - 1))
                 .setFirstSffName(theFirstHop.getServiceFunctionForwarder())
                 .setLastSffName(lastRspHop.getServiceFunctionForwarder())
@@ -205,10 +205,10 @@ public class SfcRspInfo {
             return sfcRspInfo;
         }
 
-        sfcRspInfo.setNshMetaC1(md.getContextHeader1())
-                .setNshMetaC2(md.getContextHeader2())
-                .setNshMetaC3(md.getContextHeader3())
-                .setNshMetaC4(md.getContextHeader4());
+        sfcRspInfo.setNshMetaC1(md.getContextHeader1().toJava())
+                .setNshMetaC2(md.getContextHeader2().toJava())
+                .setNshMetaC3(md.getContextHeader3().toJava())
+                .setNshMetaC4(md.getContextHeader4().toJava());
 
         return sfcRspInfo;
     }

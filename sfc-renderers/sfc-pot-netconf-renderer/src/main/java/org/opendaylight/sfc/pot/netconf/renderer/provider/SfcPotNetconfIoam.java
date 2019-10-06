@@ -457,8 +457,8 @@ public class SfcPotNetconfIoam {
         }
 
         refreshPeriodTimeUnits = potAugmentation.getRefreshPeriodTimeUnits();
-        Long refreshPeriodValue = potAugmentation.getRefreshPeriodValue();
-        Long ioamPotNumProfiles = potAugmentation.getIoamPotNumProfiles();
+        Long refreshPeriodValue = potAugmentation.getRefreshPeriodValue().toJava();
+        Long ioamPotNumProfiles = potAugmentation.getIoamPotNumProfiles().toJava();
 
         LOG.debug("iOAM:PoT:SB:RSP {}:Got iOAM Proof of Transit params:{}", rsp.getName(), potAugmentation);
 

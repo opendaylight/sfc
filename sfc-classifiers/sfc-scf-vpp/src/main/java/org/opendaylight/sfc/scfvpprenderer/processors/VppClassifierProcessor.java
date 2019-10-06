@@ -316,13 +316,13 @@ public class VppClassifierProcessor {
 
                 if (aceip.getSourcePortRange() != null && aceip.getSourcePortRange().getLowerPort() != null
                         && aceip.getSourcePortRange().getLowerPort().getValue() != null
-                        && aceip.getSourcePortRange().getLowerPort().getValue() != 0) {
-                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue();
+                        && aceip.getSourcePortRange().getLowerPort().getValue().toJava() != 0) {
+                    srcPort = aceip.getSourcePortRange().getLowerPort().getValue().toJava();
                 }
                 if (aceip.getDestinationPortRange() != null && aceip.getDestinationPortRange().getLowerPort() != null
                         && aceip.getDestinationPortRange().getLowerPort().getValue() != null
-                        && aceip.getDestinationPortRange().getLowerPort().getValue() != 0) {
-                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue();
+                        && aceip.getDestinationPortRange().getLowerPort().getValue().toJava() != 0) {
+                    dstPort = aceip.getDestinationPortRange().getLowerPort().getValue().toJava();
                 }
 
                 // don't support port range
@@ -382,7 +382,7 @@ public class VppClassifierProcessor {
             return null;
         }
 
-        Long pathId = renderedServicePath.getPathId();
+        Long pathId = renderedServicePath.getPathId().toJava();
         List<RenderedServicePathHop> hopList = renderedServicePath.getRenderedServicePathHop();
         if (hopList == null || hopList.isEmpty()) {
             LOG.error("Rendered path {} does not contain any hop", renderedServicePath.getName().getValue());
@@ -395,7 +395,7 @@ public class VppClassifierProcessor {
             return null;
         }
 
-        Short serviceIndex = firstRspHop.getServiceIndex();
+        Short serviceIndex = firstRspHop.getServiceIndex().toJava();
         SffName sffName = firstRspHop.getServiceFunctionForwarder();
         IpAddress sffIp = SfcVppUtils.getSffFirstDplIp(sffName);
         DataBroker mountPoint = SfcVppUtils.getSffMountpoint(mountService, sffName);
@@ -455,7 +455,7 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                final Long reversePathId = reverseRenderedServicePath.getPathId();
+                final Long reversePathId = reverseRenderedServicePath.getPathId().toJava();
                 List<RenderedServicePathHop> hopList = reverseRenderedServicePath.getRenderedServicePathHop();
                 if (hopList == null || hopList.isEmpty()) {
                     LOG.error("Rendered path {} does not contain any hop",
@@ -469,7 +469,7 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
+                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex().toJava() - 1);
                 List<Pair<HexString>> pairList = entry.getValue();
                 int length = pairList.size();
                 int index = 0;
@@ -559,7 +559,7 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                final Long reversePathId = reverseRenderedServicePath.getPathId();
+                final Long reversePathId = reverseRenderedServicePath.getPathId().toJava();
                 List<RenderedServicePathHop> hopList = reverseRenderedServicePath.getRenderedServicePathHop();
                 if (hopList == null || hopList.isEmpty()) {
                     LOG.error("Rendered path {} does not contain any hop",
@@ -573,7 +573,7 @@ public class VppClassifierProcessor {
                     return false;
                 }
 
-                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex() - 1);
+                final Short reverseServiceIndex = (short)(lastRspHop.getServiceIndex().toJava() - 1);
 
                 // Remove VPP classfier classify tables, sessions and disable ingress ACL
                 List<Pair<HexString>> pairList = entry.getValue();

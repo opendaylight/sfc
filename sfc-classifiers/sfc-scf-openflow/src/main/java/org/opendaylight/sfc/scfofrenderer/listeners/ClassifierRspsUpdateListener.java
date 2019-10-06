@@ -87,7 +87,7 @@ public class ClassifierRspsUpdateListener extends AbstractSyncDataTreeChangeList
             // keep in mind that the only flows in the openflow are classifier
             // flows - the RSP flows are in another
             // of writer instance
-            openflowWriter.deleteRspFlows(originalRenderedServicePath.getPathId());
+            openflowWriter.deleteRspFlows(originalRenderedServicePath.getPathId().toJava());
             openflowWriter.deleteFlowSet();
             List<Acl> theAcls = updateDataGetter.filterAclsByRspName(theRspName);
 

@@ -455,7 +455,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             SfName sfFWName = new SfName(sftFirewallList.get(i).getName());
             java.lang.Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfFWName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
             LOG.debug("Reading CPU of ServiceFunction {} : {}", sfFWName, utilization);
 
@@ -465,7 +465,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             SfName sfDPIName = new SfName(sftDpiList.get(i).getName());
             java.lang.Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfDPIName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
             LOG.debug("Reading CPU of ServiceFunction {} : {}", sfDPIName, utilization);
         }
@@ -474,7 +474,7 @@ public class SfcServiceFunctionLoadPathAwareSchedulerAPITest extends AbstractDat
             SfName sfNATName = new SfName(sftNapt44List.get(i).getName());
             java.lang.Long utilization = SfcProviderServiceFunctionAPI
                     .readServiceFunctionDescriptionMonitor(sfNATName).getMonitoringInfo().getResourceUtilization()
-                    .getCPUUtilization();
+                    .getCPUUtilization().toJava();
             assertNotNull(utilization);
             LOG.debug("Reading CPU of ServiceFunction {} : {}", sfNATName, utilization);
         }

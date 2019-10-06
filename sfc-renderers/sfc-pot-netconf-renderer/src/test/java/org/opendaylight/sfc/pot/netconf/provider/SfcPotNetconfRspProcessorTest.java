@@ -301,7 +301,7 @@ public class SfcPotNetconfRspProcessorTest extends AbstractDataBrokerTest {
         assertNotNull(params);
 
         /* Verify refresh value stored in profiles */
-        assertTrue(params.getRefreshPeriodValue() == REFRESH_VALUE);
+        assertTrue(params.getRefreshPeriodValue().toJava() == REFRESH_VALUE);
 
         /* Note: Need to test timers, other parameters etc., in future. */
     }

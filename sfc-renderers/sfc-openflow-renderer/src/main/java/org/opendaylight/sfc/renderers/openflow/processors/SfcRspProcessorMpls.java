@@ -109,7 +109,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfPathMapperFlow(SffGraph.SffGraphEntry entry, SfDataPlaneLocator sfDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        Integer vlanTag = ((MacAddressLocator) sfDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) sfDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag != null) {
             this.sfcFlowProgrammer.configureVlanPathMapperFlow(sffNodeName, vlanTag, entry.getPathId(), true);
         }
@@ -126,7 +126,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     @Override
     public void configureSffPathMapperFlow(SffGraphEntry entry, DataPlaneLocator hopDpl) {
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getDstSff(), entry.getPathId());
-        long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel();
+        long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel().toJava();
         this.sfcFlowProgrammer.configureMplsPathMapperFlow(sffNodeName, mplsLabel, entry.getPathId(), false);
     }
 
@@ -231,7 +231,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
     @Override
     public void configureSfTransportEgressFlow(SffGraph.SffGraphEntry entry, SffDataPlaneLocator srcSffDpl,
             SfDataPlaneLocator dstSfDpl, DataPlaneLocator hopDpl) {
-        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId();
+        Integer vlanTag = ((MacAddressLocator) hopDpl.getLocatorType()).getVlanId().toJava();
         if (vlanTag == null) {
             return;
         }
@@ -285,7 +285,7 @@ public class SfcRspProcessorMpls extends SfcRspTransportProcessorBase {
         }
 
         String sffNodeName = sfcProviderUtils.getSffOpenFlowNodeName(entry.getSrcSff(), entry.getPathId());
-        long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel();
+        long mplsLabel = ((MplsLocator) hopDpl.getLocatorType()).getMplsLabel().toJava();
         String srcMac = sfcProviderUtils.getDplPortInfoMac(srcSffDpl);
         String dstMac = dstSffDpl == null ? null : sfcProviderUtils.getDplPortInfoMac(dstSffDpl);
         if (entry.getDstSff().equals(SffGraph.EGRESS)) {

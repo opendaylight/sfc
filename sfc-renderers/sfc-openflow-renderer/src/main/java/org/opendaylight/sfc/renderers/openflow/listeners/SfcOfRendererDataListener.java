@@ -74,21 +74,22 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
      *            the configuration details
      */
     private void processConfig(SfcOfRendererConfig config) {
-        if (verifyMaxTableId(config.getSfcOfTableOffset(), this.sfcOfFlowProgrammer.getMaxTableOffset()) == null) {
+        if (verifyMaxTableId(config.getSfcOfTableOffset().toJava(),
+            this.sfcOfFlowProgrammer.getMaxTableOffset()) == null) {
             return;
         }
 
-        if (verifyMaxTableId(config.getSfcOfAppEgressTableOffset(), (short) 0) == null) {
+        if (verifyMaxTableId(config.getSfcOfAppEgressTableOffset().toJava(), (short) 0) == null) {
             return;
         }
 
-        if (config.getSfcOfTableOffset() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
+        if (config.getSfcOfTableOffset().toJava() < MAGIC_NUMBER_IN_SFCOFLOWPROGRAMMERIMPL) {
             LOG.error("Error SfcOfTableOffset value [{}]", config.getSfcOfTableOffset());
             return;
         }
 
         // Cant set the egress table negative
-        if (config.getSfcOfAppEgressTableOffset() < 0) {
+        if (config.getSfcOfAppEgressTableOffset().toJava() < 0) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}]", config.getSfcOfAppEgressTableOffset());
             return;
         }
@@ -98,18 +99,18 @@ public class SfcOfRendererDataListener extends SfcOfAbstractDataListener<SfcOfRe
         // Example: tableBase = 20, SfcMaxTableOffset=10, then the SFC tables
         // would be in the range [20..30]. So an egress value of 25
         // would be invalid
-        if (config.getSfcOfAppEgressTableOffset() >= config.getSfcOfTableOffset()
-                && config.getSfcOfAppEgressTableOffset() <= config.getSfcOfTableOffset()
+        if (config.getSfcOfAppEgressTableOffset().toJava() >= config.getSfcOfTableOffset().toJava()
+                && config.getSfcOfAppEgressTableOffset().toJava() <= config.getSfcOfTableOffset().toJava()
                         + this.sfcOfFlowProgrammer.getMaxTableOffset()) {
             LOG.error("Error SfcOfAppEgressTableOffset value [{}] cant be in the SFC table range [{}..{}]",
-                    config.getSfcOfAppEgressTableOffset(), config.getSfcOfTableOffset(),
-                    config.getSfcOfTableOffset() + this.sfcOfFlowProgrammer.getMaxTableOffset());
+                    config.getSfcOfAppEgressTableOffset().toJava(), config.getSfcOfTableOffset().toJava(),
+                    config.getSfcOfTableOffset().toJava() + this.sfcOfFlowProgrammer.getMaxTableOffset());
 
             return;
         }
 
-        UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset(),
-                config.getSfcOfAppEgressTableOffset());
+        UpdateOpenFlowTableOffsets updateThread = new UpdateOpenFlowTableOffsets(config.getSfcOfTableOffset().toJava(),
+                config.getSfcOfAppEgressTableOffset().toJava());
 
         threadExecutor.execute(updateThread);
     }

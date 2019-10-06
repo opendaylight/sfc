@@ -67,14 +67,14 @@ public class SfcOpenFlowStatisticsReaderTest extends AbstractDataStoreManager {
         // Check the input stats
         Optional<ServiceStatistic> stats =
                 sfcOpenFlowStatsReader.getNextHopStatistics(
-                        true, sff, rsp.getPathId(), rsp.getStartingIndex());
+                        true, sff, rsp.getPathId().toJava(), rsp.getStartingIndex().toJava());
         assertTrue(stats.isPresent());
         sfcStatsTestUtils.checkStatistics(stats.get(), true,
                 sfcStatsTestUtils.STATS_COUNTER_BYTES, sfcStatsTestUtils.STATS_COUNTER_PACKETS);
 
         // Check the output stats
         stats = sfcOpenFlowStatsReader.getNextHopStatistics(
-                false, sff, rsp.getPathId(), rsp.getStartingIndex());
+                false, sff, rsp.getPathId().toJava(), rsp.getStartingIndex().toJava());
         assertTrue(stats.isPresent());
         sfcStatsTestUtils.checkStatistics(stats.get(), false,
                 sfcStatsTestUtils.STATS_COUNTER_BYTES, sfcStatsTestUtils.STATS_COUNTER_PACKETS);

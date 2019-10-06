@@ -25,6 +25,9 @@ import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev14070
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.VariableMetadataKey;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.variable.metadata.TlvMetadata;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.md.rev140701.service.function.metadata.variable.metadata.TlvMetadataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * This class defines the APIs to operate on the ServiceFunctionScheduleTypes
@@ -58,11 +61,11 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         // read service function metadata
         ContextMetadata contextMetadata = SfcProviderServiceFunctionMetadataAPI.readContextMetadata("CMD");
         assertNotNull("Must not be null", contextMetadata);
-        assertEquals("Must be equal", contextMetadata.getName(), "CMD");
-        assertEquals("Must be equal", contextMetadata.getContextHeader1(), (Object) 1L);
-        assertEquals("Must be equal", contextMetadata.getContextHeader2(), (Object) 2L);
-        assertEquals("Must be equal", contextMetadata.getContextHeader3(), (Object) 3L);
-        assertEquals("Must be equal", contextMetadata.getContextHeader4(), (Object) 4L);
+        assertEquals("Must be equal", "CMD", contextMetadata.getName());
+        assertEquals("Must be equal", Uint32.ONE, contextMetadata.getContextHeader1());
+        assertEquals("Must be equal", Uint32.valueOf(2), contextMetadata.getContextHeader2());
+        assertEquals("Must be equal", Uint32.valueOf(3), contextMetadata.getContextHeader3());
+        assertEquals("Must be equal", Uint32.valueOf(4), contextMetadata.getContextHeader4());
 
         // remove service function metadata
         transactionSuccessful = SfcProviderServiceFunctionMetadataAPI.deleteContextMetadata("CMD");
@@ -76,7 +79,7 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         List<TlvMetadata> tlvList = new ArrayList<>();
 
         TlvMetadataBuilder tlvMetadataBuilder = new TlvMetadataBuilder();
-        tlvMetadataBuilder.setTlvClass(1).setTlvType(Short.valueOf("2")).setLength(Short.valueOf("6"))
+        tlvMetadataBuilder.setTlvClass(1).setTlvType(Uint8.valueOf(2)).setLength(Uint8.valueOf(6))
                 .setTlvData("123456");
 
         tlvList.add(tlvMetadataBuilder.build());
@@ -94,9 +97,9 @@ public class SfcProviderServiceFunctionMetadataAPITest extends AbstractDataStore
         assertNotNull("Must not be null", variableMetadata.getTlvMetadata());
         assertEquals("Must be equal", variableMetadata.getTlvMetadata().size(), 1);
         assertNotNull("Must not be null", variableMetadata.getTlvMetadata().get(0));
-        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvClass(), (Object) 1);
-        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvType(), Short.valueOf("2"));
-        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getLength(), Short.valueOf("6"));
+        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvClass(), Uint16.ONE);
+        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvType(), Uint8.valueOf(2));
+        assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getLength(), Uint8.valueOf(6));
         assertEquals("Must be equal", variableMetadata.getTlvMetadata().get(0).getTlvData(), "123456");
 
         // remove service function metadata

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da87b5cf_4a5c0726",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfcFlowProgrammer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1873
+      },
+      "writtenOn": "2014-10-09T06:26:19Z",
+      "side": 1,
+      "message": "typedef ipv4-prefix {\n    type string {\n      pattern\n         \u0027(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}\u0027\n       +  \u0027([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\u0027\n       + \u0027/(([0-9])|([1-2][0-9])|(3[0-2]))\u0027;\n    }\n\nip address in restconf will be of patter a.b.c.d or a.b.c.d/x\n\nYou need to take care of these scenarios in the code",
+      "revId": "0caca7a1b4f491024ade26f7e92c2a4961b3e06e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

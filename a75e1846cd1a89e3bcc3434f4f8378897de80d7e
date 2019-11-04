@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_42562708",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfpDataListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 1,
+      "message": "Here you need to use the API  SfcProviderServiceFunctionAPI. getRead().",
+      "revId": "a75e1846cd1a89e3bcc3434f4f8378897de80d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_625b2b2f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfpDataListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 1,
+      "message": "Here you need to use the API SfcProviderServiceForwarderAPI. getRead().",
+      "revId": "a75e1846cd1a89e3bcc3434f4f8378897de80d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

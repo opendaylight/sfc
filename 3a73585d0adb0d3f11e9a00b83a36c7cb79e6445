@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_e2465b4f",
+        "filename": "sfc-distribution/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 0,
+      "message": "So, SFC distribution will not have your provider?",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_df53f437",
+        "filename": "sfc-distribution/src/main/resources/configuration/startup/bootstrap/service-function-forwarders.json",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 0,
+      "message": "In my previous comment I suggested that you should create your own SFF in this file, but you just reverted back the change. So, I suggest you add an SFF with name openflow:1 with a mac+vlan-id locator.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_7f30a807",
+        "filename": "sfc-distribution/src/main/resources/configuration/startup/bootstrap/service-functions.json",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 0,
+      "message": "Same comment as the other initial config file. You need to add SFs in this file for your own testing. Just add a few SFs that reference openflow:1.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_7f174855",
+        "filename": "sfcofl2/pom.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T06:27:33Z",
+      "side": 0,
+      "message": "Change tabs to spaces. Indent 4 spaces, make sure things are aligned",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

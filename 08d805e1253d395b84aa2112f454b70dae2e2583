@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_57ba6e6f",
+        "filename": "pom.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "I think we need a better name. There will be multiple openflow sfc renderers. This just happens to be one of them.",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d7a51e48",
+        "filename": "sfc-distribution/src/main/resources/configuration/initial/sfc-initial.xml",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "This file should not be editted and the original should be left alone. The ovssfc-provider should make their own config.xml file.",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d77c3eb8",
+        "filename": "sfc-renderer-openflow/src/main/java/org/opendaylight/ofsfc/provider/OpenFlowSfcRenderer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "Don\u0027t think you need RPCs",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b77f3aab",
+        "filename": "sfc-renderer-openflow/src/main/java/org/opendaylight/ofsfc/provider/OpenFlowSfcRenderer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "I don\u0027t know if you need this logic. Maybe only the sfcProvider needs this otherwise we have two modules doing the same delete.",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d78e7ed0",
+        "filename": "sfc-renderer-openflow/src/main/yang/ofsfc-provider-impl.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "still see a bunch of \\r\u0027s at the end. Is that right",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_97c0f6e1",
+        "filename": "sfc-renderer-openflow/src/main/yang/ofsfc-provider-impl.yang",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-03T12:16:23Z",
+      "side": 1,
+      "message": "I don\u0027t think you have a need for an rpc since you are just a listener.",
+      "revId": "08d805e1253d395b84aa2112f454b70dae2e2583",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

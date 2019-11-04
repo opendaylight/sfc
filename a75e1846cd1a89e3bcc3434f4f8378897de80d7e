@@ -2,6 +2,40 @@
   "comments": [
     {
       "key": {
+        "uuid": "fa82b9bf_ff527867",
+        "filename": "sfc-distribution/src/main/resources/configuration/initial/sfc-initial.xml",
+        "patchSetId": 10
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-04T00:58:39Z",
+      "side": 1,
+      "message": "This file is still all messed up. Can you just checkout the file since it shouldn\u0027t be changed.",
+      "revId": "a75e1846cd1a89e3bcc3434f4f8378897de80d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_bf4cf0c9",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 773
+      },
+      "writtenOn": "2014-09-04T00:58:39Z",
+      "side": 1,
+      "message": "same comment, maybe just check this file back out so it is left unchanged.",
+      "revId": "a75e1846cd1a89e3bcc3434f4f8378897de80d7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_42562708",
         "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfpDataListener.java",
         "patchSetId": 10

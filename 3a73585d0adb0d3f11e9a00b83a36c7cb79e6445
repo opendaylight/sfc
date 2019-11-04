@@ -70,6 +70,23 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_76bbf875",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderSnDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "You can remove this file for now.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_d68e84d0",
         "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/logback/SfcProviderLogbackLoader.java",
         "patchSetId": 1

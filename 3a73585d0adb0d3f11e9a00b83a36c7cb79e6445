@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "fa82b9bf_6bc6b118",
+        "filename": "ofsfc/src/main/java/org/opendaylight/controller/config/yang/config/ofsfc_provider/impl/OfSfcProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1873
+      },
+      "writtenOn": "2014-09-02T12:46:25Z",
+      "side": 1,
+      "message": "In the next commit, we will definitely clean up this code.",
+      "parentUuid": "fa82b9bf_8b2f75f6",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa82b9bf_0b3b6539",
         "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderAclDataListener.java",
         "patchSetId": 1
@@ -64,6 +82,24 @@
       "writtenOn": "2014-09-02T12:34:03Z",
       "side": 1,
       "message": "Can you clean up the line endings in this file?\n\nSide question - did this work? When I tried to use the acl code the bundle could not be resolved because of missing symbols.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_2bd0a9c8",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderAclDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1873
+      },
+      "writtenOn": "2014-09-02T12:46:25Z",
+      "side": 1,
+      "message": "We had the same problem, but we fixed it by adding ietf acl and protocol fields packages in sfc-model pom.xml",
+      "parentUuid": "fa82b9bf_0b3b6539",
       "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -200,6 +236,24 @@
       "writtenOn": "2014-09-02T12:34:03Z",
       "side": 1,
       "message": "I don\u0027t think this should be included in the distro. The infra to allow multiple renderers is not in so there is no arbitration if there are more than one renderers.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_4bd5edb7",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1873
+      },
+      "writtenOn": "2014-09-02T12:46:25Z",
+      "side": 1,
+      "message": "Yes, you are right\n\nThis is an oversight, we will remove from the distro",
+      "parentUuid": "fa82b9bf_8b08d592",
       "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

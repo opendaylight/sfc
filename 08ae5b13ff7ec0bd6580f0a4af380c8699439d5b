@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_9d81f44f",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/controller/config/yang/config/ofsfc_provider/impl/OfSfcProviderModule.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T07:09:59Z",
+      "side": 1,
+      "message": "It took me a long time to figure out what you were doing here because you named your method \"createInstance\". This is the method name that MD-SAL uses to callback to initialize providers. Therefore I immediately tried to understand if you had overloaded an infrastructure method. \n\nI suggest you name this something else to avoid such name confusions.",
+      "revId": "08ae5b13ff7ec0bd6580f0a4af380c8699439d5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_3d6468e4",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfpDataListener.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T07:09:59Z",
+      "side": 1,
+      "message": "This code will not work as you expect. The Listener is attached to SFP Entry (a list) but you are testing for the top container (ServiceFunctionPaths). I\u0027m surprised you are not seeing bugs when testing. What you want to do here is:\n\nif ((entry.getValue() instanceof ServiceFunctionPath) \u0026\u0026 (!(dataCreatedObject.containsKey(entry.getKey()))))\n\nAnd in the beginning of OnDataChanged() you want to pull all created objects:\n\nMap\u003cInstanceIdentifier\u003c?\u003e, DataObject\u003e dataCreatedObject \u003d change.getCreatedData();",
+      "revId": "08ae5b13ff7ec0bd6580f0a4af380c8699439d5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_fd8b6066",
+        "filename": "sfcofl2/src/main/java/org/opendaylight/ofsfc/provider/OpenflowSfpDataListener.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-04T07:09:59Z",
+      "side": 1,
+      "message": "Do you do really need to fetch this instance every time? If not,  suggest creating a final variable and initializing it once.",
+      "revId": "08ae5b13ff7ec0bd6580f0a4af380c8699439d5b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

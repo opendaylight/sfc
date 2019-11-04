@@ -1,0 +1,242 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_f6ae282f",
+        "filename": "ofsfc/src/main/java/org/opendaylight/controller/config/yang/config/ofsfc_provider/impl/OfSfcProviderModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Whitespace...",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_76621818",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderSfcDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Change LOG.info to LOG.debug at some point.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_16506c5d",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderSffFlowWriter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "There are a lot of hardcoded values in these methods. I\u0027m assuming you will  allow folks to pass parameters in the future.\n\nInstead of having a method signature for each action, you might consider a visitor deisgn patterns or reflection so that you can change things as much as you want without changing he API.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_366c9008",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/OfSfcProviderSfpDataListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Lots of whitespace and \\r line endings.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d68e84d0",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/logback/SfcProviderLogbackLoader.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Does still point to the right file?",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_769458e8",
+        "filename": "ofsfc/src/main/java/org/opendaylight/ofsfc/provider/utils/MdSalUtils.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "The class name MdSalUtils is confusing. Maybe you want to call it SfcOpenflowUtils.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_567114df",
+        "filename": "ofsfc/src/main/yang/ofsfc-provider-impl.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "You might want to change the revision date.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_b6fae041",
+        "filename": "sfc-distribution/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "sfc-model is already a dependency here. Why do you need the lines below?",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_56ecb48f",
+        "filename": "sfc-distribution/src/main/resources/configuration/initial/sfc-initial.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Whitespace",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_36e7b0ae",
+        "filename": "sfc-distribution/src/main/resources/configuration/startup/bootstrap/service-function-forwarders.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "If you change the name of the main SFF, our testing scripts will fail. You should add a new SFF called openflow:1.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_d6e0c498",
+        "filename": "sfc-distribution/src/main/resources/configuration/startup/bootstrap/service-functions.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Instead of modifying, it would be less disruptive if you just add new SFs.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_56d594b7",
+        "filename": "sfc-model/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "This will conflict with Sam\u0027s recent commit.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_36b5707e",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "There is no need to make it public. You can have it private and use reflection to access it.",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa82b9bf_96647c4a",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServiceForwarderAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 260,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 1,
+      "message": "Since you tested dataBroker !\u003d null, you shoud provide logging or some recovery if databroker \u003d\u003d NULL",
+      "revId": "3a73585d0adb0d3f11e9a00b83a36c7cb79e6445",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

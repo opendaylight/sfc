@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa82b9bf_d6720411",
+        "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcProviderServicePathAPI.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2014-09-02T17:23:16Z",
+      "side": 0,
+      "message": "Any reason why you changed all LOG.debug to LOG.error. None of these logs are errors, they are debug messages.",
+      "revId": "b74a1ec1261721dc6300740de36901d421f472a9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

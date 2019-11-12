@@ -17,6 +17,23 @@
       "revId": "354234a7e31d2bf0efe94569601ae4946d524b45",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_bc0957df",
+        "filename": "sfc-pot/src/main/java/org/opendaylight/sfc/sfc_pot/SfcPot.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Package name should match /^[a-z]+(\\.[a-z][a-z0-9]*)*$/ (check-style/PackageName)\n\n(The difference with o.o.c.c.yang.config.sfc_pot.impl is that this one is not generated)",
+      "revId": "354234a7e31d2bf0efe94569601ae4946d524b45",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

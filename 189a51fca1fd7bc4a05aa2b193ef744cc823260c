@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_45a3df4e",
+        "filename": "sfc-demo/sfc103-docker/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Why do you modify the VM twice?",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 5
+      },
+      "revId": "189a51fca1fd7bc4a05aa2b193ef744cc823260c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_988b9ac2",
         "filename": "sfc-demo/sfc103-docker/Vagrantfile",
         "patchSetId": 3
@@ -38,6 +61,29 @@
       "side": 1,
       "message": "I take the Vagrantfile of sfc103 as base. They do this that way. I think it doesn\u0027t worth to change it, it\u0027s just a demo.",
       "parentUuid": "9a561d44_85afb729",
+      "range": {
+        "startLine": 39,
+        "startChar": 26,
+        "endLine": 39,
+        "endChar": 41
+      },
+      "revId": "189a51fca1fd7bc4a05aa2b193ef744cc823260c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_85afb729",
+        "filename": "sfc-demo/sfc103-docker/Vagrantfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Do you really need to sync the whole sfc directory?\nCould you sync just sfc103 or sfc-demo?\nIn any case the last name in the path should NOT be \u0027..\u0027 in order to fail early (and to reduce risks).",
       "range": {
         "startLine": 39,
         "startChar": 26,

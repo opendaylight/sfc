@@ -20,6 +20,23 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_788d617b",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "LOG.info needed.\nSee https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#INFO",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_741a8518",
         "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
         "patchSetId": 5
@@ -32,6 +49,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_f8f851e7",
+      "range": {
+        "startLine": 41,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 17
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_f8f851e7",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Level should be info.\nSee https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#INFO",
       "range": {
         "startLine": 41,
         "startChar": 12,
@@ -62,6 +102,23 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_78e4413b",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/controller/config/yang/config/sfc_verify/impl/SfcVerifyModule.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "LOG.info needed.\nSee https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#INFO",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_b4d37d37",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
         "patchSetId": 5
@@ -74,6 +131,23 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_b8bff9cf",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_b8bff9cf",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Double check idiom does not work.\nSee http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html",
       "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
@@ -104,6 +178,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_5ec4c591",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 353,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
+      "range": {
+        "startLine": 353,
+        "startChar": 0,
+        "endLine": 353,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_f4ddf543",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
         "patchSetId": 5
@@ -116,6 +213,29 @@
       "side": 1,
       "message": "No Exception is being thrown in the code in-between and hence the try...catch block is being removed.  Currently checking only for no ACL and logging a message, as there is a possibility of not having ACL here.",
       "parentUuid": "da5c1566_3ec11181",
+      "range": {
+        "startLine": 427,
+        "startChar": 0,
+        "endLine": 427,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_3ec11181",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/SfcVerifyIoamAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 427,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
       "range": {
         "startLine": 427,
         "startChar": 0,
@@ -176,6 +296,46 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_d5443976",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyNodeListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Cyclic dependency.",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9b1aef15",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyRSPDataListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Could you please remove the \u0027\\n\u0027 chars embedded in logs?\nThey may be useful while developing, but they are cumbersome in operation.",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_74f1e5cc",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyRSPDataListener.java",
         "patchSetId": 5
@@ -224,6 +384,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_38d809ef",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/listener/SfcVerifyRSPDataListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Cyclic dependency.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 56
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_d4e27102",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
         "patchSetId": 5
@@ -248,6 +431,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_db88e724",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Methods should use lowerCamelCase.\nSee https://google.github.io/styleguide/javaguide.html#s5.2.3-method-names",
+      "range": {
+        "startLine": 26,
+        "startChar": 47,
+        "endLine": 26,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_34e76d14",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
         "patchSetId": 5
@@ -260,6 +466,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_9b766f3d",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 9
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9b766f3d",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNetconfDataProvider.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "This should be synchronized or sfcVerifyNetconfDataProvider should be declared volatile.",
       "range": {
         "startLine": 27,
         "startChar": 0,
@@ -320,6 +549,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_75c1ede3",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyNodeManager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Cyclic dependency.",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 70
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_b4ba5ddf",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
         "patchSetId": 5
@@ -368,6 +620,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_9b778f02",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Cyclic dependency.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_94bf59d0",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
         "patchSetId": 5
@@ -380,6 +655,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_3b22c3b9",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 86
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_3b22c3b9",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/SfcVerifyRspProcessor.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Would you consider an alternative API to get the default algorithm? (i.e. sfcvAlgorithm\u003dSfcVerificationAPI.getDefaultAlgorithm())\nThis avoids a few null checks (and a few FindBug\u0027s false positives).",
       "range": {
         "startLine": 121,
         "startChar": 0,
@@ -416,6 +714,145 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_fb17ab4f",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "It should be LOG.error(\"Error creating algorithm API\", e);\nSee https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 58
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_9b066f1f",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationConfigGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "They look like static fields. Aren\u0027t they?",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 38
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_0fbcd568",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationConfigGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "I mean \u0027\u003c0\u0027.",
+      "parentUuid": "da5c1566_1e7d2d6f",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 117
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1e7d2d6f",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationConfigGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Is 0 a valid coefficient? The expression becomes 0 if numLimit\u003c\u003d1 and r.nextLong()\u003d\u003dLong.MIN_VALUE because \nMath.abs(Long.MIN_VALUE)\u003d\u003dLong.MIN_VALUE.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 117
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_fecf99ae",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationConfigGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See my previous comment about coefficients and Math.abs(Long.MIN_VALUE).",
+      "range": {
+        "startLine": 368,
+        "startChar": 0,
+        "endLine": 368,
+        "endChar": 113
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1ecb6da6",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationConfigGenerator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 541,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "This returns a reference to coeffPerPack, so it can be modified by the caller.",
+      "range": {
+        "startLine": 541,
+        "startChar": 0,
+        "endLine": 541,
+        "endChar": 28
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_54c5c159",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationPolyAPI.java",
         "patchSetId": 5
@@ -428,6 +865,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_7ebb890e",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 227,
+        "endChar": 69
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_7ebb890e",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationPolyAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
       "range": {
         "startLine": 227,
         "startChar": 0,
@@ -458,6 +918,23 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_9e55bdc8",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/provider/api/SfcVerificationPolyClassAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Double check idiom does not work. See http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html",
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_94a639c0",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
         "patchSetId": 5
@@ -470,6 +947,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_fe5dd9ea",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_fe5dd9ea",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Dangerous. It should be at least package-protected.",
       "range": {
         "startLine": 38,
         "startChar": 0,
@@ -506,6 +1006,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_5e72057d",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 48,
+        "endChar": 66
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_549ca169",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
         "patchSetId": 5
@@ -518,6 +1041,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_de0575c3",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_de0575c3",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
       "range": {
         "startLine": 68,
         "startChar": 0,
@@ -554,6 +1100,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_be0a41d0",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 66
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_14922957",
         "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
         "patchSetId": 5
@@ -566,6 +1135,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_1e108d00",
+      "range": {
+        "startLine": 110,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 67
+      },
+      "revId": "d524a1fe66698409fd6aa23cccd28bbb2d8230e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_1e108d00",
+        "filename": "sfc-verify/src/main/java/org/opendaylight/sfc/sfc_verify/utils/SfcVerifyNetconfReaderWriterAPI.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "See https://wiki.opendaylight.org/view/BestPractices/Logging_Best_Practices#Provide_useful_event_context",
       "range": {
         "startLine": 110,
         "startChar": 0,

@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a6a9dd7_203c4b2f",
+        "filename": "sfc-py/setup.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-06-04T14:08:24Z",
+      "side": 1,
+      "message": "If you use the following code you can support python 2.x for the verify job and python 3 for your script.\n\n    # Support for Python 2.x\n    if sys.version_info \u003c (3, 0):\n        with open(name\u003dfile, mode\u003d\u0027r\u0027) as _file:\n            content \u003d _file.read()\n    else:\n        with open(file\u003dfile, mode\u003d\u0027r\u0027, encoding\u003d\u0027utf-8\u0027) as _file:\n            content \u003d _file.read()",
+      "parentUuid": "9a6a9dd7_8004377f",
+      "revId": "db6e2125b4f72d8c68e96317d5b38c6f21b257b8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

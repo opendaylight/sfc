@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_c24981d1",
+        "filename": "sfc-py/sfc/nsh/common.py",
+        "patchSetId": 31
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-16T01:10:02Z",
+      "side": 1,
+      "message": "Can not change the paylaod start index without changing all the corresponding code. Otherwise things will not work anymore.\n\nPAYLOAD_START_INDEX_NSH_TYPE3 \u003d 46\nPAYLOAD_START_INDEX_NSH_TYPE2 \u003d 32\nPAYLOAD_START_INDEX_NSH_TYPE1 \u003d 32",
+      "revId": "fe740d71710a94a0ce3c0b2c257f806a8ab78a82",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

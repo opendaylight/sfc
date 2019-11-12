@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_8ebbd00d",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "Correct me if I am wrong, but I dont see the difference between my and original init. Now as the BasicService._init_() is changed, I dont want to call it any more as it is changed . Instead i put into ControlUDPServer._init_() everything what was in the original BasicService._init_(). If so, You probably argue that _init_ was programmed wrong way from the begining, or?",
+      "parentUuid": "1a9dcd25_9abb0e0e",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_3a38ba9f",
         "filename": "sfc-py/sfc/common/services.py",
         "patchSetId": 3
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_ae956c41",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "1a9dcd25_3a38ba9f",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_1a47fe20",
         "filename": "sfc-py/sfc/common/sfc_globals.py",
         "patchSetId": 3
@@ -47,6 +83,24 @@
       "writtenOn": "2015-05-29T17:44:35Z",
       "side": 1,
       "message": "If you have more than one SFF/SF, how are you going to get proper statistics? I believe the SF/SFF statistics needs to be under the dictionary entry for that specific SF/SFF topo entry.",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_2ebb9ce6",
+        "filename": "sfc-py/sfc/common/sfc_globals.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "I dont care much  about that as this was intended just for you to try my changes, I asked you to test them and once we are sure they works for you too, I can remove all this statistic infos. Have you chance to test it? How is it working?",
+      "parentUuid": "1a9dcd25_1a47fe20",
       "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

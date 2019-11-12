@@ -17,6 +17,23 @@
       "revId": "e9a56f349d528a86c9df3a1841db5ac31c894495",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_dc5453cc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "TSC\u0027s BestPractices[0] recommends to follow OpenStack commit message recommendations[1].  See, for example, bullets 2 and 4 of section 1.3.2 \u0027Summary of Git commit message structure\u0027[2]:\n\n- Insert a single blank line after the first line.\n\n- The first line should be limited to 50 characters and should not end with a period.\n\n\n[0]: https://wiki.opendaylight.org/view/BestPractices/Coding_Guidelines#Git_commit_message_style\n\n[1]: https://wiki.openstack.org/wiki/GitCommitMessages\n\n[2]: https://wiki.openstack.org/wiki/GitCommitMessages#Summary_of_Git_commit_message_structure",
+      "revId": "e9a56f349d528a86c9df3a1841db5ac31c894495",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

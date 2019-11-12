@@ -20,6 +20,23 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_84045516",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "There are a few index-like leafs of different sizes and ranges. Would you mind typedefining them?",
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_5a1df665",
         "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
         "patchSetId": 3
@@ -32,6 +49,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_8968eef6",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 22
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_8968eef6",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "I think \"Initial revision.\" description is customary.",
       "range": {
         "startLine": 22,
         "startChar": 0,
@@ -68,6 +108,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_a9185285",
+        "filename": "sfc-verify/src/main/yang/ioam-scv.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "If this refers to sfc-common:sfc-name or sfc-common:sfp-name then the appropriate typedef should be used.",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 34
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_9a266eb9",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -80,6 +143,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_0974decd",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 50
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_0974decd",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Not used.",
       "range": {
         "startLine": 13,
         "startChar": 0,
@@ -109,6 +195,52 @@
         "startChar": 0,
         "endLine": 18,
         "endChar": 46
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_69811a8f",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Not used.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 46
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_29b0c28a",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "I think \"Initial revision.\" is customary.",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 6
       },
       "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -164,6 +296,53 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_09adfe31",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Why uint32?",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 85,
+        "endChar": 13
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_8f90e5ed",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Let me see if I\u0027m understanding: every distinct profile has an id which is uint32 but, at any time, every SF/SFF keeps only 16 profiles stored in a circular buffer. Am I right?",
+      "parentUuid": "da5c1566_7a79da92",
+      "range": {
+        "startLine": 83,
+        "startChar": 12,
+        "endLine": 85,
+        "endChar": 13
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_fa64cae6",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -176,6 +355,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_a931720d",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 124,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_a931720d",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "RFC6020 section 12 recommends \"ordered-by\" to be before \"description\".",
       "range": {
         "startLine": 124,
         "startChar": 0,
@@ -212,6 +414,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_69aaba1a",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "There are two pindex/uint32 and two index/uint16. Would you mind typedefining them?",
+      "range": {
+        "startLine": 126,
+        "startChar": 17,
+        "endLine": 126,
+        "endChar": 23
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_faab2ad4",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -224,6 +449,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_c9bb0671",
+      "range": {
+        "startLine": 140,
+        "startChar": 17,
+        "endLine": 140,
+        "endChar": 51
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_c9bb0671",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Bug 2062 is already fixed.\nhttps://bugs.opendaylight.org/show_bug.cgi?id\u003d2062",
       "range": {
         "startLine": 140,
         "startChar": 17,
@@ -260,6 +508,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_89362e02",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "RFC6020 section 12 recommends \"ordered-by\" to be before \"description\".",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_5ab9762d",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -284,6 +555,29 @@
     },
     {
       "key": {
+        "uuid": "da5c1566_e93b6ae9",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "RFC6020 section 12 recommends \"ordered-by\" to be before \"description\".",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 30
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_3ab6423e",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 3
@@ -296,6 +590,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_e9440a76",
+      "range": {
+        "startLine": 234,
+        "startChar": 0,
+        "endLine": 235,
+        "endChar": 31
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_e9440a76",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "RFC6020 section 12 recommends \"type\" to be before \"description\".",
       "range": {
         "startLine": 234,
         "startChar": 0,
@@ -344,6 +661,53 @@
       "side": 1,
       "message": "No worries at all! Thanks for your time.",
       "parentUuid": "da5c1566_6ff8f17c",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 80
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_c9402659",
+        "filename": "sfc-verify/src/main/yang/sfc-verify-impl.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Not used.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 80
+      },
+      "revId": "3f3fe5dcd510ee6509eca661d3b8f0d5109ec25c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_6ff8f17c",
+        "filename": "sfc-verify/src/main/yang/sfc-verify-impl.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "pyang --lint says opendaylight-md-sal-binding is not used but, you are right, it *is*.\nI\u0027ll double check pyang output from now on. Sorry for the inconvenience.",
+      "parentUuid": "da5c1566_ba81b24c",
       "range": {
         "startLine": 8,
         "startChar": 0,

@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "da5c1566_6434a1de",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "I think sfc-common:rsp-name typedef would be better.",
+      "range": {
+        "startLine": 281,
+        "startChar": 13,
+        "endLine": 281,
+        "endChar": 19
+      },
+      "revId": "68d5d6023f9ee42bb96a09bc3ea2ce51baac76fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_7aeefa23",
         "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
         "patchSetId": 4
@@ -14,6 +37,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "da5c1566_0437a5e4",
+      "range": {
+        "startLine": 327,
+        "startChar": 13,
+        "endLine": 327,
+        "endChar": 19
+      },
+      "revId": "68d5d6023f9ee42bb96a09bc3ea2ce51baac76fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_0437a5e4",
+        "filename": "sfc-verify/src/main/yang/service-function-chain-verification.yang",
+        "patchSetId": 4
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "I think sfc-common:rsp-name typedef would be better.",
       "range": {
         "startLine": 327,
         "startChar": 13,

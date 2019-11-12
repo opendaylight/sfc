@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_1f096f2c",
+        "filename": "sfc-py/jenkins_build_package.sh",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-06-15T16:06:59Z",
+      "side": 1,
+      "message": "Thanks for cleaning up after the build.",
+      "revId": "7baead7a31232c9b796db17c24d761dce25c327d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

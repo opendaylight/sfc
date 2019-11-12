@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a6a9dd7_8004377f",
+        "filename": "sfc-py/setup.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2015-06-04T13:47:46Z",
+      "side": 1,
+      "message": "So I changed this line to the following which made it work:\n\nwith open(name\u003dfile, mode\u003d\u0027r\u0027) as _file:",
+      "revId": "db6e2125b4f72d8c68e96317d5b38c6f21b257b8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a6a9dd7_203c4b2f",
         "filename": "sfc-py/setup.py",
         "patchSetId": 3

@@ -16,6 +16,24 @@
       "revId": "5a95c308aadb999413819743522121ad49cfdddc",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_225cf224",
+        "filename": "sfc-py/jenkins_build_package.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "have no idea how to do it automatically other way in this moment, if you have any solution, please, let us know, thanks.",
+      "parentUuid": "7a7fa997_9d1c4e79",
+      "revId": "5a95c308aadb999413819743522121ad49cfdddc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }

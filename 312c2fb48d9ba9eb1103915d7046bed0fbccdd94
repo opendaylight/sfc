@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_dfd2b0d1",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "this change breaks the funcionality. There is new command line switch --legacy-vxlan that enables to set the type VXLAN encaspulation instead of VXLAN-GPE in python classifier , even if the VXLAN-GPE is set in controller( there is no such choice in controler UI). if this --legacy-vxlan is used the classifier\u0027s SFF generates and sends encapsulated packet with VXLAN instead of VXLAN-GPE. Then  this encapsulated packed travels to another SFF and SF and at the end SF sent it to SFF where the encapsulation is thrown away. Here with your change SFF tries to send original packet to original destination with wrong port set to 6633 ! The packet never comes to the original destination server. What is the intention and reason to change the port . Could this port be changed in UI instead?",
+      "range": {
+        "startLine": 248,
+        "startChar": 12,
+        "endLine": 252,
+        "endChar": 36
+      },
+      "revId": "312c2fb48d9ba9eb1103915d7046bed0fbccdd94",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

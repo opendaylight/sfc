@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_9abb0e0e",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-29T17:44:35Z",
+      "side": 1,
+      "message": "the control UDP server does not need VXLANGPE, BASEHEADER, etc. It never receives data packets the original initialization was fine.",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3a38ba9f",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-29T17:44:35Z",
+      "side": 1,
+      "message": "Leaving this log is fine. The controlUDPserver only receives a packet when a SFF is destroyed.",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_1a47fe20",
+        "filename": "sfc-py/sfc/common/sfc_globals.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-29T17:44:35Z",
+      "side": 1,
+      "message": "If you have more than one SFF/SF, how are you going to get proper statistics? I believe the SF/SFF statistics needs to be under the dictionary entry for that specific SF/SFF topo entry.",
+      "revId": "ea36ec714d419b462bcb9e9c4749b3eabdbbea7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

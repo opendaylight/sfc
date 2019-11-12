@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_6be2c5d6",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:16:32Z",
+      "side": 1,
+      "message": "Let\u0027s try to use constants instead of these magic numbers. We have lots of constants in nsh/common.pu, we can add more if needed. \n\nSame comment for other pieces of code",
+      "revId": "76bc39ee96a9304db4d3805d112f61daa5a2aa94",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_0be9d1b7",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:16:32Z",
+      "side": 1,
+      "message": "Let\u0027s not use if \"3 \u003d\u003d\". Let\u0027s replace by constants, no magic numbers.",
+      "revId": "76bc39ee96a9304db4d3805d112f61daa5a2aa94",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_cbd2f9ff",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-07-20T16:16:32Z",
+      "side": 1,
+      "message": "No magic numbers.",
+      "revId": "76bc39ee96a9304db4d3805d112f61daa5a2aa94",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

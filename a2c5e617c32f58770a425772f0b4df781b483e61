@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_915e13e8",
+        "filename": "sfc-test/sfc-docker/dovs/dovs.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 954,
+      "author": {
+        "id": 5899
+      },
+      "writtenOn": "2019-11-12T20:55:56Z",
+      "side": 1,
+      "message": "Could you please fix this unbounded loop?",
+      "range": {
+        "startLine": 953,
+        "startChar": 0,
+        "endLine": 954,
+        "endChar": 25
+      },
+      "revId": "a2c5e617c32f58770a425772f0b4df781b483e61",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

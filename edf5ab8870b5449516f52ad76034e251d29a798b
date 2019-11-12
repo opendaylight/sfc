@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_34ba18df",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "main changes are to be able read from the NFQ as fast as possible.\n     internal queues are used for improvement\n     So no logs while picking  the packet from NFQ into our internal queue.\n    Another thread picks the packet from our queue , process it and send to data plane services - forward_packet(self, packet)\n    The only log line in the code is showing the  snapshot of values in the same time to see what happens on which level\n    ( this info in one line is just for the purpose to be able to analyze the asynchronous progress of  processing)",
+      "parentUuid": "1a9dcd25_b212bd60",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_522c99ab",
         "filename": "sfc-py/sfc/common/classifier.py",
         "patchSetId": 2
@@ -36,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1a9dcd25_d4ce5483",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "During playing and fiddling these changes I found out that when forward_packet(self, packet) is too fast , it stop working.\nso even we are fast enough to pick up the packest from the NFQ  ,  sending our NSH packets to the data planes much faster probably disturbes the socket and iptables mechanism  that NFQ doesnt run our call back any more. ...\nSo I decided to slow this function down. I know that sleeps are not nice but sometimes help to stabilize the asynchronous tasks if there is\nnot know solution.",
+      "parentUuid": "1a9dcd25_522c99ab",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a9dcd25_3206ad21",
         "filename": "sfc-py/sfc/common/services.py",
         "patchSetId": 2
@@ -47,6 +83,24 @@
       "writtenOn": "2015-05-27T18:57:02Z",
       "side": 1,
       "message": "These logs are for traceroute, there is no need to comment them out. They should never appear on the screen",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_74c0a050",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 7184
+      },
+      "writtenOn": "2019-11-12T21:03:31Z",
+      "side": 1,
+      "message": "ok these changes i will revert back",
+      "parentUuid": "1a9dcd25_3206ad21",
       "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false

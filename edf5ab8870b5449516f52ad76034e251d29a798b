@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_b212bd60",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-27T18:57:02Z",
+      "side": 1,
+      "message": "You mention logging was dragging performance but this is a huge log at level info",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_522c99ab",
+        "filename": "sfc-py/sfc/common/classifier.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-27T18:57:02Z",
+      "side": 1,
+      "message": "Why is this sleep needed?",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3206ad21",
+        "filename": "sfc-py/sfc/common/services.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 248
+      },
+      "writtenOn": "2015-05-27T18:57:02Z",
+      "side": 1,
+      "message": "These logs are for traceroute, there is no need to comment them out. They should never appear on the screen",
+      "revId": "edf5ab8870b5449516f52ad76034e251d29a798b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

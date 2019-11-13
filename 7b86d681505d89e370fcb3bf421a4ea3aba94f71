@@ -26,6 +26,29 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_87a0e6a6",
+        "filename": "sfc-netconf/src/main/resources/org/opendaylight/blueprint/sfc-netconf.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 5153
+      },
+      "writtenOn": "2019-11-13T21:42:34Z",
+      "side": 1,
+      "message": "This can be removed, since the DCL class is being injected with DataBroker directly.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 9
+      },
+      "revId": "7b86d681505d89e370fcb3bf421a4ea3aba94f71",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_47b88e2a",
         "filename": "sfc-provider/src/main/java/org/opendaylight/sfc/provider/api/SfcDataStoreAPI.java",
         "patchSetId": 1
@@ -61,6 +84,29 @@
       "side": 1,
       "message": "OK, no problem, I will try to conver TheadPoolWraper to a service.",
       "parentUuid": "7a6b29fe_274592b3",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 9
+      },
+      "revId": "7b86d681505d89e370fcb3bf421a4ea3aba94f71",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_274592b3",
+        "filename": "sfc-provider/src/main/resources/org/opendaylight/blueprint/sfc-provider.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 5153
+      },
+      "writtenOn": "2019-11-13T21:42:34Z",
+      "side": 1,
+      "message": "I am not sure how SfcThreadPoolWrapper is implemented, but the ExecutorService is being used in many other modules so you might have to register the org.opendaylight.controller.config.threadpool.ThreadPool as a service to reference it later on.\n\nAlso, there seems to two more argument values a boolean and a string that can be added.",
       "range": {
         "startLine": 12,
         "startChar": 0,

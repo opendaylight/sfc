@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_d7bda5d9",
+        "filename": "sfc-ovs/src/main/resources/org/opendaylight/blueprint/sfc-ovs.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 2039
+      },
+      "writtenOn": "2016-09-21T10:23:30Z",
+      "side": 1,
+      "message": "Alexis, I agree with all of your comments. The OpendaylightSfc Singleton has been something Ive wanted to refactor/throw away for some time now, but have just never gotten to it. I created the following bugzilla with your comments so we done lose this:\nhttps://bugs.opendaylight.org/show_bug.cgi?id\u003d6768\n\nEven still, for now, this file should be changed to use the reference keyword as you originally suggested.",
+      "parentUuid": "7a6b29fe_e4e809e4",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "3fddf8a37e2c99bedc182ed4b94e6b5d921b246f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

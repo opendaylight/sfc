@@ -2,6 +2,53 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a6b29fe_04fee5ad",
+        "filename": "sfc-ovs/src/main/resources/org/opendaylight/blueprint/sfc-ovs.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-09-13T12:51:12Z",
+      "side": 1,
+      "message": "Isn\u0027t this class suppose to be a singleton? Thus instantiated only once, and registered in the OSGi registry (in the sfc-provider). Allowing you to use the reference keyword afterward to pull it in.\n\nLooking at its close() method, it\u0027s deleting all the SFC datastore, so if only this bundle goes down, the whole datastore is wiped out, potentially creating disruption.",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "3fddf8a37e2c99bedc182ed4b94e6b5d921b246f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_e4e809e4",
+        "filename": "sfc-ovs/src/main/resources/org/opendaylight/blueprint/sfc-ovs.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-09-13T13:21:17Z",
+      "side": 1,
+      "message": "By looking closer at it, it seems this class is providing those things:\n\n- InstanceIdentifier across the project\n- ExecutorService statically defined\n- close method clearing the whole SFC datastore\n- an init method called in the sfc-provider\n- some utility getters providing things given by blueprint\u0027s service registery\n\nI think the main concerns of having this class new in every bundle are the close() method and the ExecutorService definition (thread pool of 100). Regarding the close() method, it is well-know that ODL doesn\u0027t support uninstall (yet), thus not such a big deal, but it can blow here and there on shutdown because of this. Regarding the ExecutorService, this is more concerning, because you don\u0027t want to exhaust the thread pool available in the host running ODL (even though this might not happen, you better be safe). Moreover, the initial intention was to have only one thread pool of 100 threads shared across the whole SFC project.\n\nTo sum up, I guess for now this is fine, but once all blueprint patches are there, the OpendaylightSfc class needs to be rework and/or break down, and the ExecturoService needs to become shared across all bundle. To do the later, you can defined a FixedThreadPoolWrapper ( https://github.com/opendaylight/controller/blob/master/opendaylight/config/threadpool-config-impl/src/main/java/org/opendaylight/controller/config/threadpool/util/FixedThreadPoolWrapper.java ) in the sfc-provider, and expose the ThreadPool service so it can be gathered from the service registery.",
+      "parentUuid": "7a6b29fe_04fee5ad",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "3fddf8a37e2c99bedc182ed4b94e6b5d921b246f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_d7bda5d9",
         "filename": "sfc-ovs/src/main/resources/org/opendaylight/blueprint/sfc-ovs.xml",
         "patchSetId": 1

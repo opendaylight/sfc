@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_642eb944",
+        "filename": "sfc-ovs/src/main/java/org/opendaylight/controller/config/yang/config/sfc_ovs/impl/SfcOvsModule.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-09-13T12:51:12Z",
+      "side": 0,
+      "message": "this shouldn\u0027t be new in the blueprint, it should be referenced",
+      "range": {
+        "startLine": 50,
+        "startChar": 48,
+        "endLine": 50,
+        "endChar": 88
+      },
+      "revId": "073047d55c705a48287a3c01f3770ee2980bdd11",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

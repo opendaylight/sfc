@@ -67,7 +67,6 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-reflect</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

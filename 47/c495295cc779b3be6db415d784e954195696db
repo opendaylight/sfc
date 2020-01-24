@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Anil Belur <abelur@linuxfoundation.org>
+Submitted-by: Anil Belur <abelur@linuxfoundation.org>
+Submitted-at: Fri, 24 Jan 2020 08:10:42 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/sfc/+/86938
+Project: sfc
+Branch: refs/heads/stable/sodium

@@ -8,7 +8,6 @@
 package org.opendaylight.sfc.statistics.readers;
 
 import java.util.Optional;
-
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sff.rev140701.service.function.forwarders.ServiceFunctionForwarder;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.statistic.fields.ServiceStatistic;
 import org.slf4j.Logger;

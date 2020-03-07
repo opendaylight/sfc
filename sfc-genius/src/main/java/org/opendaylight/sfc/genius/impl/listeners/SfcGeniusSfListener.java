@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.genius.impl.listeners;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -24,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SfcGeniusSfListener extends AbstractAsyncDataTreeChangeListener<ServiceFunction> {
-
     private static final Logger LOG = LoggerFactory.getLogger(SfcGeniusSfListener.class);
+
     private final SfcGeniusServiceManager interfaceManager;
 
     public SfcGeniusSfListener(DataBroker dataBroker,

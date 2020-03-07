@@ -10,7 +10,6 @@ package org.opendaylight.sfc.statistics.handlers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.opendaylight.sfc.provider.api.SfcProviderServiceForwarderAPI;
 import org.opendaylight.sfc.statistics.readers.SfcStatisticsReaderBase;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;

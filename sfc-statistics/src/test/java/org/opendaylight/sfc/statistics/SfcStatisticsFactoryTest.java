@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opendaylight.sfc.statistics.handlers.RspStatisticsHandler;
 import org.opendaylight.sfc.statistics.handlers.SfStatisticsHandler;
 import org.opendaylight.sfc.statistics.handlers.SfcStatisticsHandlerBase;

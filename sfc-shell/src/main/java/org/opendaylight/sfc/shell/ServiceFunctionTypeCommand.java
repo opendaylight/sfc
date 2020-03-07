@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.shell;
 
 import java.util.List;
-
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * Karaf CLI command to show the provisioned Service Function Types.
  *
  * @author David Suárez (david.suarez.fuentes@gmail.com)
- *
  */
 @Service
 @Command(scope = "sfc",

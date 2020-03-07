@@ -9,7 +9,6 @@ package org.opendaylight.sfc.statistics.handlers;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.opendaylight.sfc.statistics.readers.SfcStatisticsReaderBase;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.sf.rev140701.service.functions.ServiceFunction;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.ss.rev140701.service.statistics.group.StatisticByTimestamp;

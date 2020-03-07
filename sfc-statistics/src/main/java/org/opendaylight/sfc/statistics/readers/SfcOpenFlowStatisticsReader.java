@@ -9,7 +9,6 @@ package org.opendaylight.sfc.statistics.readers;
 
 import java.util.Optional;
 import java.util.StringJoiner;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.sfc.provider.api.SfcDataStoreAPI;
 import org.opendaylight.sfc.util.openflow.OpenflowConstants;

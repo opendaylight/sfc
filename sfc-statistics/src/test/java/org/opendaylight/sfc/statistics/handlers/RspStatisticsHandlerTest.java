@@ -12,10 +12,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opendaylight.sfc.statistics.SfcStatisticsFactory;
 import org.opendaylight.sfc.statistics.readers.SfcOpenFlowStatisticsReader;
 import org.opendaylight.sfc.statistics.testutils.AbstractDataStoreManager;

@@ -5,14 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.sfc.provider.listeners;
 
 import java.util.Collections;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -34,7 +31,6 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class RenderedServicePathListener extends AbstractSyncDataTreeChangeListener<RenderedServicePath> {
-
     private static final Logger LOG = LoggerFactory.getLogger(RenderedServicePathListener.class);
 
     @Inject

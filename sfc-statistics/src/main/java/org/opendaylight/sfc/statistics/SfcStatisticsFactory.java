@@ -8,7 +8,6 @@
 package org.opendaylight.sfc.statistics;
 
 import java.util.List;
-
 import org.opendaylight.sfc.statistics.handlers.RspStatisticsHandler;
 import org.opendaylight.sfc.statistics.handlers.SfStatisticsHandler;
 import org.opendaylight.sfc.statistics.handlers.SfcStatisticsHandlerBase;

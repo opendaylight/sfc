@@ -17,10 +17,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opendaylight.sfc.statistics.testutils.AbstractDataStoreManager;
 import org.opendaylight.sfc.statistics.testutils.SfcStatisticsTestUtils;
 import org.opendaylight.yang.gen.v1.urn.cisco.params.xml.ns.yang.sfc.rsp.rev140701.rendered.service.paths.RenderedServicePath;

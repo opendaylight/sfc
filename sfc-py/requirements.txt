@@ -1,4 +1,4 @@
-ecdsa==0.13
+ecdsa==0.13.3
 Flask==0.10.1
 ipaddress==1.0.15
 itsdangerous==0.24

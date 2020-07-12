@@ -1,0 +1,68 @@
+---
+project: 'sfc'
+project_creation_date: ''
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &odl_sfc_ptl
+    name: 'Brady Johnson'
+    email: 'bradyallenjohnson@gmail.com'
+    company: ''
+    id: 'ebrjohn'
+    timezone: 'Unknown/Unknown'
+primary_contact: *odl_sfc_ptl
+issue_tracking:
+    type: 'jira'
+    url: 'https://jira.opendaylight.org/projects/'
+    key: 'sfc'
+mailing_list:
+    type: 'groups.io'
+    url: 'app-dev@lists.opendaylight.org'
+    tag: '[]'
+realtime_discussion:
+    type: 'irc'
+    server: 'freenode.net'
+    channel: '#opendaylight'
+meetings:
+    - type: 'gotomeeting+irc'
+      agenda: 'https://wiki.opendaylight.org'
+      url: ''
+      server: 'freenode.net'
+      channel: '#opendaylight'
+      repeats: ''
+      time: ''
+repositories:
+    - sfc
+committers:
+    - <<: *odl_sfc_ptl
+    - name: 'Yi Yang'
+      email: 'yi.y.yang@intel.com'
+      company: 'intel'
+      id: 'yyang13'
+      timezone: 'Unknown/Unknown'
+    - name: 'Reinaldo Penno'
+      email: 'rapenno@gmail.com'
+      company: ''
+      id: 'repenno'
+      timezone: 'Unknown/Unknown'
+    - name: 'Vinayak Joshi'
+      email: 'Vinayak.Joshi@ericsson.com'
+      company: 'Ericsson'
+      id: 'joshivinayak'
+      timezone: 'Unknown/Unknown'
+    - name: 'Jaime Caamaño Ruiz'
+      email: 'jcaamano@suse.com'
+      company: 'suse'
+      id: 'jaicaa'
+      timezone: 'Unknown/Unknown'
+    - name: 'David Suárez Fuentes'
+      email: 'david.suarez.fuentes@gmail.com'
+      company: ''
+      id: 'dsuarez'
+      timezone: 'Unknown/Unknown'
+tsc:
+    # yamllint disable rule:line-length
+    approval: ''
+    changes:
+        - type: ''
+          name: ''
+          link: ''

@@ -11,7 +11,7 @@ ptyprocess==0.5
 py==1.4.31
 pycrypto~=2.6.1
 pytest==2.8.3
-requests==2.8.1
+requests==2.20.0
 scapy-python3==0.18
 six==1.10.0
 Werkzeug==0.11.2

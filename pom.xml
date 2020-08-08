@@ -11,7 +11,7 @@
 
   <groupId>org.opendaylight.sfc</groupId>
   <artifactId>sfc-parent</artifactId>
-  <version>0.10.4-SNAPSHOT</version>
+  <version>0.10.4</version>
   <name>sfc</name> <!-- Used by Sonar to set project name -->
   <packaging>pom</packaging>
 
@@ -71,23 +71,23 @@
     <!-- Build Plugin Versions -->
     <karaf.maven.version>3.0.1</karaf.maven.version>
 
-    <config.version>0.11.4-SNAPSHOT</config.version>
-    <mdsal.version>1.10.4-SNAPSHOT</mdsal.version>
-    <netconf.parent.version>1.7.4-SNAPSHOT</netconf.parent.version>
-    <restconf.version>1.10.4-SNAPSHOT</restconf.version>
+    <config.version>0.11.4</config.version>
+    <mdsal.version>1.10.4</mdsal.version>
+    <netconf.parent.version>1.7.4</netconf.parent.version>
+    <restconf.version>1.10.4</restconf.version>
     <salGeneratorPath>src/main/yang-gen-sal</salGeneratorPath>
-    <lispflowmapping.version>1.10.4-SNAPSHOT</lispflowmapping.version>
-    <ovsdb.southbound.version>1.9.4-SNAPSHOT</ovsdb.southbound.version>
-    <l2switch.version>0.10.4-SNAPSHOT</l2switch.version>
-    <genius.version>0.7.4-SNAPSHOT</genius.version>
-    <serviceutils.version>0.4.4-SNAPSHOT</serviceutils.version>
-    <infrautils.version>1.6.4-SNAPSHOT</infrautils.version>
+    <lispflowmapping.version>1.10.4</lispflowmapping.version>
+    <ovsdb.southbound.version>1.9.4</ovsdb.southbound.version>
+    <l2switch.version>0.10.4</l2switch.version>
+    <genius.version>0.7.4</genius.version>
+    <serviceutils.version>0.4.4</serviceutils.version>
+    <infrautils.version>1.6.4</infrautils.version>
 
     <!-- Supporting Libraries -->
-    <feature.openflowplugin.version>0.9.4-SNAPSHOT</feature.openflowplugin.version>
-    <openflowplugin.version>0.9.4-SNAPSHOT</openflowplugin.version>
+    <feature.openflowplugin.version>0.9.4</feature.openflowplugin.version>
+    <openflowplugin.version>0.9.4</openflowplugin.version>
 
-    <branding.version>1.9.4-SNAPSHOT</branding.version>
+    <branding.version>1.9.4</branding.version>
 
     <!-- Test Libraries -->
     <junitparams.version>1.0.3</junitparams.version>

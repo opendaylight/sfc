@@ -2,4 +2,3 @@
 #
 58068fc18a66158c0fee84b8fcadbf5a662be084                           	saml/odl-gerrit-sfc-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                           	GitHub Replication
-ldap:cn=odl-gerrit-sfc-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-sfc-committers

@@ -14,5 +14,5 @@ pytest==2.8.3
 requests==2.8.1
 scapy-python3==0.18
 six==1.10.0
-Werkzeug==0.11.2
+Werkzeug==0.15.3
 wheel==0.26.0
